@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "86340825349",
+    "project_id": "sellcoda-dev-notification",
+    "storage_bucket": "sellcoda-dev-notification.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:86340825349:android:9a65f542fa9138dfa5876c",
+        "android_client_info": {
+          "package_name": "com.sellcodasale"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "86340825349-p1s2cj4fj984n8okb78a1bsoa6eu57or.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBaA0BMKjgA_ZrFPTBxJ60ipQZFq6SbM60"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "86340825349-p1s2cj4fj984n8okb78a1bsoa6eu57or.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

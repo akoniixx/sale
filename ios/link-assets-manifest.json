@@ -1,0 +1,41 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "src/assets/fonts/NotoSansThai-Bold.ttf",
+      "sha1": "a8bcaf7c642fda91257616173a006bd55513ec2a"
+    },
+    {
+      "path": "src/assets/fonts/NotoSansThai-Light.ttf",
+      "sha1": "ffc70332f89a86806236bb253c2e566fe6c54d53"
+    },
+    {
+      "path": "src/assets/fonts/NotoSansThai-Medium.ttf",
+      "sha1": "6dc602fd2843b6b782b932dd26b4b5484f29122c"
+    },
+    {
+      "path": "src/assets/fonts/NotoSansThai-Regular.ttf",
+      "sha1": "5dd3374492170140ac2b790d0f01a2b5377020f6"
+    },
+    {
+      "path": "src/assets/fonts/Sarabun-Bold.ttf",
+      "sha1": "8a5854cb1d43fe0caf68d4f82a62c3dfd4f5cb5a"
+    },
+    {
+      "path": "src/assets/fonts/Sarabun-Light.ttf",
+      "sha1": "49e7b35305be84b3de4cf02cadd9eebc21c8f681"
+    },
+    {
+      "path": "src/assets/fonts/Sarabun-Medium.ttf",
+      "sha1": "39c5f343e03df2db76283f8b07125e15ffff0b75"
+    },
+    {
+      "path": "src/assets/fonts/Sarabun-Regular.ttf",
+      "sha1": "a9b65e36ee8224b459b9dcdb8bf55ef41b4ab867"
+    },
+    {
+      "path": "src/assets/fonts/Sarabun-SemiBold.ttf",
+      "sha1": "fa6c7f47da0dae54034d0b4eea541e48e615d2d5"
+    }
+  ]
+}

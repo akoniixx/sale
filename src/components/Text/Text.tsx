@@ -1,4 +1,11 @@
-import { Text as TextRN, TextProps, StyleSheet, ViewStyle } from 'react-native';
+import {
+  Text as TextRN,
+  TextProps,
+  StyleSheet,
+  ViewStyle,
+  StyleProp,
+  TextStyle,
+} from 'react-native';
 import React from 'react';
 import { colors } from '../../assets/colors/colors';
 
@@ -38,7 +45,7 @@ interface TextStyled {
 }
 interface Props extends TextProps, TextStyled {
   children: React.ReactNode;
-  style?: ViewStyle;
+  style?: TextStyle;
 }
 export default function Text({ children, style, ...props }: Props) {
   return (

@@ -17,13 +17,20 @@ interface ButtonStyledProps {
 }
 interface Props extends TouchableOpacityProps, ButtonStyledProps {
   title?: string;
+  fontSize?: 16 | 18 | 20 | 24;
 }
 export default function Button({ title, ...props }: Props): JSX.Element {
   return (
     <TouchableOpacity
       {...props}
       style={[styled({ ...props }).button, props.style]}>
-      <Text color={props.secondary ? 'primary' : 'white'}>{title}</Text>
+      <Text
+        fontFamily="NotoSans"
+        bold
+        fontSize={props.fontSize}
+        color={props.secondary ? 'primary' : 'white'}>
+        {title}
+      </Text>
     </TouchableOpacity>
   );
 }
@@ -40,8 +47,9 @@ const styled = ({ secondary, success, danger }: ButtonStyledProps) => {
       backgroundColor,
       justifyContent: 'center',
       alignItems: 'center',
-      paddingVertical: 16,
+      paddingVertical: 12,
       width: '100%',
+      borderRadius: 8,
     },
   });
 };

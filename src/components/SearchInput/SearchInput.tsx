@@ -1,0 +1,75 @@
+import { View, Text, TouchableOpacity, Image, TextInput } from 'react-native';
+import React from 'react';
+import { colors } from '../../assets/colors/colors';
+import icons from '../../assets/icons';
+
+interface Props {
+  value: string | undefined;
+  onChange: (value: string | undefined) => void;
+  placeholder?: string;
+}
+export default function SearchInput({
+  value,
+  onChange,
+  placeholder,
+}: Props): JSX.Element {
+  const [isFocused, setIsFocused] = React.useState<boolean>(false);
+  return (
+    <View
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        borderWidth: 1,
+        borderColor: isFocused ? colors.text1 : colors.border1,
+
+        borderRadius: 6,
+
+        paddingHorizontal: 16,
+      }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+        }}>
+        <Image
+          source={icons.search}
+          style={{
+            width: 24,
+            height: 24,
+          }}
+        />
+        <TextInput
+          style={{
+            paddingLeft: 16,
+            fontFamily: 'NotoSansThai-Regular',
+            fontSize: 16,
+            paddingTop: 10,
+            paddingBottom: 8,
+          }}
+          onFocus={() => {
+            setIsFocused(true);
+          }}
+          onBlur={() => {
+            setIsFocused(false);
+          }}
+          onChangeText={value => onChange(value)}
+          value={value}
+          placeholder={placeholder}
+          placeholderTextColor={colors.text3}
+        />
+      </View>
+      {value && value?.length > 0 && (
+        <TouchableOpacity onPress={() => onChange(undefined)}>
+          <Image
+            source={icons.close}
+            style={{
+              width: 24,
+              height: 24,
+            }}
+          />
+        </TouchableOpacity>
+      )}
+    </View>
+  );
+}

@@ -11,7 +11,62 @@
         "label": "ใส่รหัส OTP",
         "subLabel": "ใส่หมายเลขโทรศัพท์ของคุณเพื่อรับ รหัส OTP \n ยืนยันการลงทะเบียน",
         "required": "กรุณากรอกรหัส OTP"
+      },
+      "timer": {
+        "label": "รหัส OTP จะหมดอายุในอีก %{time}",
+        "resend": "ส่งรหัส OTP อีกครั้ง"
       }
+    },
+    "WelcomeScreen": {
+      "skip": "ข้าม",
+      "stepOne": {
+        "label": "ยินดีต้อนรับเข้าสู่ SellCoda",
+        "subLabel": "สั่งซื้อสินค้าได้ง่ายๆจาก %{companyName}"
+      },
+      "stepTwo": {
+        "label": "สั่งซื้อออนไลน์",
+        "subLabel": "สั่งซื้อสินค้าได้ง่ายๆจาก %{companyName}"
+      },
+      "stepThree": {
+        "label": "โปรโมชั่น & สิทธิพิเศษ",
+        "subLabel": "สั่งซื้อสินค้าได้ง่ายๆจาก %{companyName}"
+      },
+      "button": {
+        "label": "เริ่มต้นใช้งาน",
+        "next": "ต่อไป"
+      }
+    },
+    "LoginSuccessScreen": {
+      "title": "เข้าสู่ระบบสำเร็จ !"
+    },
+    "HomeScreen": {
+      "news": "คุณจะได้รับข่าวสารเร็วๆนี้"
+    },
+    "SelectStoreScreen": {
+      "title": "เลือกร้านค้า",
+      "placeholder": "ค้นหาร้านค้า...",
+      "empty": "ไม่พบร้านค้าที่คุณค้นหา"
     }
+  },
+  "tabs": {
+    "HomeTab": {
+      "title": "หน้าหลัก"
+    },
+    "OrderTab": {
+      "title": "รายการสั่งซื้อ"
+    },
+    "ProfileTab": {
+      "title": "โปรไฟล์"
+    },
+    "HistoryTab": {
+      "title": "ประวัติการสั่งซื้อ"
+    },
+    "NotificationTab": {
+      "title": "แจ้งเตือน"
+    }
+  },
+  "menu": {
+    "order": "สั่งสินค้า",
+    "history": "ประวัติ"
   }
 }

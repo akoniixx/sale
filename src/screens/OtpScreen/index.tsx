@@ -1,4 +1,10 @@
-import { Image, Dimensions, View, TouchableOpacity } from 'react-native';
+import {
+  Image,
+  Dimensions,
+  View,
+  TouchableOpacity,
+  Platform,
+} from 'react-native';
 import React, { useEffect, useState } from 'react';
 import Container from '../../components/Container/Container';
 import images from '../../assets/images';
@@ -85,7 +91,7 @@ export default function OtpScreen({ navigation }: Props): JSX.Element {
         </View>
         <View
           style={{
-            marginTop: 56,
+            marginTop: Platform.OS === 'ios' ? 24 : 56,
             width: '100%',
             alignItems: 'center',
           }}>
@@ -103,6 +109,7 @@ export default function OtpScreen({ navigation }: Props): JSX.Element {
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
+                marginTop: 8,
               }}>
               <Text color="text3">
                 {t('screens.OtpScreen.timer.otpNotSend')}

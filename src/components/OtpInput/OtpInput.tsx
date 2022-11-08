@@ -1,10 +1,4 @@
-import {
-  StyleSheet,
-  KeyboardAvoidingView,
-  Platform,
-  View,
-  Dimensions,
-} from 'react-native';
+import { StyleSheet, View, Dimensions, Platform } from 'react-native';
 import React from 'react';
 import {
   CodeField,
@@ -55,9 +49,7 @@ const OtpInput = ({ CELL_COUNT = 6, isError = false, onCodeChange }: Props) => {
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={{ flex: 1 }}>
+    <View>
       <CodeField
         ref={refCode}
         {...props}
@@ -71,7 +63,7 @@ const OtpInput = ({ CELL_COUNT = 6, isError = false, onCodeChange }: Props) => {
         textContentType="oneTimeCode"
         renderCell={renderCell}
       />
-    </KeyboardAvoidingView>
+    </View>
   );
 };
 
@@ -87,7 +79,7 @@ const styles = ({
   isFocused: boolean;
 }) => {
   const width = Dimensions.get('screen').width / CELL_COUNT - 16;
-  const height = 48;
+  const height = Platform.OS === 'ios' ? 56 : 48;
   const defaultStyle = {
     width,
     height,

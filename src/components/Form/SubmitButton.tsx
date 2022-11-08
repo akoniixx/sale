@@ -10,6 +10,7 @@ interface Props {
   disabled?: boolean;
   style?: ViewStyle;
   secondary?: boolean;
+  radius?: number;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onSubmit: (data: any, e: unknown, reset: unknown) => void;
 }
@@ -19,6 +20,7 @@ export const SubmitButton = ({
   disabled = false,
   onSubmit,
   style,
+  radius,
 }: Props): JSX.Element => {
   const { handleSubmit, reset } = useFormContext();
   return (
@@ -27,6 +29,7 @@ export const SubmitButton = ({
       onPress={handleSubmit((data, e) => {
         onSubmit(data, e, reset);
       })}
+      radius={radius}
       title={title}
       disabled={disabled}
     />

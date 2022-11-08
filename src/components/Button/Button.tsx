@@ -34,7 +34,12 @@ export default function Button({ title, ...props }: Props): JSX.Element {
     </TouchableOpacity>
   );
 }
-const styled = ({ secondary, success, danger }: ButtonStyledProps) => {
+const styled = ({
+  secondary,
+  success,
+  danger,
+  radius = 8,
+}: ButtonStyledProps) => {
   const backgroundColor = secondary
     ? colors.secondary
     : success
@@ -49,7 +54,7 @@ const styled = ({ secondary, success, danger }: ButtonStyledProps) => {
       alignItems: 'center',
       paddingVertical: 12,
       width: '100%',
-      borderRadius: 8,
+      borderRadius: radius,
     },
   });
 };

@@ -1,4 +1,10 @@
-import { View, Image, TouchableOpacity, TextInput } from 'react-native';
+import {
+  View,
+  Image,
+  TouchableOpacity,
+  TextInput,
+  Platform,
+} from 'react-native';
 import React from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { colors } from '../../assets/colors/colors';
@@ -29,7 +35,7 @@ const InputTel = ({ name, errorManual }: Props): JSX.Element => {
                   borderWidth: 1,
                   borderColor: errors[name] ? colors.error : colors.border1,
                   borderRadius: 6,
-
+                  padding: Platform.OS === 'ios' ? 12 : 0,
                   paddingHorizontal: 16,
                 }}>
                 <View

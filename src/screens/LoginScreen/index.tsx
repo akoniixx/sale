@@ -1,4 +1,11 @@
-import { Dimensions, Image, View } from 'react-native';
+import {
+  Dimensions,
+  Image,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  View,
+} from 'react-native';
 import React from 'react';
 import Text from '../../components/Text/Text';
 import Container from '../../components/Container/Container';
@@ -26,50 +33,57 @@ export default function LoginScreen({ navigation }: Props): JSX.Element {
   };
 
   return (
-    <Container>
-      <Image
-        source={images.BGOtpScreen}
-        style={{
-          width: '100%',
-          height: Dimensions.get('screen').height * 0.6,
-          position: 'absolute',
-        }}
-      />
-      <Form
-        schema={schema}
-        style={{}}
-        defaultValues={{
-          tel: '',
-        }}>
-        <Content
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+      <Container>
+        <Image
+          source={images.BGOtpScreen}
           style={{
-            flex: 1,
-            justifyContent: 'flex-start',
-            paddingHorizontal: 16,
             width: '100%',
-          }}>
-          <View
-            style={{
-              width: '100%',
-              alignItems: 'flex-start',
-              marginTop: Dimensions.get('screen').height * 0.3,
-              marginBottom: 24,
-            }}>
-            <Text color="text2" left>
-              {t('screens.LoginScreen.telInput.label')}
-            </Text>
-          </View>
-          <InputTel name="tel" />
-        </Content>
-        <SubmitButton
-          onSubmit={onSubmit}
-          style={{
+            height: Dimensions.get('screen').height * 0.6,
+
             position: 'absolute',
-            bottom: 0,
           }}
-          title="ขอรหัส OTP"
         />
-      </Form>
-    </Container>
+        <Form
+          schema={schema}
+          style={{}}
+          defaultValues={{
+            tel: '',
+          }}>
+          <Content
+            style={{
+              flex: 1,
+              justifyContent: 'flex-start',
+              paddingHorizontal: 16,
+              width: '100%',
+            }}>
+            <View
+              style={{
+                width: '100%',
+                alignItems: 'flex-start',
+                marginTop: Dimensions.get('screen').height * 0.3,
+                marginBottom: 24,
+              }}>
+              <Text color="text2" left>
+                {t('screens.LoginScreen.telInput.label')}
+              </Text>
+            </View>
+            <InputTel name="tel" />
+          </Content>
+          <SubmitButton
+            onSubmit={onSubmit}
+            radius={0}
+            style={{
+              position: 'absolute',
+              bottom: 2,
+              paddingVertical: 16,
+            }}
+            title="ขอรหัส OTP"
+          />
+        </Form>
+      </Container>
+    </KeyboardAvoidingView>
   );
 }

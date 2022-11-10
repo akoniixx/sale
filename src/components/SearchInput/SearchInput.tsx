@@ -1,4 +1,10 @@
-import { View, Text, TouchableOpacity, Image, TextInput } from 'react-native';
+import {
+  View,
+  TouchableOpacity,
+  Image,
+  TextInput,
+  Pressable,
+} from 'react-native';
 import React from 'react';
 import { colors } from '../../assets/colors/colors';
 import icons from '../../assets/icons';
@@ -14,8 +20,13 @@ export default function SearchInput({
   placeholder,
 }: Props): JSX.Element {
   const [isFocused, setIsFocused] = React.useState<boolean>(false);
+  const ref = React.useRef<TextInput>(null);
+
   return (
-    <View
+    <Pressable
+      onPress={() => {
+        ref.current?.focus();
+      }}
       style={{
         flexDirection: 'row',
         alignItems: 'center',
@@ -40,6 +51,7 @@ export default function SearchInput({
           }}
         />
         <TextInput
+          ref={ref}
           style={{
             paddingLeft: 16,
             fontFamily: 'NotoSansThai-Regular',
@@ -70,6 +82,6 @@ export default function SearchInput({
           />
         </TouchableOpacity>
       )}
-    </View>
+    </Pressable>
   );
 }

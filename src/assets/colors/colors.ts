@@ -8,6 +8,7 @@ export const colors = {
   border1: '#E1E7F6',
   error: '#FF5D5D',
   success: '#00C48C',
-  background3: '#EAEAEA',
   background1: '#F8FAFF',
+  background2: '#EFF3FD',
+  background3: '#EAEAEA',
 };

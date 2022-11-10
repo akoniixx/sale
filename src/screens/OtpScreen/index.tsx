@@ -14,24 +14,76 @@ import Text from '../../components/Text/Text';
 import { useLocalization } from '../../contexts/LocalizationContext';
 import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
 import OtpInput from '../../components/OtpInput/OtpInput';
+import { RouteProp } from '@react-navigation/native';
+import { AuthServices } from '../../services/AuthServices';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface Props {
   navigation: StackNavigationHelpers;
+  route: RouteProp<
+    {
+      params: {
+        token: string;
+        refCode: string;
+        tel: string;
+      };
+    },
+    'params'
+  >;
 }
-export default function OtpScreen({ navigation }: Props): JSX.Element {
+export default function OtpScreen({ navigation, route }: Props): JSX.Element {
   const { t } = useLocalization();
-  // const [otpCalling, setOtpCalling] = useState(false);
+  const params = route.params;
   const [otpTimeOut, setOtpTimeOut] = useState(120);
   const [time, setTime] = useState('02:00');
   const [isError, setIsError] = useState(false);
+  const [paramsData, setParamsData] = useState({
+    token: '',
+    refCode: '',
+    tel: '',
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const {
+    authContext: { login },
+  } = useAuth();
+  useEffect(() => {
+    if (params) {
+      setParamsData(params);
+    }
+  }, [params]);
+  const onResendOtp = async () => {
+    try {
+      const { data } = await AuthServices.requestOtp(params.tel);
+      setOtpTimeOut(120);
+      setTime('02:00');
+      setParamsData(prev => ({
+        ...prev,
+        token: data.result.token,
+        refCode: data.result.refCode,
+      }));
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
-  const onCodeChange = (code: string) => {
+  const onCodeChange = async (code: string) => {
     setIsError(false);
     if (code.length === 6) {
-      if (code === '123456') {
+      setIsLoading(true);
+      const payload = {
+        token: paramsData.token,
+        otpCode: code,
+        refCode: paramsData.refCode,
+        telephoneNo: paramsData.tel,
+      };
+
+      try {
+        await login(payload);
         navigation.navigate('WelcomeScreen');
-      } else {
+      } catch (e) {
         setIsError(true);
+      } finally {
+        setIsLoading(false);
       }
     }
   };
@@ -114,7 +166,7 @@ export default function OtpScreen({ navigation }: Props): JSX.Element {
               <Text color="text3">
                 {t('screens.OtpScreen.timer.otpNotSend')}
               </Text>
-              <TouchableOpacity>
+              <TouchableOpacity onPress={onResendOtp}>
                 <Text
                   color="primary"
                   fontFamily="NotoSans"
@@ -137,7 +189,7 @@ export default function OtpScreen({ navigation }: Props): JSX.Element {
           )}
         </View>
       </Content>
-      <LoadingSpinner />
+      <LoadingSpinner visible={isLoading} />
     </Container>
   );
 }

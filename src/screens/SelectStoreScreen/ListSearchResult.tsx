@@ -3,17 +3,20 @@ import React from 'react';
 import Text from '../../components/Text/Text';
 import images from '../../assets/images';
 import { useLocalization } from '../../contexts/LocalizationContext';
+import { StackNavigationHelpers } from '@react-navigation/stack/lib/typescript/src/types';
 
 interface Props {
   data: {
-    id: number;
+    id: string;
     name: string;
+    customerNo: string;
   }[];
-  searchValue: string | undefined;
+  searchValue?: string | undefined;
+  navigation: StackNavigationHelpers;
 }
 export default function ListSearchResult({
   data,
-  searchValue,
+  navigation,
 }: Props): JSX.Element {
   const { t } = useLocalization();
   return (
@@ -43,6 +46,12 @@ export default function ListSearchResult({
       renderItem={({ item }) => {
         return (
           <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('StoreDetailScreen', {
+                id: item.id,
+                name: item.name,
+              });
+            }}
             style={{
               padding: 16,
               borderBottomWidth: 1,

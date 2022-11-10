@@ -15,6 +15,8 @@ interface TextStyled {
   semiBold?: boolean;
   medium?: boolean;
   fontSize?:
+    | 10
+    | 12
     | 14
     | 16
     | 18
@@ -65,6 +67,7 @@ const styled = ({
   right,
   center,
   fontFamily = 'Sarabun',
+  lineHeight,
 }: TextStyled) => {
   const fontSarabun = bold
     ? 'Sarabun-Bold'
@@ -96,6 +99,7 @@ const styled = ({
       fontFamily: fontFamily === 'Sarabun' ? fontSarabun : fontNotoSans,
       color: colors[color],
       textAlign,
+      lineHeight,
     },
   });
 };

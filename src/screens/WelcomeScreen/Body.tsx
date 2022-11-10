@@ -3,6 +3,7 @@ import React from 'react';
 import images from '../../assets/images';
 import { useLocalization } from '../../contexts/LocalizationContext';
 import Text from '../../components/Text/Text';
+import { useAuth } from '../../contexts/AuthContext';
 
 // interface Props {
 //   currentStep: number;
@@ -10,7 +11,10 @@ import Text from '../../components/Text/Text';
 // }
 export default function Body(): JSX.Element {
   const { t } = useLocalization();
-  const companyName = 'ICP Ladda';
+  const {
+    state: { user },
+  } = useAuth();
+  const companyName = user.company === 'ICPL' ? 'ICP Ladda' : 'ICPL';
   const listStep = [
     {
       label: t('screens.WelcomeScreen.stepOne.label'),

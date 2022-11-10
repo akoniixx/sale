@@ -1,5 +1,5 @@
 import { View } from 'react-native';
-import React from 'react';
+import React, { useEffect, useMemo } from 'react';
 import Container from '../../components/Container/Container';
 import Content from '../../components/Content/Content';
 import Header from '../../components/Header/Header';
@@ -9,6 +9,9 @@ import SearchInput from '../../components/SearchInput/SearchInput';
 import { colors } from '../../assets/colors/colors';
 import Text from '../../components/Text/Text';
 import ListSearchResult from './ListSearchResult';
+import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
+import { customerServices } from '../../services/CustomerServices';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface Props {
   navigation: StackNavigationHelpers;
@@ -18,51 +21,51 @@ export default function SelectStoreScreen({ navigation }: Props): JSX.Element {
   const [searchValue, setSearchValue] = React.useState<string | undefined>(
     undefined,
   );
-  const mockData = [
+  const {
+    state: { user },
+  } = useAuth();
+  const [loading, setLoading] = React.useState<boolean>(false);
+  const [listStore, setListStore] = React.useState<
     {
-      id: 1,
-      name: 'บริษัท ช. เกษตร 1881 จำกัด',
-    },
-    {
-      id: 2,
-      name: 'บริษัท นิยมชัยการเกษตร จำกัด Bangkok',
-    },
-    {
-      id: 3,
-      name: 'บริษัท เอี่ยวฮั่วล้ง จำกัด Bangkok',
-    },
-    {
-      id: 4,
-      name: 'บริษัท พีบี อโกรเทรด จำกัด Dusit',
-    },
-    {
-      id: 5,
-      name: 'บริษัท ยนต์นิรมิตคลังเกษตร จำกัด Ratchadaphisek',
-    },
-    {
-      id: 6,
-      name: 'บริษัท รุจ การค้า จำกัด Pathumwan',
-    },
-    {
-      id: 7,
-      name: 'บริษัท เกษตร 85 จำกัด Chatuchak',
-    },
-    {
-      id: 8,
-      name: 'บริษัท โซติสุพัฒน์ จำกัด Makkasan',
-    },
-    {
-      id: 9,
-      name: 'บริษัท ไทยรุ่งเรือง จำกัด Ekamai',
-    },
-  ];
-  const data = mockData.filter(item => {
-    if (searchValue) {
-      return item.name.includes(searchValue);
-    } else {
-      return true;
+      customerCompany: {
+        customerId: string;
+        customerName: string;
+        customerNo: string;
+      }[];
+    }[]
+  >([]);
+
+  useEffect(() => {
+    const getListStore = async () => {
+      try {
+        const data = await customerServices.getDealerZoneById(user.userStaffId);
+        setListStore(data);
+      } catch (e) {
+        console.log(e);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    setLoading(true);
+    if (user.userStaffId) {
+      getListStore();
     }
-  });
+  }, [user]);
+  const data = useMemo(() => {
+    const newFormat = listStore.map(el => {
+      const c = el.customerCompany?.[0];
+      return {
+        name: c.customerName,
+        id: c.customerId,
+        customerNo: c.customerNo,
+      };
+    });
+    return newFormat.filter(i => {
+      if (!searchValue) return true;
+      return i.name.toLowerCase().includes(searchValue.toLowerCase());
+    });
+  }, [listStore, searchValue]);
   return (
     <Container>
       <Header title={t('screens.SelectStoreScreen.title')} />
@@ -91,11 +94,18 @@ export default function SelectStoreScreen({ navigation }: Props): JSX.Element {
             backgroundColor: colors.background1,
           }}>
           <Text color="text1" bold fontFamily="NotoSans">
-            ร้านค้าในเขต A01
+            {t('screens.SelectStoreScreen.listStore', {
+              area: user?.zone,
+            })}
           </Text>
         </View>
-        <ListSearchResult searchValue={searchValue} data={data} />
+        <ListSearchResult
+          searchValue={searchValue}
+          data={data}
+          navigation={navigation}
+        />
       </Content>
+      <LoadingSpinner visible={loading} />
     </Container>
   );
 }

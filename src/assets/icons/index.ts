@@ -8,4 +8,8 @@ export default {
   NotificationInactive: require('./NotificationInActive.png'),
   backIcon: require('./BackIcon.png'),
   search: require('./search.png'),
+  cart: require('./cart.png'),
+  promoIcon: require('./promoIcon.png'),
+  iconAdd: require('./iconAdd.png'),
+  iconMinus: require('./iconMinus.png'),
 };

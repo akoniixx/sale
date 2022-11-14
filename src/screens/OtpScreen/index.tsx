@@ -9,29 +9,22 @@ import React, { useEffect, useState } from 'react';
 import Container from '../../components/Container/Container';
 import images from '../../assets/images';
 import Content from '../../components/Content/Content';
-import { StackNavigationHelpers } from '@react-navigation/stack/lib/typescript/src/types';
+import {
+  StackNavigationHelpers,
+  StackScreenProps,
+} from '@react-navigation/stack/lib/typescript/src/types';
 import Text from '../../components/Text/Text';
 import { useLocalization } from '../../contexts/LocalizationContext';
 import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
 import OtpInput from '../../components/OtpInput/OtpInput';
-import { RouteProp } from '@react-navigation/native';
 import { AuthServices } from '../../services/AuthServices';
 import { useAuth } from '../../contexts/AuthContext';
+import { AuthStackParamList } from '../../navigations/AuthNavigator';
 
-interface Props {
-  navigation: StackNavigationHelpers;
-  route: RouteProp<
-    {
-      params: {
-        token: string;
-        refCode: string;
-        tel: string;
-      };
-    },
-    'params'
-  >;
-}
-export default function OtpScreen({ navigation, route }: Props): JSX.Element {
+export default function OtpScreen({
+  navigation,
+  route,
+}: StackScreenProps<AuthStackParamList, 'OtpScreen'>): JSX.Element {
   const { t } = useLocalization();
   const params = route.params;
   const [otpTimeOut, setOtpTimeOut] = useState(120);
@@ -42,6 +35,7 @@ export default function OtpScreen({ navigation, route }: Props): JSX.Element {
     refCode: '',
     tel: '',
   });
+
   const [isLoading, setIsLoading] = useState(false);
   const {
     authContext: { login },

@@ -22,6 +22,7 @@ interface Context {
   authContext: {
     getUser: () => Promise<any>;
     login: (user: any) => Promise<void>;
+    logout: () => Promise<void>;
   };
   state: State;
 }
@@ -35,6 +36,7 @@ const AuthContext = React.createContext<Context>({
   authContext: {
     getUser: Promise.resolve,
     login: Promise.resolve,
+    logout: Promise.resolve,
   },
   state: initialState,
 });
@@ -47,6 +49,12 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
           ...prevState,
           user: action.user,
         };
+      case 'LOGOUT':
+        return {
+          ...prevState,
+          user: null,
+        };
+
       case 'LOGIN':
         return {
           ...prevState,
@@ -81,6 +89,15 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
           await AsyncStorage.setItem('user', JSON.stringify(data.data));
           dispatch({ type: 'LOGIN', user: data.data });
         } catch (e: any) {
+          console.log(e);
+        }
+      },
+      logout: async () => {
+        try {
+          await AsyncStorage.removeItem('token');
+          await AsyncStorage.removeItem('user');
+          dispatch({ type: 'LOGOUT' });
+        } catch (e) {
           console.log(e);
         }
       },

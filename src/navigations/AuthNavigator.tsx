@@ -5,9 +5,13 @@ import OtpScreen from '../screens/OtpScreen';
 import WelcomeScreen from '../screens/WelcomeScreen';
 import LoginSuccessScreen from '../screens/LoginSuccessScreen';
 
-type AuthStackParamList = {
+export type AuthStackParamList = {
   LoginScreen: undefined;
-  OtpScreen: undefined;
+  OtpScreen: {
+    token: string;
+    refCode: string;
+    tel: string;
+  };
   WelcomeScreen: undefined;
   LoginSuccessScreen: undefined;
 };

@@ -14,7 +14,7 @@ export default function Body(): JSX.Element {
   const {
     state: { user },
   } = useAuth();
-  const companyName = user.company === 'ICPL' ? 'ICP Ladda' : 'ICPL';
+  const companyName = user && user.company === 'ICPL' ? 'ICP Ladda' : 'ICPL';
   const listStep = [
     {
       label: t('screens.WelcomeScreen.stepOne.label'),

@@ -54,8 +54,37 @@
       "allItems": "สินค้าทั้งหมด",
       "promotion": "โปรโมชั่น",
       "empty": "ไม่พบสินค้าที่คุณต้องการ",
-      "price": "฿%{price}/%{unit}",
+      "price": "฿%{price}",
       "buttonAddCart": "เพิ่มเข้าตระกร้า"
+    },
+    "ProductDetailScreen": {
+      "detail": "รายละเอียดสินค้า",
+      "important": "สารสำคัญ",
+      "featuresAndBenefits": "คุณสมบัติและ ประโยชน์",
+      "seeMore": "ดูเพิ่มเติม",
+      "seeLess": "ดูน้อยลง",
+      "promotion": "โปรโมชั่น",
+      "orderButton": "สั่งซื้อสินค้า",
+      "durationPromotion": "ระยะเวลา %{dateStart} - %{dateEnd}"
+    },
+    "CartScreen": {
+      "title": "ตระกร้าสินค้า",
+      "listProduct": "สินค้า (%{count} รายการ)",
+      "discount": "ส่วนลด ฿%{discount}",
+      "summary": {
+        "titlePayment": "วิธีชำระเงิน",
+        "titlePromotion": "ส่วนลดดูแลราคา",
+        "remainingMoney": "วงเงินคงเหลือ ฿%{remainingMoney}",
+        "usePromotion": "ใช้ส่วนลด",
+        "priceBeforeDiscount": "ราคาก่อนลด",
+        "discountFromList": "ส่วนลดจากรายการ",
+        "discountSpecial": "ขอส่วนลดพิเศษเพิ่ม",
+        "discountCarePrice": "ส่วนลดดูแลราคา",
+        "discountCash": "ส่วนลดเงินสด",
+        "totalDiscount": "ส่วนลดรวม",
+        "totalPrice": "ราคารวม",
+        "button": "ยืนยันการสั่งซื้อ"
+      }
     }
   },
   "tabs": {
@@ -69,7 +98,7 @@
       "title": "โปรไฟล์"
     },
     "HistoryTab": {
-      "title": "ประวัติการสั่งซื้อ"
+      "title": "ประวัติ"
     },
     "NotificationTab": {
       "title": "แจ้งเตือน"

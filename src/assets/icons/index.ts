@@ -12,4 +12,10 @@ export default {
   promoIcon: require('./promoIcon.png'),
   iconAdd: require('./iconAdd.png'),
   iconMinus: require('./iconMinus.png'),
+  cartFill: require('./cartFill.png'),
+  promotionDetail: require('./promotionDetail.png'),
+  bin: require('./bin.png'),
+  iconAddWhite: require('./iconAddWhite.png'),
+  iconMinusWhite: require('./iconMinusWhite.png'),
+  iconCheck: require('./iconCheck.png'),
 };

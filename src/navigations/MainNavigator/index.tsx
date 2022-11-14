@@ -3,6 +3,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import MainTabBottomNavigator from './MainTabBottomNavigator';
 import SelectStoreScreen from '../../screens/SelectStoreScreen';
 import StoreDetailScreen from '../../screens/StoreDetailScreen';
+import ProductDetailScreen from '../../screens/ProductDetailScreen';
+import CartScreen from '../../screens/CartScreen';
 
 export type MainStackParamList = {
   MainScreen: undefined;
@@ -11,6 +13,10 @@ export type MainStackParamList = {
     id: string;
     name: string;
   };
+  ProductDetailScreen: {
+    id: string;
+  };
+  CartScreen: undefined;
 };
 const Stack = createStackNavigator<MainStackParamList>();
 export default function MainNavigator() {
@@ -27,6 +33,11 @@ export default function MainNavigator() {
         />
         <Stack.Screen name="SelectStoreScreen" component={SelectStoreScreen} />
         <Stack.Screen name="StoreDetailScreen" component={StoreDetailScreen} />
+        <Stack.Screen
+          name="ProductDetailScreen"
+          component={ProductDetailScreen}
+        />
+        <Stack.Screen name="CartScreen" component={CartScreen} />
       </Stack.Group>
     </Stack.Navigator>
   );

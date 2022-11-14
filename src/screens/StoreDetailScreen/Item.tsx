@@ -19,19 +19,29 @@ interface Props {
   price?: number;
   index: number;
   onPressCart?: () => void;
+  setIsAddCart: (v: boolean) => void;
+  setIsDelCart: (v: boolean) => void;
+  navigation: any;
+  idItem: string;
 }
-export default function Item({ ...props }: Props): JSX.Element {
+export default function Item({
+  setIsAddCart,
+  setIsDelCart,
+  navigation,
+  idItem,
+  ...props
+}: Props): JSX.Element {
   const isPromo = props?.index % 2 === 0;
   const price = props.price || 14000;
   const name = props.index % 2 === 0 ? 'ไฮซีส' : 'ไซม๊อกซิเมท';
   const unit = props?.index % 2 === 0 ? 'ลัง' : 'กระสอบ';
+  const detail = '40*500 cc';
   const { t } = useLocalization();
   const { setCartList, cartList } = useCart();
-  const [isAddCart, setIsAddCart] = React.useState(false);
-  const [isDelCart, setIsDelCart] = React.useState(false);
 
   const isAlreadyInCart = cartList?.find(
-    (item: { id: string | number }) => item?.id === props?.index,
+    (item: { id: string | number }) =>
+      item?.id.toString() === idItem.toString(),
   );
   const onChangeText = (text: string, id: string) => {
     const findIndex = cartList?.findIndex(
@@ -73,7 +83,13 @@ export default function Item({ ...props }: Props): JSX.Element {
     }
   };
   return (
-    <TouchableOpacity style={styles().container}>
+    <TouchableOpacity
+      style={styles().container}
+      onPress={() => {
+        navigation.navigate('ProductDetailScreen', {
+          id: idItem,
+        });
+      }}>
       {isPromo && (
         <Image
           source={icons.promoIcon}
@@ -104,7 +120,7 @@ export default function Item({ ...props }: Props): JSX.Element {
             obcaecati, modi saepe accusantium expedita vitae voluptate
             cupiditate officiis autem molestiae? Autem, illo? Praesentium.
           </Text>
-          <Text color="text3">40*500 cc</Text>
+          <Text color="text3">{detail}</Text>
           <Text fontSize={18} bold>
             {t('screens.StoreDetailScreen.price', {
               price: numberWithCommas(price),
@@ -140,10 +156,14 @@ export default function Item({ ...props }: Props): JSX.Element {
                 return [
                   ...prev,
                   {
-                    id: props.index,
+                    id: idItem,
                     name: name,
                     price: price,
                     amount: 5,
+                    image: images.mockImage,
+                    promotion: 100000,
+                    unit: unit,
+                    detail,
                   },
                 ];
               });
@@ -156,16 +176,6 @@ export default function Item({ ...props }: Props): JSX.Element {
           />
         )}
       </View>
-      <ModalMessage
-        visible={isAddCart}
-        message={t('modalMessage.addCart')}
-        onRequestClose={() => setIsAddCart(false)}
-      />
-      <ModalMessage
-        visible={isDelCart}
-        message={t('modalMessage.deleteCart')}
-        onRequestClose={() => setIsDelCart(false)}
-      />
     </TouchableOpacity>
   );
 }

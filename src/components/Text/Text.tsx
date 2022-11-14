@@ -1,11 +1,4 @@
-import {
-  Text as TextRN,
-  TextProps,
-  StyleSheet,
-  ViewStyle,
-  StyleProp,
-  TextStyle,
-} from 'react-native';
+import { Text as TextRN, TextProps, StyleSheet, TextStyle } from 'react-native';
 import React from 'react';
 import { colors } from '../../assets/colors/colors';
 
@@ -40,7 +33,10 @@ interface TextStyled {
     | 'text1'
     | 'text2'
     | 'text3'
-    | 'error';
+    | 'current'
+    | 'error'
+    | 'specialRequest'
+    | 'waiting';
   left?: boolean;
   right?: boolean;
   center?: boolean;

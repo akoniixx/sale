@@ -13,19 +13,27 @@ import Text from '../../components/Text/Text';
 import { useLocalization } from '../../contexts/LocalizationContext';
 import { colors } from '../../assets/colors/colors';
 import Item from './Item';
+import ModalMessage from '../../components/Modal/ModalMessage';
 
 interface Props {
   data: [];
   nameDealer: string;
+  navigation: any;
 }
-export default function ListItem({ data, nameDealer }: Props): JSX.Element {
+export default function ListItem({
+  data,
+  nameDealer,
+  navigation,
+}: Props): JSX.Element {
   const [type, setType] = React.useState<string>('all');
   const { t } = useLocalization();
   const [brand, setBrand] = React.useState<string>('all');
+  const [isAddCart, setIsAddCart] = React.useState(false);
+  const [isDelCart, setIsDelCart] = React.useState(false);
   const mockData = useMemo(() => {
     const data = [];
     const brand = [];
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < 12; i++) {
       data.push(i);
       brand.push({
         id: i,
@@ -135,13 +143,19 @@ export default function ListItem({ data, nameDealer }: Props): JSX.Element {
           horizontal
           showsHorizontalScrollIndicator={false}
           style={{
-            paddingLeft: 16,
+            padding: 16,
           }}>
-          {mockData.brand.map(item => {
+          {mockData.brand.map((item, idx) => {
+            const isLast = idx === mockData.brand.length - 1;
             return (
               <TouchableOpacity
                 key={item.id}
-                style={styles({ isFocus: item.name === brand }).buttonBrand}
+                style={[
+                  styles({ isFocus: item.name === brand }).buttonBrand,
+                  {
+                    marginRight: isLast ? 32 : 8,
+                  },
+                ]}
                 onPress={() => {
                   setBrand(item.name);
                 }}>
@@ -157,43 +171,63 @@ export default function ListItem({ data, nameDealer }: Props): JSX.Element {
   };
 
   return (
-    <FlatList
-      data={mockData.data}
-      numColumns={2}
-      columnWrapperStyle={{
-        paddingHorizontal: 16,
-        justifyContent: 'space-between',
-      }}
-      ListEmptyComponent={() => {
-        return (
-          <View
-            style={{
-              flex: 1,
-              justifyContent: 'center',
-              alignItems: 'center',
-              height: 300,
-            }}>
-            <Image
-              source={images.emptyProduct}
+    <>
+      <FlatList
+        data={mockData.data}
+        numColumns={2}
+        columnWrapperStyle={{
+          paddingHorizontal: 16,
+          justifyContent: 'space-between',
+        }}
+        ListEmptyComponent={() => {
+          return (
+            <View
               style={{
-                width: 90,
-                height: 90,
-              }}
-            />
-            <Text
-              color="text3"
-              fontFamily="NotoSans"
-              style={{
-                marginTop: 16,
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: 300,
               }}>
-              {t('screens.StoreDetailScreen.empty')}
-            </Text>
-          </View>
-        );
-      }}
-      ListHeaderComponent={<HeaderFlatList />}
-      renderItem={({ item, index }) => <Item index={index} />}
-    />
+              <Image
+                source={images.emptyProduct}
+                style={{
+                  width: 90,
+                  height: 90,
+                }}
+              />
+              <Text
+                color="text3"
+                fontFamily="NotoSans"
+                style={{
+                  marginTop: 16,
+                }}>
+                {t('screens.StoreDetailScreen.empty')}
+              </Text>
+            </View>
+          );
+        }}
+        ListHeaderComponent={<HeaderFlatList />}
+        renderItem={({ item, index }) => (
+          <Item
+            index={index}
+            idItem={item.toString()}
+            navigation={navigation}
+            setIsAddCart={setIsAddCart}
+            setIsDelCart={setIsDelCart}
+          />
+        )}
+      />
+      <ModalMessage
+        visible={isAddCart}
+        message={t('modalMessage.addCart')}
+        onRequestClose={() => setIsAddCart(false)}
+      />
+      <ModalMessage
+        visible={isDelCart}
+        message={t('modalMessage.deleteCart')}
+        onRequestClose={() => setIsDelCart(false)}
+      />
+    </>
   );
 }
 

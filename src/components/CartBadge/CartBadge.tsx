@@ -11,7 +11,10 @@ const CartBadge = ({ navigation }: Props): JSX.Element => {
   const { cartList = [] } = useCart();
   const length = cartList.length || 0;
   return (
-    <TouchableOpacity>
+    <TouchableOpacity
+      onPress={() => {
+        navigation.navigate('CartScreen');
+      }}>
       <View style={styles(length).count}>
         <Text fontSize={12} color="white" lineHeight={14}>
           {length}

@@ -1,18 +1,12 @@
-import { Image, TouchableOpacity, View } from 'react-native';
+import { View } from 'react-native';
 import React from 'react';
-import {
-  StackNavigationHelpers,
-  StackScreenProps,
-} from '@react-navigation/stack/lib/typescript/src/types';
-import { RouteProp } from '@react-navigation/native';
+import { StackScreenProps } from '@react-navigation/stack/lib/typescript/src/types';
 import Container from '../../components/Container/Container';
 import Header from '../../components/Header/Header';
 import Content from '../../components/Content/Content';
 import { useLocalization } from '../../contexts/LocalizationContext';
-import icons from '../../assets/icons';
 import SearchInput from '../../components/SearchInput/SearchInput';
 import ListItem from './ListItem';
-import { useCart } from '../../contexts/CartContext';
 import CartBadge from '../../components/CartBadge/CartBadge';
 import { MainStackParamList } from '../../navigations/MainNavigator';
 
@@ -49,7 +43,7 @@ const StoreDetailScreen = ({
             }}
           />
         </View>
-        <ListItem data={[]} nameDealer={name} />
+        <ListItem data={[]} nameDealer={name} navigation={navigation} />
       </Content>
     </Container>
   );

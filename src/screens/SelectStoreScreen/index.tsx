@@ -48,7 +48,7 @@ export default function SelectStoreScreen({ navigation }: Props): JSX.Element {
     };
 
     setLoading(true);
-    if (user.userStaffId) {
+    if (user?.userStaffId) {
       getListStore();
     }
   }, [user]);

@@ -9,6 +9,9 @@ import { LocalizationProvider } from './src/contexts/LocalizationContext';
 import { toastConfig } from './src/Toast/ToastConfig';
 import { CartProvider } from './src/contexts/CartContext';
 
+import buddhaEra from 'dayjs/plugin/buddhistEra';
+import dayjs from 'dayjs';
+dayjs.extend(buddhaEra);
 const App = () => {
   return (
     <NavigationContainer ref={navigationRef}>

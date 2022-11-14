@@ -91,7 +91,7 @@ export default function LoginScreen({ navigation }: Props): JSX.Element {
             onSubmit={onSubmit}
             radius={0}
             style={{
-              height: Platform.OS === 'ios' ? 48 : 56,
+              height: Platform.OS === 'ios' ? 52 : 56,
               paddingVertical: 16,
             }}
             title="ขอรหัส OTP"

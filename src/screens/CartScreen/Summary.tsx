@@ -1,4 +1,4 @@
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import React from 'react';
 import Text from '../../components/Text/Text';
 import { useLocalization } from '../../contexts/LocalizationContext';
@@ -6,10 +6,17 @@ import { colors } from '../../assets/colors/colors';
 import Radio from '../../components/Radio/Radio';
 import { numberWithCommas } from '../../utils/functions';
 import Checkbox from '../../components/Checkbox/Checkbox';
+import icons from '../../assets/icons';
 
 export default function Summary(): JSX.Element {
   const { t } = useLocalization();
   const [valueCheckbox, setValueCheckbox] = React.useState<string[]>([]);
+  const [isCollapsed, setIsCollapsed] = React.useState<{
+    [key: string]: boolean;
+  }>({
+    discountList: true,
+    specialListDiscount: true,
+  });
   return (
     <View style={styles.container}>
       <View
@@ -113,44 +120,75 @@ export default function Summary(): JSX.Element {
           )}`}</Text>
         </View>
         <View style={styles.row}>
-          <TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              setIsCollapsed({
+                ...isCollapsed,
+                discountList: !isCollapsed.discountList,
+              });
+            }}
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+            }}>
             <Text color="text2">
               {t('screens.CartScreen.summary.discountFromList')}
             </Text>
+            <Image
+              source={icons.iconCollapse}
+              style={stylesIcon({ isCollapsed: isCollapsed.discountList }).icon}
+            />
           </TouchableOpacity>
-          <Text color="current" semiBold>{`-฿${numberWithCommas(
-            277000,
-            true,
-          )}`}</Text>
+          <Text
+            color="current"
+            semiBold
+            fontFamily="NotoSans">{`-฿${numberWithCommas(10000, true)}`}</Text>
         </View>
         <View style={styles.row}>
-          <TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              setIsCollapsed({
+                ...isCollapsed,
+                specialListDiscount: !isCollapsed.specialListDiscount,
+              });
+            }}
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+            }}>
             <Text color="text2">
               {t('screens.CartScreen.summary.discountSpecial')}
             </Text>
+            <Image
+              source={icons.iconCollapse}
+              style={
+                stylesIcon({ isCollapsed: isCollapsed.specialListDiscount })
+                  .icon
+              }
+            />
           </TouchableOpacity>
-          <Text color="specialRequest" semiBold>{`-฿${numberWithCommas(
-            277000,
-            true,
-          )}`}</Text>
+          <Text
+            color="specialRequest"
+            semiBold
+            fontFamily="NotoSans">{`-฿${numberWithCommas(0, true)}`}</Text>
         </View>
         <View style={styles.row}>
           <Text color="text2">
             {t('screens.CartScreen.summary.discountCarePrice')}
           </Text>
-          <Text color="error" semiBold>{`-฿${numberWithCommas(
-            277000,
-            true,
-          )}`}</Text>
+          <Text
+            color="error"
+            semiBold
+            fontFamily="NotoSans">{`-฿${numberWithCommas(5, true)}`}</Text>
         </View>
         <View style={styles.row}>
           <Text color="text2">
             {t('screens.CartScreen.summary.discountCash')}
           </Text>
-          <Text color="waiting" semiBold>{`-฿${numberWithCommas(
-            277000,
-            true,
-          )}`}</Text>
+          <Text
+            color="waiting"
+            fontFamily="NotoSans"
+            semiBold>{`-฿${numberWithCommas(3591, true)}`}</Text>
         </View>
         <View
           style={[
@@ -162,10 +200,9 @@ export default function Summary(): JSX.Element {
           <Text color="text2">
             {t('screens.CartScreen.summary.totalDiscount')}
           </Text>
-          <Text color="text2" semiBold>{`-฿${numberWithCommas(
-            277000,
-            true,
-          )}`}</Text>
+          <Text color="text2" semiBold fontFamily="NotoSans">
+            {`-฿${numberWithCommas(14000, true)}`}
+          </Text>
         </View>
       </View>
       <View style={styles.summary}>
@@ -181,7 +218,15 @@ export default function Summary(): JSX.Element {
     </View>
   );
 }
-
+const stylesIcon = ({ isCollapsed }: { isCollapsed: boolean }) => {
+  return StyleSheet.create({
+    icon: {
+      width: 20,
+      height: 20,
+      transform: [{ rotate: isCollapsed ? '0deg' : '180deg' }],
+    },
+  });
+};
 const styles = StyleSheet.create({
   container: {
     marginTop: 10,
@@ -196,6 +241,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 10,
+    alignItems: 'center',
   },
   summary: {
     flexDirection: 'row',

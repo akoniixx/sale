@@ -26,12 +26,10 @@ interface Item {
 export default function ListItemInCart() {
   const { t } = useLocalization();
   const { cartList, setCartList } = useCart();
-  console.log('cartList', cartList);
   const onIncrease = (id: string | number) => {
     const findIndex = cartList?.findIndex(
       (item: { id: string | number }) => item?.id.toString() === id.toString(),
     );
-    console.log('findIndex', findIndex);
     if (findIndex !== -1) {
       const newCartList = [...cartList];
       newCartList[findIndex].amount += 5;

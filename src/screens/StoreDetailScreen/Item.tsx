@@ -1,4 +1,10 @@
-import { View, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  Platform,
+} from 'react-native';
 import React from 'react';
 import Text from '../../components/Text/Text';
 import { colors } from '../../assets/colors/colors';
@@ -110,7 +116,10 @@ export default function Item({
             height: 100,
           }}
         />
-        <View>
+        <View
+          style={{
+            marginBottom: Platform.OS === 'ios' ? 8 : 0,
+          }}>
           <Text fontFamily="Sarabun" semiBold>
             {name}
           </Text>
@@ -187,7 +196,7 @@ const styles = () => {
       borderWidth: 1,
       borderColor: colors.border1,
       borderRadius: 12,
-      padding: 8,
+      padding: Platform.OS === 'ios' ? 16 : 10,
       width: '48%',
       marginBottom: 8,
       minHeight: 200,

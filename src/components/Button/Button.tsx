@@ -1,7 +1,9 @@
 import {
   StyleSheet,
+  TextStyle,
   TouchableOpacity,
   TouchableOpacityProps,
+  View,
 } from 'react-native';
 import React from 'react';
 import { colors } from '../../assets/colors/colors';
@@ -18,19 +20,33 @@ interface ButtonStyledProps {
 interface Props extends TouchableOpacityProps, ButtonStyledProps {
   title?: string;
   fontSize?: 16 | 18 | 20 | 24;
+  textStyle?: TextStyle;
+  iconFont?: React.ReactNode;
+  iconBack?: React.ReactNode;
 }
 export default function Button({ title, ...props }: Props): JSX.Element {
   return (
     <TouchableOpacity
       {...props}
       style={[styled({ ...props }).button, props.style]}>
-      <Text
-        fontFamily="NotoSans"
-        bold
-        fontSize={props.fontSize}
-        color={props.secondary ? 'primary' : 'white'}>
-        {title}
-      </Text>
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}>
+        {props.iconFont && props.iconFont}
+        {title && (
+          <Text
+            fontFamily="NotoSans"
+            bold
+            fontSize={props.fontSize}
+            color={props.secondary ? 'primary' : 'white'}>
+            {title}
+          </Text>
+        )}
+        {props.iconBack && props.iconBack}
+      </View>
     </TouchableOpacity>
   );
 }
@@ -41,7 +57,7 @@ const styled = ({
   radius = 8,
 }: ButtonStyledProps) => {
   const backgroundColor = secondary
-    ? colors.secondary
+    ? colors.background2
     : success
     ? colors.success
     : danger

@@ -9,4 +9,8 @@ export default {
   History: require('./History.png'),
   News: require('./news.png'),
   emptyStore: require('./emptyStore.png'),
+  BGStoreDetailScreen: require('./BGStoreDetailScreen.png'),
+  noImageStore: require('./noImageStore.png'),
+  mockImage: require('./mockImage.png'),
+  emptyProduct: require('./emptyProduct.png'),
 };

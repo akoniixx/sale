@@ -17,6 +17,8 @@ import InputTel from '../../components/Form/InputTel';
 import { SubmitButton } from '../../components/Form/SubmitButton';
 import { useLocalization } from '../../contexts/LocalizationContext';
 import { StackNavigationHelpers } from '@react-navigation/stack/lib/typescript/src/types';
+import { AuthServices } from '../../services/AuthServices';
+import Button from '../../components/Button/Button';
 
 interface Props {
   navigation: StackNavigationHelpers;
@@ -24,12 +26,25 @@ interface Props {
 export default function LoginScreen({ navigation }: Props): JSX.Element {
   const { t } = useLocalization();
   const schema = yup.object().shape({
-    tel: yup.string().required(t('screens.LoginScreen.telInput.required')),
+    tel: yup
+      .string()
+      .required(t('screens.LoginScreen.telInput.required'))
+      .matches(/^[0-9]+$/, t('screens.LoginScreen.telInput.invalid'))
+      .min(10, t('screens.LoginScreen.telInput.invalid'))
+      .max(10, t('screens.LoginScreen.telInput.invalid')),
   });
 
-  const onSubmit = (data: { tel: string }) => {
-    console.log(data);
-    navigation.navigate('OtpScreen');
+  const onSubmit = async (v: { tel: string }) => {
+    try {
+      const { data } = await AuthServices.requestOtp(v.tel);
+      navigation.navigate('OtpScreen', {
+        token: data.result.token,
+        refCode: data.result.refCode,
+        tel: v.tel,
+      });
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   return (
@@ -72,12 +87,12 @@ export default function LoginScreen({ navigation }: Props): JSX.Element {
             </View>
             <InputTel name="tel" />
           </Content>
+
           <SubmitButton
             onSubmit={onSubmit}
             radius={0}
             style={{
-              position: 'absolute',
-              bottom: 2,
+              height: Platform.OS === 'ios' ? 52 : 56,
               paddingVertical: 16,
             }}
             title="ขอรหัส OTP"

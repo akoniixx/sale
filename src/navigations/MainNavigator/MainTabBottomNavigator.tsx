@@ -6,6 +6,7 @@ import { colors } from '../../assets/colors/colors';
 import { useLocalization } from '../../contexts/LocalizationContext';
 import icons from '../../assets/icons';
 import HomeScreen from '../../screens/HomeScreen';
+import ProfileScreen from '../../screens/ProfileScreen';
 const Tab = createBottomTabNavigator();
 export default function MainTabBottomNavigator() {
   const { t } = useLocalization();
@@ -43,7 +44,7 @@ export default function MainTabBottomNavigator() {
       title: t('tabs.ProfileTab.title'),
       iconActive: icons.ProfileInactive,
       iconInactive: '',
-      component: View,
+      component: ProfileScreen,
     },
   ];
 

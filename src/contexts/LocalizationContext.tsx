@@ -28,16 +28,16 @@ const i18n = new I18n({
 });
 i18n.enableFallback = true;
 export const LocalizationProvider: React.FC<Props> = ({ children }) => {
-  const [locale, setLocale] = React.useState('en');
+  const [locale, setLocale] = React.useState('th');
 
-  useEffect(() => {
-    getLanguage();
-  }, []);
+  // useEffect(() => {
+  //   getLanguage();
+  // }, []);
 
-  const getLanguage = async () => {
-    const language = await AsyncStorage.getItem('language');
-    setLocale(language ? language : 'en');
-  };
+  // const getLanguage = async () => {
+  //   const language = await AsyncStorage.getItem('language');
+  //   setLocale(language ? language : 'en');
+  // };
 
   const localizationContext = React.useMemo(
     () => ({

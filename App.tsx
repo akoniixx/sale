@@ -6,18 +6,25 @@ import AppNavigator from './src/navigations/AppNavigator';
 import { navigationRef } from './src/navigations/RootNavigator';
 import Toast from 'react-native-toast-message';
 import { LocalizationProvider } from './src/contexts/LocalizationContext';
+import { toastConfig } from './src/Toast/ToastConfig';
+import { CartProvider } from './src/contexts/CartContext';
 
+import buddhaEra from 'dayjs/plugin/buddhistEra';
+import dayjs from 'dayjs';
+dayjs.extend(buddhaEra);
 const App = () => {
   return (
     <NavigationContainer ref={navigationRef}>
       <LocalizationProvider>
         <AuthProvider>
-          <SheetProvider>
-            <AppNavigator />
-          </SheetProvider>
+          <CartProvider>
+            <SheetProvider>
+              <AppNavigator />
+            </SheetProvider>
+          </CartProvider>
         </AuthProvider>
       </LocalizationProvider>
-      <Toast />
+      <Toast config={toastConfig} />
     </NavigationContainer>
   );
 };

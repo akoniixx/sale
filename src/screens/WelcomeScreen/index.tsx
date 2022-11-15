@@ -18,6 +18,7 @@ const WelcomeScreen = ({ navigation }: Props): JSX.Element => {
   const { t } = useLocalization();
   const [step, setStep] = React.useState(initialStep);
   const stepList = [1, 2];
+
   const ref = React.useRef<ScrollView>(null);
   const onScrollTo = (step: number) => {
     ref?.current?.scrollTo({

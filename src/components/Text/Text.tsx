@@ -1,11 +1,4 @@
-import {
-  Text as TextRN,
-  TextProps,
-  StyleSheet,
-  ViewStyle,
-  StyleProp,
-  TextStyle,
-} from 'react-native';
+import { Text as TextRN, TextProps, StyleSheet, TextStyle } from 'react-native';
 import React from 'react';
 import { colors } from '../../assets/colors/colors';
 
@@ -15,6 +8,8 @@ interface TextStyled {
   semiBold?: boolean;
   medium?: boolean;
   fontSize?:
+    | 10
+    | 12
     | 14
     | 16
     | 18
@@ -38,7 +33,10 @@ interface TextStyled {
     | 'text1'
     | 'text2'
     | 'text3'
-    | 'error';
+    | 'current'
+    | 'error'
+    | 'specialRequest'
+    | 'waiting';
   left?: boolean;
   right?: boolean;
   center?: boolean;
@@ -65,6 +63,7 @@ const styled = ({
   right,
   center,
   fontFamily = 'Sarabun',
+  lineHeight,
 }: TextStyled) => {
   const fontSarabun = bold
     ? 'Sarabun-Bold'
@@ -96,6 +95,7 @@ const styled = ({
       fontFamily: fontFamily === 'Sarabun' ? fontSarabun : fontNotoSans,
       color: colors[color],
       textAlign,
+      lineHeight,
     },
   });
 };

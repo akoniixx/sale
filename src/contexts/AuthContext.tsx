@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import * as React from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { AppState } from 'react-native';
+import { AuthServices } from '../services/AuthServices';
 
 interface Props {
   children: JSX.Element;
@@ -20,7 +20,9 @@ interface Action {
 
 interface Context {
   authContext: {
-    getProfileAuth: () => Promise<any>;
+    getUser: () => Promise<any>;
+    login: (user: any) => Promise<void>;
+    logout: () => Promise<void>;
   };
   state: State;
 }
@@ -32,7 +34,9 @@ const initialState = {
 
 const AuthContext = React.createContext<Context>({
   authContext: {
-    getProfileAuth: Promise.resolve,
+    getUser: Promise.resolve,
+    login: Promise.resolve,
+    logout: Promise.resolve,
   },
   state: initialState,
 });
@@ -41,6 +45,17 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
   const reducer = (prevState: State, action: Action): State => {
     switch (action.type) {
       case 'GET_ME':
+        return {
+          ...prevState,
+          user: action.user,
+        };
+      case 'LOGOUT':
+        return {
+          ...prevState,
+          user: null,
+        };
+
+      case 'LOGIN':
         return {
           ...prevState,
           user: action.user,
@@ -57,14 +72,32 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
 
   const authContext = React.useMemo(
     () => ({
-      getProfileAuth: async () => {
+      getUser: async () => {
         try {
-          const dronerId = (await AsyncStorage.getItem('droner_id')) ?? '';
-
-          // const data = await ProfileDatasource.getProfile(dronerId);
-          // dispatch({type: 'GET_ME', user: data});
-          // return data;
+          const user = await AsyncStorage.getItem('user');
+          if (user) {
+            dispatch({ type: 'GET_ME', user: JSON.parse(user) });
+          }
         } catch (e: any) {
+          console.log(e);
+        }
+      },
+      login: async (payload: any) => {
+        try {
+          const { data } = await AuthServices.verifyOtp(payload);
+          await AsyncStorage.setItem('token', data.accessToken);
+          await AsyncStorage.setItem('user', JSON.stringify(data.data));
+          dispatch({ type: 'LOGIN', user: data.data });
+        } catch (e: any) {
+          console.log(e);
+        }
+      },
+      logout: async () => {
+        try {
+          await AsyncStorage.removeItem('token');
+          await AsyncStorage.removeItem('user');
+          dispatch({ type: 'LOGOUT' });
+        } catch (e) {
           console.log(e);
         }
       },

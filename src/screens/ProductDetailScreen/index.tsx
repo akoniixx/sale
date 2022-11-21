@@ -38,6 +38,7 @@ export default function ProductDetailScreen({
         }}>
         <Body {...mockData} />
         <Footer
+          navigation={navigation}
           id={id}
           setIsAddCart={setIsAddCart}
           setIsDelCart={setIsDelCart}

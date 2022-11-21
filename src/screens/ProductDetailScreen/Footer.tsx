@@ -9,6 +9,7 @@ import icons from '../../assets/icons';
 
 interface Props {
   id: string;
+  navigation: any;
   setIsAddCart: React.Dispatch<React.SetStateAction<boolean>>;
   setIsDelCart: React.Dispatch<React.SetStateAction<boolean>>;
   image?: ImageSourcePropType;
@@ -27,6 +28,7 @@ export default function Footer({
   detail,
   price,
   unit,
+  navigation,
   promotion,
 }: Props): JSX.Element {
   const { t } = useLocalization();
@@ -103,6 +105,7 @@ export default function Footer({
       ]);
     }
     setIsAddCart(true);
+    navigation.navigate('CartScreen');
   };
   return (
     <View style={styles().container}>

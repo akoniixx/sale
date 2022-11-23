@@ -13,7 +13,6 @@ import Header from '../../components/Header/Header';
 import { colors } from '../../assets/colors/colors';
 import ListItemInCart from './ListItemInCart';
 import Summary from './Summary';
-import Button from '../../components/Button/Button';
 import { useCart } from '../../contexts/CartContext';
 import icons from '../../assets/icons';
 import Text from '../../components/Text/Text';

@@ -7,6 +7,7 @@ import Radio from '../../components/Radio/Radio';
 import { numberWithCommas } from '../../utils/functions';
 import Checkbox from '../../components/Checkbox/Checkbox';
 import icons from '../../assets/icons';
+import { useCart } from '../../contexts/CartContext';
 
 export default function Summary(): JSX.Element {
   const { t } = useLocalization();
@@ -17,6 +18,9 @@ export default function Summary(): JSX.Element {
     discountList: true,
     specialListDiscount: true,
   });
+  const { cartList } = useCart();
+  const totalPrice = cartList.reduce((a, b) => a + b.amount * +b.unitPrice, 0);
+
   return (
     <View style={styles.container}>
       <View
@@ -213,7 +217,7 @@ export default function Summary(): JSX.Element {
           fontFamily="NotoSans"
           color="primary"
           bold
-          fontSize={20}>{`฿${numberWithCommas(262995, true)}`}</Text>
+          fontSize={20}>{`฿${numberWithCommas(totalPrice, true)}`}</Text>
       </View>
     </View>
   );

@@ -10,6 +10,12 @@ interface Props {
     id: string;
     name: string;
     customerNo: string;
+    moreThanOneBrand: boolean;
+    productBrand: {
+      product_brand_id: string;
+      product_brand_name: string;
+      company: string;
+    }[];
   }[];
   searchValue?: string | undefined;
   navigation: StackNavigationHelpers;
@@ -47,10 +53,19 @@ export default function ListSearchResult({
         return (
           <TouchableOpacity
             onPress={() => {
-              navigation.navigate('StoreDetailScreen', {
-                id: item.id,
-                name: item.name,
-              });
+              if (item.moreThanOneBrand) {
+                navigation.navigate('SelectBrandBeforeDetailScreen', {
+                  id: item.id,
+                  name: item.name,
+                  productBrand: item.productBrand,
+                });
+              } else {
+                navigation.navigate('StoreDetailScreen', {
+                  id: item.id,
+                  name: item.name,
+                  productBrand: item.productBrand && item.productBrand[0],
+                });
+              }
             }}
             style={{
               padding: 16,

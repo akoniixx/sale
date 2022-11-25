@@ -5,6 +5,7 @@ import SelectStoreScreen from '../../screens/SelectStoreScreen';
 import StoreDetailScreen from '../../screens/StoreDetailScreen';
 import ProductDetailScreen from '../../screens/ProductDetailScreen';
 import CartScreen from '../../screens/CartScreen';
+import SelectBrandBeforeDetailScreen from '../../screens/SelectBrandBeforeDetailScreen';
 
 export type MainStackParamList = {
   MainScreen: undefined;
@@ -12,6 +13,21 @@ export type MainStackParamList = {
   StoreDetailScreen: {
     id: string;
     name: string;
+    productBrand?: {
+      product_brand_id: string;
+      product_brand_name: string;
+      company: string;
+    };
+  };
+  SelectBrandBeforeDetailScreen: {
+    id: string;
+    name: string;
+    productBrand: {
+      company: string;
+      product_brand_id: string;
+      product_brand_name: string;
+      product_brand_logo: string;
+    }[];
   };
   ProductDetailScreen: {
     id: string;
@@ -32,6 +48,10 @@ export default function MainNavigator() {
           }}
         />
         <Stack.Screen name="SelectStoreScreen" component={SelectStoreScreen} />
+        <Stack.Screen
+          name="SelectBrandBeforeDetailScreen"
+          component={SelectBrandBeforeDetailScreen}
+        />
         <Stack.Screen name="StoreDetailScreen" component={StoreDetailScreen} />
         <Stack.Screen
           name="ProductDetailScreen"

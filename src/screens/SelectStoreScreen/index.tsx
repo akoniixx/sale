@@ -21,6 +21,7 @@ export default function SelectStoreScreen({ navigation }: Props): JSX.Element {
   const [searchValue, setSearchValue] = React.useState<string | undefined>(
     undefined,
   );
+
   const {
     state: { user },
   } = useAuth();
@@ -31,6 +32,7 @@ export default function SelectStoreScreen({ navigation }: Props): JSX.Element {
         customerId: string;
         customerName: string;
         customerNo: string;
+        productBrand: [];
       }[];
     }[]
   >([]);
@@ -38,7 +40,10 @@ export default function SelectStoreScreen({ navigation }: Props): JSX.Element {
   useEffect(() => {
     const getListStore = async () => {
       try {
-        const data = await customerServices.getDealerZoneById(user.userStaffId);
+        const data = await customerServices.getDealerZoneById(
+          user?.userStaffId || '',
+        );
+
         setListStore(data);
       } catch (e) {
         console.log(e);
@@ -59,6 +64,8 @@ export default function SelectStoreScreen({ navigation }: Props): JSX.Element {
         name: c.customerName,
         id: c.customerId,
         customerNo: c.customerNo,
+        productBrand: c.productBrand,
+        moreThanOneBrand: c.productBrand?.length > 1,
       };
     });
     return newFormat.filter(i => {
@@ -66,6 +73,7 @@ export default function SelectStoreScreen({ navigation }: Props): JSX.Element {
       return i.name.toLowerCase().includes(searchValue.toLowerCase());
     });
   }, [listStore, searchValue]);
+
   return (
     <Container>
       <Header title={t('screens.SelectStoreScreen.title')} />

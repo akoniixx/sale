@@ -2,20 +2,33 @@
 import * as React from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthServices } from '../services/AuthServices';
+import { navigate } from '../navigations/RootNavigator';
 
 interface Props {
   children: JSX.Element;
+}
+interface UserType {
+  company: string;
+  email: string;
+  firstname: string;
+  lastname: string;
+  nickname: string;
+  role: string;
+  status: string;
+  telephone: string;
+  userStaffId: string;
+  zone: string;
 }
 
 interface State {
   isLoading: boolean;
 
-  user: null | any;
+  user?: null | UserType;
 }
 
 interface Action {
   type: string;
-  user?: any;
+  user?: UserType | null;
 }
 
 interface Context {
@@ -97,6 +110,7 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
           await AsyncStorage.removeItem('token');
           await AsyncStorage.removeItem('user');
           dispatch({ type: 'LOGOUT' });
+          navigate('LoginScreen');
         } catch (e) {
           console.log(e);
         }

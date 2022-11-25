@@ -9,26 +9,17 @@ import React from 'react';
 import Text from '../../components/Text/Text';
 import { useLocalization } from '../../contexts/LocalizationContext';
 import { useCart } from '../../contexts/CartContext';
-import { numberWithCommas } from '../../utils/functions';
+import { getNewPath, numberWithCommas } from '../../utils/functions';
 import icons from '../../assets/icons';
 import { colors } from '../../assets/colors/colors';
 import CounterSmall from './CounterSmall';
 
-interface Item {
-  id: string;
-  amount: number;
-  image: ImageSourcePropType;
-  name: string;
-  detail: string;
-  price: number;
-  unit: string;
-}
 export default function ListItemInCart() {
   const { t } = useLocalization();
   const { cartList, setCartList } = useCart();
   const onIncrease = (id: string | number) => {
     const findIndex = cartList?.findIndex(
-      (item: { id: string | number }) => item?.id.toString() === id.toString(),
+      item => item?.productId.toString() === id.toString(),
     );
     if (findIndex !== -1) {
       const newCartList = [...cartList];
@@ -38,7 +29,7 @@ export default function ListItemInCart() {
   };
   const onDecrease = (id: string | number) => {
     const findIndex = cartList?.findIndex(
-      (item: { id: string | number }) => item?.id.toString() === id.toString(),
+      item => item?.productId.toString() === id.toString(),
     );
     if (findIndex !== -1) {
       const newCartList = [...cartList];
@@ -48,7 +39,7 @@ export default function ListItemInCart() {
   };
   const onChangeText = (text: string, id: string) => {
     const findIndex = cartList?.findIndex(
-      (item: { id: string }) => item?.id.toString() === id.toString(),
+      item => item?.productId.toString() === id.toString(),
     );
     if (findIndex !== -1) {
       const newCartList = [...cartList];
@@ -58,7 +49,7 @@ export default function ListItemInCart() {
   };
   const onDelete = (id: string | number) => {
     const newCartList = cartList?.filter(
-      (item: { id: string | number }) => item?.id.toString() !== id.toString(),
+      item => item?.productId.toString() !== id.toString(),
     );
     setCartList(newCartList);
   };
@@ -71,43 +62,56 @@ export default function ListItemInCart() {
       </Text>
       {cartList.length > 0 ? (
         <View>
-          {cartList.map((item: Item) => {
+          {cartList.map(item => {
             return (
               <View
-                key={item.id}
+                key={item.productId}
                 style={{
                   marginTop: 16,
                 }}>
                 <View style={styles.containerItem}>
                   <View style={styles.containerLeft}>
-                    <Image
-                      source={item.image}
-                      style={{
-                        width: 62,
-                        height: 62,
-                        marginRight: 10,
-                      }}
-                    />
+                    {item?.productImage ? (
+                      <Image
+                        source={{ uri: getNewPath(item?.productImage) }}
+                        style={{
+                          width: 62,
+                          height: 62,
+                          marginRight: 10,
+                        }}
+                      />
+                    ) : (
+                      <View
+                        style={{
+                          width: 62,
+                          height: 62,
+                        }}
+                      />
+                    )}
                     <View style={styles.item}>
                       <Text fontFamily="NotoSans" fontSize={16} bold>
-                        {item.name}
+                        {item.productName}
                       </Text>
                       <Text fontFamily="NotoSans" fontSize={14} color="text3">
-                        {`${item.detail} | ฿${numberWithCommas(item.price)}/${
-                          item.unit
-                        }`}
+                        {item.packSize
+                          ? `${item.packSize} | ฿${numberWithCommas(
+                              +item.unitPrice,
+                            )}/${item.baseUOM}`
+                          : `฿${numberWithCommas(+item.unitPrice)}/${
+                              item.baseUOM
+                            }`}
                       </Text>
                       <Text fontSize={14} color="text2">
-                        {`฿${numberWithCommas(item.price)}/${item.unit} x ${
-                          item.amount
-                        } `}
-                        <Text fontSize={12} color="current">
+                        {`฿${numberWithCommas(+item.unitPrice)}/${
+                          item.baseUOM
+                        } x ${item.amount} `}
+                        {/* <Text fontSize={12} color="current">
                           {t('screens.CartScreen.discount', {
                             discount: numberWithCommas(
                               item.price * item.amount * 0.1,
                             ),
                           })}
-                        </Text>
+                        </Text> */}
                       </Text>
                     </View>
                   </View>
@@ -115,7 +119,7 @@ export default function ListItemInCart() {
                   <TouchableOpacity
                     style={styles.buttonDel}
                     onPress={() => {
-                      onDelete(item.id);
+                      onDelete(item.productId);
                     }}>
                     <Image
                       source={icons.bin}
@@ -146,11 +150,11 @@ export default function ListItemInCart() {
                       onChangeText={onChangeText}
                       onIncrease={onIncrease}
                       onDecrease={onDecrease}
-                      id={item.id}
+                      id={item.productId}
                     />
                   </View>
                   <Text bold fontFamily="NotoSans">
-                    {`฿${numberWithCommas(item.price * item.amount)}`}
+                    {`฿${numberWithCommas(+item.unitPrice * item.amount)}`}
                   </Text>
                 </View>
               </View>

@@ -63,7 +63,8 @@ export default function ListSearchResult({
                 navigation.navigate('StoreDetailScreen', {
                   id: item.id,
                   name: item.name,
-                  productBrand: item.productBrand && item.productBrand[0],
+                  productBrand:
+                    item.productBrand.length > 0 && item.productBrand[0],
                 });
               }
             }}

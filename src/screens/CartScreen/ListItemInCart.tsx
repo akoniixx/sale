@@ -105,13 +105,6 @@ export default function ListItemInCart() {
                         {`฿${numberWithCommas(+item.unitPrice)}/${
                           item.baseUOM
                         } x ${item.amount} `}
-                        {/* <Text fontSize={12} color="current">
-                          {t('screens.CartScreen.discount', {
-                            discount: numberWithCommas(
-                              item.price * item.amount * 0.1,
-                            ),
-                          })}
-                        </Text> */}
                       </Text>
                     </View>
                   </View>

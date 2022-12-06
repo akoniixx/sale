@@ -4,6 +4,7 @@ import {
   Image,
   TextInput,
   Pressable,
+  Dimensions,
 } from 'react-native';
 import React from 'react';
 import { colors } from '../../assets/colors/colors';
@@ -24,9 +25,6 @@ export default function SearchInput({
 
   return (
     <Pressable
-      onPress={() => {
-        ref.current?.focus();
-      }}
       style={{
         flexDirection: 'row',
         alignItems: 'center',
@@ -58,6 +56,8 @@ export default function SearchInput({
             fontSize: 16,
             paddingTop: 10,
             paddingBottom: 8,
+            overflow: 'hidden',
+            width: Dimensions.get('screen').width - 120,
           }}
           onFocus={() => {
             setIsFocused(true);

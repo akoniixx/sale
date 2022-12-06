@@ -1,12 +1,15 @@
 import * as React from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ProductType } from '../entities/productType';
 
 interface Props {
   children: JSX.Element;
 }
+export interface newProductType extends ProductType {
+  amount: number;
+}
 interface ContextCart {
-  cartList: any;
-  setCartList: React.Dispatch<any>;
+  cartList: newProductType[];
+  setCartList: React.Dispatch<React.SetStateAction<newProductType[]>>;
 }
 const CartContext = React.createContext<ContextCart>({
   cartList: [],
@@ -15,7 +18,7 @@ const CartContext = React.createContext<ContextCart>({
 });
 
 export const CartProvider: React.FC<Props> = ({ children }) => {
-  const [cartList, setCartList] = React.useState<any>([]);
+  const [cartList, setCartList] = React.useState<newProductType[]>([]);
   const value = React.useMemo(() => ({ cartList, setCartList }), [cartList]);
   return (
     <CartContext.Provider

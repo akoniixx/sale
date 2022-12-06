@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StackScreenProps } from '@react-navigation/stack';
 import { MainStackParamList } from '../../navigations/MainNavigator';
 import Container from '../../components/Container/Container';
@@ -10,7 +10,10 @@ import Body from './Body';
 import Footer from './Footer';
 import ModalMessage from '../../components/Modal/ModalMessage';
 import { useLocalization } from '../../contexts/LocalizationContext';
-import images from '../../assets/images';
+import { useFocusEffect } from '@react-navigation/native';
+import { productServices } from '../../services/ProductServices';
+import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
+import { ProductSummary } from '../../entities/productType';
 
 export default function ProductDetailScreen({
   route,
@@ -20,14 +23,26 @@ export default function ProductDetailScreen({
   const { t } = useLocalization();
   const [isAddCart, setIsAddCart] = React.useState(false);
   const [isDelCart, setIsDelCart] = React.useState(false);
-  const mockData = {
-    name: 'ไฮซีส',
-    price: 14000,
-    unit: 'ลัง',
-    detail: '40*500 cc',
-    promotion: 100 * 1000,
-    image: images.mockImage,
-  };
+  const [productItem, setProductItem] = React.useState<ProductSummary>();
+  const [loading, setLoading] = useState(false);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const getProductById = async () => {
+        try {
+          setLoading(true);
+          const result = await productServices.getProductById(id);
+
+          setProductItem(result);
+        } catch (e) {
+          console.log(e);
+        } finally {
+          setLoading(false);
+        }
+      };
+      getProductById();
+    }, [id]),
+  );
   return (
     <Container>
       <Header componentRight={<CartBadge navigation={navigation} />} />
@@ -36,14 +51,25 @@ export default function ProductDetailScreen({
           backgroundColor: colors.background1,
           padding: 0,
         }}>
-        <Body {...mockData} />
-        <Footer
-          id={id}
-          setIsAddCart={setIsAddCart}
-          setIsDelCart={setIsDelCart}
-          {...mockData}
+        <Body
+          baseUOM={productItem?.baseUOM}
+          packSize={productItem?.packSize}
+          productImage={productItem?.productImage}
+          productName={productItem?.productName}
+          unitPrice={productItem?.unitPrice}
+          commonName={productItem?.commonName}
         />
+        {productItem && (
+          <Footer
+            navigation={navigation}
+            id={id}
+            setIsAddCart={setIsAddCart}
+            setIsDelCart={setIsDelCart}
+            productItem={productItem}
+          />
+        )}
       </Content>
+      <LoadingSpinner visible={loading} />
       <ModalMessage
         visible={isAddCart}
         message={t('modalMessage.addCart')}

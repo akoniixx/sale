@@ -8,17 +8,15 @@ import {
 import React from 'react';
 import Text from '../../components/Text/Text';
 import { colors } from '../../assets/colors/colors';
-import images from '../../assets/images';
 import { useLocalization } from '../../contexts/LocalizationContext';
-import { numberWithCommas } from '../../utils/functions';
+import { getNewPath, numberWithCommas } from '../../utils/functions';
 import Button from '../../components/Button/Button';
 import icons from '../../assets/icons';
-import ModalMessage from '../../components/Modal/ModalMessage';
 import { useCart } from '../../contexts/CartContext';
 import Counter from '../../components/Counter/Counter';
+import { ProductType } from '../../entities/productType';
 
-interface Props {
-  image?: string;
+interface Props extends ProductType {
   name?: string;
   desc?: string;
   amount?: number;
@@ -35,24 +33,22 @@ export default function Item({
   setIsDelCart,
   navigation,
   idItem,
+  productName,
+  unitPrice,
+  productImage,
   ...props
 }: Props): JSX.Element {
-  const isPromo = props?.index % 2 === 0;
-  const price = props.price || 14000;
-  const name = props.index % 2 === 0 ? 'ไฮซีส' : 'ไซม๊อกซิเมท';
-  const unit = props?.index % 2 === 0 ? 'ลัง' : 'กระสอบ';
-  const detail = '40*500 cc';
+  const isPromo = false;
+
   const { t } = useLocalization();
   const { setCartList, cartList } = useCart();
 
   const isAlreadyInCart = cartList?.find(
-    (item: { id: string | number }) =>
-      item?.id.toString() === idItem.toString(),
+    item => item?.productId.toString() === idItem.toString(),
   );
   const onChangeText = (text: string, id: string) => {
-    const findIndex = cartList?.findIndex(
-      (item: { id: string }) => item?.id === id,
-    );
+    const findIndex = cartList?.findIndex(item => item?.productId === id);
+
     if (findIndex !== -1) {
       const newCartList = [...cartList];
       newCartList[findIndex].amount = Number(text);
@@ -60,9 +56,8 @@ export default function Item({
     }
   };
   const onAddCartByIndex = (id: string | number) => {
-    const findIndex = cartList?.findIndex(
-      (item: { id: string | number }) => item?.id === id,
-    );
+    const findIndex = cartList?.findIndex(item => item?.productId === id);
+
     if (findIndex !== -1) {
       const newCartList = [...cartList];
 
@@ -71,9 +66,7 @@ export default function Item({
     }
   };
   const onSubtractCartByIndex = (id: string | number) => {
-    const findIndex = cartList?.findIndex(
-      (item: { id: string | number }) => item?.id === id,
-    );
+    const findIndex = cartList?.findIndex(item => item?.productId === id);
 
     if (findIndex !== -1) {
       const newCartList = [...cartList];
@@ -88,6 +81,7 @@ export default function Item({
       }
     }
   };
+
   return (
     <TouchableOpacity
       style={styles().container}
@@ -109,37 +103,86 @@ export default function Item({
         />
       )}
       <View>
-        <Image
-          source={images.mockImage}
-          style={{
-            width: '100%',
-            height: 100,
-          }}
-        />
+        {productImage ? (
+          <View
+            style={{
+              height: 100,
+              marginBottom: 8,
+            }}>
+            <Image
+              source={{ uri: getNewPath(productImage) }}
+              style={{
+                height: 100,
+              }}
+              resizeMode="contain"
+            />
+          </View>
+        ) : (
+          <View
+            style={{
+              height: 100,
+
+              backgroundColor: colors.background1,
+              borderWidth: 1,
+              borderColor: colors.border1,
+              justifyContent: 'center',
+              alignItems: 'center',
+              borderRadius: 10,
+              marginBottom: 8,
+            }}>
+            <Text fontFamily="NotoSans" color="text3" bold>
+              no image
+            </Text>
+          </View>
+        )}
         <View
           style={{
-            marginBottom: Platform.OS === 'ios' ? 8 : 0,
+            marginBottom: 8,
           }}>
-          <Text fontFamily="Sarabun" semiBold>
-            {name}
+          <Text
+            fontFamily="Sarabun"
+            semiBold
+            numberOfLines={1}
+            style={{
+              height: 26,
+            }}>
+            {productName}
           </Text>
-          <Text fontFamily="Sarabun" numberOfLines={1} color="text2">
-            EMAMECTIN BENZOATE 2 Lorem ipsum dolor sit amet consectetur
-            adipisicing elit. Error, culpa quod aperiam ab maiores fugit quos
-            obcaecati, modi saepe accusantium expedita vitae voluptate
-            cupiditate officiis autem molestiae? Autem, illo? Praesentium.
+
+          <Text
+            fontFamily="Sarabun"
+            style={{
+              height: 24,
+            }}
+            numberOfLines={1}
+            color="text2">
+            {props.commonName}
           </Text>
-          <Text color="text3">{detail}</Text>
+          {!!props.packSize ? (
+            <Text
+              color="text3"
+              style={{
+                height: 28,
+              }}>
+              {props.packSize}
+            </Text>
+          ) : (
+            <View
+              style={{
+                height: 28,
+              }}
+            />
+          )}
           <Text fontSize={18} bold>
             {t('screens.StoreDetailScreen.price', {
-              price: numberWithCommas(price),
+              price: numberWithCommas(+unitPrice),
             })}
-            <Text color="text3"> /{unit}</Text>
+            <Text color="text3"> /{props.baseUOM}</Text>
           </Text>
         </View>
         {!!isAlreadyInCart ? (
           <Counter
-            id={isAlreadyInCart.id}
+            id={isAlreadyInCart.productId}
             onDecrease={onSubtractCartByIndex}
             onIncrease={onAddCartByIndex}
             currentQuantity={+isAlreadyInCart.amount}
@@ -165,14 +208,12 @@ export default function Item({
                 return [
                   ...prev,
                   {
-                    id: idItem,
-                    name: name,
-                    price: price,
+                    ...props,
+                    productId: idItem,
+                    productName,
+                    unitPrice,
                     amount: 5,
-                    image: images.mockImage,
-                    promotion: 100000,
-                    unit: unit,
-                    detail,
+                    productImage,
                   },
                 ];
               });
@@ -199,7 +240,6 @@ const styles = () => {
       padding: Platform.OS === 'ios' ? 16 : 10,
       width: '48%',
       marginBottom: 8,
-      minHeight: 200,
     },
   });
 };

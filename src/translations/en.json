@@ -57,7 +57,11 @@
       "promotionAll": "สินค้าโปรโมชั่น",
       "empty": "ไม่พบสินค้าที่คุณต้องการ",
       "price": "฿%{price}",
-      "buttonAddCart": "เพิ่มเข้าตระกร้า"
+      "buttonAddCart": "เพิ่มเข้าตระกร้า",
+      "allCategory": "กลุ่มทั้งหมด"
+    },
+    "SelectBrandBeforeDetailScreen": {
+      "title": "เลือกแบรนด์"
     },
     "ProductDetailScreen": {
       "detail": "รายละเอียดสินค้า",

@@ -9,17 +9,21 @@ import SearchInput from '../../components/SearchInput/SearchInput';
 import ListItem from './ListItem';
 import CartBadge from '../../components/CartBadge/CartBadge';
 import { MainStackParamList } from '../../navigations/MainNavigator';
+import { useDebounce } from '../../hook';
+import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
 
 const StoreDetailScreen = ({
   navigation,
   route,
 }: StackScreenProps<MainStackParamList, 'StoreDetailScreen'>) => {
-  const { id, name } = route.params;
+  const { name, productBrand } = route.params;
+
   const { t } = useLocalization();
   const [searchValue, setSearchValue] = React.useState<string | undefined>(
     undefined,
   );
-
+  const [debounceSearchValue, loading] = useDebounce(searchValue, 500);
+  const [loadingApi, setLoadingApi] = React.useState<boolean>(false);
   return (
     <Container>
       <Header
@@ -43,8 +47,15 @@ const StoreDetailScreen = ({
             }}
           />
         </View>
-        <ListItem data={[]} nameDealer={name} navigation={navigation} />
+        <ListItem
+          nameDealer={name}
+          navigation={navigation}
+          debounceSearchValue={debounceSearchValue}
+          productBrand={productBrand}
+          setLoadingApi={setLoadingApi}
+        />
       </Content>
+      <LoadingSpinner visible={loading || loadingApi} />
     </Container>
   );
 };

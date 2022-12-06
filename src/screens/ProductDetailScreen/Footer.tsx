@@ -6,56 +6,46 @@ import Button from '../../components/Button/Button';
 import { useLocalization } from '../../contexts/LocalizationContext';
 import { useCart } from '../../contexts/CartContext';
 import icons from '../../assets/icons';
+import { ProductSummary } from '../../entities/productType';
 
 interface Props {
   id: string;
+  navigation: any;
   setIsAddCart: React.Dispatch<React.SetStateAction<boolean>>;
   setIsDelCart: React.Dispatch<React.SetStateAction<boolean>>;
-  image?: ImageSourcePropType;
-  name?: string;
-  detail?: string;
-  price?: number;
-  promotion?: number;
-  unit?: string;
+  productItem: ProductSummary;
 }
 export default function Footer({
   id,
   setIsAddCart,
   setIsDelCart,
-  image,
-  name,
-  detail,
-  price,
-  unit,
-  promotion,
+  navigation,
+  productItem,
 }: Props): JSX.Element {
   const { t } = useLocalization();
   const { cartList, setCartList } = useCart();
-
+  console.log('productItem', productItem);
   const currentProduct = cartList?.find(
-    (item: { id: string }) => item?.id.toString() === id,
+    item => item?.productId.toString() === id,
   );
   const onChangeText = (text: string, id: string) => {
     const findIndex = cartList?.findIndex(
-      (item: { id: string }) => item?.id.toString() === id.toString(),
+      item => item?.productId.toString() === id.toString(),
     );
     if (findIndex !== -1) {
       const newCartList = [...cartList];
       newCartList[findIndex].amount = Number(text);
       setCartList(newCartList);
     } else {
-      setCartList([
-        ...cartList,
-        {
-          id,
-          amount: Number(text),
-        },
+      setCartList(prev => [
+        ...prev,
+        { ...productItem, productId: id, amount: Number(text) },
       ]);
     }
   };
   const onIncrease = () => {
     const findIndex = cartList?.findIndex(
-      (item: { id: string | number }) => item?.id.toString() === id,
+      item => item?.productId.toString() === id,
     );
     if (findIndex !== -1) {
       const newCartList = [...cartList];
@@ -63,16 +53,16 @@ export default function Footer({
       newCartList[findIndex].amount += 5;
       setCartList(newCartList);
     } else {
-      setCartList([
-        ...cartList,
-        { id, amount: 5, image, name, detail, price, promotion, unit },
+      setCartList(prev => [
+        ...prev,
+        { ...productItem, productId: id, amount: 5 },
       ]);
     }
     setIsAddCart(true);
   };
   const onDecrease = () => {
     const findIndex = cartList?.findIndex(
-      (item: { id: string | number }) => item?.id.toString() === id,
+      item => item?.productId.toString() === id,
     );
 
     if (findIndex !== -1) {
@@ -90,19 +80,20 @@ export default function Footer({
   };
   const onOrder = () => {
     const findIndex = cartList?.findIndex(
-      (item: { id: string | number }) => item?.id.toString() === id,
+      item => item?.productId.toString() === id,
     );
     if (findIndex !== -1) {
       const newCartList = [...cartList];
       newCartList[findIndex].amount += 5;
       setCartList(newCartList);
     } else {
-      setCartList([
-        ...cartList,
-        { id, amount: 5, image, name, detail, price, promotion, unit },
+      setCartList(prev => [
+        ...prev,
+        { ...productItem, productId: id, amount: 5 },
       ]);
     }
     setIsAddCart(true);
+    navigation.navigate('CartScreen');
   };
   return (
     <View style={styles().container}>

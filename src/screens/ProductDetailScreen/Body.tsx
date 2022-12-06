@@ -1,33 +1,27 @@
-import {
-  View,
-  Image,
-  ScrollView,
-  TouchableOpacity,
-  ImageSourcePropType,
-} from 'react-native';
+import { View, Image, ScrollView, TouchableOpacity } from 'react-native';
 import React from 'react';
 import { colors } from '../../assets/colors/colors';
-import images from '../../assets/images';
 import Text from '../../components/Text/Text';
-import { numberWithCommas } from '../../utils/functions';
+import { getNewPath, numberWithCommas } from '../../utils/functions';
 import { useLocalization } from '../../contexts/LocalizationContext';
 import dayjs from 'dayjs';
 import PromotionItem from './PromotionItem';
 
-interface Props {
-  image?: ImageSourcePropType;
-  name?: string;
-  detail?: string;
-  price?: number;
-  promotion?: number;
-  unit?: string;
-}
+type Props = {
+  packSize?: string;
+  productImage?: string;
+  productName?: string;
+  unitPrice?: string;
+  baseUOM?: string;
+  commonName?: string;
+};
 export default function Body({
-  image,
-  name,
-  detail,
-  price,
-  unit,
+  baseUOM,
+  packSize,
+  productImage,
+  productName,
+  unitPrice = '0',
+  commonName,
 }: Props): JSX.Element {
   const { t } = useLocalization();
   const [isShowMore, setIsShowMore] = React.useState(false);
@@ -47,6 +41,7 @@ export default function Body({
       dateEnd: dayjs().add(1, 'month'),
     },
   ];
+
   return (
     <ScrollView>
       <View
@@ -59,30 +54,48 @@ export default function Body({
             justifyContent: 'center',
             alignItems: 'center',
           }}>
-          <Image
-            source={image}
-            style={{
-              height: 220,
-            }}
-          />
+          {productImage ? (
+            <Image
+              source={{ uri: getNewPath(productImage) }}
+              style={{
+                width: '100%',
+                height: 220,
+              }}
+              resizeMode="contain"
+            />
+          ) : (
+            <View
+              style={{
+                height: 220,
+                width: '100%',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
+              <Text bold fontFamily="NotoSans">
+                No Image
+              </Text>
+            </View>
+          )}
         </View>
         <View
           style={{
             paddingHorizontal: 16,
           }}>
           <Text fontFamily="NotoSans" bold fontSize={20}>
-            {name}
+            {productName}
           </Text>
-          <Text
-            fontFamily="NotoSans"
-            bold
-            fontSize={18}
-            color="primary"
-            style={{
-              marginTop: 8,
-            }}>
-            {`฿${numberWithCommas(price)}`}
-          </Text>
+          {unitPrice && (
+            <Text
+              fontFamily="NotoSans"
+              bold
+              fontSize={18}
+              color="primary"
+              style={{
+                marginTop: 8,
+              }}>
+              {`฿${numberWithCommas(+unitPrice)}`}
+            </Text>
+          )}
           <Text
             fontFamily="NotoSans"
             color="text3"
@@ -90,7 +103,9 @@ export default function Body({
             style={{
               marginTop: 8,
             }}>
-            {`${detail} | ฿${numberWithCommas(price)}/${unit}`}
+            {packSize
+              ? `${packSize} | ฿${numberWithCommas(+unitPrice)}/${baseUOM}`
+              : `฿${numberWithCommas(+unitPrice)}/${baseUOM}`}
           </Text>
         </View>
       </View>
@@ -119,7 +134,7 @@ export default function Body({
           }}>
           <Text semiBold>{t('screens.ProductDetailScreen.important')}</Text>
           <Text semiBold numberOfLines={1} color="text3">
-            {'EMAMECTIN BENZOATE 2.0% W/V ME'}
+            {commonName}
           </Text>
           <View
             style={{

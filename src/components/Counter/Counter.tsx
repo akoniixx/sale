@@ -1,4 +1,11 @@
-import { View, StyleSheet, TextInput, Image } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  TextInput,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
 import React from 'react';
 import Button from '../Button/Button';
 import icons from '../../assets/icons';
@@ -20,7 +27,9 @@ export default function Counter({
   id,
 }: Props): JSX.Element {
   return (
-    <View style={styles().container}>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={styles().container}>
       <Button
         onPress={() => {
           if (onDecrease) {
@@ -74,7 +83,7 @@ export default function Counter({
           height: 40,
         }}
       />
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 

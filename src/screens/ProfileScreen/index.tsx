@@ -14,7 +14,7 @@ const ProfileScreen = () => {
   const onLogout = async () => {
     try {
       await logout();
-      navigate('Auth');
+      navigate('initPage');
     } catch (e) {
       console.log(e);
     }

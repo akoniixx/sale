@@ -1,23 +1,27 @@
 import { View, Text, StyleSheet } from 'react-native';
-import React, { useEffect } from 'react';
+import React from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import { useFocusEffect } from '@react-navigation/native';
 const LoadingNavigator: React.FC<any> = ({ navigation }) => {
-  useEffect(() => {
-    const getData = async () => {
-      try {
-        const value = await AsyncStorage.getItem('token');
-        if (!!value) {
-          navigation.push('Main');
-        } else {
-          navigation.push('Auth');
+  useFocusEffect(
+    React.useCallback(() => {
+      const getData = async () => {
+        try {
+          const value = await AsyncStorage.getItem('token');
+          console.log('token for test api', value);
+
+          if (!!value) {
+            navigation.push('Main');
+          } else {
+            navigation.push('Auth');
+          }
+        } catch (e) {
+          console.log(e, 'get async token');
         }
-      } catch (e) {
-        console.log(e, 'get async token');
-      }
-    };
-    getData();
-  }, [navigation]);
+      };
+      getData();
+    }, [navigation]),
+  );
   return (
     <View style={styles.scaffold}>
       <Text>Loading...</Text>

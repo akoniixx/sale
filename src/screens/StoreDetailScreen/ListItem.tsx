@@ -7,44 +7,55 @@ import {
   ScrollView,
   StyleSheet,
 } from 'react-native';
-import React, { useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import images from '../../assets/images';
 import Text from '../../components/Text/Text';
 import { useLocalization } from '../../contexts/LocalizationContext';
 import { colors } from '../../assets/colors/colors';
 import Item from './Item';
 import ModalMessage from '../../components/Modal/ModalMessage';
+import { ProductCategory, ProductType } from '../../entities/productType';
+import { productServices } from '../../services/ProductServices';
+import { useAuth } from '../../contexts/AuthContext';
+import { useFocusEffect } from '@react-navigation/native';
 
 interface Props {
-  data: [];
   nameDealer: string;
   navigation: any;
+  debounceSearchValue: any;
+  productBrand?: {
+    product_brand_id: string;
+    product_brand_name: string;
+    company: string;
+  };
+  setLoadingApi: (v: boolean) => void;
 }
 export default function ListItem({
-  data,
   nameDealer,
   navigation,
+  debounceSearchValue,
+  productBrand,
+  setLoadingApi,
 }: Props): JSX.Element {
   const [type, setType] = React.useState<string>('all');
   const { t } = useLocalization();
-  const [brand, setBrand] = React.useState<string>('all');
+  const [currentBrand, setCurrentBrand] = React.useState<string>('all');
+  const [dataBrand, setDataBrand] = React.useState<ProductCategory[]>([]);
   const [isAddCart, setIsAddCart] = React.useState(false);
   const [isDelCart, setIsDelCart] = React.useState(false);
-  const mockData = useMemo(() => {
-    const data = [];
-    const brand = [];
-    for (let i = 0; i < 12; i++) {
-      data.push(i);
-      brand.push({
-        id: i,
-        name: 'แบรนด์ ' + i + 1,
-      });
-    }
-    return {
-      data,
-      brand,
-    };
-  }, []);
+  const [page, setPage] = React.useState(1);
+  const {
+    state: { user },
+  } = useAuth();
+
+  const [data, setData] = React.useState<{
+    count: number;
+    data: ProductType[];
+  }>({
+    count: 0,
+    data: [],
+  });
+
   const headerList = [
     {
       id: 'all',
@@ -55,6 +66,101 @@ export default function ListItem({
       title: t('screens.StoreDetailScreen.promotion'),
     },
   ];
+
+  const getAllProduct = useCallback(async () => {
+    try {
+      setLoadingApi(true);
+      const result = await productServices.getAllProducts({
+        company: user?.company,
+        customerId: user?.userStaffId,
+        page: 1,
+        take: 10,
+        searchText: debounceSearchValue,
+        productBrandId: productBrand?.product_brand_id,
+        isPromotion: type !== 'all',
+        productCategoryId: currentBrand !== 'all' ? currentBrand : undefined,
+      });
+
+      setData(result);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoadingApi(false);
+    }
+  }, [
+    debounceSearchValue,
+    user?.company,
+    user?.userStaffId,
+    productBrand,
+    type,
+    currentBrand,
+    setLoadingApi,
+  ]);
+  const getMoreProduct = useCallback(async () => {
+    try {
+      if (data.count > data.data.length) {
+        const result = await productServices.getAllProducts({
+          company: user?.company,
+          customerId: user?.userStaffId,
+          page: page + 1,
+          take: 10,
+          searchText: debounceSearchValue,
+          productBrandId: productBrand?.product_brand_id,
+          isPromotion: type !== 'all',
+
+          productCategoryId: currentBrand !== 'all' ? currentBrand : undefined,
+        });
+        setData(prev => ({
+          ...prev,
+          data: [...prev.data, ...result.data],
+        }));
+        setPage(prev => prev + 1);
+      } else {
+        console.log('no more');
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  }, [
+    debounceSearchValue,
+    user?.userStaffId,
+    user?.company,
+    productBrand,
+    type,
+    page,
+    data.data,
+    data.count,
+    currentBrand,
+  ]);
+  useEffect(() => {
+    getAllProduct();
+  }, [getAllProduct]);
+
+  const getProductCategory = useCallback(async () => {
+    try {
+      const result = await productServices.getProductCategory(user?.company);
+      setDataBrand(result);
+    } catch (error) {
+      console.log(error);
+    }
+  }, [user?.company]);
+  useFocusEffect(
+    useCallback(() => {
+      getProductCategory();
+    }, [getProductCategory]),
+  );
+
+  const newDataBrand = useMemo(() => {
+    return [
+      {
+        productCategoryId: 'all',
+        company: user?.company,
+        productCategoryImage: null,
+        productCategoryName: 'all',
+      },
+      ...dataBrand,
+    ];
+  }, [dataBrand, user?.company]);
   const HeaderFlatList = () => {
     return (
       <View
@@ -77,7 +183,12 @@ export default function ListItem({
               justifyContent: 'space-between',
               alignItems: 'center',
             }}>
-            <Text fontFamily="NotoSans" fontSize={18} color="white" bold>
+            <Text
+              fontFamily="NotoSans"
+              fontSize={18}
+              color="white"
+              bold
+              numberOfLines={1}>
               {nameDealer}
             </Text>
             <Image
@@ -145,36 +256,98 @@ export default function ListItem({
           style={{
             padding: 16,
           }}>
-          {mockData.brand.map((item, idx) => {
-            const isLast = idx === mockData.brand.length - 1;
-            return (
-              <TouchableOpacity
-                key={item.id}
-                style={[
-                  styles({ isFocus: item.name === brand }).buttonBrand,
-                  {
-                    marginRight: isLast ? 32 : 8,
-                  },
-                ]}
-                onPress={() => {
-                  setBrand(item.name);
-                }}>
-                <Text fontFamily="NotoSans" fontSize={14} semiBold>
-                  {item.name}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
+          {dataBrand.length < 1 ? (
+            <></>
+          ) : (
+            (newDataBrand || []).map((item, idx) => {
+              const isLast = idx === newDataBrand.length - 1;
+              if (!item.productCategoryImage) {
+                return (
+                  <TouchableOpacity
+                    key={item.productCategoryId}
+                    style={[
+                      styles({
+                        isFocus: item.productCategoryId === currentBrand,
+                      }).buttonBrand,
+                      {
+                        marginRight: isLast ? 32 : 8,
+                      },
+                    ]}
+                    onPress={() => {
+                      setCurrentBrand(item.productCategoryId);
+                    }}>
+                    <Text fontFamily="NotoSans" fontSize={14} semiBold>
+                      {t('screens.StoreDetailScreen.allCategory')}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              }
+              return (
+                <TouchableOpacity
+                  key={item.productCategoryId}
+                  style={[
+                    {
+                      marginRight: isLast ? 32 : 8,
+                    },
+                  ]}
+                  onPress={() => {
+                    setCurrentBrand(item.productCategoryId);
+                  }}>
+                  <Image
+                    source={{ uri: item.productCategoryImage }}
+                    style={{
+                      width: 106,
+                      height: 40,
+                      borderWidth: 1,
+                      borderRadius: 6,
+                      borderColor:
+                        currentBrand === item.productCategoryId
+                          ? colors.text2
+                          : colors.border1,
+                    }}
+                  />
+                </TouchableOpacity>
+              );
+            })
+          )}
         </ScrollView>
       </View>
     );
   };
-
+  const memorizeItem = useMemo(() => {
+    const renderItem = ({
+      item,
+      index,
+    }: {
+      item: ProductType;
+      index: number;
+    }) => {
+      return (
+        <>
+          <Item
+            {...item}
+            index={index}
+            idItem={item.productId}
+            navigation={navigation}
+            setIsAddCart={setIsAddCart}
+            setIsDelCart={setIsDelCart}
+          />
+        </>
+      );
+    };
+    return renderItem;
+  }, [setIsAddCart, setIsDelCart, navigation]);
   return (
     <>
       <FlatList
-        data={mockData.data}
+        data={data?.data || []}
         numColumns={2}
+        initialNumToRender={10}
+        onEndReachedThreshold={0.7}
+        onEndReached={() => {
+          getMoreProduct();
+        }}
+        keyExtractor={(item, idx) => `${item.productId}` + idx}
         columnWrapperStyle={{
           paddingHorizontal: 16,
           justifyContent: 'space-between',
@@ -207,15 +380,7 @@ export default function ListItem({
           );
         }}
         ListHeaderComponent={<HeaderFlatList />}
-        renderItem={({ item, index }) => (
-          <Item
-            index={index}
-            idItem={item.toString()}
-            navigation={navigation}
-            setIsAddCart={setIsAddCart}
-            setIsDelCart={setIsDelCart}
-          />
-        )}
+        renderItem={memorizeItem}
       />
       <ModalMessage
         visible={isAddCart}
@@ -235,9 +400,12 @@ const styles = ({ isFocus }: { isFocus: boolean }) =>
   StyleSheet.create({
     buttonBrand: {
       paddingVertical: 8,
-      paddingHorizontal: 16,
+      width: 88,
+      height: 40,
       marginRight: 8,
       borderRadius: 6,
+      justifyContent: 'center',
+      alignItems: 'center',
       borderWidth: 1,
       backgroundColor: isFocus ? colors.background1 : 'transparent',
       borderColor: isFocus ? colors.text2 : colors.border1,

@@ -18,7 +18,6 @@ import { SubmitButton } from '../../components/Form/SubmitButton';
 import { useLocalization } from '../../contexts/LocalizationContext';
 import { StackNavigationHelpers } from '@react-navigation/stack/lib/typescript/src/types';
 import { AuthServices } from '../../services/AuthServices';
-import Button from '../../components/Button/Button';
 
 interface Props {
   navigation: StackNavigationHelpers;

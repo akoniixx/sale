@@ -36,7 +36,20 @@
 		</dict>
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string/>
+	<string></string>
+	<key>UIAppFonts</key>
+	<array>
+		<string>Sarabun-Bold.ttf</string>
+		<string>Sarabun-Light.ttf</string>
+		<string>Sarabun-Medium.ttf</string>
+		<string>Sarabun-Regular.ttf</string>
+		<string>Sarabun-SemiBold.ttf</string>
+		<string>NotoSansThai-Bold.ttf</string>
+		<string>NotoSansThai-Light.ttf</string>
+		<string>NotoSansThai-Medium.ttf</string>
+		<string>NotoSansThai-Regular.ttf</string>
+		<string>NotoSansThai-SemiBold.ttf</string>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>
@@ -51,18 +64,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>UIAppFonts</key>
-	<array>
-		<string>Sarabun-Bold.ttf</string>
-		<string>Sarabun-Light.ttf</string>
-		<string>Sarabun-Medium.ttf</string>
-		<string>Sarabun-Regular.ttf</string>
-		<string>Sarabun-SemiBold.ttf</string>
-		<string>NotoSansThai-Bold.ttf</string>
-		<string>NotoSansThai-Light.ttf</string>
-		<string>NotoSansThai-Medium.ttf</string>
-		<string>NotoSansThai-Regular.ttf</string>
-		<string>NotoSansThai-SemiBold.ttf</string>
-	</array>
 </dict>
 </plist>

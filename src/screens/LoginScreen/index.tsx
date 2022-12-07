@@ -6,7 +6,7 @@ import {
   Platform,
   View,
 } from 'react-native';
-import React from 'react';
+import React, { useEffect } from 'react';
 import Text from '../../components/Text/Text';
 import Container from '../../components/Container/Container';
 import Content from '../../components/Content/Content';
@@ -18,12 +18,15 @@ import { SubmitButton } from '../../components/Form/SubmitButton';
 import { useLocalization } from '../../contexts/LocalizationContext';
 import { StackNavigationHelpers } from '@react-navigation/stack/lib/typescript/src/types';
 import { AuthServices } from '../../services/AuthServices';
+import { useFocusEffect } from '@react-navigation/native';
+import SplashScreen from 'react-native-splash-screen';
 
 interface Props {
   navigation: StackNavigationHelpers;
 }
 export default function LoginScreen({ navigation }: Props): JSX.Element {
   const { t } = useLocalization();
+
   const schema = yup.object().shape({
     tel: yup
       .string()

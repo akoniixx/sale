@@ -11,8 +11,12 @@ import { CartProvider } from './src/contexts/CartContext';
 
 import buddhaEra from 'dayjs/plugin/buddhistEra';
 import dayjs from 'dayjs';
+import SplashScreen from 'react-native-splash-screen';
 dayjs.extend(buddhaEra);
 const App = () => {
+  React.useEffect(() => {
+    SplashScreen.hide();
+  }, []);
   return (
     <NavigationContainer ref={navigationRef}>
       <LocalizationProvider>

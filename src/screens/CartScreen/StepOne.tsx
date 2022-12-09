@@ -3,6 +3,7 @@ import React from 'react';
 import ListItemInCart from './ListItemInCart';
 
 import { useLocalization } from '../../contexts/LocalizationContext';
+import PromotionSection from './PromotionSection';
 
 export default function StepOne(): JSX.Element {
   return (

@@ -1,39 +1,131 @@
-import { ViewStyle, Image, TouchableOpacity, StyleSheet } from 'react-native';
-import React, { useEffect, useMemo } from 'react';
+import {
+  ViewStyle,
+  Image,
+  TouchableOpacity,
+  StyleSheet,
+  View,
+} from 'react-native';
+import React from 'react';
 import { colors } from '../../assets/colors/colors';
 import icons from '../../assets/icons';
 import { Picker } from '@react-native-picker/picker';
 import Text from '../Text/Text';
+import Modal from '../Modal/Modal';
+import Button from '../Button/Button';
+import { useLocalization } from '../../contexts/LocalizationContext';
 interface Props {
   value?: any;
   placeholder?: string;
   style?: ViewStyle;
-  data?: any[];
+  data?: {
+    label: string;
+    value: string;
+  }[];
+  onChangeValue?: (value: any) => void;
+  titleModal?: string;
 }
 export default function Dropdown({
   value,
   placeholder,
   style,
   data,
-  ...props
+  onChangeValue,
+  titleModal,
 }: Props) {
+  const [isVisible, setIsVisible] = React.useState(false);
+  const { t } = useLocalization();
+  const [currentValue, setCurrentValue] = React.useState(undefined);
   return (
     <>
       <TouchableOpacity
-        style={styles.button}
+        style={{
+          borderWidth: 1,
+          borderColor: colors.border2,
+          borderRadius: 6,
+          ...style,
+        }}
         onPress={() => {
-          console.log('Open ActionSheet');
+          setIsVisible(true);
         }}>
-        <Text>Open ActionSheet</Text>
+        <Image
+          source={icons.iconDropdown}
+          style={{
+            width: 20,
+            height: 20,
+            position: 'absolute',
+            right: 6,
+          }}
+        />
+        <Text fontSize={14}>{value}</Text>
       </TouchableOpacity>
-
-      <Picker>
-        <Picker.Item label="Java" value="java" />
-        <Picker.Item label="JavaScript" value="js" />
-      </Picker>
+      <Modal
+        visible={isVisible}
+        hideClose
+        onRequestClose={() => {
+          setIsVisible(false);
+        }}>
+        <View
+          style={{
+            flexDirection: 'row',
+          }}>
+          <View
+            style={{
+              flex: 1,
+            }}>
+            {titleModal && (
+              <Text center fontSize={20} bold>
+                {titleModal}
+              </Text>
+            )}
+            <Picker
+              selectedValue={currentValue ? currentValue : value}
+              onValueChange={v => {
+                if (!v) {
+                  setCurrentValue(undefined);
+                  return;
+                }
+                setCurrentValue(v);
+              }}>
+              {data?.map((item, idx) => {
+                return (
+                  <Picker.Item
+                    key={idx}
+                    label={item.label}
+                    value={item.value.toString()}
+                  />
+                );
+              })}
+            </Picker>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+              }}>
+              <Button
+                secondary
+                title={t('dropDownModal.buttonCancel')}
+                style={{
+                  flex: 0.45,
+                }}
+                onPress={() => {
+                  setIsVisible(false);
+                }}
+              />
+              <Button
+                title={t('dropDownModal.buttonConfirm')}
+                style={{
+                  flex: 0.45,
+                }}
+                onPress={() => {
+                  setIsVisible(false);
+                  onChangeValue?.(currentValue);
+                }}
+              />
+            </View>
+          </View>
+        </View>
+      </Modal>
     </>
   );
 }
-const styles = StyleSheet.create({
-  button: {},
-});
+const styles = StyleSheet.create({});

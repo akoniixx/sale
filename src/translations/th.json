@@ -79,6 +79,15 @@
       "discount": "ส่วนลด ฿%{discount}",
       "emptyCart": "กรุณาเพิ่มสินค้า",
       "stepOneButton": "สรุปคำสั่งซื้อ",
+      "promotionSection": {
+        "promotionTitle": "โปรโมชันที่เข้าร่วม",
+        "joinAllPromotion": "เข้าร่วมโปรโมชั่นทั้งหมด"
+      },
+      "giftFromPromotion": {
+        "title": "ของแถมที่ได้รับ",
+        "empty": "ไม่มีของขวัญจากโปรโมชั่น",
+        "allListCount": "ทั้งหมด %{count} รายการ"
+      },
       "summary": {
         "titlePayment": "วิธีชำระเงิน",
         "titlePromotion": "ส่วนลดดูแลราคา",
@@ -119,5 +128,9 @@
   "modalMessage": {
     "addCart": "เพิ่มสินค้าไปยังตระกร้าแล้ว",
     "deleteCart": "ลบสินค้าออกจากตระกร้าแล้ว"
+  },
+  "dropDownModal": {
+    "buttonCancel": "ยกเลิก",
+    "buttonConfirm": "ยืนยัน"
   }
 }

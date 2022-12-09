@@ -19,4 +19,5 @@ export default {
   iconMinusWhite: require('./iconMinusWhite.png'),
   iconCheck: require('./iconCheck.png'),
   iconCollapse: require('./iconCollapse.png'),
+  iconDropdown: require('./iconDropdown.png'),
 };

@@ -75,7 +75,10 @@
     "CartScreen": {
       "title": "ตระกร้าสินค้า",
       "listProduct": "สินค้า (%{count} รายการ)",
+      "tooltip": "*โปรดเรียงลำดับการขนสินค้า",
       "discount": "ส่วนลด ฿%{discount}",
+      "emptyCart": "กรุณาเพิ่มสินค้า",
+      "stepOneButton": "สรุปคำสั่งซื้อ",
       "summary": {
         "titlePayment": "วิธีชำระเงิน",
         "titlePromotion": "ส่วนลดดูแลราคา",

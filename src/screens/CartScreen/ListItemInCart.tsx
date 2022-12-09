@@ -1,11 +1,5 @@
-import {
-  View,
-  StyleSheet,
-  Image,
-  ImageSourcePropType,
-  TouchableOpacity,
-} from 'react-native';
-import React from 'react';
+import { View, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import React, { useMemo } from 'react';
 import Text from '../../components/Text/Text';
 import { useLocalization } from '../../contexts/LocalizationContext';
 import { useCart } from '../../contexts/CartContext';
@@ -13,10 +7,24 @@ import { getNewPath, numberWithCommas } from '../../utils/functions';
 import icons from '../../assets/icons';
 import { colors } from '../../assets/colors/colors';
 import CounterSmall from './CounterSmall';
+import images from '../../assets/images';
+import Dropdown from '../../components/Dropdown/Dropdown';
 
 export default function ListItemInCart() {
   const { t } = useLocalization();
   const { cartList, setCartList } = useCart();
+  const isPromotion = true;
+
+  const onChangeOrder = (value: any, id: string) => {
+    const findIndex = cartList?.findIndex(item => item?.productId === id);
+    if (findIndex !== -1) {
+      const newCartList = [...cartList];
+      newCartList[findIndex].order = Number(value);
+
+      setCartList(newCartList);
+    }
+  };
+
   const onIncrease = (id: string | number) => {
     const findIndex = cartList?.findIndex(
       item => item?.productId.toString() === id.toString(),
@@ -53,12 +61,25 @@ export default function ListItemInCart() {
     );
     setCartList(newCartList);
   };
+  const itemsDropdown = useMemo(() => {
+    console.log('cartList');
+    return cartList.map((el, idx) => {
+      return {
+        key: idx + 1,
+        value: idx + 1,
+      };
+    });
+  }, []);
+
   return (
     <View style={styles.container}>
       <Text fontFamily="NotoSans" fontSize={18} bold>
         {t('screens.CartScreen.listProduct', {
           count: cartList.length,
         })}
+        <Text fontSize={14} color="text3">
+          {`   ${t('screens.CartScreen.tooltip')}`}
+        </Text>
       </Text>
       {cartList.length > 0 ? (
         <View>
@@ -85,8 +106,16 @@ export default function ListItemInCart() {
                         style={{
                           width: 62,
                           height: 62,
-                        }}
-                      />
+                          marginRight: 10,
+                        }}>
+                        <Image
+                          style={{
+                            width: 56,
+                            height: 56,
+                          }}
+                          source={images.emptyProduct}
+                        />
+                      </View>
                     )}
                     <View style={styles.item}>
                       <Text fontFamily="NotoSans" fontSize={16} bold>
@@ -106,6 +135,7 @@ export default function ListItemInCart() {
                           item.baseUOM
                         } x ${item.amount} `}
                       </Text>
+                      <Dropdown />
                     </View>
                   </View>
 
@@ -146,9 +176,24 @@ export default function ListItemInCart() {
                       id={item.productId}
                     />
                   </View>
-                  <Text bold fontFamily="NotoSans">
-                    {`฿${numberWithCommas(+item.unitPrice * item.amount)}`}
-                  </Text>
+                  <View>
+                    {isPromotion && (
+                      <Text
+                        fontFamily="NotoSans"
+                        color="text3"
+                        style={{
+                          textDecorationStyle: 'solid',
+                          textDecorationLine: isPromotion
+                            ? 'line-through'
+                            : 'none',
+                        }}>
+                        {`฿${numberWithCommas(+item.unitPrice * item.amount)}`}
+                      </Text>
+                    )}
+                    <Text bold fontFamily="NotoSans">
+                      {`฿${numberWithCommas(+item.unitPrice * item.amount)}`}
+                    </Text>
+                  </View>
                 </View>
               </View>
             );
@@ -158,7 +203,25 @@ export default function ListItemInCart() {
         <View
           style={{
             minHeight: 200,
-          }}></View>
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+          <Image
+            source={images.emptyProduct}
+            style={{
+              width: 100,
+              height: 100,
+            }}
+          />
+          <Text
+            style={{
+              marginTop: 4,
+            }}
+            color="text3"
+            fontFamily="NotoSans">
+            {t('screens.CartScreen.emptyCart')}
+          </Text>
+        </View>
       )}
     </View>
   );

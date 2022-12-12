@@ -20,7 +20,67 @@ export default function Summary(): JSX.Element {
   });
   const { cartList } = useCart();
   const totalPrice = cartList.reduce((a, b) => a + b.amount * +b.unitPrice, 0);
+  const renderDiscountList = () => {
+    const mockData = [
+      {
+        productName: 'โบร์แลน',
+        discountPrice: 15000,
+        unit: 5,
+        unitType: 'ลัง',
+      },
+    ];
+    return mockData?.map((el, idx) => {
+      return (
+        <View
+          style={[
+            styles.row,
+            { backgroundColor: colors.background1, minHeight: 40 },
+          ]}
+          key={idx}>
+          <Text fontSize={14} color="text3">
+            {el.productName}
+            {` ฿${numberWithCommas(el.discountPrice)} x ${el.unit} ${
+              el.unitType
+            }`}
+          </Text>
+          <Text fontSize={14} color="text3">
+            {`-฿${numberWithCommas(el.discountPrice * el.unit)}`}
+          </Text>
+        </View>
+      );
+    });
+  };
 
+  const renderSpecialRequest = () => {
+    const mockData = [
+      {
+        productName: 'ไฮซีส',
+        discountPrice: 100,
+        unit: 10,
+        unitType: 'ลัง',
+      },
+    ];
+    return mockData?.map((el, idx) => {
+      return (
+        <View
+          style={[
+            styles.row,
+            { backgroundColor: colors.background1, minHeight: 40 },
+          ]}
+          key={idx}>
+          <Text fontSize={14} color="text3">
+            {el.productName}
+            {` ฿${numberWithCommas(el.discountPrice)} x ${el.unit} ${
+              el.unitType
+            }`}
+          </Text>
+          <Text fontSize={14} color="text3">
+            {`-฿${numberWithCommas(el.discountPrice * el.unit)}`}
+          </Text>
+        </View>
+      );
+    });
+  };
   return (
     <View style={styles.container}>
       <View
@@ -143,11 +203,13 @@ export default function Summary(): JSX.Element {
               style={stylesIcon({ isCollapsed: isCollapsed.discountList }).icon}
             />
           </TouchableOpacity>
+
           <Text
             color="current"
             semiBold
             fontFamily="NotoSans">{`-฿${numberWithCommas(10000, true)}`}</Text>
         </View>
+        {!isCollapsed.discountList && <>{renderDiscountList()}</>}
         <View style={styles.row}>
           <TouchableOpacity
             onPress={() => {
@@ -176,6 +238,8 @@ export default function Summary(): JSX.Element {
             semiBold
             fontFamily="NotoSans">{`-฿${numberWithCommas(0, true)}`}</Text>
         </View>
+        {!isCollapsed.specialListDiscount && <>{renderSpecialRequest()}</>}
+
         <View style={styles.row}>
           <Text color="text2">
             {t('screens.CartScreen.summary.discountCarePrice')}
@@ -236,9 +300,10 @@ const styles = StyleSheet.create({
     marginTop: 10,
     backgroundColor: 'white',
     overflow: 'hidden',
+    marginBottom: 10,
   },
   containerBottom: {
-    padding: 16,
+    paddingVertical: 16,
     backgroundColor: 'white',
   },
   row: {
@@ -246,6 +311,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 10,
     alignItems: 'center',
+    paddingHorizontal: 16,
   },
   summary: {
     flexDirection: 'row',

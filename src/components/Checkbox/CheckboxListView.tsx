@@ -1,4 +1,10 @@
-import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
+import {
+  Dimensions,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import React from 'react';
 import icons from '../../assets/icons';
 import Text from '../Text/Text';
@@ -24,7 +30,12 @@ export default function CheckboxListView({
         const isLast = idx === listCheckbox.length - 1;
         return (
           <View key={idx} style={styles({ isLast }).containerCheckbox}>
-            <Text>{item.title}</Text>
+            <Text
+              style={{
+                width: Dimensions.get('window').width - 72,
+              }}>
+              {item.title}
+            </Text>
             <TouchableOpacity
               onPress={() => onPress && onPress(item.value)}
               style={

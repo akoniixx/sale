@@ -13,4 +13,7 @@ export default {
   noImageStore: require('./noImageStore.png'),
   mockImage: require('./mockImage.png'),
   emptyProduct: require('./emptyProduct.png'),
+  timer: require('./timer.png'),
+  bottomSlip: require('./bottomSlip.png'),
+  emptyGift: require('./emptyGift.png'),
 };

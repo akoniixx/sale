@@ -79,6 +79,8 @@
       "tooltip": "*โปรดเรียงลำดับการขนสินค้า",
       "emptyCart": "กรุณาเพิ่มสินค้า",
       "stepOneButton": "สรุปคำสั่งซื้อ",
+      "stepTwoButton": "ยืนยันคำสั่งซื้อ",
+
       "promotionSection": {
         "promotionTitle": "โปรโมชันที่เข้าร่วม",
         "joinAllPromotion": "เข้าร่วมโปรโมชั่นทั้งหมด"

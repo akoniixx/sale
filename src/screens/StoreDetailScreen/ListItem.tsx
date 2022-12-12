@@ -51,9 +51,11 @@ export default function ListItem({
   const [data, setData] = React.useState<{
     count: number;
     data: ProductType[];
+    count_location: [];
   }>({
     count: 0,
     data: [],
+    count_location: [],
   });
 
   const headerList = [

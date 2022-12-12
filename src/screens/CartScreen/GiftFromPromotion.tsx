@@ -9,6 +9,7 @@ import { getNewPath } from '../../utils/functions';
 export default function GiftFromPromotion(): JSX.Element {
   const { t } = useLocalization();
   const { cartList } = useCart();
+  console.log('cartList', JSON.stringify(cartList, null, 2));
   if (cartList.length < 1) return <></>;
   return (
     <View style={styles().container}>
@@ -33,6 +34,8 @@ export default function GiftFromPromotion(): JSX.Element {
                     height: 56,
                     borderRadius: 8,
                     backgroundColor: colors.white,
+                    justifyContent: 'center',
+                    alignItems: 'center',
                   }}>
                   <Image
                     source={{ uri: getNewPath(item.productImage) }}
@@ -41,6 +44,14 @@ export default function GiftFromPromotion(): JSX.Element {
                       height: 40,
                     }}
                   />
+                </View>
+                <View>
+                  <Text fontSize={14} color="text3">
+                    {item.productName}
+                  </Text>
+                  <Text semiBold fontSize={12}>
+                    {item.qtySaleUnit} {item.baseUOM}
+                  </Text>
                 </View>
               </View>
             );
@@ -71,8 +82,11 @@ const styles = () => {
       flexDirection: 'row',
       height: 72,
       padding: 8,
+      borderRadius: 8,
+      alignItems: 'center',
+
       backgroundColor: colors.background1,
-      marginRight: 16,
+      marginRight: 8,
     },
   });
 };

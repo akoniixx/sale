@@ -3,6 +3,7 @@ import {
   Image,
   TouchableOpacity,
   StyleSheet,
+  Platform,
   View,
 } from 'react-native';
 import React from 'react';
@@ -56,7 +57,14 @@ export default function Dropdown({
             right: 6,
           }}
         />
-        <Text fontSize={14}>{value}</Text>
+        <Text
+          style={{
+            left: 16,
+            position: 'absolute',
+          }}
+          fontSize={14}>
+          {value}
+        </Text>
       </TouchableOpacity>
       <Modal
         visible={isVisible}
@@ -78,6 +86,7 @@ export default function Dropdown({
               </Text>
             )}
             <Picker
+              mode="dropdown"
               selectedValue={currentValue ? currentValue : value}
               onValueChange={v => {
                 if (!v) {
@@ -100,6 +109,7 @@ export default function Dropdown({
               style={{
                 flexDirection: 'row',
                 justifyContent: 'space-between',
+                marginTop: Platform.OS === 'android' ? 16 : 0,
               }}>
               <Button
                 secondary

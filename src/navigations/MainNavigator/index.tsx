@@ -6,9 +6,11 @@ import StoreDetailScreen from '../../screens/StoreDetailScreen';
 import ProductDetailScreen from '../../screens/ProductDetailScreen';
 import CartScreen from '../../screens/CartScreen';
 import SelectBrandBeforeDetailScreen from '../../screens/SelectBrandBeforeDetailScreen';
+import OrderSuccessScreen from '../../screens/OrderSuccessScreen';
 
 export type MainStackParamList = {
   MainScreen: undefined;
+
   SelectStoreScreen: undefined;
   StoreDetailScreen: {
     id: string;
@@ -33,6 +35,9 @@ export type MainStackParamList = {
     id: string;
   };
   CartScreen: undefined;
+  OrderSuccessScreen: {
+    orderId: string;
+  };
 };
 const Stack = createStackNavigator<MainStackParamList>();
 export default function MainNavigator() {
@@ -58,6 +63,10 @@ export default function MainNavigator() {
           component={ProductDetailScreen}
         />
         <Stack.Screen name="CartScreen" component={CartScreen} />
+        <Stack.Screen
+          name="OrderSuccessScreen"
+          component={OrderSuccessScreen}
+        />
       </Stack.Group>
     </Stack.Navigator>
   );

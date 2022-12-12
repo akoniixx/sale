@@ -17,11 +17,14 @@ import images from '../../assets/images';
 import Dropdown from '../../components/Dropdown/Dropdown';
 import PromotionSection from './PromotionSection';
 import GiftFromPromotion from './GiftFromPromotion';
+import ModalWarning from '../../components/Modal/ModalWarning';
 
 export default function ListItemInCart() {
   const { t } = useLocalization();
   const { cartList, setCartList } = useCart();
   const isPromotion = true;
+  const [visibleDel, setVisibleDel] = React.useState(false);
+  const [delId, setDelId] = React.useState<string | number>('');
   const onChangeOrder = (value: any, id: string) => {
     const findIndex = cartList?.findIndex(item => item?.productId === id);
     const findOrder = cartList?.findIndex(item => +item?.order === +value);
@@ -40,7 +43,6 @@ export default function ListItemInCart() {
       return setCartList(newCartList);
     }
   };
-  // console.log(JSON.stringify(cartList, null, 2));
 
   const onIncrease = (id: string | number) => {
     const findIndex = cartList?.findIndex(
@@ -181,7 +183,8 @@ export default function ListItemInCart() {
                     <TouchableOpacity
                       style={styles.buttonDel}
                       onPress={() => {
-                        onDelete(item.productId);
+                        setDelId(item.productId);
+                        setVisibleDel(true);
                       }}>
                       <Image
                         source={icons.bin}
@@ -265,6 +268,13 @@ export default function ListItemInCart() {
           </View>
         )}
       </View>
+      <ModalWarning
+        visible={visibleDel}
+        title="ยืนยันการลบสินค้า"
+        desc="ต้องการยืนยันการลบสินค้าใช่หรือไม่ ?"
+        onConfirm={() => onDelete(delId)}
+      />
+
       <PromotionSection />
       <GiftFromPromotion />
     </>

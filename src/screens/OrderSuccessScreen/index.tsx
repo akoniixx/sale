@@ -4,6 +4,8 @@ import {
   Image,
   StyleSheet,
   ScrollView,
+  Dimensions,
+  SafeAreaView,
 } from 'react-native';
 import React from 'react';
 import { StackScreenProps } from '@react-navigation/stack';
@@ -50,7 +52,10 @@ export default function OrderSuccessScreen({
     },
   ];
   return (
-    <>
+    <SafeAreaView
+      style={{
+        flex: 1,
+      }}>
       <Header
         style={{
           backgroundColor: colors.primary,
@@ -73,101 +78,96 @@ export default function OrderSuccessScreen({
         style={{
           backgroundColor: colors.primary,
           paddingTop: 0,
+          flex: 1,
         }}>
-        <ScrollView style={styles().card} showsVerticalScrollIndicator={false}>
+        <ScrollView
+          style={styles().card}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{
+            flexGrow: 1,
+          }}>
           <View
             style={{
-              borderStyle: 'dotted',
-              justifyContent: 'center',
-              alignItems: 'center',
-              paddingBottom: 24,
-            }}>
-            <Text color="primary" bold fontFamily="NotoSans" fontSize={20}>
-              บริษัท เอี่ยวฮั่วล้ง จำกัด
-            </Text>
-            <Image
-              source={images.timer}
-              style={{
-                width: 72,
-                height: 72,
-              }}
-            />
-          </View>
-          <DashedLine dashColor={colors.border1} dashGap={6} />
-          <View
-            style={{
-              paddingVertical: 16,
+              flex: 1,
+              justifyContent: 'space-between',
             }}>
             <View
               style={{
-                flexDirection: 'row',
+                justifyContent: 'center',
+                alignItems: 'center',
+                paddingBottom: 24,
               }}>
+              <Text color="primary" bold fontFamily="NotoSans" fontSize={20}>
+                บริษัท เอี่ยวฮั่วล้ง จำกัด
+              </Text>
               <Image
-                source={icons.invoice}
+                source={images.timer}
                 style={{
-                  width: 24,
-                  height: 24,
-                  marginRight: 8,
+                  width: 72,
+                  height: 72,
+                  marginTop: 16,
                 }}
               />
-              <Text bold fontFamily="NotoSans">
-                SP020110024
-              </Text>
             </View>
+            <DashedLine dashColor={colors.border1} dashGap={6} />
             <View
               style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                marginTop: 16,
+                paddingVertical: 16,
               }}>
-              <Text fontFamily="NotoSans" semiBold color="text2">
-                สินค้า
-              </Text>
-              <Text fontFamily="NotoSans" semiBold color="text2">
-                ราคารวม
-              </Text>
-            </View>
-            {mockData.map((el, idx) => {
-              return (
-                <View
-                  key={idx}
+              <View
+                style={{
+                  flexDirection: 'row',
+                }}>
+                <Image
+                  source={icons.invoice}
                   style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginTop: 16,
-                  }}>
-                  <Text semiBold color="text2" fontSize={14}>
-                    {el.productName} {`${el.quantity}x`} {`(${el.unit})`}
-                  </Text>
-                  <Text
-                    fontFamily="NotoSans"
-                    semiBold
-                    color="text2"
-                    fontSize={14}>
-                    {`฿${numberWithCommas(el.totalPrice, true)}`}
-                  </Text>
-                </View>
-              );
-            })}
-          </View>
-          <DashedLine dashColor={colors.border1} dashGap={6} />
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              height: 60,
-              alignItems: 'center',
-            }}>
-            <Text fontFamily="NotoSans" semiBold color="text2">
-              ราคารวม
-            </Text>
-            <Text fontSize={24} fontFamily="NotoSans" bold color="primary">
-              {`฿${numberWithCommas(totalPrice, true)}`}
-            </Text>
-          </View>
-          <DashedLine dashColor={colors.border1} dashGap={6} />
-          <View>
+                    width: 24,
+                    height: 24,
+                    marginRight: 8,
+                  }}
+                />
+                <Text bold fontFamily="NotoSans">
+                  SP020110024
+                </Text>
+              </View>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  marginTop: 16,
+                }}>
+                <Text fontFamily="NotoSans" semiBold color="text2">
+                  สินค้า
+                </Text>
+                <Text fontFamily="NotoSans" semiBold color="text2">
+                  ราคารวม
+                </Text>
+              </View>
+              {mockData.map((el, idx) => {
+                return (
+                  <View
+                    key={idx}
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      marginTop: 16,
+                    }}>
+                    <Text semiBold color="text2" fontSize={14}>
+                      {el.productName} {`${el.quantity}x`} {`(${el.unit})`}
+                    </Text>
+                    <Text
+                      fontFamily="NotoSans"
+                      semiBold
+                      color="text2"
+                      fontSize={14}>
+                      {`฿${numberWithCommas(el.totalPrice, true)}`}
+                    </Text>
+                  </View>
+                );
+              })}
+            </View>
+            <DashedLine dashColor={colors.border1} dashGap={6} />
             <View
               style={{
                 flexDirection: 'row',
@@ -176,91 +176,103 @@ export default function OrderSuccessScreen({
                 alignItems: 'center',
               }}>
               <Text fontFamily="NotoSans" semiBold color="text2">
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    height: 60,
-                    alignItems: 'center',
-                  }}>
-                  <Text fontFamily="NotoSans" bold fontSize={18}>
-                    ของแถมที่ได้รับ
-                  </Text>
-                </View>
+                ราคารวม
               </Text>
-              <Text fontSize={14} fontFamily="NotoSans" bold color="text3">
-                {`ทั้งหมด ${mockGiftData.length} รายการ`}
+              <Text fontSize={24} fontFamily="NotoSans" bold color="primary">
+                {`฿${numberWithCommas(totalPrice, true)}`}
               </Text>
             </View>
-            {mockGiftData.length > 0 ? (
-              <>
-                {mockGiftData.map((el, idx) => {
-                  return (
-                    <View
-                      key={idx}
-                      style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                      }}>
-                      <Image
-                        source={images.emptyProduct}
-                        style={{
-                          width: 56,
-                          height: 56,
-                        }}
-                      />
-                      <View
-                        style={{
-                          marginLeft: 8,
-                        }}>
-                        <Text fontSize={14} color="text3">
-                          {el.productName}
-                        </Text>
-                        <Text fontSize={14}>
-                          {el.qauntity} {el.unit}
-                        </Text>
-                      </View>
-                    </View>
-                  );
-                })}
-              </>
-            ) : (
+            <DashedLine dashColor={colors.border1} dashGap={6} />
+            <View>
               <View
                 style={{
-                  justifyContent: 'center',
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  height: 60,
                   alignItems: 'center',
                 }}>
-                <Image
-                  source={images.emptyGift}
-                  style={{
-                    width: 140,
-                    height: 140,
-                  }}
-                />
-                <Text color="text3" center fontFamily="NotoSans">
-                  ไม่มีของแถมที่ได้รับ
+                <Text fontFamily="NotoSans" semiBold color="text2">
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      height: 60,
+                      alignItems: 'center',
+                    }}>
+                    <Text fontFamily="NotoSans" bold fontSize={18}>
+                      ของแถมที่ได้รับ
+                    </Text>
+                  </View>
+                </Text>
+                <Text fontSize={14} fontFamily="NotoSans" bold color="text3">
+                  {`ทั้งหมด ${mockGiftData.length} รายการ`}
                 </Text>
               </View>
-            )}
+              {mockGiftData.length > 0 ? (
+                <>
+                  {mockGiftData.map((el, idx) => {
+                    return (
+                      <View
+                        key={idx}
+                        style={{
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                        }}>
+                        <Image
+                          source={images.emptyProduct}
+                          style={{
+                            width: 56,
+                            height: 56,
+                          }}
+                        />
+                        <View
+                          style={{
+                            marginLeft: 8,
+                          }}>
+                          <Text fontSize={14} color="text3">
+                            {el.productName}
+                          </Text>
+                          <Text fontSize={14}>
+                            {el.qauntity} {el.unit}
+                          </Text>
+                        </View>
+                      </View>
+                    );
+                  })}
+                </>
+              ) : (
+                <View
+                  style={{
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}>
+                  <Image
+                    source={images.emptyGift}
+                    style={{
+                      width: 140,
+                      height: 140,
+                    }}
+                  />
+                  <Text color="text3" center fontFamily="NotoSans">
+                    ไม่มีของแถมที่ได้รับ
+                  </Text>
+                </View>
+              )}
+            </View>
+            <View
+              style={{
+                justifyContent: 'center',
+                alignItems: 'center',
+                marginTop: 16,
+              }}>
+              <TouchableOpacity style={{ height: 40 }}>
+                <Text color="primary" fontSize={14}>
+                  ดูรายละเอียดคำสั่งซื้อนี้
+                </Text>
+              </TouchableOpacity>
+              <Button title="ดูคำสั่งซื้อทั้งหมด" />
+            </View>
           </View>
-          <View
-            style={{
-              justifyContent: 'center',
-              alignItems: 'center',
-              marginTop: 16,
-            }}>
-            <TouchableOpacity style={{ height: 40 }}>
-              <Text color="primary" fontSize={14}>
-                ดูรายละเอียดคำสั่งซื้อนี้
-              </Text>
-            </TouchableOpacity>
-            <Button title="ดูคำสั่งซื้อทั้งหมด" />
-          </View>
-          <View
-            style={{
-              height: 32,
-            }}
-          />
         </ScrollView>
         <Image
           style={{
@@ -270,7 +282,7 @@ export default function OrderSuccessScreen({
           source={images.bottomSlip}
         />
       </Content>
-    </>
+    </SafeAreaView>
   );
 }
 const styles = () => {
@@ -281,6 +293,7 @@ const styles = () => {
       borderTopRightRadius: 16,
       paddingHorizontal: 16,
       paddingVertical: 16,
+      flex: 1,
     },
   });
 };

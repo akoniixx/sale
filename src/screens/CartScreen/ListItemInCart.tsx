@@ -79,6 +79,7 @@ export default function ListItemInCart() {
       item => item?.productId.toString() !== id.toString(),
     );
     setCartList(newCartList);
+    setVisibleDel(false);
   };
   const itemsDropdown = useMemo(() => {
     return cartList.map((el, idx) => {

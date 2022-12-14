@@ -19,10 +19,10 @@ export default function HomeScreen({ navigation }: Props): JSX.Element {
   } = useAuth();
 
   useEffect(() => {
-    if (!state.user) {
+    if (!state?.user) {
       getUser();
     }
-  }, [state.user, getUser]);
+  }, [state?.user, getUser]);
 
   const name = state.user?.firstname || '';
   const roleObj = {
@@ -64,7 +64,7 @@ export default function HomeScreen({ navigation }: Props): JSX.Element {
         </ImageBackground>
         <Body navigation={navigation} />
       </Content>
-      <LoadingSpinner visible={state.user === null} />
+      <LoadingSpinner visible={state?.user === null} />
     </Container>
   );
 }

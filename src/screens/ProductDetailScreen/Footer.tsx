@@ -1,4 +1,4 @@
-import { View, StyleSheet, Image, ImageSourcePropType } from 'react-native';
+import { View, StyleSheet, Image } from 'react-native';
 import React from 'react';
 import Counter from '../../components/Counter/Counter';
 import { colors } from '../../assets/colors/colors';
@@ -24,7 +24,6 @@ export default function Footer({
 }: Props): JSX.Element {
   const { t } = useLocalization();
   const { cartList, setCartList } = useCart();
-  console.log('productItem', productItem);
   const currentProduct = cartList?.find(
     item => item?.productId.toString() === id,
   );
@@ -39,7 +38,12 @@ export default function Footer({
     } else {
       setCartList(prev => [
         ...prev,
-        { ...productItem, productId: id, amount: Number(text) },
+        {
+          ...productItem,
+          productId: id,
+          amount: Number(text),
+          order: prev.length + 1,
+        },
       ]);
     }
   };
@@ -51,11 +55,12 @@ export default function Footer({
       const newCartList = [...cartList];
 
       newCartList[findIndex].amount += 5;
+
       setCartList(newCartList);
     } else {
       setCartList(prev => [
         ...prev,
-        { ...productItem, productId: id, amount: 5 },
+        { ...productItem, productId: id, amount: 5, order: prev.length + 1 },
       ]);
     }
     setIsAddCart(true);
@@ -85,11 +90,12 @@ export default function Footer({
     if (findIndex !== -1) {
       const newCartList = [...cartList];
       newCartList[findIndex].amount += 5;
+      newCartList[findIndex].order = newCartList.length + 1;
       setCartList(newCartList);
     } else {
       setCartList(prev => [
         ...prev,
-        { ...productItem, productId: id, amount: 5 },
+        { ...productItem, productId: id, amount: 5, order: prev?.length + 1 },
       ]);
     }
     setIsAddCart(true);
@@ -145,6 +151,14 @@ const styles = () => {
       justifyContent: 'space-between',
       alignItems: 'center',
       backgroundColor: colors.white,
+      shadowColor: '#000',
+      shadowOffset: {
+        width: 0,
+        height: -4,
+      },
+      shadowOpacity: 0.06,
+      shadowRadius: 1.62,
+      elevation: 14,
     },
   });
 };

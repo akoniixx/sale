@@ -1,4 +1,10 @@
-import { View, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  ViewStyle,
+} from 'react-native';
 import React from 'react';
 import Text from '../Text/Text';
 import { useNavigation } from '@react-navigation/native';
@@ -9,15 +15,30 @@ interface Props {
   title?: string;
   componentLeft?: React.ReactNode;
   componentRight?: React.ReactNode;
+  style?: ViewStyle;
+  titleColor?:
+    | 'primary'
+    | 'secondary'
+    | 'white'
+    | 'text1'
+    | 'text2'
+    | 'text3'
+    | 'current'
+    | 'error'
+    | 'specialRequest'
+    | 'waiting'
+    | 'border2';
 }
 export default function Header({
   title,
   componentLeft,
   componentRight,
+  titleColor = 'text1',
+  style,
 }: Props) {
   const navigation = useNavigation();
   return (
-    <View style={styled.container}>
+    <View style={[styled.container, style]}>
       {componentLeft ? (
         componentLeft
       ) : (
@@ -31,7 +52,7 @@ export default function Header({
           />
         </TouchableOpacity>
       )}
-      <Text fontFamily="NotoSans" bold fontSize={20}>
+      <Text fontFamily="NotoSans" bold fontSize={20} color={titleColor}>
         {title}
       </Text>
       {componentRight ? (

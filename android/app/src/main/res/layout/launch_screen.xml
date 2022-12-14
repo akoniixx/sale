@@ -4,7 +4,7 @@
     android:paddingHorizontal="60dp"
     android:background="@color/primary_white"
     android:layout_height="match_parent">
-    <ImageView android:layout_width="500px" android:layout_height="500px" android:src="@drawable/launch_screen"
+    <ImageView android:layout_width="650px" android:layout_height="650px" android:src="@drawable/launch_screen"
     android:layout_centerInParent="true"
     android:scaleType="centerCrop"
       />

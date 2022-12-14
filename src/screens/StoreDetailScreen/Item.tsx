@@ -15,6 +15,7 @@ import icons from '../../assets/icons';
 import { useCart } from '../../contexts/CartContext';
 import Counter from '../../components/Counter/Counter';
 import { ProductType } from '../../entities/productType';
+import images from '../../assets/images';
 
 interface Props extends ProductType {
   name?: string;
@@ -122,17 +123,17 @@ export default function Item({
             style={{
               height: 100,
 
-              backgroundColor: colors.background1,
-              borderWidth: 1,
-              borderColor: colors.border1,
               justifyContent: 'center',
               alignItems: 'center',
-              borderRadius: 10,
               marginBottom: 8,
             }}>
-            <Text fontFamily="NotoSans" color="text3" bold>
-              no image
-            </Text>
+            <Image
+              source={images.emptyProduct}
+              style={{
+                height: 90,
+                width: 90,
+              }}
+            />
           </View>
         )}
         <View
@@ -214,6 +215,7 @@ export default function Item({
                     unitPrice,
                     amount: 5,
                     productImage,
+                    order: prev.length + 1,
                   },
                 ];
               });

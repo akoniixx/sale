@@ -1,16 +1,15 @@
-import { TextInput, TextInputProps, ViewStyle, StyleSheet } from 'react-native';
+import { TextInput, TextInputProps, StyleSheet } from 'react-native';
 import React from 'react';
 import { colors } from '../../assets/colors/colors';
 
 interface InputStyledProps {
   isError?: boolean;
 }
-interface Props extends TextInputProps, InputStyledProps {
-  style?: ViewStyle;
-}
+interface Props extends TextInputProps, InputStyledProps {}
 const InputText = ({ style, ...props }: Props) => {
   return (
     <TextInput
+      placeholderTextColor={colors.text3}
       {...props}
       style={[
         styles({

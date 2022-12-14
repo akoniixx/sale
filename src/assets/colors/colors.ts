@@ -7,6 +7,7 @@ export const colors = {
   text3: '#8F9EBC',
   white: '#FFFFFF',
   border1: '#E1E7F6',
+  border2: '#c6c6c6',
   error: '#FF5D5D',
   current: '#3AAE49',
   success: '#00C48C',

@@ -8,7 +8,7 @@ const LoadingNavigator: React.FC<any> = ({ navigation }) => {
       const getData = async () => {
         try {
           const value = await AsyncStorage.getItem('token');
-          console.log('token for test api', value);
+          console.log('tokenForTest', value);
 
           if (!!value) {
             navigation.push('Main');

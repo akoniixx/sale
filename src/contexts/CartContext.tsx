@@ -6,6 +6,7 @@ interface Props {
 }
 export interface newProductType extends ProductType {
   amount: number;
+  order: number;
 }
 interface ContextCart {
   cartList: newProductType[];

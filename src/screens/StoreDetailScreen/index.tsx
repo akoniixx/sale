@@ -1,5 +1,5 @@
 import { View } from 'react-native';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StackScreenProps } from '@react-navigation/stack/lib/typescript/src/types';
 import Container from '../../components/Container/Container';
 import Header from '../../components/Header/Header';
@@ -24,6 +24,7 @@ const StoreDetailScreen = ({
   );
   const [debounceSearchValue, loading] = useDebounce(searchValue, 500);
   const [loadingApi, setLoadingApi] = React.useState<boolean>(false);
+
   return (
     <Container>
       <Header

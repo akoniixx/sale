@@ -4,6 +4,7 @@ import Text from '../../components/Text/Text';
 import images from '../../assets/images';
 import { useLocalization } from '../../contexts/LocalizationContext';
 import { StackNavigationHelpers } from '@react-navigation/stack/lib/typescript/src/types';
+import { useAsyncStorage } from '@react-native-async-storage/async-storage';
 
 interface Props {
   data: {
@@ -11,6 +12,7 @@ interface Props {
     name: string;
     customerNo: string;
     moreThanOneBrand: boolean;
+    customerCompanyId: string;
     productBrand: {
       product_brand_id: string;
       product_brand_name: string;
@@ -25,6 +27,7 @@ export default function ListSearchResult({
   navigation,
 }: Props): JSX.Element {
   const { t } = useLocalization();
+  const { setItem } = useAsyncStorage('customerCompanyId');
   return (
     <FlatList
       data={data}
@@ -53,6 +56,7 @@ export default function ListSearchResult({
         return (
           <TouchableOpacity
             onPress={() => {
+              setItem(item.customerCompanyId);
               if (item.moreThanOneBrand) {
                 navigation.navigate('SelectBrandBeforeDetailScreen', {
                   id: item.id,
@@ -63,6 +67,7 @@ export default function ListSearchResult({
                 navigation.navigate('StoreDetailScreen', {
                   id: item.id,
                   name: item.name,
+
                   productBrand:
                     item.productBrand.length > 0 && item.productBrand[0],
                 });

@@ -53,6 +53,7 @@ export default function CartScreen({
             marginVertical: 8,
           }}>
           <Step
+            onPress={step => setCurrentStep(step)}
             currentStep={currentStep}
             labelList={['รายการคำสั่งซื้อ', 'สรุปคำสั่งซื้อ', 'สั่งซื้อสำเร็จ']}
           />

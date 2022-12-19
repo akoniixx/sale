@@ -30,9 +30,11 @@ export type MainStackParamList = {
       product_brand_name: string;
       product_brand_logo: string;
     }[];
+    customerCompanyId: string;
   };
   ProductDetailScreen: {
     id: string;
+    customerCompanyId: string;
   };
   CartScreen: undefined;
   OrderSuccessScreen: {

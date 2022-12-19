@@ -1,12 +1,11 @@
 import {
   Dimensions,
   Image,
-  Keyboard,
   KeyboardAvoidingView,
   Platform,
   View,
 } from 'react-native';
-import React, { useEffect } from 'react';
+import React from 'react';
 import Text from '../../components/Text/Text';
 import Container from '../../components/Container/Container';
 import Content from '../../components/Content/Content';
@@ -18,8 +17,6 @@ import { SubmitButton } from '../../components/Form/SubmitButton';
 import { useLocalization } from '../../contexts/LocalizationContext';
 import { StackNavigationHelpers } from '@react-navigation/stack/lib/typescript/src/types';
 import { AuthServices } from '../../services/AuthServices';
-import { useFocusEffect } from '@react-navigation/native';
-import SplashScreen from 'react-native-splash-screen';
 
 interface Props {
   navigation: StackNavigationHelpers;
@@ -50,25 +47,25 @@ export default function LoginScreen({ navigation }: Props): JSX.Element {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <Container>
-        <Image
-          source={images.BGOtpScreen}
-          style={{
-            width: '100%',
-            height: Dimensions.get('screen').height * 0.6,
+    <Container>
+      <Image
+        source={images.BGOtpScreen}
+        style={{
+          width: '100%',
+          height: Dimensions.get('screen').height * 0.6,
 
-            position: 'absolute',
-          }}
-        />
-        <Form
-          schema={schema}
-          style={{}}
-          defaultValues={{
-            tel: '',
-          }}>
+          position: 'absolute',
+        }}
+      />
+      <Form
+        schema={schema}
+        style={{}}
+        defaultValues={{
+          tel: '',
+        }}>
+        <KeyboardAvoidingView
+          style={{ flex: 1, width: '100%' }}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
           <Content
             style={{
               flex: 1,
@@ -94,13 +91,14 @@ export default function LoginScreen({ navigation }: Props): JSX.Element {
             onSubmit={onSubmit}
             radius={0}
             style={{
+              width: '100%',
               height: Platform.OS === 'ios' ? 52 : 56,
               paddingVertical: 16,
             }}
             title="ขอรหัส OTP"
           />
-        </Form>
-      </Container>
-    </KeyboardAvoidingView>
+        </KeyboardAvoidingView>
+      </Form>
+    </Container>
   );
 }

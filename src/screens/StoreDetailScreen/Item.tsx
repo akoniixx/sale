@@ -12,10 +12,13 @@ import { useLocalization } from '../../contexts/LocalizationContext';
 import { getNewPath, numberWithCommas } from '../../utils/functions';
 import Button from '../../components/Button/Button';
 import icons from '../../assets/icons';
-import { useCart } from '../../contexts/CartContext';
+import { newProductType, useCart } from '../../contexts/CartContext';
 import Counter from '../../components/Counter/Counter';
 import { ProductType } from '../../entities/productType';
 import images from '../../assets/images';
+import { cartServices } from '../../services/CartServices';
+import { useAuth } from '../../contexts/AuthContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface Props extends ProductType {
   name?: string;
@@ -40,9 +43,33 @@ export default function Item({
   ...props
 }: Props): JSX.Element {
   const isPromo = false;
+  const {
+    state: { user },
+  } = useAuth();
 
   const { t } = useLocalization();
   const { setCartList, cartList } = useCart();
+  const postCartItem = async (cl: newProductType[]) => {
+    try {
+      const orderProducts = cl.map(item => {
+        return {
+          productId: +item.productId,
+          quantity: item.amount,
+          shipmentOrder: item.order,
+        };
+      });
+      const customerCompanyId = await AsyncStorage.getItem('customerCompanyId');
+      const payload = {
+        company: user?.company || '',
+        userStaffId: user?.userStaffId || '',
+        orderProducts,
+        customerCompanyId: customerCompanyId || '',
+      };
+      const res = await cartServices.postCart(payload);
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   const isAlreadyInCart = cartList?.find(
     item => item?.productId.toString() === idItem.toString(),
@@ -56,7 +83,7 @@ export default function Item({
       setCartList(newCartList);
     }
   };
-  const onAddCartByIndex = (id: string | number) => {
+  const onAddCartByIndex = async (id: string | number) => {
     const findIndex = cartList?.findIndex(item => item?.productId === id);
 
     if (findIndex !== -1) {
@@ -64,6 +91,8 @@ export default function Item({
 
       newCartList[findIndex].amount += 5;
       setCartList(newCartList);
+
+      await postCartItem(newCartList);
     }
   };
   const onSubtractCartByIndex = (id: string | number) => {
@@ -203,22 +232,23 @@ export default function Item({
                 }}
               />
             }
-            onPress={() => {
+            onPress={async () => {
+              const newCartList = [
+                ...cartList,
+                {
+                  ...props,
+                  productId: idItem,
+                  productName,
+                  unitPrice,
+                  amount: 5,
+                  productImage,
+                  order: cartList.length + 1,
+                },
+              ];
               setIsAddCart(true);
-              setCartList((prev: any) => {
-                return [
-                  ...prev,
-                  {
-                    ...props,
-                    productId: idItem,
-                    productName,
-                    unitPrice,
-                    amount: 5,
-                    productImage,
-                    order: prev.length + 1,
-                  },
-                ];
-              });
+
+              setCartList(newCartList);
+              await postCartItem(newCartList);
               props.onPressCart && props.onPressCart();
             }}
             style={{

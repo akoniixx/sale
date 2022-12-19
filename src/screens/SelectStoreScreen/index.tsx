@@ -32,10 +32,12 @@ export default function SelectStoreScreen({ navigation }: Props): JSX.Element {
         customerId: string;
         customerName: string;
         customerNo: string;
+        customerCompanyId: string;
         productBrand: [];
       }[];
     }[]
   >([]);
+  console.log('listStore', JSON.stringify(listStore, null, 2));
 
   useEffect(() => {
     const getListStore = async () => {
@@ -60,9 +62,11 @@ export default function SelectStoreScreen({ navigation }: Props): JSX.Element {
   const data = useMemo(() => {
     const newFormat = listStore.map(el => {
       const c = el.customerCompany?.[0];
+
       return {
         name: c.customerName,
         id: c.customerId,
+        customerCompanyId: c.customerCompanyId,
         customerNo: c.customerNo,
         productBrand: c.productBrand,
         moreThanOneBrand: c.productBrand?.length > 1,

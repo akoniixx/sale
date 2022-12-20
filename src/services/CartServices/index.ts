@@ -14,13 +14,23 @@ interface CartItemType {
   specialRequestRemark?: string;
   userStaffId: string;
 }
+interface GetCartType {
+  userStaffId?: string;
+  customerCompanyId?: number;
+}
 const postCart = async (payload: CartItemType) => {
-  console.log('payload', JSON.stringify(payload, null, 2));
   return await request
     .post(`/cart/api/v1/cart`, payload)
     .then(res => res.data)
     .catch(err => console.log(JSON.stringify(err.response.data, null, 2)));
 };
+const getCartList = async ({ userStaffId, customerCompanyId }: GetCartType) => {
+  return await request
+    .get(`/cart/api/v1/cart/${userStaffId}/${customerCompanyId}`)
+    .then(res => res.data)
+    .catch(err => console.log(JSON.stringify(err.response.data, null, 2)));
+};
 export const cartServices = {
   postCart,
+  getCartList,
 };

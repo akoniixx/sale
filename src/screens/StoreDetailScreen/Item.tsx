@@ -48,28 +48,11 @@ export default function Item({
   } = useAuth();
 
   const { t } = useLocalization();
-  const { setCartList, cartList } = useCart();
-  const postCartItem = async (cl: newProductType[]) => {
-    try {
-      const orderProducts = cl.map(item => {
-        return {
-          productId: +item.productId,
-          quantity: item.amount,
-          shipmentOrder: item.order,
-        };
-      });
-      const customerCompanyId = await AsyncStorage.getItem('customerCompanyId');
-      const payload = {
-        company: user?.company || '',
-        userStaffId: user?.userStaffId || '',
-        orderProducts,
-        customerCompanyId: customerCompanyId || '',
-      };
-      const res = await cartServices.postCart(payload);
-    } catch (e) {
-      console.log(e);
-    }
-  };
+  const {
+    setCartList,
+    cartList,
+    cartApi: { postCartItem },
+  } = useCart();
 
   const isAlreadyInCart = cartList?.find(
     item => item?.productId.toString() === idItem.toString(),

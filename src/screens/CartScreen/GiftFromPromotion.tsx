@@ -5,11 +5,11 @@ import { useLocalization } from '../../contexts/LocalizationContext';
 import { useCart } from '../../contexts/CartContext';
 import { colors } from '../../assets/colors/colors';
 import { getNewPath } from '../../utils/functions';
+import images from '../../assets/images';
 
 export default function GiftFromPromotion(): JSX.Element {
   const { t } = useLocalization();
   const { cartList } = useCart();
-  console.log('cartList', JSON.stringify(cartList, null, 2));
   if (cartList.length < 1) return <></>;
   return (
     <View style={styles().container}>
@@ -36,14 +36,25 @@ export default function GiftFromPromotion(): JSX.Element {
                     backgroundColor: colors.white,
                     justifyContent: 'center',
                     alignItems: 'center',
+                    marginRight: 8,
                   }}>
-                  <Image
-                    source={{ uri: getNewPath(item.productImage) }}
-                    style={{
-                      width: 40,
-                      height: 40,
-                    }}
-                  />
+                  {item.productImage ? (
+                    <Image
+                      source={{ uri: getNewPath(item.productImage) }}
+                      style={{
+                        width: 40,
+                        height: 40,
+                      }}
+                    />
+                  ) : (
+                    <Image
+                      style={{
+                        width: 40,
+                        height: 40,
+                      }}
+                      source={images.emptyProduct}
+                    />
+                  )}
                 </View>
                 <View>
                   <Text fontSize={14} color="text3">

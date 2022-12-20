@@ -6,6 +6,7 @@ import { getNewPath, numberWithCommas } from '../../utils/functions';
 import { useLocalization } from '../../contexts/LocalizationContext';
 import dayjs from 'dayjs';
 import PromotionItem from './PromotionItem';
+import images from '../../assets/images';
 
 type Props = {
   packSize?: string;
@@ -71,9 +72,7 @@ export default function Body({
                 justifyContent: 'center',
                 alignItems: 'center',
               }}>
-              <Text bold fontFamily="NotoSans">
-                No Image
-              </Text>
+              <Image source={images.emptyProduct} />
             </View>
           )}
         </View>

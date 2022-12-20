@@ -11,13 +11,20 @@ import CartBadge from '../../components/CartBadge/CartBadge';
 import { MainStackParamList } from '../../navigations/MainNavigator';
 import { useDebounce } from '../../hook';
 import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
+import { useCart } from '../../contexts/CartContext';
 
 const StoreDetailScreen = ({
   navigation,
   route,
 }: StackScreenProps<MainStackParamList, 'StoreDetailScreen'>) => {
   const { name, productBrand } = route.params;
+  const {
+    cartApi: { getCartList },
+  } = useCart();
 
+  useEffect(() => {
+    getCartList();
+  }, []);
   const { t } = useLocalization();
   const [searchValue, setSearchValue] = React.useState<string | undefined>(
     undefined,

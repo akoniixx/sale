@@ -21,30 +21,36 @@ import ModalWarning from '../../components/Modal/ModalWarning';
 
 export default function ListItemInCart() {
   const { t } = useLocalization();
-  const { cartList, setCartList } = useCart();
-  const isPromotion = true;
+  const {
+    cartList,
+    setCartList,
+    cartApi: { postCartItem },
+  } = useCart();
+  const isPromotion = false;
   const [visibleDel, setVisibleDel] = React.useState(false);
   const [delId, setDelId] = React.useState<string | number>('');
-  const onChangeOrder = (value: any, id: string) => {
+  const onChangeOrder = async (value: any, id: string) => {
     const findIndex = cartList?.findIndex(item => item?.productId === id);
     const findOrder = cartList?.findIndex(item => +item?.order === +value);
     if (findOrder !== -1 && cartList.length > 1) {
       const newCartList = [...cartList];
       newCartList[findOrder].order = +newCartList[findIndex].order;
       newCartList[findIndex].order = +value;
-      return setCartList(newCartList);
+      setCartList(newCartList);
+      return await postCartItem(newCartList);
     }
 
     if (findIndex !== -1) {
       const newCartList = [...cartList];
 
       newCartList[findIndex].order = Number(value);
+      setCartList(newCartList);
 
-      return setCartList(newCartList);
+      return await postCartItem(newCartList);
     }
   };
 
-  const onIncrease = (id: string | number) => {
+  const onIncrease = async (id: string | number) => {
     const findIndex = cartList?.findIndex(
       item => item?.productId.toString() === id.toString(),
     );
@@ -52,9 +58,10 @@ export default function ListItemInCart() {
       const newCartList = [...cartList];
       newCartList[findIndex].amount += 5;
       setCartList(newCartList);
+      await postCartItem(newCartList);
     }
   };
-  const onDecrease = (id: string | number) => {
+  const onDecrease = async (id: string | number) => {
     const findIndex = cartList?.findIndex(
       item => item?.productId.toString() === id.toString(),
     );
@@ -62,9 +69,10 @@ export default function ListItemInCart() {
       const newCartList = [...cartList];
       newCartList[findIndex].amount -= 5;
       setCartList(newCartList);
+      await postCartItem(newCartList);
     }
   };
-  const onChangeText = (text: string, id: string) => {
+  const onChangeText = async (text: string, id: string) => {
     const findIndex = cartList?.findIndex(
       item => item?.productId.toString() === id.toString(),
     );
@@ -72,14 +80,17 @@ export default function ListItemInCart() {
       const newCartList = [...cartList];
       newCartList[findIndex].amount = Number(text);
       setCartList(newCartList);
+      await postCartItem(newCartList);
     }
   };
-  const onDelete = (id: string | number) => {
+  const onDelete = async (id: string | number) => {
     const newCartList = cartList?.filter(
       item => item?.productId.toString() !== id.toString(),
     );
+
     setCartList(newCartList);
     setVisibleDel(false);
+    await postCartItem(newCartList);
   };
   const itemsDropdown = useMemo(() => {
     return cartList.map((el, idx) => {
@@ -151,14 +162,14 @@ export default function ListItemInCart() {
                         <Text fontFamily="NotoSans" fontSize={14} color="text3">
                           {item.packSize
                             ? `${item.packSize} | ฿${numberWithCommas(
-                                +item.unitPrice,
+                                +item.marketPrice,
                               )}/${item.baseUOM}`
-                            : `฿${numberWithCommas(+item.unitPrice)}/${
+                            : `฿${numberWithCommas(+item.marketPrice)}/${
                                 item.baseUOM
                               }`}
                         </Text>
                         <Text fontSize={14} color="text2">
-                          {`฿${numberWithCommas(+item.unitPrice)}/${
+                          {`฿${numberWithCommas(+item.marketPrice)}/${
                             item.baseUOM
                           } x ${item.amount} `}
                         </Text>
@@ -231,12 +242,14 @@ export default function ListItemInCart() {
                               : 'none',
                           }}>
                           {`฿${numberWithCommas(
-                            +item.unitPrice * item.amount,
+                            +item.marketPrice * item.amount,
                           )}`}
                         </Text>
                       )}
                       <Text bold fontFamily="NotoSans">
-                        {`฿${numberWithCommas(+item.unitPrice * item.amount)}`}
+                        {`฿${numberWithCommas(
+                          +item.marketPrice * item.amount,
+                        )}`}
                       </Text>
                     </View>
                   </View>

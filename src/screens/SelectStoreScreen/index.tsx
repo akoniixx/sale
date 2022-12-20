@@ -37,7 +37,6 @@ export default function SelectStoreScreen({ navigation }: Props): JSX.Element {
       }[];
     }[]
   >([]);
-  console.log('listStore', JSON.stringify(listStore, null, 2));
 
   useEffect(() => {
     const getListStore = async () => {

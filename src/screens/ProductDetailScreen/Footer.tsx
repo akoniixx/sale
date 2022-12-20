@@ -23,11 +23,15 @@ export default function Footer({
   productItem,
 }: Props): JSX.Element {
   const { t } = useLocalization();
-  const { cartList, setCartList } = useCart();
+  const {
+    cartList,
+    setCartList,
+    cartApi: { postCartItem },
+  } = useCart();
   const currentProduct = cartList?.find(
     item => item?.productId.toString() === id,
   );
-  const onChangeText = (text: string, id: string) => {
+  const onChangeText = async (text: string, id: string) => {
     const findIndex = cartList?.findIndex(
       item => item?.productId.toString() === id.toString(),
     );
@@ -35,19 +39,22 @@ export default function Footer({
       const newCartList = [...cartList];
       newCartList[findIndex].amount = Number(text);
       setCartList(newCartList);
+      await postCartItem(newCartList);
     } else {
-      setCartList(prev => [
-        ...prev,
+      const newCartList = [
+        ...cartList,
         {
           ...productItem,
           productId: id,
           amount: Number(text),
-          order: prev.length + 1,
+          order: cartList.length + 1,
         },
-      ]);
+      ];
+      await postCartItem(newCartList);
+      setCartList(newCartList);
     }
   };
-  const onIncrease = () => {
+  const onIncrease = async () => {
     const findIndex = cartList?.findIndex(
       item => item?.productId.toString() === id,
     );
@@ -57,15 +64,23 @@ export default function Footer({
       newCartList[findIndex].amount += 5;
 
       setCartList(newCartList);
+      await postCartItem(newCartList);
     } else {
-      setCartList(prev => [
-        ...prev,
-        { ...productItem, productId: id, amount: 5, order: prev.length + 1 },
-      ]);
+      const newCartList = [
+        ...cartList,
+        {
+          ...productItem,
+          productId: id,
+          amount: 5,
+          order: cartList.length + 1,
+        },
+      ];
+      setCartList(newCartList);
+      await postCartItem(newCartList);
     }
     setIsAddCart(true);
   };
-  const onDecrease = () => {
+  const onDecrease = async () => {
     const findIndex = cartList?.findIndex(
       item => item?.productId.toString() === id,
     );
@@ -76,14 +91,16 @@ export default function Footer({
       if (amount > 5) {
         newCartList[findIndex].amount -= 5;
         setCartList(newCartList);
+        await postCartItem(newCartList);
       } else {
         newCartList.splice(findIndex, 1);
         setCartList(newCartList);
         setIsDelCart(true);
+        await postCartItem(newCartList);
       }
     }
   };
-  const onOrder = () => {
+  const onOrder = async () => {
     const findIndex = cartList?.findIndex(
       item => item?.productId.toString() === id,
     );
@@ -92,11 +109,19 @@ export default function Footer({
       newCartList[findIndex].amount += 5;
       newCartList[findIndex].order = newCartList.length + 1;
       setCartList(newCartList);
+      await postCartItem(newCartList);
     } else {
-      setCartList(prev => [
-        ...prev,
-        { ...productItem, productId: id, amount: 5, order: prev?.length + 1 },
-      ]);
+      const newCartList = [
+        ...cartList,
+        {
+          ...productItem,
+          productId: id,
+          amount: 5,
+          order: cartList?.length + 1,
+        },
+      ];
+      setCartList(newCartList);
+      await postCartItem(newCartList);
     }
     setIsAddCart(true);
     navigation.navigate('CartScreen');

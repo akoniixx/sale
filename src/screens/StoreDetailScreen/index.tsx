@@ -1,4 +1,4 @@
-import { View } from 'react-native';
+import { KeyboardAvoidingView, Platform, View } from 'react-native';
 import React, { useEffect } from 'react';
 import { StackScreenProps } from '@react-navigation/stack/lib/typescript/src/types';
 import Container from '../../components/Container/Container';
@@ -38,31 +38,34 @@ const StoreDetailScreen = ({
         title={t('screens.StoreDetailScreen.title')}
         componentRight={<CartBadge navigation={navigation} />}
       />
-      <Content
-        style={{
-          padding: 0,
-          flex: 1,
-          width: '100%',
-        }}>
-        <View
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+        <Content
           style={{
-            paddingHorizontal: 16,
+            padding: 0,
+            flex: 1,
+            width: '100%',
           }}>
-          <SearchInput
-            value={searchValue}
-            onChange={v => {
-              setSearchValue(v);
-            }}
+          <View
+            style={{
+              paddingHorizontal: 16,
+            }}>
+            <SearchInput
+              value={searchValue}
+              onChange={v => {
+                setSearchValue(v);
+              }}
+            />
+          </View>
+          <ListItem
+            nameDealer={name}
+            navigation={navigation}
+            debounceSearchValue={debounceSearchValue}
+            productBrand={productBrand}
+            setLoadingApi={setLoadingApi}
           />
-        </View>
-        <ListItem
-          nameDealer={name}
-          navigation={navigation}
-          debounceSearchValue={debounceSearchValue}
-          productBrand={productBrand}
-          setLoadingApi={setLoadingApi}
-        />
-      </Content>
+        </Content>
+      </KeyboardAvoidingView>
       <LoadingSpinner visible={loading || loadingApi} />
     </Container>
   );

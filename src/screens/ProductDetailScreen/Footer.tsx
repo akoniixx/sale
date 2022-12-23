@@ -37,9 +37,17 @@ export default function Footer({
     );
     if (findIndex !== -1) {
       const newCartList = [...cartList];
-      newCartList[findIndex].amount = Number(text);
-      setCartList(newCartList);
-      await postCartItem(newCartList);
+      if (+text < 1) {
+        newCartList.splice(findIndex, 1);
+        setCartList(newCartList);
+        await postCartItem(newCartList);
+        setIsDelCart(true);
+        return;
+      } else {
+        newCartList[findIndex].amount = Number(text);
+        setCartList(newCartList);
+        await postCartItem(newCartList);
+      }
     } else {
       const newCartList = [
         ...cartList,

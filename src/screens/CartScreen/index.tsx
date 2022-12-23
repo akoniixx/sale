@@ -17,25 +17,97 @@ import icons from '../../assets/icons';
 import Text from '../../components/Text/Text';
 import { StackScreenProps } from '@react-navigation/stack';
 import { MainStackParamList } from '../../navigations/MainNavigator';
+import { useFocusEffect } from '@react-navigation/native';
+import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
+import { orderServices } from '../../services/OrderServices';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
+export interface TypeDataStepTwo {
+  paymentMethod: string;
+  specialRequestRemark?: string | null;
+  saleCoRemark?: string | null;
+}
 export default function CartScreen({
   navigation,
 }: StackScreenProps<MainStackParamList, 'CartScreen'>): JSX.Element {
   const { t } = useLocalization();
   const [currentStep, setCurrentStep] = React.useState(0);
   const [visible, setVisible] = React.useState(false);
-  const { cartList } = useCart();
+  const [visibleConfirm, setVisibleConfirm] = React.useState(false);
+  const {
+    cartList,
+    setCartList,
+    cartApi: { getCartList },
+  } = useCart();
+  const [loading, setLoading] = React.useState(false);
+  const [dataStepTwo, setDataStepTwo] = React.useState<TypeDataStepTwo>({
+    paymentMethod: '',
+    specialRequestRemark: null,
+    saleCoRemark: null,
+  });
+  const onCreateOrder = async () => {
+    try {
+      const customerNo = await AsyncStorage.getItem('customerNo');
+      const customerName = await AsyncStorage.getItem('customerName');
+      setLoading(true);
+      const orderProducts = (cartList || []).map(item => {
+        return {
+          productId: +item.productId,
+          quantity: item.amount,
+          shipmentOrder: item.order,
+        };
+      });
+
+      const data = await getCartList();
+      console.log(data);
+
+      const payload: any = {
+        company: data.company,
+        customerCompanyId: data.customerCompanyId,
+        userStaffId: data.userStaffId,
+        orderProducts,
+        paymentMethod: dataStepTwo.paymentMethod,
+        customerNo: customerNo || '',
+        customerName: customerName || '',
+      };
+      if (dataStepTwo.specialRequestRemark) {
+        payload.specialRequestRemark = dataStepTwo.specialRequestRemark;
+      }
+      if (dataStepTwo.saleCoRemark) {
+        payload.saleCoRemark = dataStepTwo.saleCoRemark;
+      }
+      const result = await orderServices.createOrder(payload);
+      if (result) {
+        setCartList([]);
+        setVisibleConfirm(false);
+        navigation.navigate('OrderSuccessScreen', {
+          orderId: result.orderId,
+        });
+      }
+    } catch (e: any) {
+      console.log(JSON.stringify(e.response.data, null, 2));
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const renderStep = useMemo(() => {
     switch (currentStep) {
       case 1: {
-        return <StepTwo />;
+        return (
+          <StepTwo setDataStepTwo={setDataStepTwo} dataStepTwo={dataStepTwo} />
+        );
       }
       default: {
         return <StepOne />;
       }
     }
-  }, [currentStep]);
+  }, [currentStep, dataStepTwo]);
+  useFocusEffect(
+    React.useCallback(() => {
+      getCartList();
+    }, [getCartList]),
+  );
 
   return (
     <Container>
@@ -53,7 +125,9 @@ export default function CartScreen({
             marginVertical: 8,
           }}>
           <Step
-            onPress={step => setCurrentStep(step)}
+            onPress={step => {
+              setCurrentStep(step === 2 ? currentStep : step);
+            }}
             currentStep={currentStep}
             labelList={['รายการคำสั่งซื้อ', 'สรุปคำสั่งซื้อ', 'สั่งซื้อสำเร็จ']}
           />
@@ -75,9 +149,7 @@ export default function CartScreen({
         {currentStep === 1 && (
           <TouchableOpacity
             onPress={() => {
-              navigation.navigate('OrderSuccessScreen', {
-                orderId: 'SP020110024',
-              });
+              setVisibleConfirm(true);
             }}
             style={{
               width: '100%',
@@ -125,6 +197,7 @@ export default function CartScreen({
           </TouchableOpacity>
         )}
       </FooterShadow>
+      <LoadingSpinner visible={loading} />
       <ModalWarning
         visible={visible}
         onlyCancel
@@ -132,6 +205,15 @@ export default function CartScreen({
         textCancel={'ตกลง'}
         title="ไม่สามารถสั่งสินค้าได้"
         desc="คุณต้องเพิ่มสินค้าที่ต้องการสั่งซื้อในตระกร้านี้"
+      />
+      <ModalWarning
+        visible={visibleConfirm}
+        title="ยืนยันคำสั่งซื้อ"
+        desc="ต้องการยืนยันคำสั่งซื้อใช่หรือไม่?"
+        onConfirm={async () => {
+          await onCreateOrder();
+        }}
+        onRequestClose={() => setVisibleConfirm(false)}
       />
     </Container>
   );

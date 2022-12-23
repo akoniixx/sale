@@ -1,4 +1,4 @@
-import { ImageBackground, StyleSheet, View } from 'react-native';
+import { Image, ImageBackground, StyleSheet, View } from 'react-native';
 import React, { useEffect } from 'react';
 import Container from '../../components/Container/Container';
 import Content from '../../components/Content/Content';
@@ -25,9 +25,6 @@ export default function HomeScreen({ navigation }: Props): JSX.Element {
   }, [state?.user, getUser]);
 
   const name = state.user?.firstname || '';
-  const roleObj = {
-    SALE: 'Sale, Marketing executive',
-  };
 
   return (
     <Container>
@@ -52,13 +49,26 @@ export default function HomeScreen({ navigation }: Props): JSX.Element {
                 {`สวัสดี, ${name}`}
               </Text>
               <Text color="white" fontSize={14} fontFamily="NotoSans">
-                {roleObj[state.user?.role as keyof typeof roleObj]}
+                {state.user?.role}
               </Text>
             </View>
             <View style={styles.circle}>
-              <Text fontFamily="NotoSans" fontSize={24} color="primary">
-                {name.charAt(0)}
-              </Text>
+              {state.user?.profileImage ? (
+                <Image
+                  source={{
+                    uri: state.user?.profileImage,
+                  }}
+                  style={{
+                    width: 62,
+                    height: 62,
+                    borderRadius: 62 / 2,
+                  }}
+                />
+              ) : (
+                <Text fontFamily="NotoSans" fontSize={24} color="primary">
+                  {name.charAt(0)}
+                </Text>
+              )}
             </View>
           </View>
         </ImageBackground>

@@ -6,6 +6,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import Text from '../../components/Text/Text';
 import icons from '../../assets/icons';
 import { useLocalization } from '../../contexts/LocalizationContext';
+import DashedLine from 'react-native-dashed-line';
 
 interface Props {
   dateStart: Dayjs;
@@ -44,13 +45,7 @@ export default function PromotionItem({
         <Text color="white" semiBold>
           {`${index + 1}. ${title}`}
         </Text>
-        <View
-          style={{
-            paddingBottom: 8,
-            borderBottomColor: colors.border1,
-            borderBottomWidth: 1,
-            borderStyle: 'dashed',
-          }}>
+        <View style={{}}>
           {listPromotions.map((item, index) => {
             return (
               <Text color="white" key={index} fontSize={14}>
@@ -59,6 +54,13 @@ export default function PromotionItem({
             );
           })}
         </View>
+        <View
+          style={{
+            paddingVertical: 10,
+          }}>
+          <DashedLine dashColor={colors.border1} dashGap={6} />
+        </View>
+
         <Text color="white" fontSize={14}>
           {`•  ${t('screens.ProductDetailScreen.durationPromotion', {
             dateStart: dateStart.format('DD MMMM BBBB'),

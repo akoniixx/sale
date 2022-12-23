@@ -12,6 +12,7 @@ interface Props {
     key: string;
     amount?: number;
   }[];
+  disabled?: boolean;
   valueCheckbox?: string[];
   onPress?: (value: string) => void;
 }
@@ -19,6 +20,7 @@ export default function Checkbox({
   listCheckbox = [],
   valueCheckbox,
   onPress,
+  disabled = false,
 }: Props): JSX.Element {
   return (
     <>
@@ -27,6 +29,7 @@ export default function Checkbox({
         return (
           <View key={idx} style={styles({ isLast }).containerCheckbox}>
             <TouchableOpacity
+              disabled={disabled}
               onPress={() => onPress && onPress(item.value)}
               style={
                 styles({

@@ -4,6 +4,9 @@ import {
   Image,
   TouchableOpacity,
   Dimensions,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
 } from 'react-native';
 import React, { useMemo } from 'react';
 import Text from '../../components/Text/Text';
@@ -18,6 +21,7 @@ import Dropdown from '../../components/Dropdown/Dropdown';
 import PromotionSection from './PromotionSection';
 import GiftFromPromotion from './GiftFromPromotion';
 import ModalWarning from '../../components/Modal/ModalWarning';
+import ModalMessage from '../../components/Modal/ModalMessage';
 
 export default function ListItemInCart() {
   const { t } = useLocalization();
@@ -67,15 +71,28 @@ export default function ListItemInCart() {
     );
     if (findIndex !== -1) {
       const newCartList = [...cartList];
-      newCartList[findIndex].amount -= 5;
-      setCartList(newCartList);
-      await postCartItem(newCartList);
+      const amount = newCartList[findIndex].amount;
+      if (amount > 5) {
+        newCartList[findIndex].amount -= 5;
+        setCartList(newCartList);
+        await postCartItem(newCartList);
+      } else {
+        newCartList.splice(findIndex, 1);
+        setCartList(newCartList);
+
+        await postCartItem(newCartList);
+      }
     }
   };
   const onChangeText = async (text: string, id: string) => {
     const findIndex = cartList?.findIndex(
       item => item?.productId.toString() === id.toString(),
     );
+
+    if (+text === 0 && findIndex !== -1) {
+      setVisibleDel(true);
+      setDelId(id);
+    }
     if (findIndex !== -1) {
       const newCartList = [...cartList];
       newCartList[findIndex].amount = Number(text);
@@ -90,8 +107,11 @@ export default function ListItemInCart() {
 
     setCartList(newCartList);
     setVisibleDel(false);
+
     await postCartItem(newCartList);
+    setIsDelCart(true);
   };
+  const [isDelCart, setIsDelCart] = React.useState(false);
   const itemsDropdown = useMemo(() => {
     return cartList.map((el, idx) => {
       return {
@@ -103,194 +123,206 @@ export default function ListItemInCart() {
 
   return (
     <>
-      <View style={styles.container}>
-        <Text fontFamily="NotoSans" fontSize={18} bold>
-          {t('screens.CartScreen.listProduct', {
-            count: cartList.length,
-          })}
-          <Text fontSize={14} color="text3">
-            {`   ${t('screens.CartScreen.tooltip')}`}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+        <View style={styles.container}>
+          <Text fontFamily="NotoSans" fontSize={18} bold>
+            {t('screens.CartScreen.listProduct', {
+              count: cartList.length,
+            })}
+            <Text fontSize={14} color="text3">
+              {`   ${t('screens.CartScreen.tooltip')}`}
+            </Text>
           </Text>
-        </Text>
-        {cartList.length > 0 ? (
-          <View>
-            {cartList.map(item => {
-              return (
-                <View
-                  key={item.productId}
-                  style={{
-                    marginTop: 16,
-                  }}>
-                  <View style={styles.containerItem}>
-                    <View style={styles.containerLeft}>
-                      {item?.productImage ? (
+          {cartList.length > 0 ? (
+            <View>
+              {cartList.map(item => {
+                return (
+                  <View
+                    key={item.productId}
+                    style={{
+                      marginTop: 16,
+                    }}>
+                    <View style={styles.containerItem}>
+                      <View style={styles.containerLeft}>
+                        {item?.productImage ? (
+                          <Image
+                            source={{ uri: getNewPath(item?.productImage) }}
+                            style={{
+                              width: 62,
+                              height: 62,
+                              marginRight: 10,
+                            }}
+                          />
+                        ) : (
+                          <View
+                            style={{
+                              width: 62,
+                              height: 62,
+                              marginRight: 10,
+                            }}>
+                            <Image
+                              style={{
+                                width: 56,
+                                height: 56,
+                              }}
+                              source={images.emptyProduct}
+                            />
+                          </View>
+                        )}
+                        <View style={styles.item}>
+                          <Text
+                            fontFamily="NotoSans"
+                            fontSize={16}
+                            bold
+                            style={{
+                              width: Dimensions.get('window').width - 150,
+                            }}
+                            numberOfLines={1}>
+                            {item.productName}
+                          </Text>
+                          <Text
+                            fontFamily="NotoSans"
+                            fontSize={14}
+                            color="text3">
+                            {item.packSize
+                              ? `${item.packSize} | ฿${numberWithCommas(
+                                  +item.marketPrice,
+                                )}/${item.baseUOM}`
+                              : `฿${numberWithCommas(+item.marketPrice)}/${
+                                  item.baseUOM
+                                }`}
+                          </Text>
+                          <Text fontSize={14} color="text2">
+                            {`฿${numberWithCommas(+item.marketPrice)}/${
+                              item.baseUOM
+                            } x ${item.amount} `}
+                          </Text>
+                          <Dropdown
+                            style={{
+                              width: 70,
+                              height: 24,
+                              justifyContent: 'center',
+                              paddingLeft: 16,
+                              marginTop: 8,
+                              paddingVertical: 2,
+                            }}
+                            titleModal="เลือกลำดับ"
+                            data={itemsDropdown}
+                            value={item.order}
+                            onChangeValue={value =>
+                              onChangeOrder(value, item.productId)
+                            }
+                          />
+                        </View>
+                      </View>
+
+                      <TouchableOpacity
+                        style={styles.buttonDel}
+                        onPress={() => {
+                          setDelId(item.productId);
+                          setVisibleDel(true);
+                        }}>
                         <Image
-                          source={{ uri: getNewPath(item?.productImage) }}
+                          source={icons.bin}
                           style={{
-                            width: 62,
-                            height: 62,
-                            marginRight: 10,
+                            width: 15,
+                            height: 17,
+                            marginBottom: 2,
                           }}
                         />
-                      ) : (
+                      </TouchableOpacity>
+                    </View>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        marginTop: 10,
+                      }}>
+                      <View style={{ flexDirection: 'row' }}>
                         <View
                           style={{
                             width: 62,
-                            height: 62,
                             marginRight: 10,
-                          }}>
-                          <Image
-                            style={{
-                              width: 56,
-                              height: 56,
-                            }}
-                            source={images.emptyProduct}
-                          />
-                        </View>
-                      )}
-                      <View style={styles.item}>
-                        <Text
-                          fontFamily="NotoSans"
-                          fontSize={16}
-                          bold
-                          style={{
-                            width: Dimensions.get('window').width - 150,
                           }}
-                          numberOfLines={1}>
-                          {item.productName}
-                        </Text>
-                        <Text fontFamily="NotoSans" fontSize={14} color="text3">
-                          {item.packSize
-                            ? `${item.packSize} | ฿${numberWithCommas(
-                                +item.marketPrice,
-                              )}/${item.baseUOM}`
-                            : `฿${numberWithCommas(+item.marketPrice)}/${
-                                item.baseUOM
-                              }`}
-                        </Text>
-                        <Text fontSize={14} color="text2">
-                          {`฿${numberWithCommas(+item.marketPrice)}/${
-                            item.baseUOM
-                          } x ${item.amount} `}
-                        </Text>
-                        <Dropdown
-                          style={{
-                            width: 70,
-                            height: 24,
-                            justifyContent: 'center',
-                            paddingLeft: 16,
-                            marginTop: 8,
-                            paddingVertical: 2,
-                          }}
-                          titleModal="เลือกลำดับ"
-                          data={itemsDropdown}
-                          value={item.order}
-                          onChangeValue={value =>
-                            onChangeOrder(value, item.productId)
-                          }
+                        />
+                        <CounterSmall
+                          currentQuantity={+item.amount}
+                          onChangeText={onChangeText}
+                          onIncrease={onIncrease}
+                          onDecrease={onDecrease}
+                          id={item.productId}
                         />
                       </View>
-                    </View>
-
-                    <TouchableOpacity
-                      style={styles.buttonDel}
-                      onPress={() => {
-                        setDelId(item.productId);
-                        setVisibleDel(true);
-                      }}>
-                      <Image
-                        source={icons.bin}
-                        style={{
-                          width: 15,
-                          height: 17,
-                          marginBottom: 2,
-                        }}
-                      />
-                    </TouchableOpacity>
-                  </View>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      marginTop: 10,
-                    }}>
-                    <View style={{ flexDirection: 'row' }}>
-                      <View
-                        style={{
-                          width: 62,
-                          marginRight: 10,
-                        }}
-                      />
-                      <CounterSmall
-                        currentQuantity={item.amount}
-                        onChangeText={onChangeText}
-                        onIncrease={onIncrease}
-                        onDecrease={onDecrease}
-                        id={item.productId}
-                      />
-                    </View>
-                    <View>
-                      {isPromotion && (
-                        <Text
-                          fontFamily="NotoSans"
-                          color="text3"
-                          style={{
-                            textDecorationStyle: 'solid',
-                            textDecorationLine: isPromotion
-                              ? 'line-through'
-                              : 'none',
-                          }}>
+                      <View>
+                        {isPromotion && (
+                          <Text
+                            fontFamily="NotoSans"
+                            color="text3"
+                            style={{
+                              textDecorationStyle: 'solid',
+                              textDecorationLine: isPromotion
+                                ? 'line-through'
+                                : 'none',
+                            }}>
+                            {`฿${numberWithCommas(
+                              +item.marketPrice * item.amount,
+                            )}`}
+                          </Text>
+                        )}
+                        <Text bold fontFamily="NotoSans">
                           {`฿${numberWithCommas(
                             +item.marketPrice * item.amount,
                           )}`}
                         </Text>
-                      )}
-                      <Text bold fontFamily="NotoSans">
-                        {`฿${numberWithCommas(
-                          +item.marketPrice * item.amount,
-                        )}`}
-                      </Text>
+                      </View>
                     </View>
                   </View>
-                </View>
-              );
-            })}
-          </View>
-        ) : (
-          <View
-            style={{
-              minHeight: 200,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
-            <Image
-              source={images.emptyProduct}
+                );
+              })}
+            </View>
+          ) : (
+            <View
               style={{
-                width: 100,
-                height: 100,
-              }}
-            />
-            <Text
-              style={{
-                marginTop: 4,
-              }}
-              color="text3"
-              fontFamily="NotoSans">
-              {t('screens.CartScreen.emptyCart')}
-            </Text>
-          </View>
-        )}
-      </View>
-      <ModalWarning
-        visible={visibleDel}
-        title="ยืนยันการลบสินค้า"
-        desc="ต้องการยืนยันการลบสินค้าใช่หรือไม่ ?"
-        onConfirm={() => onDelete(delId)}
-      />
+                minHeight: 200,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
+              <Image
+                source={images.emptyProduct}
+                style={{
+                  width: 100,
+                  height: 100,
+                }}
+              />
+              <Text
+                style={{
+                  marginTop: 4,
+                }}
+                color="text3"
+                fontFamily="NotoSans">
+                {t('screens.CartScreen.emptyCart')}
+              </Text>
+            </View>
+          )}
+        </View>
+        <ModalWarning
+          visible={visibleDel}
+          title="ยืนยันการลบสินค้า"
+          desc="ต้องการยืนยันการลบสินค้าใช่หรือไม่ ?"
+          onConfirm={() => onDelete(delId)}
+          onRequestClose={() => setVisibleDel(false)}
+        />
 
-      <PromotionSection />
-      <GiftFromPromotion />
+        <PromotionSection />
+        <GiftFromPromotion />
+        <ModalMessage
+          visible={isDelCart}
+          message={t('modalMessage.deleteCart')}
+          onRequestClose={() => setIsDelCart(false)}
+        />
+      </KeyboardAvoidingView>
     </>
   );
 }

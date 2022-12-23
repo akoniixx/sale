@@ -14,7 +14,7 @@ export interface newProductType extends ProductType {
 interface ContextCart {
   cartList: newProductType[];
   cartApi: {
-    getCartList: () => Promise<void>;
+    getCartList: () => Promise<any>;
     postCartItem: (cl: newProductType[]) => Promise<void>;
   };
   setCartList: React.Dispatch<React.SetStateAction<newProductType[]>>;
@@ -41,7 +41,7 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
         customerCompanyId: JSON.parse(customerCompanyId || '') || '',
         userStaffId,
       });
-      const newFormat = result.data.order_products.map(
+      const newFormat = (result.data.orderProducts || []).map(
         (item: any): newProductType => {
           return {
             ...item,
@@ -57,6 +57,7 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
         },
       );
       setCartList(newFormat);
+      return result.data;
     };
     const postCartItem = async (cl: newProductType[]) => {
       try {

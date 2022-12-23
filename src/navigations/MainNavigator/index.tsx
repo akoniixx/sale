@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import MainTabBottomNavigator from './MainTabBottomNavigator';
 import SelectStoreScreen from '../../screens/SelectStoreScreen';
@@ -7,13 +7,18 @@ import ProductDetailScreen from '../../screens/ProductDetailScreen';
 import CartScreen from '../../screens/CartScreen';
 import SelectBrandBeforeDetailScreen from '../../screens/SelectBrandBeforeDetailScreen';
 import OrderSuccessScreen from '../../screens/OrderSuccessScreen';
+import LoginSuccessScreen from '../../screens/LoginSuccessScreen';
+import TermAndConditionScreen from '../../screens/TermAndConditionScreen';
+import { useFocusEffect } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { navigate } from '../RootNavigator';
 
 export type MainStackParamList = {
   MainScreen: undefined;
 
   SelectStoreScreen: undefined;
   StoreDetailScreen: {
-    id: string;
+    id?: string;
     name: string;
     productBrand?: {
       product_brand_id: string;
@@ -40,9 +45,22 @@ export type MainStackParamList = {
   OrderSuccessScreen: {
     orderId: string;
   };
+  TermAndConditionScreen: undefined;
+  LoginSuccessScreen: undefined;
 };
 const Stack = createStackNavigator<MainStackParamList>();
 export default function MainNavigator() {
+  useEffect(() => {
+    const getAlreadyAcceptTerm = async () => {
+      const alreadyAcceptTerm = await AsyncStorage.getItem('alreadyAcceptTerm');
+      if (alreadyAcceptTerm === null) {
+        navigate('TermAndConditionScreen');
+      } else {
+        navigate('MainScreen');
+      }
+    };
+    getAlreadyAcceptTerm();
+  }, []);
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Group>
@@ -68,6 +86,14 @@ export default function MainNavigator() {
         <Stack.Screen
           name="OrderSuccessScreen"
           component={OrderSuccessScreen}
+        />
+        <Stack.Screen
+          name="LoginSuccessScreen"
+          component={LoginSuccessScreen}
+        />
+        <Stack.Screen
+          name="TermAndConditionScreen"
+          component={TermAndConditionScreen}
         />
       </Stack.Group>
     </Stack.Navigator>

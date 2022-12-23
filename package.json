@@ -1,6 +1,6 @@
 {
   "name": "SellcodaSale",
-  "version": "2.2.2",
+  "version": "2.3.0",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
@@ -25,6 +25,7 @@
     "axios": "0.27.2",
     "dayjs": "^1.11.6",
     "i18n-js": "^4.1.1",
+    "lodash": "^4.17.21",
     "react": "18.1.0",
     "react-hook-form": "^7.39.1",
     "react-native": "0.70.4",

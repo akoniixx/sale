@@ -5,7 +5,7 @@ import {
   Platform,
   View,
 } from 'react-native';
-import React from 'react';
+import React, { useState } from 'react';
 import Text from '../../components/Text/Text';
 import Container from '../../components/Container/Container';
 import Content from '../../components/Content/Content';
@@ -23,7 +23,17 @@ interface Props {
 }
 export default function LoginScreen({ navigation }: Props): JSX.Element {
   const { t } = useLocalization();
-
+  const [errorCode, setErrorCode] = useState<number | undefined>();
+  const errorConvert = (code: number | undefined) => {
+    switch (code) {
+      case 400:
+        return t('screens.LoginScreen.telInput.notFound');
+      case 404:
+        return t('screens.LoginScreen.telInput.notFound');
+      case 500:
+        return t('screens.LoginScreen.telInput.somethingWrong');
+    }
+  };
   const schema = yup.object().shape({
     tel: yup
       .string()
@@ -41,8 +51,10 @@ export default function LoginScreen({ navigation }: Props): JSX.Element {
         refCode: data.result.refCode,
         tel: v.tel,
       });
-    } catch (e) {
-      console.log(e);
+    } catch (e: any) {
+      if (e?.response?.data?.statusCode) {
+        setErrorCode(e.response.data.statusCode);
+      }
     }
   };
 
@@ -84,7 +96,7 @@ export default function LoginScreen({ navigation }: Props): JSX.Element {
                 {t('screens.LoginScreen.telInput.label')}
               </Text>
             </View>
-            <InputTel name="tel" />
+            <InputTel name="tel" errorManual={errorConvert(errorCode)} />
           </Content>
 
           <SubmitButton

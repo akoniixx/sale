@@ -1,6 +1,9 @@
 
 ## [Version - 2]
 
+## Features [v2.3.0] - Release Date: 2022-12-23
+- Resolved Bug & Defects
+- Connect to API OrderManagement 
 ## Features [v2.2.2] - Release Date: 2022-12-19
 - API Add to Cart & Remove from Cart
 ##  Features [v2.2.1] - Release Date: 2022-12-04

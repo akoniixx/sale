@@ -1,14 +1,15 @@
 import {
-  View,
   StyleSheet,
   TextInput,
   Image,
-  KeyboardAvoidingView,
   Platform,
+  View,
+  Pressable,
 } from 'react-native';
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import Button from '../Button/Button';
 import icons from '../../assets/icons';
+import { debounce } from 'lodash';
 
 interface Props {
   currentQuantity: number;
@@ -26,14 +27,26 @@ export default function Counter({
   onIncrease,
   id,
 }: Props): JSX.Element {
+  const [quantity, setQuantity] = React.useState(0);
+
+  useEffect(() => {
+    if (currentQuantity !== 0) {
+      setQuantity(currentQuantity);
+    }
+  }, [currentQuantity]);
+  const debouncedSearch = useRef(
+    debounce(quantity => {
+      onChangeText?.(quantity, id);
+    }, 1000),
+  ).current;
+  const inputRef = useRef<TextInput>(null);
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles().container}>
+    <View style={styles().container}>
       <Button
         onPress={() => {
           if (onDecrease) {
             onDecrease(id);
+            setQuantity(prev => (prev < 1 ? 0 : prev - 5));
           }
         }}
         iconFont={
@@ -51,23 +64,36 @@ export default function Counter({
           height: 40,
         }}
       />
-      <TextInput
-        value={currentQuantity.toString()}
-        keyboardType="number-pad"
-        style={{
-          fontFamily: 'NotoSansThai-Bold',
-          alignItems: 'center',
-          justifyContent: 'center',
-          textAlign: 'center',
-          textAlignVertical: 'center',
-          height: 40,
-          marginTop: 2,
-        }}
-        onChangeText={text => onChangeText?.(text, id)}
-        onBlur={onBlur}
-      />
+      <Pressable
+        onPress={() => {
+          inputRef.current?.focus();
+        }}>
+        <TextInput
+          ref={inputRef}
+          value={quantity.toString()}
+          keyboardType="number-pad"
+          style={{
+            fontFamily: 'NotoSansThai-Bold',
+            alignItems: 'center',
+            justifyContent: 'center',
+            textAlign: 'center',
+            textAlignVertical: 'center',
+            height: 40,
+            marginTop: 2,
+          }}
+          onChangeText={text => {
+            const convertedText = text.replace(/[^0-9]/g, '');
+            debouncedSearch(convertedText);
+            setQuantity(+convertedText);
+          }}
+          onBlur={onBlur}
+        />
+      </Pressable>
       <Button
-        onPress={() => onIncrease?.(id)}
+        onPress={() => {
+          onIncrease?.(id);
+          setQuantity(prev => prev + 5);
+        }}
         iconFont={
           <Image
             source={icons.iconAdd}
@@ -83,7 +109,7 @@ export default function Counter({
           height: 40,
         }}
       />
-    </KeyboardAvoidingView>
+    </View>
   );
 }
 

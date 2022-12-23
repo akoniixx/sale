@@ -43,9 +43,6 @@ export default function Item({
   ...props
 }: Props): JSX.Element {
   const isPromo = false;
-  const {
-    state: { user },
-  } = useAuth();
 
   const { t } = useLocalization();
   const {
@@ -57,13 +54,21 @@ export default function Item({
   const isAlreadyInCart = cartList?.find(
     item => item?.productId.toString() === idItem.toString(),
   );
-  const onChangeText = (text: string, id: string) => {
+  const onChangeText = async (text: string, id: string) => {
     const findIndex = cartList?.findIndex(item => item?.productId === id);
-
+    if (+text < 1 && findIndex !== -1) {
+      const newCartList = [...cartList];
+      newCartList.splice(findIndex, 1);
+      setCartList(newCartList);
+      await postCartItem(newCartList);
+      setIsDelCart(true);
+      return null;
+    }
     if (findIndex !== -1) {
       const newCartList = [...cartList];
       newCartList[findIndex].amount = Number(text);
       setCartList(newCartList);
+      await postCartItem(newCartList);
     }
   };
   const onAddCartByIndex = async (id: string | number) => {
@@ -78,7 +83,7 @@ export default function Item({
       await postCartItem(newCartList);
     }
   };
-  const onSubtractCartByIndex = (id: string | number) => {
+  const onSubtractCartByIndex = async (id: string | number) => {
     const findIndex = cartList?.findIndex(item => item?.productId === id);
 
     if (findIndex !== -1) {
@@ -87,10 +92,12 @@ export default function Item({
       if (amount > 5) {
         newCartList[findIndex].amount -= 5;
         setCartList(newCartList);
+        await postCartItem(newCartList);
       } else {
         newCartList.splice(findIndex, 1);
         setCartList(newCartList);
         setIsDelCart(true);
+        await postCartItem(newCartList);
       }
     }
   };

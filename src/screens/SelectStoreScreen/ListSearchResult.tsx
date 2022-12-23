@@ -13,6 +13,7 @@ interface Props {
     customerNo: string;
     moreThanOneBrand: boolean;
     customerCompanyId: string;
+    termPayment: string;
     productBrand: {
       product_brand_id: string;
       product_brand_name: string;
@@ -28,6 +29,10 @@ export default function ListSearchResult({
 }: Props): JSX.Element {
   const { t } = useLocalization();
   const { setItem } = useAsyncStorage('customerCompanyId');
+  const { setItem: setTermPayment } = useAsyncStorage('termPayment');
+  const { setItem: setCustomerNo } = useAsyncStorage('customerNo');
+  const { setItem: setCustomerName } = useAsyncStorage('customerName');
+  const { setItem: setProductBrand } = useAsyncStorage('productBrand');
   return (
     <FlatList
       data={data}
@@ -57,6 +62,9 @@ export default function ListSearchResult({
           <TouchableOpacity
             onPress={() => {
               setItem(item.customerCompanyId);
+              setTermPayment(item.termPayment);
+              setCustomerNo(item.customerNo);
+              setCustomerName(item.name);
               if (item.moreThanOneBrand) {
                 navigation.navigate('SelectBrandBeforeDetailScreen', {
                   id: item.id,
@@ -64,6 +72,7 @@ export default function ListSearchResult({
                   productBrand: item.productBrand,
                 });
               } else {
+                setProductBrand(JSON.stringify(item.productBrand[0]));
                 navigation.navigate('StoreDetailScreen', {
                   id: item.id,
                   name: item.name,

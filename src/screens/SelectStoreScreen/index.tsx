@@ -33,11 +33,11 @@ export default function SelectStoreScreen({ navigation }: Props): JSX.Element {
         customerName: string;
         customerNo: string;
         customerCompanyId: string;
+        termPayment: string;
         productBrand: [];
       }[];
     }[]
   >([]);
-
   useEffect(() => {
     const getListStore = async () => {
       try {
@@ -69,6 +69,7 @@ export default function SelectStoreScreen({ navigation }: Props): JSX.Element {
         customerNo: c.customerNo,
         productBrand: c.productBrand,
         moreThanOneBrand: c.productBrand?.length > 1,
+        termPayment: c.termPayment,
       };
     });
     return newFormat.filter(i => {

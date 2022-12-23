@@ -1,4 +1,4 @@
-import { View, StyleSheet, Platform, Image } from 'react-native';
+import { View, StyleSheet, Platform, Image, TextInput } from 'react-native';
 import React from 'react';
 import Text from '../../components/Text/Text';
 import InputText from '../../components/InputText/InputText';
@@ -6,8 +6,13 @@ import Button from '../../components/Button/Button';
 import icons from '../../assets/icons';
 import { colors } from '../../assets/colors/colors';
 import Summary from './Summary';
+import { TypeDataStepTwo } from '.';
 
-export default function StepTwo() {
+interface Props {
+  setDataStepTwo: React.Dispatch<React.SetStateAction<TypeDataStepTwo>>;
+  dataStepTwo: TypeDataStepTwo;
+}
+export default function StepTwo({ setDataStepTwo, dataStepTwo }: Props) {
   return (
     <>
       <View style={styles.container}>
@@ -16,11 +21,17 @@ export default function StepTwo() {
             หมายเหตุ (สำหรับ Sale Co)
           </Text>
           <InputText
+            multiline
+            value={dataStepTwo?.saleCoRemark || ''}
             placeholder="ใส่หมายเหตุ..."
             numberOfLines={5}
+            onChangeText={text =>
+              setDataStepTwo(prev => ({ ...prev, saleCoRemark: text }))
+            }
             style={{
               minHeight: Platform.OS === 'ios' ? 100 : 100,
               textAlignVertical: 'top',
+              paddingTop: 10,
             }}
           />
         </View>
@@ -111,7 +122,7 @@ export default function StepTwo() {
           </View>
         </View>
       </View>
-      <Summary />
+      <Summary dataStepTwo={dataStepTwo} setDataStepTwo={setDataStepTwo} />
     </>
   );
 }

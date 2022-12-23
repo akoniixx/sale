@@ -8,18 +8,46 @@ import { numberWithCommas } from '../../utils/functions';
 import Checkbox from '../../components/Checkbox/Checkbox';
 import icons from '../../assets/icons';
 import { useCart } from '../../contexts/CartContext';
-
-export default function Summary(): JSX.Element {
+import { TypeDataStepTwo } from '.';
+import { useFocusEffect } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+interface Props {
+  setDataStepTwo: React.Dispatch<React.SetStateAction<TypeDataStepTwo>>;
+  dataStepTwo: TypeDataStepTwo;
+}
+export default function Summary({
+  setDataStepTwo,
+  dataStepTwo,
+}: Props): JSX.Element {
   const { t } = useLocalization();
   const [valueCheckbox, setValueCheckbox] = React.useState<string[]>([]);
+  const [termPayment, setTermPayment] = React.useState<string>('');
   const [isCollapsed, setIsCollapsed] = React.useState<{
     [key: string]: boolean;
   }>({
     discountList: true,
     specialListDiscount: true,
   });
+  useFocusEffect(
+    React.useCallback(() => {
+      const getTerm = async () => {
+        const termPayment = await AsyncStorage.getItem('termPayment');
+        if (termPayment) {
+          setTermPayment(termPayment);
+          setDataStepTwo({
+            ...dataStepTwo,
+            paymentMethod: 'CASH',
+          });
+        }
+      };
+      getTerm();
+    }, []),
+  );
   const { cartList } = useCart();
-  const totalPrice = cartList.reduce((a, b) => a + b.amount * +b.unitPrice, 0);
+  const totalPrice = cartList.reduce(
+    (a, b) => a + b.amount * +b.marketPrice,
+    0,
+  );
   const renderDiscountList = () => {
     const mockData = [
       {
@@ -113,18 +141,25 @@ export default function Summary(): JSX.Element {
               borderBottomWidth: 1,
             }}>
             <Radio
+              value={dataStepTwo.paymentMethod}
+              onChange={value => {
+                setDataStepTwo(prev => ({
+                  ...prev,
+                  paymentMethod: value,
+                }));
+              }}
               radioLists={[
                 {
                   title: 'เงินสด (รับส่วนลดเพิ่ม 1.5%)',
-                  value: 'cash',
+                  value: 'CASH',
                   key: 'cash',
                 },
                 {
                   title: 'เครดิต',
-                  value: 'credit',
+                  value: 'CREDIT',
                   key: 'credit',
                 },
-              ]}
+              ].slice(0, termPayment.toUpperCase().startsWith('N') ? 2 : 1)}
             />
           </View>
           <View
@@ -179,7 +214,7 @@ export default function Summary(): JSX.Element {
             {t('screens.CartScreen.summary.priceBeforeDiscount')}
           </Text>
           <Text color="text2" semiBold>{`฿${numberWithCommas(
-            277000,
+            totalPrice,
             true,
           )}`}</Text>
         </View>
@@ -207,7 +242,7 @@ export default function Summary(): JSX.Element {
           <Text
             color="current"
             semiBold
-            fontFamily="NotoSans">{`-฿${numberWithCommas(10000, true)}`}</Text>
+            fontFamily="NotoSans">{`-฿${numberWithCommas(0, true)}`}</Text>
         </View>
         {!isCollapsed.discountList && <>{renderDiscountList()}</>}
         <View style={styles.row}>
@@ -247,7 +282,7 @@ export default function Summary(): JSX.Element {
           <Text
             color="error"
             semiBold
-            fontFamily="NotoSans">{`-฿${numberWithCommas(5, true)}`}</Text>
+            fontFamily="NotoSans">{`-฿${numberWithCommas(0, true)}`}</Text>
         </View>
         <View style={styles.row}>
           <Text color="text2">
@@ -256,7 +291,7 @@ export default function Summary(): JSX.Element {
           <Text
             color="waiting"
             fontFamily="NotoSans"
-            semiBold>{`-฿${numberWithCommas(3591, true)}`}</Text>
+            semiBold>{`-฿${numberWithCommas(0, true)}`}</Text>
         </View>
         <View
           style={[
@@ -269,7 +304,7 @@ export default function Summary(): JSX.Element {
             {t('screens.CartScreen.summary.totalDiscount')}
           </Text>
           <Text color="text2" semiBold fontFamily="NotoSans">
-            {`-฿${numberWithCommas(14000, true)}`}
+            {`-฿${numberWithCommas(0, true)}`}
           </Text>
         </View>
       </View>

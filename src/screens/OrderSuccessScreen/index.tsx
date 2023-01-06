@@ -20,7 +20,6 @@ import { numberWithCommas } from '../../utils/functions';
 import Button from '../../components/Button/Button';
 import { orderServices } from '../../services/OrderServices';
 import { OrderDetailType } from '../../entities/orderTypes';
-import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const mappingStatusHeader = {
@@ -64,7 +63,7 @@ export default function OrderSuccessScreen({
     {
       productName: 'ไฮซีส',
       unit: 'ลัง',
-      qauntity: 1,
+      quantity: 1,
     },
   ];
   const listProduct = orderData?.orderProducts.map(el => {
@@ -286,7 +285,7 @@ export default function OrderSuccessScreen({
                               {el.productName}
                             </Text>
                             <Text fontSize={14}>
-                              {el.qauntity} {el.unit}
+                              {el.quantity} {el.unit}
                             </Text>
                           </View>
                         </View>

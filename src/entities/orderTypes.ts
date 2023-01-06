@@ -1,5 +1,5 @@
 export interface OrderDetailType {
-  cancleRemark: string;
+  cancelRemark: string;
   cashDiscount: number;
   coDiscount: number;
   company: string;
@@ -27,6 +27,7 @@ export interface OrderDetailType {
       qtySaleUnit: number;
       quantity: number;
       saleUom: string;
+      saleUomTh: string;
       shipmentOrder: number;
       totalPrice: number;
     },

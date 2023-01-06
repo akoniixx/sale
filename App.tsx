@@ -25,11 +25,11 @@ const App = () => {
     if (Platform.OS === 'ios') {
       firebaseInitialize();
     }
-    requestUserPermission();
     const getTestFirebaseToken = async () => {
       const firebaseToken = await AsyncStorage.getItem('fcmtoken');
       console.log('firebaseToken', firebaseToken);
     };
+    requestUserPermission();
     getTestFirebaseToken();
   }, []);
   return (

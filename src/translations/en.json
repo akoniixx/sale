@@ -61,7 +61,8 @@
       "empty": "ไม่พบสินค้าที่คุณต้องการ",
       "price": "฿%{price}",
       "buttonAddCart": "เพิ่มเข้าตระกร้า",
-      "allCategory": "กลุ่มทั้งหมด"
+      "allCategory": "กลุ่มทั้งหมด",
+      "searchPlaceholder": "ค้นหาสินค้า..."
     },
     "SelectBrandBeforeDetailScreen": {
       "title": "เลือกแบรนด์"
@@ -74,7 +75,8 @@
       "seeLess": "ดูน้อยลง",
       "promotion": "โปรโมชั่น",
       "orderButton": "สั่งซื้อสินค้า",
-      "durationPromotion": "ระยะเวลา %{dateStart} - %{dateEnd}"
+      "durationPromotion": "ระยะเวลา %{dateStart} - %{dateEnd}",
+      "promotionTextConvert": "ซื้อ %{buy} %{unitBuy} แถม %{productNameFree} %{free}  %{unitFree}"
     },
     "CartScreen": {
       "title": "ตระกร้าสินค้า",

@@ -9,7 +9,6 @@ import SelectBrandBeforeDetailScreen from '../../screens/SelectBrandBeforeDetail
 import OrderSuccessScreen from '../../screens/OrderSuccessScreen';
 import LoginSuccessScreen from '../../screens/LoginSuccessScreen';
 import TermAndConditionScreen from '../../screens/TermAndConditionScreen';
-import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { navigate } from '../RootNavigator';
 
@@ -62,7 +61,8 @@ export default function MainNavigator() {
     getAlreadyAcceptTerm();
   }, []);
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Navigator
+      screenOptions={{ headerShown: false, gestureEnabled: false }}>
       <Stack.Group>
         <Stack.Screen
           name="MainScreen"

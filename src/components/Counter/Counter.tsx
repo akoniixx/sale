@@ -30,14 +30,14 @@ export default function Counter({
   const [quantity, setQuantity] = React.useState(0);
 
   useEffect(() => {
-    if (currentQuantity !== 0) {
+    if (currentQuantity > 0) {
       setQuantity(currentQuantity);
     }
   }, [currentQuantity]);
   const debouncedSearch = useRef(
     debounce(quantity => {
       onChangeText?.(quantity, id);
-    }, 1000),
+    }, 500),
   ).current;
   const inputRef = useRef<TextInput>(null);
   return (

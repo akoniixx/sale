@@ -24,12 +24,12 @@ const StoreDetailScreen = ({
 
   useEffect(() => {
     getCartList();
-  }, []);
+  }, [getCartList]);
   const { t } = useLocalization();
   const [searchValue, setSearchValue] = React.useState<string | undefined>(
     undefined,
   );
-  const [debounceSearchValue, loading] = useDebounce(searchValue, 500);
+  const [debounceSearchValue] = useDebounce(searchValue, 500);
   const [loadingApi, setLoadingApi] = React.useState<boolean>(false);
 
   return (
@@ -51,6 +51,7 @@ const StoreDetailScreen = ({
               paddingHorizontal: 16,
             }}>
             <SearchInput
+              placeholder={t('screens.StoreDetailScreen.searchPlaceholder')}
               value={searchValue}
               onChange={v => {
                 setSearchValue(v);
@@ -66,7 +67,7 @@ const StoreDetailScreen = ({
           />
         </Content>
       </KeyboardAvoidingView>
-      <LoadingSpinner visible={loading || loadingApi} />
+      <LoadingSpinner visible={loadingApi} />
     </Container>
   );
 };

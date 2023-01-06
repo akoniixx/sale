@@ -15,6 +15,7 @@ import { productServices } from '../../services/ProductServices';
 import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
 import { ProductSummary } from '../../entities/productType';
 import { KeyboardAvoidingView, Platform } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function ProductDetailScreen({
   route,
@@ -32,7 +33,13 @@ export default function ProductDetailScreen({
       const getProductById = async () => {
         try {
           setLoading(true);
-          const result = await productServices.getProductById(id);
+          const customerCompanyId = await AsyncStorage.getItem(
+            'customerCompanyId',
+          );
+          const result = await productServices.getProductById(
+            id,
+            customerCompanyId || '',
+          );
 
           setProductItem(result);
         } catch (e) {
@@ -49,14 +56,15 @@ export default function ProductDetailScreen({
       <Header componentRight={<CartBadge navigation={navigation} />} />
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={{ flex: 1 }}>
+        style={{ flex: 1, padding: 0, width: '100%' }}>
         <Content
           style={{
             backgroundColor: colors.background1,
             padding: 0,
           }}>
           <Body
-            baseUOM={productItem?.baseUOM}
+            {...productItem}
+            saleUOMTH={productItem?.saleUOMTH}
             packSize={productItem?.packSize}
             productImage={productItem?.productImage}
             productName={productItem?.productName}

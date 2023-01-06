@@ -12,6 +12,7 @@ const getAllProducts = async ({
   sortField,
   sortDirection,
   searchText,
+  customerCompanyId,
 }: ProductTypeParams) => {
   const payload: ProductTypeParams = {
     page,
@@ -20,6 +21,7 @@ const getAllProducts = async ({
     company,
     isPromotion,
     productBrandId,
+    customerCompanyId,
   };
   if (productCategoryId) {
     payload.productCategoryId = productCategoryId;
@@ -42,9 +44,11 @@ const getAllProducts = async ({
     .then(res => res.data)
     .catch(err => console.log(err));
 };
-const getProductById = async (id: string) => {
+const getProductById = async (id: string, customerCompanyId: string) => {
   return await request
-    .get(`/master/product/${id}`)
+    .get(
+      `/master/product/product-by-id?productId=${id}&customerCompanyId=${customerCompanyId}`,
+    )
     .then(res => res.data)
     .catch(err => console.log(err));
 };

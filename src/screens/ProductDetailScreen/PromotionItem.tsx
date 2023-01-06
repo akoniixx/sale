@@ -1,28 +1,34 @@
 import { View, StyleSheet, Image } from 'react-native';
 import React from 'react';
-import { Dayjs } from 'dayjs';
 import { colors } from '../../assets/colors/colors';
 import LinearGradient from 'react-native-linear-gradient';
 import Text from '../../components/Text/Text';
 import icons from '../../assets/icons';
 import { useLocalization } from '../../contexts/LocalizationContext';
 import DashedLine from 'react-native-dashed-line';
+import { PromotionType } from '../../entities/productType';
+import dayjs from 'dayjs';
 
-interface Props {
-  dateStart: Dayjs;
-  dateEnd: Dayjs;
-  listPromotions: { text: string }[];
-  title: string;
+interface Props extends PromotionType {
   index: number;
+  unitBuy: string | null | undefined;
+  currentProductId?: string;
 }
 export default function PromotionItem({
-  dateStart,
-  dateEnd,
-  listPromotions,
-  title,
   index,
+  conditionDetail,
+  endDate,
+  unitBuy,
+  currentProductId,
+  startDate,
+  ...props
 }: Props): JSX.Element {
   const { t } = useLocalization();
+  console.log(
+    'conditionLength',
+    JSON.stringify(conditionDetail, null, 2),
+    currentProductId,
+  );
   return (
     <LinearGradient
       style={styles.container}
@@ -43,17 +49,58 @@ export default function PromotionItem({
       </View>
       <View style={styles.content}>
         <Text color="white" semiBold>
-          {`${index + 1}. ${title}`}
+          {`${index + 1}. ${props.promotionName}`}
         </Text>
-        <View style={{}}>
-          {listPromotions.map((item, index) => {
-            return (
-              <Text color="white" key={index} fontSize={14}>
-                {`•  ${item.text}`}
-              </Text>
-            );
-          })}
-        </View>
+
+        {conditionDetail?.map(item => {
+          if (currentProductId !== item.productId) {
+            return null;
+          }
+          return item.condition.map(el => {
+            return el.freebies.map((el2, idx) => {
+              if (!el2.productFreebiesId) {
+                return (
+                  <Text
+                    key={idx}
+                    color="white"
+                    style={{
+                      lineHeight: 30,
+                    }}>
+                    {`•  ${t(
+                      'screens.ProductDetailScreen.promotionTextConvert',
+                      {
+                        buy: el.quantity,
+                        free: el2.quantity,
+                        productNameFree: el2.productName,
+                        unitFree: el2.saleUOMTH || el2.saleUOM || '',
+                        unitBuy: unitBuy || '',
+                      },
+                    )} `}
+                  </Text>
+                );
+              }
+
+              return (
+                <Text
+                  key={idx}
+                  color="white"
+                  style={{
+                    lineHeight: 30,
+                  }}>{`•  ${t(
+                  'screens.ProductDetailScreen.promotionTextConvert',
+                  {
+                    buy: el.quantity,
+                    free: el2.quantity,
+                    productNameFree: el2.productName,
+                    unitBuy: unitBuy || '',
+                    unitFree: el2.baseUnitOfMeaTh || el2.baseUnitOfMeaEn || '',
+                  },
+                )}`}</Text>
+              );
+            });
+          });
+        })}
+
         <View
           style={{
             paddingVertical: 10,
@@ -63,8 +110,8 @@ export default function PromotionItem({
 
         <Text color="white" fontSize={14}>
           {`•  ${t('screens.ProductDetailScreen.durationPromotion', {
-            dateStart: dateStart.format('DD MMMM BBBB'),
-            dateEnd: dateEnd.format('DD MMMM BBBB'),
+            dateStart: dayjs(startDate).format('DD MMMM BBBB'),
+            dateEnd: dayjs(endDate).format('DD MMMM BBBB'),
           })}`}
         </Text>
       </View>

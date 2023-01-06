@@ -18,6 +18,7 @@ import { ProductCategory, ProductType } from '../../entities/productType';
 import { productServices } from '../../services/ProductServices';
 import { useAuth } from '../../contexts/AuthContext';
 import { useFocusEffect } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface Props {
   nameDealer: string;
@@ -72,12 +73,14 @@ export default function ListItem({
   const getAllProduct = useCallback(async () => {
     try {
       setLoadingApi(true);
+      const customerCompanyId = await AsyncStorage.getItem('customerCompanyId');
       const result = await productServices.getAllProducts({
         company: user?.company,
         customerId: user?.userStaffId,
         page: 1,
         take: 10,
         searchText: debounceSearchValue,
+        customerCompanyId: customerCompanyId || '',
         productBrandId: productBrand?.product_brand_id,
         isPromotion: type !== 'all',
         productCategoryId: currentBrand !== 'all' ? currentBrand : undefined,
@@ -101,6 +104,9 @@ export default function ListItem({
   const getMoreProduct = useCallback(async () => {
     try {
       if (data.count > data.data.length) {
+        const customerCompanyId = await AsyncStorage.getItem(
+          'customerCompanyId',
+        );
         const result = await productServices.getAllProducts({
           company: user?.company,
           customerId: user?.userStaffId,
@@ -109,6 +115,7 @@ export default function ListItem({
           searchText: debounceSearchValue,
           productBrandId: productBrand?.product_brand_id,
           isPromotion: type !== 'all',
+          customerCompanyId: customerCompanyId || '',
 
           productCategoryId: currentBrand !== 'all' ? currentBrand : undefined,
         });
@@ -324,10 +331,11 @@ export default function ListItem({
       item: ProductType;
       index: number;
     }) => {
+      const newItem = Object.assign({}, item || {});
       return (
         <>
           <Item
-            {...item}
+            {...newItem}
             index={index}
             idItem={item.productId}
             navigation={navigation}
@@ -349,7 +357,7 @@ export default function ListItem({
         onEndReached={() => {
           getMoreProduct();
         }}
-        keyExtractor={(item, idx) => `${item.productId}` + idx}
+        keyExtractor={(item, idx) => idx.toString()}
         columnWrapperStyle={{
           paddingHorizontal: 16,
           justifyContent: 'space-between',

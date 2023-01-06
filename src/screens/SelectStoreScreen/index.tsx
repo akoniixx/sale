@@ -12,12 +12,14 @@ import ListSearchResult from './ListSearchResult';
 import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
 import { customerServices } from '../../services/CustomerServices';
 import { useAuth } from '../../contexts/AuthContext';
+import { useCart } from '../../contexts/CartContext';
 
 interface Props {
   navigation: StackNavigationHelpers;
 }
 export default function SelectStoreScreen({ navigation }: Props): JSX.Element {
   const { t } = useLocalization();
+  const { setCartList } = useCart();
   const [searchValue, setSearchValue] = React.useState<string | undefined>(
     undefined,
   );
@@ -57,7 +59,8 @@ export default function SelectStoreScreen({ navigation }: Props): JSX.Element {
     if (user?.userStaffId) {
       getListStore();
     }
-  }, [user]);
+    setCartList([]);
+  }, [user, setCartList]);
   const data = useMemo(() => {
     const newFormat = listStore.map(el => {
       const c = el.customerCompany?.[0];

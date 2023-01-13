@@ -18,6 +18,7 @@ import {
   requestUserPermission,
 } from './src/firebase/notification';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import './src/components/Sheet/sheets.tsx';
 dayjs.extend(buddhaEra);
 const App = () => {
   React.useEffect(() => {

@@ -36,6 +36,7 @@ export default function ProductDetailScreen({
           const customerCompanyId = await AsyncStorage.getItem(
             'customerCompanyId',
           );
+          console.log('customerCompanyId', customerCompanyId);
           const result = await productServices.getProductById(
             id,
             customerCompanyId || '',

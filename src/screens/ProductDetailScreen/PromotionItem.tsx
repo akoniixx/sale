@@ -24,11 +24,6 @@ export default function PromotionItem({
   ...props
 }: Props): JSX.Element {
   const { t } = useLocalization();
-  console.log(
-    'conditionLength',
-    JSON.stringify(conditionDetail, null, 2),
-    currentProductId,
-  );
   return (
     <LinearGradient
       style={styles.container}
@@ -57,7 +52,7 @@ export default function PromotionItem({
             return null;
           }
           return item.condition.map(el => {
-            return el.freebies.map((el2, idx) => {
+            return (el.freebies || []).map((el2, idx) => {
               if (!el2.productFreebiesId) {
                 return (
                   <Text

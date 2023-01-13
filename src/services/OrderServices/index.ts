@@ -17,11 +17,11 @@ interface Order {
   userStaffId: string;
 }
 const createOrder = async (order: Order) => {
-  const response = await request.post('/cart/api/v1/order', order);
+  const response = await request.post('/cart/order', order);
   return response.data;
 };
 const getOrderById = async (orderId: string) => {
-  const response = await request.get(`/cart/api/v1/order/${orderId}`);
+  const response = await request.get(`/cart/order/${orderId}`);
   return response.data;
 };
 export const orderServices = {

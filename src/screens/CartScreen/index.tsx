@@ -21,6 +21,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
 import { orderServices } from '../../services/OrderServices';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useAuth } from '../../contexts/AuthContext';
 
 export interface TypeDataStepTwo {
   paymentMethod: string;
@@ -33,6 +34,9 @@ export default function CartScreen({
   const { t } = useLocalization();
   const [currentStep, setCurrentStep] = React.useState(0);
   const [visible, setVisible] = React.useState(false);
+  const {
+    state: { user },
+  } = useAuth();
   const [visibleConfirm, setVisibleConfirm] = React.useState(false);
   const {
     cartList,
@@ -59,16 +63,17 @@ export default function CartScreen({
       });
 
       const data = await getCartList();
-      console.log(data);
 
       const payload: any = {
         company: data.company,
         customerCompanyId: data.customerCompanyId,
         userStaffId: data.userStaffId,
         orderProducts,
+        sellerName: `${user?.firstname} ${user?.lastname}`,
         paymentMethod: dataStepTwo.paymentMethod,
         customerNo: customerNo || '',
         customerName: customerName || '',
+        updateBy: `${user?.firstname} ${user?.lastname}`,
       };
       if (dataStepTwo.specialRequestRemark) {
         payload.specialRequestRemark = dataStepTwo.specialRequestRemark;

@@ -16,6 +16,7 @@ import { useCart } from '../../contexts/CartContext';
 import Counter from '../../components/Counter/Counter';
 import { ProductType } from '../../entities/productType';
 import images from '../../assets/images';
+import FastImage from 'react-native-fast-image';
 
 interface Props extends ProductType {
   name?: string;
@@ -128,12 +129,15 @@ export default function Item({
               height: 100,
               marginBottom: 8,
             }}>
-            <Image
-              source={{ uri: getNewPath(productImage) }}
+            <FastImage
+              source={{
+                uri: getNewPath(productImage),
+                priority: FastImage.priority.normal,
+              }}
               style={{
                 height: 100,
               }}
-              resizeMode="contain"
+              resizeMode={FastImage.resizeMode.contain}
             />
           </View>
         ) : (

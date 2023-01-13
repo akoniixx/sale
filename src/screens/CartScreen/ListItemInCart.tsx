@@ -6,7 +6,6 @@ import {
   Dimensions,
   KeyboardAvoidingView,
   Platform,
-  ScrollView,
 } from 'react-native';
 import React, { useMemo } from 'react';
 import Text from '../../components/Text/Text';
@@ -36,7 +35,7 @@ export default function ListItemInCart() {
   const onChangeOrder = async (value: any, id: string) => {
     const findIndex = cartList?.findIndex(item => item?.productId === id);
     const findOrder = cartList?.findIndex(item => +item?.order === +value);
-    if (findOrder !== -1 && cartList.length > 1) {
+    if (findOrder !== -1 && cartList.length > 1 && !!value) {
       const newCartList = [...cartList];
       newCartList[findOrder].order = +newCartList[findIndex].order;
       newCartList[findIndex].order = +value;
@@ -44,7 +43,7 @@ export default function ListItemInCart() {
       return await postCartItem(newCartList);
     }
 
-    if (findIndex !== -1) {
+    if (findIndex !== -1 && !!value) {
       const newCartList = [...cartList];
 
       newCartList[findIndex].order = Number(value);

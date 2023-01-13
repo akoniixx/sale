@@ -1,5 +1,5 @@
 import { View, StyleSheet } from 'react-native';
-import React from 'react';
+import React, { useEffect } from 'react';
 import Text from '../../components/Text/Text';
 import { useLocalization } from '../../contexts/LocalizationContext';
 import Checkbox from '../../components/Checkbox/Checkbox';
@@ -9,6 +9,10 @@ import { colors } from '../../assets/colors/colors';
 export default function PromotionSection(): JSX.Element {
   const { t } = useLocalization();
   const [promotionList, setPromotionList] = React.useState<string[]>([]);
+  useEffect(() => {
+    console.log('promotionList', promotionList);
+  }, []);
+
   const checkBoxMockData = [
     {
       title: '01-64 - ของแถมขั้นบันได - โปรโมชัน ไซม๊อกซิเมท',

@@ -115,7 +115,6 @@ export default function Footer({
     if (findIndex !== -1) {
       const newCartList = [...cartList];
       newCartList[findIndex].amount += 5;
-      newCartList[findIndex].order = newCartList.length + 1;
       setCartList(newCartList);
       await postCartItem(newCartList);
     } else {

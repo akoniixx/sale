@@ -1,4 +1,11 @@
-import { View, StyleSheet, Platform, Image, TextInput } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Platform,
+  Image,
+  TextInput,
+  TouchableOpacity,
+} from 'react-native';
 import React from 'react';
 import Text from '../../components/Text/Text';
 import InputText from '../../components/InputText/InputText';
@@ -7,6 +14,7 @@ import icons from '../../assets/icons';
 import { colors } from '../../assets/colors/colors';
 import Summary from './Summary';
 import { TypeDataStepTwo } from '.';
+import { SheetManager } from 'react-native-actions-sheet';
 
 interface Props {
   setDataStepTwo: React.Dispatch<React.SetStateAction<TypeDataStepTwo>>;
@@ -80,9 +88,14 @@ export default function StepTwo({ setDataStepTwo, dataStepTwo }: Props) {
           <Text bold fontSize={18} fontFamily="NotoSans">
             สถานที่รับสินค้า / สถานที่จัดส่ง
           </Text>
-          <Text fontSize={14} color="primary">
-            เปลี่ยน
-          </Text>
+          <TouchableOpacity
+            onPress={() => {
+              SheetManager.show('select-location');
+            }}>
+            <Text fontSize={14} color="primary">
+              เปลี่ยน
+            </Text>
+          </TouchableOpacity>
         </View>
         <View
           style={{

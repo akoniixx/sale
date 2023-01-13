@@ -59,6 +59,8 @@ export default function OrderSuccessScreen({
       getOrderByOrderId();
     }
   }, [orderId]);
+  console.log(JSON.stringify(orderData, null, 2));
+
   const mockGiftData = [
     {
       productName: 'ไฮซีส',

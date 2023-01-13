@@ -47,7 +47,7 @@ const getAllProducts = async ({
 const getProductById = async (id: string, customerCompanyId: string) => {
   return await request
     .get(
-      `/master/product/product-by-id?productId=${id}&customerCompanyId=${customerCompanyId}`,
+      `/master/product/product-by-id?productId=${id}&customerCompanyId=${customerCompanyId}&productStatus=ACTIVE`,
     )
     .then(res => res.data)
     .catch(err => console.log(err));

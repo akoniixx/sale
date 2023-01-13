@@ -41,7 +41,8 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
         customerCompanyId: JSON.parse(customerCompanyId || '') || '',
         userStaffId,
       });
-      const newFormat = (result.data.orderProducts || []).map(
+      console.log('result', JSON.stringify(result, null, 2));
+      const newFormat = (result.orderProducts || []).map(
         (item: any): newProductType => {
           return {
             ...item,
@@ -57,7 +58,8 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
         },
       );
       setCartList(newFormat);
-      return result.data;
+
+      return result;
     };
     const postCartItem = async (cl: newProductType[]) => {
       try {

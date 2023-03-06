@@ -16,4 +16,5 @@ export default {
   timer: require('./timer.png'),
   bottomSlip: require('./bottomSlip.png'),
   emptyGift: require('./emptyGift.png'),
+  bottomInvoice: require('./bottomInvoice.png'),
 };

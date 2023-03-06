@@ -46,9 +46,9 @@ export default function Checkbox({
                 />
               )}
             </TouchableOpacity>
-            <Text>
+            <Text lineHeight={28}>
               {item.title}
-              {item.amount && (
+              {item.amount?.toString() && (
                 <Text
                   bold
                   fontFamily="NotoSans"

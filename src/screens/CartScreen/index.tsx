@@ -1,5 +1,13 @@
-import { View, ScrollView, Image, TouchableOpacity } from 'react-native';
-import React, { useMemo } from 'react';
+import {
+  View,
+  ScrollView,
+  Image,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform,
+  Keyboard,
+} from 'react-native';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import Container from '../../components/Container/Container';
 import Content from '../../components/Content/Content';
 import { useLocalization } from '../../contexts/LocalizationContext';
@@ -22,16 +30,23 @@ import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
 import { orderServices } from '../../services/OrderServices';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuth } from '../../contexts/AuthContext';
+import { factoryServices } from '../../services/FactorySevices';
 
 export interface TypeDataStepTwo {
   paymentMethod: string;
   specialRequestRemark?: string | null;
   saleCoRemark?: string | null;
+  deliveryAddress?: string | null;
+  deliveryRemark?: string | null;
+  deliveryDest: string;
 }
 export default function CartScreen({
   navigation,
+  route,
 }: StackScreenProps<MainStackParamList, 'CartScreen'>): JSX.Element {
   const { t } = useLocalization();
+  const params = route.params;
+  const [isKeyboardVisible, setKeyboardVisible] = React.useState(false);
   const [currentStep, setCurrentStep] = React.useState(0);
   const [visible, setVisible] = React.useState(false);
   const {
@@ -40,25 +55,46 @@ export default function CartScreen({
   const [visibleConfirm, setVisibleConfirm] = React.useState(false);
   const {
     cartList,
+    setFreebieListItem,
+    setPromotionList,
+    setPromotionListValue,
     setCartList,
-    cartApi: { getCartList },
+    cartDetail,
+    cartApi: { getCartList, getSelectPromotion },
   } = useCart();
+
   const [loading, setLoading] = React.useState(false);
+  const [addressDelivery, setAddressDelivery] = React.useState({
+    address: '',
+    name: '',
+  });
   const [dataStepTwo, setDataStepTwo] = React.useState<TypeDataStepTwo>({
     paymentMethod: '',
     specialRequestRemark: null,
     saleCoRemark: null,
+    deliveryAddress: null,
+    deliveryRemark: null,
+    deliveryDest: '',
   });
+
   const onCreateOrder = async () => {
     try {
+      setLoading(true);
+      setVisibleConfirm(false);
       const customerNo = await AsyncStorage.getItem('customerNo');
       const customerName = await AsyncStorage.getItem('customerName');
-      setLoading(true);
       const orderProducts = (cartList || []).map(item => {
         return {
+          specialRequest: item.specialRequest,
           productId: +item.productId,
           quantity: item.amount,
           shipmentOrder: item.order,
+          orderProductPromotions: item.orderProductPromotions.map(el => {
+            return {
+              promotionId: el.promotionId,
+              isUse: el.isUse,
+            };
+          }),
         };
       });
 
@@ -66,14 +102,17 @@ export default function CartScreen({
 
       const payload: any = {
         company: data.company,
-        customerCompanyId: data.customerCompanyId,
         userStaffId: data.userStaffId,
-        orderProducts,
+        customerCompanyId: data.customerCompanyId,
+        customerName: customerName || '',
+        customerNo: customerNo || '',
         sellerName: `${user?.firstname} ${user?.lastname}`,
         paymentMethod: dataStepTwo.paymentMethod,
-        customerNo: customerNo || '',
-        customerName: customerName || '',
+        deliveryDest: dataStepTwo.deliveryDest,
+        deliveryAddress: dataStepTwo.deliveryAddress,
+        deliveryRemark: dataStepTwo.deliveryRemark || '',
         updateBy: `${user?.firstname} ${user?.lastname}`,
+        orderProducts,
       };
       if (dataStepTwo.specialRequestRemark) {
         payload.specialRequestRemark = dataStepTwo.specialRequestRemark;
@@ -81,10 +120,15 @@ export default function CartScreen({
       if (dataStepTwo.saleCoRemark) {
         payload.saleCoRemark = dataStepTwo.saleCoRemark;
       }
+
       const result = await orderServices.createOrder(payload);
       if (result) {
         setCartList([]);
+        setFreebieListItem([]);
+        setPromotionList([]);
+        setPromotionListValue([]);
         setVisibleConfirm(false);
+        setLoading(false);
         navigation.navigate('OrderSuccessScreen', {
           orderId: result.orderId,
         });
@@ -100,126 +144,254 @@ export default function CartScreen({
     switch (currentStep) {
       case 1: {
         return (
-          <StepTwo setDataStepTwo={setDataStepTwo} dataStepTwo={dataStepTwo} />
+          <StepTwo
+            setDataStepTwo={setDataStepTwo}
+            dataStepTwo={dataStepTwo}
+            navigation={navigation}
+            addressDelivery={addressDelivery}
+            setAddressDelivery={setAddressDelivery}
+          />
         );
       }
       default: {
         return <StepOne />;
       }
     }
-  }, [currentStep, dataStepTwo]);
+  }, [currentStep, dataStepTwo, addressDelivery, navigation]);
   useFocusEffect(
     React.useCallback(() => {
-      getCartList();
-    }, [getCartList]),
+      const getPromotion = async () => {
+        setLoading(true);
+        await Promise.all([
+          getSelectPromotion(cartDetail?.allPromotions || []),
+          getCartList(),
+        ]).finally(() => {
+          if (cartDetail?.orderProducts?.length > 0) {
+            const freebieListItem = cartDetail?.orderProducts
+              .filter(el => el.isFreebie)
+              .map(el => {
+                if (el.productFreebiesId) {
+                  const newObj = {
+                    productName: el.productName,
+                    id: el.productFreebiesId,
+                    quantity: el.quantity,
+                    baseUnit: el.baseUnitOfMeaTh || el.baseUnitOfMeaEn,
+                    status: el.productFreebiesStatus,
+                    productImage: el.productFreebiesImage,
+                  };
+                  return newObj;
+                } else {
+                  const newObj = {
+                    productName: el.productName,
+                    id: el.productId,
+                    quantity: el.quantity,
+                    baseUnit: el.saleUOMTH || el.saleUOM || '',
+                    status: el.productStatus,
+                    productImage: el.productImage,
+                  };
+                  return newObj;
+                }
+              });
+            setFreebieListItem(freebieListItem);
+          }
+          setLoading(false);
+        });
+      };
+      getPromotion();
+      const getInitData = async () => {
+        const getFactory = async () => {
+          const factoryData = await factoryServices.getFactory();
+          setAddressDelivery(prev => ({
+            ...prev,
+            name: factoryData.name,
+            address: `${factoryData.address} ${factoryData.subDistrict} ${factoryData.district} ${factoryData.province} ${factoryData.postcode}`,
+          }));
+          setDataStepTwo(prev => ({
+            ...prev,
+            deliveryDest: 'FACTORY',
+            deliveryAddress: `${factoryData.address} ${factoryData.subDistrict} ${factoryData.district} ${factoryData.province} ${factoryData.postcode}`,
+          }));
+        };
+        const getShopLocation = async () => {
+          const address = await AsyncStorage.getItem('address');
+          const parsedAddress = JSON.parse(address || '');
+          setAddressDelivery({
+            address: parsedAddress.addressText,
+            name: parsedAddress.name,
+          });
+          setDataStepTwo(prev => ({
+            ...prev,
+            deliveryAddress: `${parsedAddress.name} ${parsedAddress.addressText}`,
+            deliveryDest: 'SHOP',
+          }));
+        };
+        if (user?.company && user?.company === 'ICPL') {
+          getShopLocation();
+        }
+        if (user?.company && user?.company === 'ICPF') {
+          getFactory();
+        }
+        if (params?.specialRequestRemark) {
+          setDataStepTwo(prev => ({
+            ...prev,
+            specialRequestRemark: params.specialRequestRemark,
+          }));
+        }
+        if (params?.step) {
+          setCurrentStep(params.step);
+        }
+      };
+      getInitData();
+    }, []),
   );
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      'keyboardDidShow',
+      () => {
+        setKeyboardVisible(true);
+      },
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      'keyboardDidHide',
+      () => {
+        setKeyboardVisible(false);
+      },
+    );
+
+    return () => {
+      keyboardDidHideListener.remove();
+      keyboardDidShowListener.remove();
+    };
+  }, []);
 
   return (
-    <Container>
-      <Header title={t('screens.CartScreen.title')} />
-      <Content
-        style={{
-          backgroundColor: colors.background1,
-          padding: 0,
-        }}>
-        <View
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={{
+        flex: 1,
+      }}>
+      <Container>
+        <Header
+          onBackCustom={() => {
+            currentStep === 0
+              ? navigation.goBack()
+              : setCurrentStep(currentStep - 1);
+          }}
+          title={t('screens.CartScreen.title')}
+        />
+        <Content
           style={{
-            backgroundColor: colors.white,
-            paddingVertical: 12,
-            justifyContent: 'center',
-            marginVertical: 8,
+            backgroundColor: colors.background1,
+            padding: 0,
           }}>
-          <Step
-            onPress={step => {
-              setCurrentStep(step === 2 ? currentStep : step);
-            }}
-            currentStep={currentStep}
-            labelList={['รายการคำสั่งซื้อ', 'สรุปคำสั่งซื้อ', 'สั่งซื้อสำเร็จ']}
-          />
-        </View>
-        <ScrollView>{renderStep}</ScrollView>
-      </Content>
-      <FooterShadow>
-        {currentStep === 0 && (
-          <Button
-            onPress={() => {
-              if (cartList.length < 1) {
-                return setVisible(true);
-              }
-              setCurrentStep(prev => prev + 1);
-            }}
-            title={t('screens.CartScreen.stepOneButton')}
-          />
-        )}
-        {currentStep === 1 && (
-          <TouchableOpacity
-            onPress={() => {
-              setVisibleConfirm(true);
-            }}
+          <View
             style={{
-              width: '100%',
-              height: 50,
+              backgroundColor: colors.white,
+              paddingVertical: 12,
               justifyContent: 'center',
-              alignItems: 'center',
-              backgroundColor: colors.primary,
-              borderRadius: 8,
+              marginVertical: 8,
             }}>
-            <View
+            <Step
+              onPress={step => {
+                if (cartList.length > 0) {
+                  setCurrentStep(step === 2 ? currentStep : step);
+                }
+              }}
+              currentStep={currentStep}
+              labelList={[
+                'รายการคำสั่งซื้อ',
+                'สรุปคำสั่งซื้อ',
+                'สั่งซื้อสำเร็จ',
+              ]}
+            />
+          </View>
+          <ScrollView>{renderStep}</ScrollView>
+        </Content>
+        <FooterShadow
+          style={{
+            paddingBottom: isKeyboardVisible ? 0 : 16,
+          }}>
+          {currentStep === 0 && (
+            <Button
+              onPress={() => {
+                if (cartList.length < 1) {
+                  return setVisible(true);
+                }
+                setCurrentStep(prev => prev + 1);
+              }}
+              title={t('screens.CartScreen.stepOneButton')}
+            />
+          )}
+          {currentStep === 1 && (
+            <TouchableOpacity
+              onPress={() => {
+                setVisibleConfirm(true);
+              }}
               style={{
-                position: 'absolute',
-                left: 16,
+                width: '100%',
+                height: 50,
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: colors.primary,
+                borderRadius: 8,
               }}>
-              <Image
-                source={icons.cartFill}
-                style={{
-                  width: 24,
-                  height: 24,
-                }}
-              />
               <View
                 style={{
-                  width: 16,
-                  height: 16,
                   position: 'absolute',
-                  right: -6,
-                  borderColor: colors.primary,
-                  borderWidth: 1,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  borderRadius: 12,
-                  zIndex: 1,
-                  padding: 2,
-                  backgroundColor: colors.white,
+                  left: 16,
                 }}>
-                <Text color="primary" fontSize={12} lineHeight={12}>
-                  {cartList.length}
-                </Text>
+                <Image
+                  source={icons.cartFill}
+                  style={{
+                    width: 24,
+                    height: 24,
+                  }}
+                />
+                <View
+                  style={{
+                    width: 16,
+                    height: 16,
+                    position: 'absolute',
+                    right: -6,
+                    borderColor: colors.primary,
+                    borderWidth: 1,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    borderRadius: 12,
+                    zIndex: 1,
+                    padding: 2,
+                    backgroundColor: colors.white,
+                  }}>
+                  <Text color="primary" fontSize={12} lineHeight={12}>
+                    {cartList.length}
+                  </Text>
+                </View>
               </View>
-            </View>
-            <Text color="white" bold fontSize={18} fontFamily="NotoSans">
-              {t('screens.CartScreen.stepTwoButton')}
-            </Text>
-          </TouchableOpacity>
-        )}
-      </FooterShadow>
-      <LoadingSpinner visible={loading} />
-      <ModalWarning
-        visible={visible}
-        onlyCancel
-        onRequestClose={() => setVisible(false)}
-        textCancel={'ตกลง'}
-        title="ไม่สามารถสั่งสินค้าได้"
-        desc="คุณต้องเพิ่มสินค้าที่ต้องการสั่งซื้อในตระกร้านี้"
-      />
-      <ModalWarning
-        visible={visibleConfirm}
-        title="ยืนยันคำสั่งซื้อ"
-        desc="ต้องการยืนยันคำสั่งซื้อใช่หรือไม่?"
-        onConfirm={async () => {
-          await onCreateOrder();
-        }}
-        onRequestClose={() => setVisibleConfirm(false)}
-      />
-    </Container>
+              <Text color="white" bold fontSize={18} fontFamily="NotoSans">
+                {t('screens.CartScreen.stepTwoButton')}
+              </Text>
+            </TouchableOpacity>
+          )}
+        </FooterShadow>
+        <LoadingSpinner visible={loading} />
+        <ModalWarning
+          visible={visible}
+          onlyCancel
+          onRequestClose={() => setVisible(false)}
+          textCancel={'ตกลง'}
+          title="ไม่สามารถสั่งสินค้าได้"
+          desc="คุณต้องเพิ่มสินค้าที่ต้องการสั่งซื้อในตระกร้านี้"
+        />
+        <ModalWarning
+          visible={visibleConfirm}
+          title="ยืนยันคำสั่งซื้อ"
+          desc="ต้องการยืนยันคำสั่งซื้อใช่หรือไม่?"
+          onConfirm={async () => {
+            await onCreateOrder();
+          }}
+          onRequestClose={() => setVisibleConfirm(false)}
+        />
+      </Container>
+    </KeyboardAvoidingView>
   );
 }

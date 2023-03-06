@@ -19,10 +19,12 @@ const getAllProducts = async ({
     take,
     customerId,
     company,
-    isPromotion,
     productBrandId,
     customerCompanyId,
   };
+  if (isPromotion) {
+    payload.isPromotion = isPromotion;
+  }
   if (productCategoryId) {
     payload.productCategoryId = productCategoryId;
   }
@@ -39,9 +41,12 @@ const getAllProducts = async ({
   const genQuery = Object.keys(payload)
     .map(key => `${key}=${payload[key as keyof ProductTypeParams]}`)
     .join('&');
+
   return await request
     .get(`/master/product?${genQuery}`)
-    .then(res => res.data)
+    .then(res => {
+      return res.data;
+    })
     .catch(err => console.log(err));
 };
 const getProductById = async (id: string, customerCompanyId: string) => {

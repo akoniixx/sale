@@ -7,25 +7,38 @@ import { colors } from '../../assets/colors/colors';
 import { getNewPath } from '../../utils/functions';
 import images from '../../assets/images';
 
-export default function GiftFromPromotion(): JSX.Element {
+interface Props {
+  freebieListItem: {
+    productName: string;
+    id: string;
+    quantity: number;
+    baseUnit: string | undefined;
+    status: string | undefined;
+    productImage: string | undefined;
+  }[];
+}
+
+export default function GiftFromPromotion({
+  freebieListItem = [],
+}: Props): JSX.Element {
   const { t } = useLocalization();
-  const { cartList } = useCart();
-  if (cartList.length < 1) return <></>;
+
+  if (freebieListItem.length < 1) return <></>;
   return (
     <View style={styles().container}>
       <View style={styles().header}>
         <Text fontSize={18} bold fontFamily="NotoSans">
           {t('screens.CartScreen.giftFromPromotion.title')}
         </Text>
-        <Text color="text3">
+        <Text color="text3" lineHeight={24}>
           {t('screens.CartScreen.giftFromPromotion.allListCount', {
-            count: 3,
+            count: freebieListItem.length,
           })}
         </Text>
       </View>
       <View style={styles().content}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          {cartList.map((item, index) => {
+          {freebieListItem.map((item, index) => {
             return (
               <View key={index} style={styles().list}>
                 <View
@@ -57,11 +70,11 @@ export default function GiftFromPromotion(): JSX.Element {
                   )}
                 </View>
                 <View>
-                  <Text fontSize={14} color="text3">
+                  <Text fontSize={14} color="text3" lineHeight={24}>
                     {item.productName}
                   </Text>
-                  <Text semiBold fontSize={12}>
-                    {item.qtySaleUnit} {item.baseUOM}
+                  <Text semiBold fontSize={12} lineHeight={22}>
+                    {item.quantity} {item.baseUnit}
                   </Text>
                 </View>
               </View>

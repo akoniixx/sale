@@ -8,6 +8,10 @@ interface CartItemType {
     productId: number;
     quantity: number;
     shipmentOrder: number;
+    orderProductPromotions?: {
+      promotionId: string;
+      isUse: boolean;
+    }[];
   }[];
   paymentMethod?: string;
   saleCoRemark?: string;

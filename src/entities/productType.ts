@@ -131,8 +131,16 @@ export interface PromotionType {
       saleUnit: string;
       discountPrice: string;
       saleUnitDiscount: string;
+      saleUnitDiscountTH: string | null;
+      saleUnitTH: string | null;
     }[];
   }[];
+}
+export interface PromotionTypeCart {
+  promotionId: string | undefined;
+  isUse: boolean;
+  promotionName: string;
+  promotionType: string;
 }
 export interface ProductCategory {
   productCategoryId: string;

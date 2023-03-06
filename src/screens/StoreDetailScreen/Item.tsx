@@ -43,6 +43,12 @@ export default function Item({
   ...props
 }: Props): JSX.Element {
   const isPromo = promotion && promotion?.length > 0;
+  const orderProductPromotions = promotion?.map((el: any) => {
+    return {
+      promotionId: el?.promotionId,
+      isUse: true,
+    };
+  });
 
   const { t } = useLocalization();
   const {
@@ -54,9 +60,15 @@ export default function Item({
   const isAlreadyInCart = cartList?.find(
     item => item?.productId.toString() === idItem.toString(),
   );
-  const onChangeText = async (text: string, id: string) => {
+  const onChangeText = async ({
+    quantity,
+    id,
+  }: {
+    quantity: string;
+    id?: any;
+  }) => {
     const findIndex = cartList?.findIndex(item => item?.productId === id);
-    if (+text < 1 && findIndex !== -1) {
+    if (+quantity < 1 && findIndex !== -1) {
       const newCartList = [...cartList];
       newCartList.splice(findIndex, 1);
       setCartList(newCartList);
@@ -66,7 +78,7 @@ export default function Item({
     }
     if (findIndex !== -1) {
       const newCartList = [...cartList];
-      newCartList[findIndex].amount = Number(text);
+      newCartList[findIndex].amount = Number(quantity);
       setCartList(newCartList);
       await postCartItem(newCartList);
     }
@@ -228,7 +240,7 @@ export default function Item({
               />
             }
             onPress={async () => {
-              const newCartList = [
+              const newCartList: any = [
                 ...cartList,
                 {
                   ...props,
@@ -239,6 +251,7 @@ export default function Item({
                   amount: 5,
                   productImage,
                   order: cartList.length + 1,
+                  orderProductPromotions,
                 },
               ];
               setIsAddCart(true);

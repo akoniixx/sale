@@ -19,7 +19,7 @@ interface Props {
 }
 export default function SelectStoreScreen({ navigation }: Props): JSX.Element {
   const { t } = useLocalization();
-  const { setCartList } = useCart();
+  const { setCartList, setPromotionList, setFreebieListItem } = useCart();
   const [searchValue, setSearchValue] = React.useState<string | undefined>(
     undefined,
   );
@@ -30,6 +30,12 @@ export default function SelectStoreScreen({ navigation }: Props): JSX.Element {
   const [loading, setLoading] = React.useState<boolean>(false);
   const [listStore, setListStore] = React.useState<
     {
+      address: string;
+      province: string;
+      district: string;
+      subdistrict: string;
+      postcode: string;
+
       customerCompany: {
         customerId: string;
         customerName: string;
@@ -60,11 +66,14 @@ export default function SelectStoreScreen({ navigation }: Props): JSX.Element {
       getListStore();
     }
     setCartList([]);
-  }, [user, setCartList]);
+    setPromotionList([]);
+    setFreebieListItem([]);
+  }, [user, setCartList, setPromotionList, setFreebieListItem]);
   const data = useMemo(() => {
+    // console.log('listStore', JSON.stringify(listStore, null, 2));
+
     const newFormat = listStore.map(el => {
       const c = el.customerCompany?.[0];
-
       return {
         name: c.customerName,
         id: c.customerId,
@@ -73,6 +82,10 @@ export default function SelectStoreScreen({ navigation }: Props): JSX.Element {
         productBrand: c.productBrand,
         moreThanOneBrand: c.productBrand?.length > 1,
         termPayment: c.termPayment,
+        address: {
+          addressText: `${el.address} ${el.subdistrict} ${el.district} ${el.province} ${el.postcode}`,
+          name: c.customerName,
+        },
       };
     });
     return newFormat.filter(i => {

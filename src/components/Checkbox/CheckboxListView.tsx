@@ -31,8 +31,9 @@ export default function CheckboxListView({
         return (
           <View key={idx} style={styles({ isLast }).containerCheckbox}>
             <Text
+              lineHeight={24}
               style={{
-                width: Dimensions.get('window').width - 72,
+                width: Dimensions.get('screen').width - 120,
               }}>
               {item.title}
             </Text>

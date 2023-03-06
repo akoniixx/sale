@@ -137,6 +137,10 @@
     "addCart": "เพิ่มสินค้าไปยังตระกร้าแล้ว",
     "deleteCart": "ลบสินค้าออกจากตระกร้าแล้ว"
   },
+  "modalWarning": {
+    "cartDeleteTitle": "ยืนยันการลบสินค้า",
+    "cartDeleteDesc": "ต้องการลบสินค้าใช่หรือไม่"
+  },
   "dropDownModal": {
     "buttonCancel": "ยกเลิก",
     "buttonConfirm": "ยืนยัน"

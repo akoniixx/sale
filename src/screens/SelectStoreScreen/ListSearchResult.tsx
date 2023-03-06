@@ -14,6 +14,10 @@ interface Props {
     moreThanOneBrand: boolean;
     customerCompanyId: string;
     termPayment: string;
+    address: {
+      addressText: string;
+      name: string;
+    };
     productBrand: {
       product_brand_id: string;
       product_brand_name: string;
@@ -33,6 +37,8 @@ export default function ListSearchResult({
   const { setItem: setCustomerNo } = useAsyncStorage('customerNo');
   const { setItem: setCustomerName } = useAsyncStorage('customerName');
   const { setItem: setProductBrand } = useAsyncStorage('productBrand');
+  const { setItem: setAddress } = useAsyncStorage('address');
+  // console.log('data', JSON.stringify(data, null, 2));
   return (
     <FlatList
       data={data}
@@ -65,6 +71,7 @@ export default function ListSearchResult({
               setTermPayment(item.termPayment);
               setCustomerNo(item.customerNo);
               setCustomerName(item.name);
+              setAddress(JSON.stringify(item.address));
               if (item.moreThanOneBrand) {
                 navigation.navigate('SelectBrandBeforeDetailScreen', {
                   id: item.id,
@@ -87,7 +94,7 @@ export default function ListSearchResult({
               borderBottomWidth: 1,
               borderBottomColor: '#E5E5E5',
             }}>
-            <Text>{item.name}</Text>
+            <Text lineHeight={36}>{item.name}</Text>
           </TouchableOpacity>
         );
       }}

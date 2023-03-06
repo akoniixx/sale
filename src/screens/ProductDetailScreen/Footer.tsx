@@ -31,30 +31,43 @@ export default function Footer({
   const currentProduct = cartList?.find(
     item => item?.productId.toString() === id,
   );
-  const onChangeText = async (text: string, id: string) => {
+  const promotionIdList = (productItem?.promotion || []).map(el => {
+    return {
+      promotionId: el?.promotionId,
+      isUse: true,
+    };
+  });
+  const onChangeText = async ({
+    quantity,
+    id,
+  }: {
+    quantity: string;
+    id?: any;
+  }) => {
     const findIndex = cartList?.findIndex(
       item => item?.productId.toString() === id.toString(),
     );
     if (findIndex !== -1) {
       const newCartList = [...cartList];
-      if (+text < 1) {
+      if (+quantity < 1) {
         newCartList.splice(findIndex, 1);
         setCartList(newCartList);
         await postCartItem(newCartList);
         setIsDelCart(true);
         return;
       } else {
-        newCartList[findIndex].amount = Number(text);
+        newCartList[findIndex].amount = Number(quantity);
         setCartList(newCartList);
         await postCartItem(newCartList);
       }
     } else {
-      const newCartList = [
+      const newCartList: any = [
         ...cartList,
         {
           ...productItem,
           productId: id,
-          amount: Number(text),
+          amount: Number(quantity),
+          orderProductPromotions: promotionIdList || [],
           order: cartList.length + 1,
         },
       ];
@@ -74,12 +87,13 @@ export default function Footer({
       setCartList(newCartList);
       await postCartItem(newCartList);
     } else {
-      const newCartList = [
+      const newCartList: any = [
         ...cartList,
         {
           ...productItem,
           productId: id,
           amount: 5,
+          orderProductPromotions: promotionIdList,
           order: cartList.length + 1,
         },
       ];
@@ -118,12 +132,13 @@ export default function Footer({
       setCartList(newCartList);
       await postCartItem(newCartList);
     } else {
-      const newCartList = [
+      const newCartList: any = [
         ...cartList,
         {
           ...productItem,
           productId: id,
           amount: 5,
+          orderProductPromotions: promotionIdList,
           order: cartList?.length + 1,
         },
       ];

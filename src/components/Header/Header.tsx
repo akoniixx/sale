@@ -13,6 +13,7 @@ import icons from '../../assets/icons';
 
 interface Props {
   title?: string;
+  onBackCustom?: () => void;
   componentLeft?: React.ReactNode;
   componentRight?: React.ReactNode;
   style?: ViewStyle;
@@ -35,6 +36,7 @@ export default function Header({
   componentRight,
   titleColor = 'text1',
   style,
+  onBackCustom,
 }: Props) {
   const navigation = useNavigation();
   return (
@@ -42,7 +44,8 @@ export default function Header({
       {componentLeft ? (
         componentLeft
       ) : (
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        <TouchableOpacity
+          onPress={() => (onBackCustom ? onBackCustom() : navigation.goBack())}>
           <Image
             source={icons.backIcon}
             style={{

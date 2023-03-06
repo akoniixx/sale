@@ -5,6 +5,7 @@ import OtpScreen from '../screens/OtpScreen';
 import WelcomeScreen from '../screens/WelcomeScreen';
 import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { navigate } from './RootNavigator';
 
 export type AuthStackParamList = {
   LoginScreen: undefined;
@@ -17,18 +18,14 @@ export type AuthStackParamList = {
 };
 const Stack = createStackNavigator<AuthStackParamList>();
 export default function AuthNavigator() {
-  const [isFirstOpenApp, setIsFirstOpenApp] = React.useState<boolean | null>(
-    null,
-  );
-
   useFocusEffect(
     React.useCallback(() => {
       const getIsFirstOpenApp = async () => {
         const firstOpenApp = await AsyncStorage.getItem('firstOpenApp');
         if (firstOpenApp === null) {
-          setIsFirstOpenApp(null);
+          navigate('WelcomeScreen');
         } else {
-          setIsFirstOpenApp(false);
+          navigate('LoginScreen');
         }
       };
       getIsFirstOpenApp();
@@ -37,7 +34,7 @@ export default function AuthNavigator() {
   return (
     <Stack.Navigator
       screenOptions={{ headerShown: false }}
-      initialRouteName={isFirstOpenApp ? 'WelcomeScreen' : 'LoginScreen'}>
+      initialRouteName={'LoginScreen'}>
       <Stack.Group>
         <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} />
         <Stack.Screen name="OtpScreen" component={OtpScreen} />

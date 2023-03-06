@@ -3,7 +3,6 @@ import {
   StyleSheet,
   Platform,
   Image,
-  TextInput,
   TouchableOpacity,
 } from 'react-native';
 import React from 'react';
@@ -15,12 +14,36 @@ import { colors } from '../../assets/colors/colors';
 import Summary from './Summary';
 import { TypeDataStepTwo } from '.';
 import { SheetManager } from 'react-native-actions-sheet';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { MainStackParamList } from '../../navigations/MainNavigator';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface Props {
   setDataStepTwo: React.Dispatch<React.SetStateAction<TypeDataStepTwo>>;
   dataStepTwo: TypeDataStepTwo;
+  setAddressDelivery: React.Dispatch<
+    React.SetStateAction<{
+      address: string;
+      name: string;
+    }>
+  >;
+  addressDelivery: {
+    address: string;
+    name: string;
+  };
+  navigation: StackNavigationProp<MainStackParamList, 'CartScreen'>;
 }
-export default function StepTwo({ setDataStepTwo, dataStepTwo }: Props) {
+export default function StepTwo({
+  setDataStepTwo,
+  dataStepTwo,
+  navigation,
+  addressDelivery,
+  setAddressDelivery,
+}: Props) {
+  const {
+    state: { user },
+  } = useAuth();
+
   return (
     <>
       <View style={styles.container}>
@@ -52,6 +75,11 @@ export default function StepTwo({ setDataStepTwo, dataStepTwo }: Props) {
           },
         ]}>
         <Button
+          onPress={() => {
+            navigation.navigate('SpecialRequestScreen', {
+              specialRequestRemark: dataStepTwo?.specialRequestRemark || '',
+            });
+          }}
           secondary
           style={{
             height: 50,
@@ -88,14 +116,41 @@ export default function StepTwo({ setDataStepTwo, dataStepTwo }: Props) {
           <Text bold fontSize={18} fontFamily="NotoSans">
             สถานที่รับสินค้า / สถานที่จัดส่ง
           </Text>
-          <TouchableOpacity
-            onPress={() => {
-              SheetManager.show('select-location');
-            }}>
-            <Text fontSize={14} color="primary">
-              เปลี่ยน
-            </Text>
-          </TouchableOpacity>
+          {user?.company !== 'ICPF' && (
+            <TouchableOpacity
+              onPress={async () => {
+                const result: {
+                  name?: string;
+                  address: string;
+                  comment?: string;
+                  selected: string;
+                } = await SheetManager.show('select-location', {
+                  payload: {
+                    address: addressDelivery.address,
+                    name: addressDelivery.name,
+                    comment: dataStepTwo?.deliveryRemark || '',
+                    selected: dataStepTwo.deliveryDest,
+                  },
+                });
+                if (result) {
+                  setAddressDelivery(prev => ({
+                    ...prev,
+                    address: result.address,
+                    name: result.name || '',
+                  }));
+                  setDataStepTwo(prev => ({
+                    ...prev,
+                    deliveryAddress: `${result.name || ''} ${result.address}`,
+                    deliveryRemark: result.comment || '',
+                    deliveryDest: result.selected || '',
+                  }));
+                }
+              }}>
+              <Text fontSize={14} color="primary">
+                เปลี่ยน
+              </Text>
+            </TouchableOpacity>
+          )}
         </View>
         <View
           style={{
@@ -118,18 +173,24 @@ export default function StepTwo({ setDataStepTwo, dataStepTwo }: Props) {
               style={{
                 marginLeft: 8,
               }}>
-              <Text semiBold>จัดส่งที่ร้าน</Text>
-              <Text color="text3" fontSize={14}>
-                บริษัท เอี่ยวฮั่วล้ง จำกัด
+              <Text semiBold lineHeight={26}>
+                {dataStepTwo.deliveryDest === 'SHOP'
+                  ? 'จัดส่งที่ร้าน'
+                  : dataStepTwo.deliveryDest === 'OTHER'
+                  ? 'จัดส่งที่อื่นๆ'
+                  : 'จัดส่งที่โรงงาน'}
+              </Text>
+              <Text color="text3" fontSize={14} lineHeight={26}>
+                {addressDelivery.name}
               </Text>
               <Text
-                lineHeight={18}
+                lineHeight={20}
                 color="text3"
                 fontSize={14}
                 style={{
                   width: 280,
                 }}>
-                116/21 หมู่4 ตำบลเขาบางแกรก อำเภอหนองฉาง อุทัยธานี 61170
+                {addressDelivery.address}
               </Text>
             </View>
           </View>

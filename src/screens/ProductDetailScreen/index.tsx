@@ -77,6 +77,7 @@ export default function ProductDetailScreen({
               id={id}
               setIsAddCart={setIsAddCart}
               setIsDelCart={setIsDelCart}
+              setLoading={setLoading}
               productItem={productItem}
             />
           )}

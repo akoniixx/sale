@@ -17,6 +17,7 @@ import Counter from '../../components/Counter/Counter';
 import { ProductType } from '../../entities/productType';
 import images from '../../assets/images';
 import FastImage from 'react-native-fast-image';
+import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
 
 interface Props extends ProductType {
   name?: string;
@@ -56,6 +57,7 @@ export default function Item({
     cartList,
     cartApi: { postCartItem },
   } = useCart();
+  const [loading, setLoading] = React.useState(false);
 
   const isAlreadyInCart = cartList?.find(
     item => item?.productId.toString() === idItem.toString(),
@@ -67,6 +69,7 @@ export default function Item({
     quantity: string;
     id?: any;
   }) => {
+    setLoading(true);
     const findIndex = cartList?.findIndex(item => item?.productId === id);
     if (+quantity < 1 && findIndex !== -1) {
       const newCartList = [...cartList];
@@ -81,6 +84,7 @@ export default function Item({
       newCartList[findIndex].amount = Number(quantity);
       setCartList(newCartList);
       await postCartItem(newCartList);
+      setLoading(false);
     }
   };
   const onAddCartByIndex = async (id: string | number) => {
@@ -267,6 +271,7 @@ export default function Item({
           />
         )}
       </View>
+      <LoadingSpinner visible={loading} />
     </TouchableOpacity>
   );
 }

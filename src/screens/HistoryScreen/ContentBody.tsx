@@ -1,5 +1,5 @@
 import { Dimensions, FlatList, Image, View } from 'react-native';
-import React from 'react';
+import React, { useMemo } from 'react';
 import Text from '../../components/Text/Text';
 import images from '../../assets/images';
 import { HistoryDataType } from '../../entities/historyTypes';
@@ -51,6 +51,9 @@ export default function ContentBody({
   const onPressCustomer = (id: number) => {
     setCustomerCompanyId(id);
   };
+  const isHasCustomerId = useMemo(() => {
+    return !!customerCompanyId;
+  }, [customerCompanyId]);
   return typeSearch === 'area' || customerCompanyId ? (
     <FlatList
       data={data}
@@ -62,7 +65,13 @@ export default function ContentBody({
       keyExtractor={(item, index) => item.orderId.toString() + index}
       ListEmptyComponent={EmptyItem}
       renderItem={({ item }) => {
-        return <HistoryItemArea {...item} navigation={navigation} />;
+        return (
+          <HistoryItemArea
+            {...item}
+            navigation={navigation}
+            isHasCustomerId={isHasCustomerId}
+          />
+        );
       }}
     />
   ) : (

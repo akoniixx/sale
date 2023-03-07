@@ -14,6 +14,7 @@ interface Props {
   setIsAddCart: React.Dispatch<React.SetStateAction<boolean>>;
   setIsDelCart: React.Dispatch<React.SetStateAction<boolean>>;
   productItem: ProductSummary;
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
 export default function Footer({
   id,
@@ -21,6 +22,7 @@ export default function Footer({
   setIsDelCart,
   navigation,
   productItem,
+  setLoading,
 }: Props): JSX.Element {
   const { t } = useLocalization();
   const {
@@ -44,6 +46,7 @@ export default function Footer({
     quantity: string;
     id?: any;
   }) => {
+    setLoading(true);
     const findIndex = cartList?.findIndex(
       item => item?.productId.toString() === id.toString(),
     );
@@ -54,11 +57,13 @@ export default function Footer({
         setCartList(newCartList);
         await postCartItem(newCartList);
         setIsDelCart(true);
+        setLoading(false);
         return;
       } else {
         newCartList[findIndex].amount = Number(quantity);
         setCartList(newCartList);
         await postCartItem(newCartList);
+        setLoading(false);
       }
     } else {
       const newCartList: any = [
@@ -73,6 +78,7 @@ export default function Footer({
       ];
       await postCartItem(newCartList);
       setCartList(newCartList);
+      setLoading(false);
     }
   };
   const onIncrease = async () => {

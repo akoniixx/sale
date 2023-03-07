@@ -2,10 +2,10 @@ import { View, StyleSheet, ScrollView, Image } from 'react-native';
 import React from 'react';
 import Text from '../../components/Text/Text';
 import { useLocalization } from '../../contexts/LocalizationContext';
-import { useCart } from '../../contexts/CartContext';
 import { colors } from '../../assets/colors/colors';
 import { getNewPath } from '../../utils/functions';
 import images from '../../assets/images';
+import ImageCache from '../../components/ImageCache/ImageCache';
 
 interface Props {
   freebieListItem: {
@@ -22,6 +22,7 @@ export default function GiftFromPromotion({
   freebieListItem = [],
 }: Props): JSX.Element {
   const { t } = useLocalization();
+  console.log(JSON.stringify(freebieListItem, null, 2));
 
   if (freebieListItem.length < 1) return <></>;
   return (
@@ -52,8 +53,8 @@ export default function GiftFromPromotion({
                     marginRight: 8,
                   }}>
                   {item.productImage ? (
-                    <Image
-                      source={{ uri: getNewPath(item.productImage) }}
+                    <ImageCache
+                      uri={getNewPath(item.productImage)}
                       style={{
                         width: 40,
                         height: 40,

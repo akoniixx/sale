@@ -151,7 +151,13 @@ export default function SpecialRequestScreen({
               </Text>
             </View>
             {cartList.map((item, index) => {
-              return <ListSpecialRequest item={item} key={index} />;
+              return (
+                <ListSpecialRequest
+                  setIsShow={setIsShow}
+                  item={item}
+                  key={index}
+                />
+              );
             })}
             <View style={styles.commentCard}>
               <View>

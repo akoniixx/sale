@@ -11,7 +11,7 @@ export interface OrderDetailType {
   navNo: string;
   orderId: string;
   orderNo: string;
-  orderStatus: string;
+  status: string;
   orderProducts: [
     {
       baseUom: string;

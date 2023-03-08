@@ -11,9 +11,13 @@ import LoginSuccessScreen from '../../screens/LoginSuccessScreen';
 import TermAndConditionScreen from '../../screens/TermAndConditionScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { navigate } from '../RootNavigator';
+import SpecialRequestScreen from '../../screens/SpecialRequestScreen';
+import HistoryDetailScreen from '../../screens/HistoryDetailScreen';
 
 export type MainStackParamList = {
-  MainScreen: undefined;
+  MainScreen: {
+    screen?: string;
+  };
 
   SelectStoreScreen: undefined;
   StoreDetailScreen: {
@@ -40,12 +44,23 @@ export type MainStackParamList = {
     id: string;
     customerCompanyId: string;
   };
-  CartScreen: undefined;
+  CartScreen: {
+    step?: number;
+    specialRequestRemark?: string | undefined;
+  };
   OrderSuccessScreen: {
     orderId: string;
   };
   TermAndConditionScreen: undefined;
   LoginSuccessScreen: undefined;
+  SpecialRequestScreen: {
+    specialRequestRemark: string | undefined;
+  };
+  HistoryScreen: undefined;
+  HistoryDetailScreen: {
+    orderId: string;
+    headerTitle: string;
+  };
 };
 const Stack = createStackNavigator<MainStackParamList>();
 export default function MainNavigator() {
@@ -94,6 +109,14 @@ export default function MainNavigator() {
         <Stack.Screen
           name="TermAndConditionScreen"
           component={TermAndConditionScreen}
+        />
+        <Stack.Screen
+          name="SpecialRequestScreen"
+          component={SpecialRequestScreen}
+        />
+        <Stack.Screen
+          name="HistoryDetailScreen"
+          component={HistoryDetailScreen}
         />
       </Stack.Group>
     </Stack.Navigator>

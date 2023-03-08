@@ -170,7 +170,7 @@ export default function ListItem({
       ...dataBrand,
     ];
   }, [dataBrand, user?.company]);
-  const HeaderFlatList = () => {
+  const HeaderFlatList = React.memo(() => {
     return (
       <View
         style={{
@@ -322,7 +322,9 @@ export default function ListItem({
         </ScrollView>
       </View>
     );
-  };
+  });
+  HeaderFlatList.displayName = 'HeaderFlatList';
+
   const memorizeItem = useMemo(() => {
     const renderItem = ({
       item,

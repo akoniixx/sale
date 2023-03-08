@@ -5,13 +5,17 @@ import {
   Image,
   TextInput,
 } from 'react-native';
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { colors } from '../../assets/colors/colors';
 import icons from '../../assets/icons';
+import { numberWithCommas } from '../../utils/functions';
+import ModalWarning from '../../components/Modal/ModalWarning';
+import { useLocalization } from '../../contexts/LocalizationContext';
+import { debounce } from 'lodash';
 interface Props {
   currentQuantity: number;
   onBlur?: () => void;
-  onChangeText?: (text: string, id?: any) => void;
+  onChangeText?: ({ id, quantity }: { quantity: string; id?: any }) => void;
   id: string | number;
   onIncrease?: (id: string | number) => void;
   onDecrease?: (id: string | number) => void;
@@ -24,6 +28,27 @@ const CounterSmall = ({
   onIncrease,
   id,
 }: Props): JSX.Element => {
+  const [quantity, setQuantity] = React.useState('0');
+  const [isModalVisible, setIsModalVisible] = React.useState<boolean>(false);
+  const { t } = useLocalization();
+  const inputRef = useRef<TextInput>(null);
+
+  useEffect(() => {
+    if (+currentQuantity > 0) {
+      setQuantity(currentQuantity.toString());
+    } else {
+      setQuantity('0');
+    }
+  }, [currentQuantity]);
+  // const debouncedSearch = useRef(
+  //   debounce(quantity => {
+  //     if (+quantity < 1 && currentQuantity > 0) {
+  //       setIsModalVisible(true);
+  //     } else {
+  //       onChangeText?.({ id, quantity });
+  //     }
+  //   }, 1000),
+  // ).current;
   return (
     <View style={styles.container}>
       <TouchableOpacity
@@ -42,18 +67,30 @@ const CounterSmall = ({
         />
       </TouchableOpacity>
       <TextInput
-        value={currentQuantity.toString()}
+        value={numberWithCommas(quantity).toString()}
         keyboardType="number-pad"
+        ref={inputRef}
         style={{
           fontFamily: 'NotoSansThai-Bold',
           fontSize: 12,
           alignItems: 'center',
           justifyContent: 'center',
           textAlign: 'center',
-
+          minWidth: 20,
           padding: 0,
         }}
-        onChangeText={text => onChangeText?.(text, id)}
+        onChangeText={text => {
+          const onlyNumber = text.replace(/[^0-9]/g, '');
+          setQuantity(onlyNumber);
+        }}
+        returnKeyType="done"
+        onSubmitEditing={() => {
+          if (+quantity < 1 && currentQuantity > 0) {
+            setIsModalVisible(true);
+          } else {
+            onChangeText?.({ id, quantity });
+          }
+        }}
         onBlur={onBlur}
       />
       <TouchableOpacity
@@ -71,6 +108,23 @@ const CounterSmall = ({
           }}
         />
       </TouchableOpacity>
+      <ModalWarning
+        title={t('modalWarning.cartDeleteTitle')}
+        desc={t('modalWarning.cartDeleteDesc')}
+        visible={isModalVisible}
+        onConfirm={() => {
+          setIsModalVisible(false);
+          onChangeText?.({ id, quantity });
+        }}
+        onRequestClose={() => {
+          setIsModalVisible(false);
+          setQuantity(currentQuantity.toString());
+          onChangeText?.({
+            id,
+            quantity: currentQuantity.toString(),
+          });
+        }}
+      />
     </View>
   );
 };

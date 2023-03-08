@@ -1,13 +1,13 @@
 import { View, Image, ScrollView, TouchableOpacity } from 'react-native';
-import React, { useMemo } from 'react';
+import React from 'react';
 import { colors } from '../../assets/colors/colors';
 import Text from '../../components/Text/Text';
 import { getNewPath, numberWithCommas } from '../../utils/functions';
 import { useLocalization } from '../../contexts/LocalizationContext';
-import dayjs from 'dayjs';
 import PromotionItem from './PromotionItem';
 import images from '../../assets/images';
 import { PromotionType } from '../../entities/productType';
+import ImageCache from '../../components/ImageCache/ImageCache';
 
 type Props = {
   packSize?: string;
@@ -34,7 +34,6 @@ export default function Body({
 }: Props): JSX.Element {
   const { t } = useLocalization();
   const [isShowMore, setIsShowMore] = React.useState(false);
-
   return (
     <ScrollView>
       <View
@@ -48,13 +47,12 @@ export default function Body({
             alignItems: 'center',
           }}>
           {productImage ? (
-            <Image
-              source={{ uri: getNewPath(productImage) }}
+            <ImageCache
+              uri={getNewPath(productImage)}
               style={{
                 width: '100%',
                 height: 220,
               }}
-              resizeMode="contain"
             />
           ) : (
             <View
@@ -180,8 +178,11 @@ export default function Body({
                   key={index}
                   {...item}
                   index={index}
+                  promotionLength={promotion.length}
+                  productName={productName}
                   currentProductId={productId}
                   unitBuy={saleUOMTH}
+                  promotionType={item.promotionType}
                 />
               );
             })}

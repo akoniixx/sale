@@ -1,18 +1,27 @@
-import { View } from 'react-native';
-import React from 'react';
+import { View, TextInputProps } from 'react-native';
+import React, { useEffect } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import InputText from '../InputText/InputText';
 
-interface Props {
+interface Props extends TextInputProps {
   label?: string;
   name: string;
   extra?: JSX.Element;
+  placeholder?: string;
+  value?: string;
 }
-export default function InputTextForm({ name }: Props): JSX.Element {
+export default function InputTextForm({ name, ...props }: Props): JSX.Element {
   const {
     control,
     formState: { errors },
+    setValue,
   } = useFormContext();
+  useEffect(() => {
+    if (props.defaultValue) {
+      setValue(name, props.defaultValue);
+    }
+  }, [name]);
+
   return (
     <View>
       <Controller
@@ -22,6 +31,7 @@ export default function InputTextForm({ name }: Props): JSX.Element {
           return (
             <>
               <InputText
+                {...props}
                 isError={!!errors?.[name]}
                 onChangeText={value => onChange(value)}
                 value={value}

@@ -7,49 +7,69 @@ import { useLocalization } from '../../contexts/LocalizationContext';
 import icons from '../../assets/icons';
 import HomeScreen from '../../screens/HomeScreen';
 import ProfileScreen from '../../screens/ProfileScreen';
+import { StackScreenProps } from '@react-navigation/stack';
+import { MainStackParamList } from '.';
+import HistoryScreen from '../../screens/HistoryScreen';
 const Tab = createBottomTabNavigator();
-export default function MainTabBottomNavigator() {
+export default function MainTabBottomNavigator({
+  route,
+}: StackScreenProps<MainStackParamList, 'MainScreen'>) {
   const { t } = useLocalization();
+
   const ListTabs = [
     {
       name: 'home',
       title: t('tabs.HomeTab.title'),
       iconActive: icons.HomeActive,
-      iconInactive: '',
+      iconInactive: icons.HomeInActive,
       component: HomeScreen,
     },
     {
       name: 'history',
       title: t('tabs.HistoryTab.title'),
-      iconActive: icons.HistoryInactive,
-      iconInactive: '',
-      component: View,
+      iconActive: icons.HistoryActive,
+      iconInactive: icons.HistoryInactive,
+      component: HistoryScreen,
     },
     {
       name: 'order',
       title: t('tabs.OrderTab.title'),
-      iconActive: icons.OrderInactive,
-      iconInactive: '',
+      iconActive: icons.OrderActive,
+      iconInactive: icons.OrderInactive,
       component: View,
     },
     {
       name: 'notification',
       title: t('tabs.NotificationTab.title'),
-      iconActive: icons.NotificationInactive,
-      iconInactive: '',
+      iconActive: icons.NotificationActive,
+      iconInactive: icons.NotificationInactive,
       component: View,
     },
     {
       name: 'profile',
       title: t('tabs.ProfileTab.title'),
-      iconActive: icons.ProfileInactive,
-      iconInactive: '',
+      iconActive: icons.ProfileActive,
+      iconInactive: icons.ProfileInactive,
       component: ProfileScreen,
     },
   ];
 
   return (
-    <Tab.Navigator screenOptions={{ headerShown: false }}>
+    <Tab.Navigator
+      initialRouteName={route.params?.screen ? route.params.screen : 'home'}
+      screenOptions={{
+        headerShown: false,
+        tabBarStyle: {
+          shadowColor: '#000',
+          shadowOffset: {
+            width: 0,
+            height: -4,
+          },
+          shadowOpacity: 0.06,
+          shadowRadius: 1.62,
+          elevation: 14,
+        },
+      }}>
       {ListTabs.map((item, index) => {
         return (
           <Tab.Screen
@@ -85,11 +105,12 @@ export default function MainTabBottomNavigator() {
                         alignItems: 'center',
                       }}>
                       <Image
-                        source={item.iconActive}
+                        source={isFocused ? item.iconActive : item.iconInactive}
                         style={{
                           width: 24,
                           height: 24,
                         }}
+                        resizeMode="contain"
                       />
 
                       <Text

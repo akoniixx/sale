@@ -2,6 +2,7 @@ export const colors = {
   primary: '#4C95FF',
   secondary: '#FF9800',
   waiting: '#FF8824',
+  warning: '#F4BF00',
   text1: '#0E0E0E',
   text2: '#314364',
   text3: '#8F9EBC',

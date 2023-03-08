@@ -7,10 +7,10 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import React, { useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import Text from '../../components/Text/Text';
 import { useLocalization } from '../../contexts/LocalizationContext';
-import { useCart } from '../../contexts/CartContext';
+import { newProductType, useCart } from '../../contexts/CartContext';
 import { getNewPath, numberWithCommas } from '../../utils/functions';
 import icons from '../../assets/icons';
 import { colors } from '../../assets/colors/colors';
@@ -18,18 +18,33 @@ import CounterSmall from './CounterSmall';
 import images from '../../assets/images';
 import Dropdown from '../../components/Dropdown/Dropdown';
 import PromotionSection from './PromotionSection';
-import GiftFromPromotion from './GiftFromPromotion';
+
 import ModalWarning from '../../components/Modal/ModalWarning';
 import ModalMessage from '../../components/Modal/ModalMessage';
+import ImageCache from '../../components/ImageCache/ImageCache';
+import GiftFromPromotion from './GiftFromPromotion';
+import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
 
+const reArrangeShipment = (dataList: newProductType[]) => {
+  return dataList.map((item, index) => {
+    return {
+      ...item,
+      order: index + 1,
+    };
+  });
+};
 export default function ListItemInCart() {
   const { t } = useLocalization();
+  const [loading, setLoading] = React.useState(false);
   const {
     cartList,
+    cartDetail,
     setCartList,
-    cartApi: { postCartItem },
+    promotionList,
+    freebieListItem,
+    cartApi: { postCartItem, getSelectPromotion },
   } = useCart();
-  const isPromotion = false;
+
   const [visibleDel, setVisibleDel] = React.useState(false);
   const [delId, setDelId] = React.useState<string | number>('');
   const onChangeOrder = async (value: any, id: string) => {
@@ -54,61 +69,111 @@ export default function ListItemInCart() {
   };
 
   const onIncrease = async (id: string | number) => {
-    const findIndex = cartList?.findIndex(
-      item => item?.productId.toString() === id.toString(),
-    );
-    if (findIndex !== -1) {
-      const newCartList = [...cartList];
-      newCartList[findIndex].amount += 5;
-      setCartList(newCartList);
-      await postCartItem(newCartList);
+    try {
+      setLoading(true);
+      const findIndex = cartList?.findIndex(
+        item => item?.productId.toString() === id.toString(),
+      );
+      if (findIndex !== -1) {
+        const newCartList = [...cartList];
+
+        newCartList[findIndex].amount += 5;
+
+        const { cartList: cl, cartDetail } = await postCartItem(newCartList);
+        await getSelectPromotion(cartDetail.allPromotions);
+        setCartList(cl);
+      }
+    } catch (e) {
+      console.log('error', e);
+    } finally {
+      setLoading(false);
     }
   };
   const onDecrease = async (id: string | number) => {
-    const findIndex = cartList?.findIndex(
-      item => item?.productId.toString() === id.toString(),
-    );
-    if (findIndex !== -1) {
-      const newCartList = [...cartList];
-      const amount = newCartList[findIndex].amount;
-      if (amount > 5) {
-        newCartList[findIndex].amount -= 5;
-        setCartList(newCartList);
-        await postCartItem(newCartList);
-      } else {
-        newCartList.splice(findIndex, 1);
-        setCartList(newCartList);
+    try {
+      setLoading(true);
+      const findIndex = cartList?.findIndex(
+        item => item?.productId.toString() === id.toString(),
+      );
+      if (findIndex !== -1) {
+        const newCartList = [...cartList];
+        const amount = newCartList[findIndex].amount;
+        if (amount > 5) {
+          newCartList[findIndex].amount -= 5;
+          const { cartList: cl, cartDetail } = await postCartItem(newCartList);
+          await getSelectPromotion(cartDetail.allPromotions);
 
-        await postCartItem(newCartList);
+          setCartList(cl);
+        } else {
+          setIsDelCart(true);
+
+          const currentCL = reArrangeShipment(
+            newCartList.filter(el => el.productId !== id),
+          );
+
+          const { cartList: cl, cartDetail } = await postCartItem(currentCL);
+
+          await getSelectPromotion(cartDetail.allPromotions);
+          setCartList(cl);
+        }
       }
+    } catch (error) {
+      console.log('error', error);
+    } finally {
+      setLoading(false);
     }
   };
-  const onChangeText = async (text: string, id: string) => {
+  const onChangeText = async ({
+    quantity,
+    id,
+  }: {
+    quantity: string;
+    id?: any;
+  }) => {
+    setLoading(true);
     const findIndex = cartList?.findIndex(
       item => item?.productId.toString() === id.toString(),
     );
 
-    if (+text === 0 && findIndex !== -1) {
+    if (+quantity <= 0 && findIndex !== -1) {
       setVisibleDel(true);
       setDelId(id);
     }
     if (findIndex !== -1) {
-      const newCartList = [...cartList];
-      newCartList[findIndex].amount = Number(text);
-      setCartList(newCartList);
-      await postCartItem(newCartList);
+      try {
+        const newCartList = [...cartList];
+        newCartList[findIndex].amount = Number(quantity);
+        const { cartList: cl, cartDetail } = await postCartItem(newCartList);
+        await getSelectPromotion(cartDetail.allPromotions);
+        setCartList(cl);
+      } catch (e) {
+        console.log('error', e);
+      } finally {
+        setLoading(false);
+      }
     }
   };
   const onDelete = async (id: string | number) => {
-    const newCartList = cartList?.filter(
-      item => item?.productId.toString() !== id.toString(),
-    );
+    try {
+      setLoading(true);
+      const newCartList = cartList?.filter(
+        item => item?.productId.toString() !== id.toString(),
+      );
 
-    setCartList(newCartList);
-    setVisibleDel(false);
+      const currentCL = reArrangeShipment(newCartList);
 
-    await postCartItem(newCartList);
-    setIsDelCart(true);
+      setVisibleDel(false);
+
+      const { cartList: cl, cartDetail } = await postCartItem(currentCL);
+      await getSelectPromotion(cartDetail.allPromotions);
+      setCartList(cl);
+
+      setIsDelCart(true);
+    } catch (e) {
+      console.log('error', e);
+    } finally {
+      setLoading(false);
+    }
   };
   const [isDelCart, setIsDelCart] = React.useState(false);
   const itemsDropdown = useMemo(() => {
@@ -119,7 +184,167 @@ export default function ListItemInCart() {
       };
     });
   }, [cartList]);
+  const RenderList = () => {
+    return (
+      <>
+        {cartList.map(item => {
+          const isUsePromotion = cartDetail?.allPromotions?.find(el => {
+            return (
+              el.isUse &&
+              el.conditionDetail.productId.toString() ===
+                item.productId.toString()
+            );
+          });
 
+          const sumDiscount = isUsePromotion ? item?.discount : 0;
+          return (
+            <View
+              key={item.productId}
+              style={{
+                marginTop: 16,
+              }}>
+              <View style={styles.containerItem}>
+                <View style={styles.containerLeft}>
+                  {item?.productImage ? (
+                    <ImageCache
+                      uri={getNewPath(item?.productImage)}
+                      style={{
+                        width: 62,
+                        height: 62,
+                        marginRight: 10,
+                      }}
+                    />
+                  ) : (
+                    <View
+                      style={{
+                        width: 62,
+                        height: 62,
+                        marginRight: 10,
+                      }}>
+                      <Image
+                        style={{
+                          width: 56,
+                          height: 56,
+                        }}
+                        source={images.emptyProduct}
+                      />
+                    </View>
+                  )}
+                  <View style={styles.item}>
+                    <Text
+                      fontFamily="NotoSans"
+                      fontSize={16}
+                      bold
+                      style={{
+                        width: Dimensions.get('window').width - 150,
+                      }}
+                      numberOfLines={1}>
+                      {item.productName}
+                    </Text>
+                    <Text fontFamily="NotoSans" fontSize={14} color="text3">
+                      {item.packSize
+                        ? `${item.packSize} | ฿${numberWithCommas(
+                            +item.marketPrice,
+                          )}/${item.saleUom}`
+                        : `฿${numberWithCommas(+item.marketPrice)}/${
+                            item.saleUom
+                          }`}
+                    </Text>
+                    <Text fontSize={14} color="text2">
+                      {`฿${numberWithCommas(+item.marketPrice)}/${
+                        item.saleUom
+                      } x ${item.amount} ${item.saleUom}`}
+                      {sumDiscount > 0 && (
+                        <Text color="current">
+                          {`  ส่วนลด ฿${numberWithCommas(sumDiscount)}`}
+                        </Text>
+                      )}
+                    </Text>
+                    <Dropdown
+                      style={{
+                        width: 70,
+                        height: 24,
+                        justifyContent: 'center',
+                        paddingLeft: 16,
+                        marginTop: 8,
+                        paddingVertical: 2,
+                      }}
+                      titleModal="เลือกลำดับ"
+                      data={itemsDropdown}
+                      value={item.order}
+                      onChangeValue={value =>
+                        onChangeOrder(value, item.productId)
+                      }
+                    />
+                  </View>
+                </View>
+
+                <TouchableOpacity
+                  style={styles.buttonDel}
+                  onPress={() => {
+                    setDelId(item.productId);
+                    setVisibleDel(true);
+                  }}>
+                  <Image
+                    source={icons.bin}
+                    style={{
+                      width: 15,
+                      height: 17,
+                      marginBottom: 2,
+                    }}
+                  />
+                </TouchableOpacity>
+              </View>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginTop: 10,
+                }}>
+                <View style={{ flexDirection: 'row' }}>
+                  <View
+                    style={{
+                      width: 62,
+                      marginRight: 10,
+                    }}
+                  />
+                  <CounterSmall
+                    currentQuantity={+item.amount}
+                    onChangeText={onChangeText}
+                    onIncrease={onIncrease}
+                    onDecrease={onDecrease}
+                    id={item.productId}
+                  />
+                </View>
+                <View>
+                  {sumDiscount > 0 && (
+                    <Text
+                      fontFamily="NotoSans"
+                      color="text3"
+                      style={{
+                        textDecorationStyle: 'solid',
+                        textDecorationLine:
+                          sumDiscount > 0 ? 'line-through' : 'none',
+                      }}>
+                      {`฿${numberWithCommas(Number(item?.totalPrice || 0))}`}
+                    </Text>
+                  )}
+                  <Text bold fontFamily="NotoSans">
+                    {`฿${numberWithCommas(
+                      sumDiscount > 0
+                        ? Number(item?.totalPrice || 0) - sumDiscount
+                        : item?.totalPrice,
+                    )}`}
+                  </Text>
+                </View>
+              </View>
+            </View>
+          );
+        })}
+      </>
+    );
+  };
   return (
     <>
       <KeyboardAvoidingView
@@ -134,153 +359,7 @@ export default function ListItemInCart() {
             </Text>
           </Text>
           {cartList.length > 0 ? (
-            <View>
-              {cartList.map(item => {
-                return (
-                  <View
-                    key={item.productId}
-                    style={{
-                      marginTop: 16,
-                    }}>
-                    <View style={styles.containerItem}>
-                      <View style={styles.containerLeft}>
-                        {item?.productImage ? (
-                          <Image
-                            source={{ uri: getNewPath(item?.productImage) }}
-                            style={{
-                              width: 62,
-                              height: 62,
-                              marginRight: 10,
-                            }}
-                          />
-                        ) : (
-                          <View
-                            style={{
-                              width: 62,
-                              height: 62,
-                              marginRight: 10,
-                            }}>
-                            <Image
-                              style={{
-                                width: 56,
-                                height: 56,
-                              }}
-                              source={images.emptyProduct}
-                            />
-                          </View>
-                        )}
-                        <View style={styles.item}>
-                          <Text
-                            fontFamily="NotoSans"
-                            fontSize={16}
-                            bold
-                            style={{
-                              width: Dimensions.get('window').width - 150,
-                            }}
-                            numberOfLines={1}>
-                            {item.productName}
-                          </Text>
-                          <Text
-                            fontFamily="NotoSans"
-                            fontSize={14}
-                            color="text3">
-                            {item.packSize
-                              ? `${item.packSize} | ฿${numberWithCommas(
-                                  +item.marketPrice,
-                                )}/${item.baseUOM}`
-                              : `฿${numberWithCommas(+item.marketPrice)}/${
-                                  item.baseUOM
-                                }`}
-                          </Text>
-                          <Text fontSize={14} color="text2">
-                            {`฿${numberWithCommas(+item.marketPrice)}/${
-                              item.baseUOM
-                            } x ${item.amount} `}
-                          </Text>
-                          <Dropdown
-                            style={{
-                              width: 70,
-                              height: 24,
-                              justifyContent: 'center',
-                              paddingLeft: 16,
-                              marginTop: 8,
-                              paddingVertical: 2,
-                            }}
-                            titleModal="เลือกลำดับ"
-                            data={itemsDropdown}
-                            value={item.order}
-                            onChangeValue={value =>
-                              onChangeOrder(value, item.productId)
-                            }
-                          />
-                        </View>
-                      </View>
-
-                      <TouchableOpacity
-                        style={styles.buttonDel}
-                        onPress={() => {
-                          setDelId(item.productId);
-                          setVisibleDel(true);
-                        }}>
-                        <Image
-                          source={icons.bin}
-                          style={{
-                            width: 15,
-                            height: 17,
-                            marginBottom: 2,
-                          }}
-                        />
-                      </TouchableOpacity>
-                    </View>
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        marginTop: 10,
-                      }}>
-                      <View style={{ flexDirection: 'row' }}>
-                        <View
-                          style={{
-                            width: 62,
-                            marginRight: 10,
-                          }}
-                        />
-                        <CounterSmall
-                          currentQuantity={+item.amount}
-                          onChangeText={onChangeText}
-                          onIncrease={onIncrease}
-                          onDecrease={onDecrease}
-                          id={item.productId}
-                        />
-                      </View>
-                      <View>
-                        {isPromotion && (
-                          <Text
-                            fontFamily="NotoSans"
-                            color="text3"
-                            style={{
-                              textDecorationStyle: 'solid',
-                              textDecorationLine: isPromotion
-                                ? 'line-through'
-                                : 'none',
-                            }}>
-                            {`฿${numberWithCommas(
-                              +item.marketPrice * item.amount,
-                            )}`}
-                          </Text>
-                        )}
-                        <Text bold fontFamily="NotoSans">
-                          {`฿${numberWithCommas(
-                            +item.marketPrice * item.amount,
-                          )}`}
-                        </Text>
-                      </View>
-                    </View>
-                  </View>
-                );
-              })}
-            </View>
+            <View>{RenderList()}</View>
           ) : (
             <View
               style={{
@@ -314,13 +393,16 @@ export default function ListItemInCart() {
           onRequestClose={() => setVisibleDel(false)}
         />
 
-        <PromotionSection />
-        <GiftFromPromotion />
+        {promotionList.length > 0 && (
+          <PromotionSection promotionList={promotionList} />
+        )}
+        <GiftFromPromotion freebieListItem={freebieListItem} />
         <ModalMessage
           visible={isDelCart}
           message={t('modalMessage.deleteCart')}
           onRequestClose={() => setIsDelCart(false)}
         />
+        <LoadingSpinner visible={loading} />
       </KeyboardAvoidingView>
     </>
   );

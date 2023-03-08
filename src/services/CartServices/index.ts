@@ -8,6 +8,10 @@ interface CartItemType {
     productId: number;
     quantity: number;
     shipmentOrder: number;
+    orderProductPromotions?: {
+      promotionId: string;
+      isUse: boolean;
+    }[];
   }[];
   paymentMethod?: string;
   saleCoRemark?: string;
@@ -19,6 +23,7 @@ interface GetCartType {
   customerCompanyId?: number;
 }
 const postCart = async (payload: CartItemType) => {
+  console.log(JSON.stringify(payload, null, 2));
   return await request
     .post(`/cart/cart/sale`, payload)
     .then(res => res.data)

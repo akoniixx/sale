@@ -20,21 +20,42 @@ const StoreDetailScreen = ({
   const { name, productBrand } = route.params;
   const {
     cartApi: { getCartList },
+    setCartList,
   } = useCart();
-
+  const [loadingApi, setLoadingApi] = React.useState<boolean>(false);
   useEffect(() => {
-    getCartList();
+    const fetchData = async () => {
+      try {
+        setLoadingApi(true);
+        await getCartList();
+      } catch (e) {
+        console.log(e);
+      } finally {
+        setLoadingApi(false);
+      }
+    };
+    fetchData();
   }, [getCartList]);
   const { t } = useLocalization();
   const [searchValue, setSearchValue] = React.useState<string | undefined>(
     undefined,
   );
   const [debounceSearchValue] = useDebounce(searchValue, 500);
-  const [loadingApi, setLoadingApi] = React.useState<boolean>(false);
 
   return (
-    <Container>
+    <Container
+      containerStyles={{
+        paddingBottom: 50,
+        flex: 1,
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        backgroundColor: 'white',
+      }}>
       <Header
+        onBackCustom={() => {
+          navigation.goBack();
+          setCartList([]);
+        }}
         title={t('screens.StoreDetailScreen.title')}
         componentRight={<CartBadge navigation={navigation} />}
       />

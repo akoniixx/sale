@@ -13,6 +13,8 @@ interface Props extends PromotionType {
   index: number;
   unitBuy: string | null | undefined;
   currentProductId?: string;
+  productName?: string;
+  promotionLength?: number;
 }
 export default function PromotionItem({
   index,
@@ -21,12 +23,21 @@ export default function PromotionItem({
   unitBuy,
   currentProductId,
   startDate,
+  productName,
+  promotionType,
+  promotionLength = 0,
   ...props
 }: Props): JSX.Element {
   const { t } = useLocalization();
+  const isLast = index === promotionLength - 1;
   return (
     <LinearGradient
-      style={styles.container}
+      style={[
+        styles.container,
+        {
+          marginBottom: isLast ? 0 : 12,
+        },
+      ]}
       colors={[colors.BGDiscount1, colors.BGDiscount2]}
       start={{ x: 0.5, y: 0.5 }}>
       <View style={styles.header}>
@@ -51,7 +62,29 @@ export default function PromotionItem({
           if (currentProductId !== item.productId) {
             return null;
           }
-          return item.condition.map(el => {
+
+          return item.condition.map((el, idx) => {
+            if (promotionType === 'DISCOUNT_NOT_MIX') {
+              return (
+                <View key={idx}>
+                  <Text
+                    key={idx}
+                    color="white"
+                    style={{
+                      lineHeight: 30,
+                    }}>
+                    {`•  ${t('screens.ProductDetailScreen.promotionDiscount', {
+                      buy: el.quantity,
+                      discountPrice: el.discountPrice,
+                      productNameFree: productName || '',
+                      unitDiscount:
+                        el.saleUnitDiscountTH || el.saleUnitDiscount || '',
+                      unitBuy: el.saleUnitTH || el.saleUnit || '',
+                    })} `}
+                  </Text>
+                </View>
+              );
+            }
             return (el.freebies || []).map((el2, idx) => {
               if (!el2.productFreebiesId) {
                 return (

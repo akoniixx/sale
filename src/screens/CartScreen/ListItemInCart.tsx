@@ -7,7 +7,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import Text from '../../components/Text/Text';
 import { useLocalization } from '../../contexts/LocalizationContext';
 import { newProductType, useCart } from '../../contexts/CartContext';
@@ -189,14 +189,23 @@ export default function ListItemInCart() {
       <>
         {cartList.map(item => {
           const isUsePromotion = cartDetail?.allPromotions?.find(el => {
-            return (
-              el.isUse &&
-              el.conditionDetail.productId.toString() ===
-                item.productId.toString()
+            const isFindPromotionId = item.orderProductPromotions.find(
+              el2 =>
+                el2.promotionId === el.promotionId &&
+                el2.promotionType === 'DISCOUNT_NOT_MIX',
             );
+            return el.isUse && !!isFindPromotionId;
           });
+          const currentDiscount: any = item.orderProductPromotions.find(
+            el =>
+              el.promotionId === isUsePromotion?.promotionId &&
+              el.promotionType === 'DISCOUNT_NOT_MIX',
+          );
 
-          const sumDiscount = isUsePromotion ? item?.discount : 0;
+          const sumDiscount =
+            isUsePromotion && currentDiscount
+              ? currentDiscount?.conditionDetail.conditionDiscount
+              : 0;
           return (
             <View
               key={item.productId}

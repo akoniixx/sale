@@ -43,7 +43,6 @@ export default function HistoryDetailScreen({
       try {
         setLoading(true);
         const res = await orderServices.getOrderById(params.orderId);
-        console.log(JSON.stringify(res, null, 2));
         setOrderDetail(res);
       } catch (e) {
         console.log(e);

@@ -17,7 +17,6 @@ import { SheetManager } from 'react-native-actions-sheet';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { MainStackParamList } from '../../navigations/MainNavigator';
 import { useAuth } from '../../contexts/AuthContext';
-import { useCart } from '../../contexts/CartContext';
 
 interface Props {
   setDataStepTwo: React.Dispatch<React.SetStateAction<TypeDataStepTwo>>;

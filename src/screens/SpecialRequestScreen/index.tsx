@@ -40,7 +40,7 @@ export default function SpecialRequestScreen({
   });
 
   const [specialRequestRemark, setSpecialRequestRemark] = React.useState('');
-  const { cartList, cartDetail } = useCart();
+  const { cartList, cartDetail, promotionListValue } = useCart();
   useEffect(() => {
     if (params.specialRequestRemark) {
       setSpecialRequestRemark(params.specialRequestRemark);
@@ -60,30 +60,35 @@ export default function SpecialRequestScreen({
       valueLabel: string;
       value: string;
     }[] = [];
-    cartDetail.orderProducts.map((item: any) => {
-      const dataPush = {
-        label: item.productName,
-        valueLabel: `(฿${numberWithCommas(item.marketPrice)} x ${
-          item.quantity
-        } ${item.saleUomTH ? item.saleUomTH : item.saleUom})`,
-      };
-      if (item.specialRequestDiscount > 0) {
-        listDataDiscountSpecialRequest.push({
-          ...dataPush,
-          value: item.specialRequestDiscount,
-        });
-      }
-      if (item.orderProductPromotions.length > 0) {
-        item.orderProductPromotions.map((el: any) => {
-          if (el.isUse && el.promotionType === 'DISCOUNT_NOT_MIX') {
-            listDataDiscount.push({
-              ...dataPush,
-              value: el.conditionDetail.conditionDiscount,
-            });
-          }
-        });
-      }
-    });
+    cartDetail.orderProducts
+      .filter(el => !el.isFreebie)
+      .map((item: any) => {
+        const dataPush = {
+          label: item.productName,
+          valueLabel: `(฿${numberWithCommas(item.marketPrice)} x ${
+            item.quantity
+          } ${item.saleUomTH ? item.saleUomTH : item.saleUom})`,
+        };
+        if (item.specialRequestDiscount > 0) {
+          listDataDiscountSpecialRequest.push({
+            ...dataPush,
+            value: item.specialRequestDiscount,
+          });
+        }
+        if (item?.orderProductPromotions?.length > 0) {
+          item.orderProductPromotions.map((el: any) => {
+            const isFind = promotionListValue.find(
+              el2 => el2 === el.promotionId,
+            );
+            if (el.promotionType === 'DISCOUNT_NOT_MIX' && isFind) {
+              listDataDiscount.push({
+                ...dataPush,
+                value: el.conditionDetail.conditionDiscount,
+              });
+            }
+          });
+        }
+      });
     const dataObj = {
       priceBeforeDiscount: {
         label: 'ราคาก่อนลด',
@@ -146,7 +151,13 @@ export default function SpecialRequestScreen({
               </Text>
             </View>
             {cartList.map((item, index) => {
-              return <ListSpecialRequest item={item} key={index} />;
+              return (
+                <ListSpecialRequest
+                  setIsShow={setIsShow}
+                  item={item}
+                  key={index}
+                />
+              );
             })}
             <View style={styles.commentCard}>
               <View>

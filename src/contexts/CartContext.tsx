@@ -221,49 +221,11 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
         promotionType: string;
         isUse: boolean;
       }[] = [];
-      const freebieListItem: {
-        productName: string;
-        id: string;
-        quantity: number;
-        baseUnit: string | undefined;
-        status: string | undefined;
-        productImage: string | undefined;
-      }[] = [];
       const initialValue: string[] = [];
       for (let i = 0; i < cl.length; i++) {
         const promotion = cl[i];
 
         const isFreebie = promotion.promotionType === 'FREEBIES_NOT_MIX';
-        if (isFreebie && promotion.isUse) {
-          const freebieList = promotion.conditionDetail.condition;
-          freebieList.forEach((f: any) => {
-            const freebies = f.freebies;
-            freebies.forEach((fr: any) => {
-              if (fr.productFreebiesId) {
-                const newObj = {
-                  productName: fr.productName,
-                  id: fr.productFreebiesId,
-                  quantity: fr.quantity,
-                  baseUnit: fr.baseUnitOfMeaTh || fr.baseUnitOfMeaEn,
-                  status: fr.productFreebiesStatus,
-                  productImage: fr.productFreebiesImage,
-                };
-                freebieListItem.push(newObj);
-              } else {
-                const newObj = {
-                  productName: fr.productName,
-                  id: fr.productId,
-                  quantity: fr.quantity,
-                  baseUnit: fr.saleUOMTH || fr.saleUOM || '',
-                  status: fr.productStatus,
-                  productImage: fr.productImage,
-                };
-
-                freebieListItem.push(newObj);
-              }
-            });
-          });
-        }
         if (promotion.isUse) {
           initialValue.push(promotion?.promotionId || '');
         }
@@ -277,124 +239,12 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
           isUse: promotion.isUse,
         });
       }
-      console.log('initialValue', JSON.stringify(initialValue, null, 2));
-      // for (let j = 0; j < promotionList.length; j++) {
-      //   const promotion = promotionList[j];
-      //   const isFreebie = promotion.promotionType === 'FREEBIES_NOT_MIX';
-      //   if (isFreebie && promotion.isUse) {
-      //     const freebieList = promotion.conditionDetail.condition;
-      //     freebieList.forEach((f: any) => {
-      //       const freebies = f.freebies;
-      //       freebies.forEach((fr: any) => {
-      //         if (fr.productFreebiesId) {
-      //           const newObj = {
-      //             productName: fr.productName,
-      //             id: fr.productFreebiesId,
-      //             quantity: fr.quantity,
-      //             baseUnit: fr.baseUnitOfMeaTh || fr.baseUnitOfMeaEn,
-      //             status: fr.productFreebiesStatus,
-      //             productImage: fr.productFreebiesImage,
-      //           };
-      //           freebieListItem.push(newObj);
-      //         } else {
-      //           const newObj = {
-      //             productName: fr.productName,
-      //             id: fr.productId,
-      //             quantity: fr.quantity,
-      //             baseUnit: fr.saleUOMTH || fr.saleUOM || '',
-      //             status: fr.productStatus,
-      //             productImage: fr.productImage,
-      //           };
 
-      //           freebieListItem.push(newObj);
-      //         }
-      //       });
-      //     });
-      //   }
-      //   if (promotion.isUse) {
-      //     initialValue.push(promotion.promotionId || '');
-      //   }
-
-      //   const promotionType = isFreebie
-      //     ? 'ของแถมขั้นบันได'
-      //     : 'ส่วนลดขั้นบันได';
-      //   const title = `${promotionType} - ${promotion.promotionName}`;
-      //   formatPromotion.push({
-      //     value: promotion.promotionId || '',
-      //     key: promotion.promotionId || '',
-      //     title,
-      //     promotionType: promotion.promotionType || '',
-      //     isUse: promotion.isUse,
-      //   });
-      // }
-      // const newPromotion: PromotionTypeCart[] = cl.reduce((acc: any, cur) => {
-      //   if (
-      //     cur.orderProductPromotions &&
-      //     cur.orderProductPromotions.length > 0
-      //   ) {
-      //     return [...acc, ...cur.orderProductPromotions];
-      //   }
-
-      //   return [...acc];
-      // }, []);
-
-      // const formatPromotion = newPromotion.map((el, idx) => {
-      //   const promotionType =
-      //     el.promotionType === 'FREEBIES_NOT_MIX'
-      //       ? 'ของแถมขั้นบันได'
-      //       : 'ส่วนลดขั้นบันได';
-      //   const title = `${idx + 1}.  ${promotionType} - ${el.promotionName}`;
-      //   return {
-      //     value: el.promotionId,
-      //     key: el.promotionId,
-      //     title,
-      //     promotionType: el.promotionType,
-      //     isUse: el.isUse,
-      //   };
-      // });
-
-      // initialValue.map(el => {
-      //   const findFreebie = newPromotion.find(el2 => {
-      //     return (
-      //       el2.promotionId === el && el2.promotionType === 'FREEBIES_NOT_MIX'
-      //     );
-      //   });
-      //   if (findFreebie) {
-      //     findFreebie?.conditionDetail.condition.map(i => {
-      //       i.freebies.map(j => {
-      //         if (j.productFreebiesId) {
-      //           const newObj = {
-      //             productName: j.productName,
-      //             id: j.productFreebiesId,
-      //             quantity: j.quantity,
-      //             baseUnit: j.baseUnitOfMeaTh || j.baseUnitOfMeaEn,
-      //             status: j.productFreebiesStatus,
-      //             productImage: j.productFreebiesImage,
-      //           };
-      //           freebieListItem.push(newObj);
-      //         } else {
-      //           const newObj = {
-      //             productName: j.productName,
-      //             id: j.productId,
-      //             quantity: j.quantity,
-      //             baseUnit: j.saleUOMTH || j.saleUOM || '',
-      //             status: j.productStatus,
-      //             productImage: j.productImage,
-      //           };
-
-      //           freebieListItem.push(newObj);
-      //         }
-      //       });
-      //     });
-      //   }
-      // });
       setPromotionListValue(initialValue);
       setPromotionList(formatPromotion);
 
-      setFreebieListItem(freebieListItem);
       return {
         promotionList: formatPromotion,
-        freebieListItem,
       };
     },
     [],
@@ -411,8 +261,8 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
         userStaffId,
       });
       setCartDetail(result);
-      const newFormat = (result.orderProducts || []).map(
-        (item: any): newProductType => {
+      const newFormat = (result?.orderProducts || [])
+        .map((item: any): newProductType => {
           return {
             ...item,
             orderProductPromotions: item.orderProductPromotions || [],
@@ -425,8 +275,8 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
             unitPrice: item.qtySaleUnit,
             baseUOM: item.baseUom,
           };
-        },
-      );
+        })
+        .filter((item: any) => !item.isFreebie);
 
       setCartList(newFormat);
 
@@ -467,8 +317,8 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
         }
         const result = await cartServices.postCart(payload);
         setCartDetail(result);
-        const newFormat = (result.orderProducts || []).map(
-          (item: any): newProductType => {
+        const newFormat = (result.orderProducts || [])
+          .map((item: any): newProductType => {
             return {
               ...item,
               amount: item.quantity,
@@ -480,8 +330,34 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
               unitPrice: item.qtySaleUnit,
               baseUOM: item.baseUom,
             };
-          },
-        );
+          })
+          .filter((item: any) => !item.isFreebie);
+        const freebieList = (result.orderProducts || [])
+          .filter((item: any) => item.isFreebie)
+          .map((el: any) => {
+            if (el.productFreebiesId) {
+              const newObj = {
+                productName: el.productName,
+                id: el.productFreebiesId,
+                quantity: el.quantity,
+                baseUnit: el.baseUnitOfMeaTh || el.baseUnitOfMeaEn,
+                status: el.productFreebiesStatus,
+                productImage: el.productFreebiesImage,
+              };
+              return newObj;
+            } else {
+              const newObj = {
+                productName: el.productName,
+                id: el.productId,
+                quantity: el.quantity,
+                baseUnit: el.saleUOMTH || el.saleUOM || '',
+                status: el.productStatus,
+                productImage: el.productImage,
+              };
+              return newObj;
+            }
+          });
+        setFreebieListItem(freebieList);
 
         return {
           cartList: newFormat || [],

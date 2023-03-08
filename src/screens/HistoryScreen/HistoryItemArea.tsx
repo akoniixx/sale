@@ -12,8 +12,13 @@ import BadgeStatus from '../../components/BadgeStatus/BadgeStatus';
 
 interface Props extends HistoryDataType {
   navigation?: any;
+  isHasCustomerId: boolean;
 }
-export default function HistoryItemArea({ orderProducts, ...props }: Props) {
+export default function HistoryItemArea({
+  orderProducts,
+  isHasCustomerId,
+  ...props
+}: Props) {
   const getOnlySixLength = orderProducts.slice(0, 6);
   const onPress = () => {
     const date = dayjs(props.createAt).format('DD MMM BBBB');
@@ -148,25 +153,27 @@ export default function HistoryItemArea({ orderProducts, ...props }: Props) {
           );
         })}
       </View>
-      <View
-        style={{
-          paddingHorizontal: 16,
-          flexDirection: 'row',
-          alignItems: 'center',
-        }}>
-        <Image
+      {!isHasCustomerId && (
+        <View
           style={{
-            width: 20,
-            height: 20,
-            marginRight: 6,
-          }}
-          resizeMode="contain"
-          source={icons.locationGray}
-        />
-        <Text color="text2" fontSize={12}>
-          {props.customerName}
-        </Text>
-      </View>
+            paddingHorizontal: 16,
+            flexDirection: 'row',
+            alignItems: 'center',
+          }}>
+          <Image
+            style={{
+              width: 20,
+              height: 20,
+              marginRight: 6,
+            }}
+            resizeMode="contain"
+            source={icons.locationGray}
+          />
+          <Text color="text2" fontSize={12}>
+            {props.customerName}
+          </Text>
+        </View>
+      )}
       {props.deliveryAddress && (
         <View
           style={{

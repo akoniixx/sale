@@ -11,7 +11,6 @@ import icons from '../../assets/icons';
 import { numberWithCommas } from '../../utils/functions';
 import ModalWarning from '../../components/Modal/ModalWarning';
 import { useLocalization } from '../../contexts/LocalizationContext';
-import { debounce } from 'lodash';
 interface Props {
   currentQuantity: number;
   onBlur?: () => void;
@@ -23,7 +22,6 @@ interface Props {
 const CounterSmall = ({
   currentQuantity = 0,
   onChangeText,
-  onBlur,
   onDecrease,
   onIncrease,
   id,
@@ -49,6 +47,16 @@ const CounterSmall = ({
   //     }
   //   }, 1000),
   // ).current;
+  const onBlurInput = () => {
+    if (currentQuantity.toString() === quantity.toString()) {
+      return;
+    }
+    if (+quantity < 1 && currentQuantity > 0) {
+      setIsModalVisible(true);
+    } else {
+      onChangeText?.({ id, quantity });
+    }
+  };
   return (
     <View style={styles.container}>
       <TouchableOpacity
@@ -91,7 +99,7 @@ const CounterSmall = ({
             onChangeText?.({ id, quantity });
           }
         }}
-        onBlur={onBlur}
+        onBlur={onBlurInput}
       />
       <TouchableOpacity
         style={styles.button}

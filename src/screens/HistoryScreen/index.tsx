@@ -26,6 +26,15 @@ interface TypeHistory {
     deliverySuccessCount: 0;
   };
 }
+export interface HistoryTypeStore {
+  customerCompanyId: number;
+  customerName: string;
+  customerNo: string;
+  customerType: string;
+  customerImage: string | null;
+  zone: string;
+  orderCount: number;
+}
 export default function HistoryScreen({ navigation }: any): JSX.Element {
   const [searchValue, setSearchValue] = React.useState<string | undefined>();
   const [typeSearch, setTypeSearch] = React.useState<string>('area');
@@ -33,6 +42,9 @@ export default function HistoryScreen({ navigation }: any): JSX.Element {
     startDate: Date | undefined;
     endDate: Date | undefined;
   }>({ startDate: undefined, endDate: undefined });
+  const [customerCompanyId, setCustomerCompanyId] = React.useState<
+    number | undefined
+  >(undefined);
 
   const [tabValue, setTabValue] = React.useState<string[]>([]);
   const [page, setPage] = React.useState<number>(1);
@@ -83,48 +95,49 @@ export default function HistoryScreen({ navigation }: any): JSX.Element {
       deliverySuccessCount: 0,
     },
   });
-  const [historyDataStore, setHistoryDataStore] = React.useState<any>();
+  const [historyDataStore, setHistoryDataStore] = React.useState<
+    HistoryTypeStore[]
+  >([]);
   const [loading, setLoading] = React.useState<boolean>(false);
   const [debounceSearchValue] = useDebounce(searchValue, 500);
-  // console.log('historyData', JSON.stringify(historyData.data, null, 2));
+  const isHasCustomerId = useMemo(() => {
+    return customerCompanyId !== undefined;
+  }, [customerCompanyId]);
+  const currentCustomerName = useMemo(() => {
+    if (isHasCustomerId) {
+      const customer = historyDataStore.find(
+        el => el.customerCompanyId === customerCompanyId,
+      );
+      return customer?.customerName || '';
+    }
+  }, [historyDataStore, customerCompanyId, isHasCustomerId]);
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
+      const payload: any = {
+        status: tabValue.length > 0 ? tabValue : tabData.map(el => el.value),
+        search: debounceSearchValue,
+        take: limit,
+        company: user?.company || '',
+        page: 1,
+        endDate: dateRange.endDate,
+        startDate: dateRange.startDate,
+      };
+      if (isHasCustomerId) {
+        payload.customerCompanyId = customerCompanyId;
+      }
       try {
-        const data = await historyServices.getHistory({
-          status: tabValue,
-          search: debounceSearchValue,
-          take: limit,
-          company: user?.company || '',
-          page: 1,
-          endDate: dateRange.endDate,
-          startDate: dateRange.startDate,
-        });
+        const data = await historyServices.getHistory(payload);
         setHistoryData(data);
         setLoading(false);
       } catch (e) {
-        console.log(e.response.data);
+        console.log('error', e);
       } finally {
         setLoading(false);
       }
     };
-    const fetchDataStore = async () => {
-      try {
-        console.log('fetchDataStore');
 
-        const data = await historyServices.getHistoryStore(
-          user?.userStaffId || '',
-        );
-        console.log('data', data);
-      } catch (e) {
-        console.log('e', e);
-      }
-    };
-    if (typeSearch === 'area') {
-      fetchData();
-    } else {
-      fetchDataStore();
-    }
+    fetchData();
   }, [
     tabValue,
     debounceSearchValue,
@@ -133,19 +146,42 @@ export default function HistoryScreen({ navigation }: any): JSX.Element {
     user?.company,
     typeSearch,
     user?.userStaffId,
+    tabData,
+    isHasCustomerId,
+    customerCompanyId,
   ]);
+
+  useEffect(() => {
+    const fetchDataStore = async () => {
+      try {
+        const data = await historyServices.getHistoryStore(
+          user?.userStaffId || '',
+        );
+        setHistoryDataStore(data);
+      } catch (e) {
+        console.log('e', e);
+      }
+    };
+    if (typeSearch === 'store') {
+      fetchDataStore();
+    }
+  }, [user?.userStaffId, typeSearch]);
   const fetchDataMore = async () => {
     if (historyData.data.length < historyData.count) {
       try {
-        const data = await historyServices.getHistory({
-          status: tabValue,
+        const payload: any = {
+          status: tabValue.length > 0 ? tabValue : tabData.map(el => el.value),
           search: debounceSearchValue,
           take: limit,
           company: user?.company || '',
-          page: page + 1,
+          page: 1,
           endDate: dateRange.endDate,
           startDate: dateRange.startDate,
-        });
+        };
+        if (isHasCustomerId) {
+          payload.customerCompanyId = customerCompanyId;
+        }
+        const data = await historyServices.getHistory(payload);
         setHistoryData({
           ...historyData,
           data: [...historyData.data, ...data.data],
@@ -177,6 +213,7 @@ export default function HistoryScreen({ navigation }: any): JSX.Element {
           placeholder={'ค้นหาเลขใบสั่งซื้อ, ร้านค้า...'}
           onChange={v => {
             setSearchValue(v);
+            setPage(1);
           }}
         />
       </View>
@@ -186,6 +223,8 @@ export default function HistoryScreen({ navigation }: any): JSX.Element {
           <TouchableOpacity
             onPress={() => {
               setTypeSearch('area');
+              setCustomerCompanyId(undefined);
+              setTabValue([]);
             }}
             style={styles().flexRow}>
             <Image
@@ -206,6 +245,7 @@ export default function HistoryScreen({ navigation }: any): JSX.Element {
           <TouchableOpacity
             onPress={() => {
               setTypeSearch('store');
+              setTabValue([]);
             }}
             style={styles().flexRow}>
             <Image
@@ -262,6 +302,62 @@ export default function HistoryScreen({ navigation }: any): JSX.Element {
           </TouchableOpacity>
         </View>
       </View>
+      {typeSearch === 'store' && (
+        <View
+          style={{
+            height: 58,
+            borderTopWidth: 1,
+            borderTopColor: colors.border1,
+            justifyContent: 'center',
+            alignItems: 'flex-start',
+            width: '100%',
+            backgroundColor: colors.background1,
+            paddingHorizontal: 16,
+          }}>
+          {!isHasCustomerId ? (
+            <View>
+              <Text color="text3" fontSize={12} lineHeight={26}>
+                คำสั่งซื้อ
+              </Text>
+              <Text color="text2" lineHeight={28}>
+                ร้านทั้งหมด
+              </Text>
+            </View>
+          ) : (
+            <View
+              style={{
+                flexDirection: 'row',
+              }}>
+              <TouchableOpacity
+                onPress={() => {
+                  setCustomerCompanyId(undefined);
+                  setTabValue([]);
+                }}
+                style={{
+                  marginRight: 8,
+                  marginTop: 4,
+                }}>
+                <Image
+                  source={icons.backIcon}
+                  style={{
+                    width: 24,
+                    height: 24,
+                  }}
+                />
+              </TouchableOpacity>
+              <View>
+                <Text color="text3" fontSize={12} lineHeight={24}>
+                  คำสั่งซื้อของ
+                </Text>
+                <Text color="text2" lineHeight={26}>
+                  {currentCustomerName}
+                </Text>
+              </View>
+            </View>
+          )}
+        </View>
+      )}
+
       <View
         style={{
           height: 58,
@@ -299,8 +395,11 @@ export default function HistoryScreen({ navigation }: any): JSX.Element {
         }}>
         <ContentBody
           data={historyData.data}
+          dataCustomer={historyDataStore}
           navigation={navigation}
           typeSearch={typeSearch}
+          customerCompanyId={customerCompanyId}
+          setCustomerCompanyId={setCustomerCompanyId}
           fetchDataMore={fetchDataMore}
         />
       </Content>

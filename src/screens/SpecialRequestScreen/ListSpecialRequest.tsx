@@ -18,8 +18,12 @@ import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
 
 interface Props {
   item: newProductType;
+  setIsShow: React.Dispatch<React.SetStateAction<boolean>>;
 }
-export default function ListSpecialRequest({ item }: Props): JSX.Element {
+export default function ListSpecialRequest({
+  item,
+  setIsShow,
+}: Props): JSX.Element {
   const alreadyHaveSpecialRequest = item.specialRequestDiscount > 0;
   const [loading, setLoading] = React.useState(false);
   const [isShowInput, setIsShowInput] = React.useState(false);
@@ -82,12 +86,11 @@ export default function ListSpecialRequest({ item }: Props): JSX.Element {
         },
         ...newCartList.slice(findIndex + 1),
       ];
-
       try {
         setLoading(true);
-        const result = await postCartItem(payload);
+        const { cartList: cl } = await postCartItem(payload);
         await getCartList();
-        setCartList(result);
+        setCartList(cl);
         setIsShowInput(false);
 
         return null;
@@ -235,6 +238,9 @@ export default function ListSpecialRequest({ item }: Props): JSX.Element {
                 }}>
                 <TextInput
                   keyboardType="numeric"
+                  onFocus={() => {
+                    setIsShow(false);
+                  }}
                   onChangeText={text => {
                     const convertText = text.replace(/[^0-9]/g, '');
                     setError(null);

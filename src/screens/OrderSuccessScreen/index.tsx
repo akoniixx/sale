@@ -112,7 +112,6 @@ export default function OrderSuccessScreen({
       getOrderByOrderId();
     }
   }, [orderId]);
-  console.log(JSON.stringify(freebieList, null, 2));
 
   const listProduct = orderData?.orderProducts.map(el => {
     return {

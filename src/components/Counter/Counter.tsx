@@ -33,15 +33,25 @@ export default function Counter({
       setQuantity('0');
     }
   }, [currentQuantity]);
-  const debouncedSearch = useRef(
-    debounce(quantity => {
-      if (+quantity < 1 && currentQuantity > 0) {
-        setIsModalVisible(true);
-      } else {
-        onChangeText?.({ id, quantity });
-      }
-    }, 1000),
-  ).current;
+  // const debouncedSearch = useRef(
+  //   debounce(quantity => {
+  //     if (+quantity < 1 && currentQuantity > 0) {
+  //       setIsModalVisible(true);
+  //     } else {
+  //       onChangeText?.({ id, quantity });
+  //     }
+  //   }, 1000),
+  // ).current;
+  const onBlurInput = () => {
+    if (currentQuantity.toString() === quantity.toString()) {
+      return;
+    }
+    if (+quantity < 1 && currentQuantity > 0) {
+      setIsModalVisible(true);
+    } else {
+      onChangeText?.({ id, quantity });
+    }
+  };
   const inputRef = useRef<TextInput>(null);
   return (
     <View style={styles().container}>
@@ -96,10 +106,9 @@ export default function Counter({
           onChangeText={text => {
             const value = text.replace(/[^0-9.]/g, '');
 
-            debouncedSearch(value);
             setQuantity(value);
           }}
-          onBlur={onBlur}
+          onBlur={onBlurInput}
         />
       </Pressable>
       <Button

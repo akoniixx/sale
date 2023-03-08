@@ -21,12 +21,11 @@ export default function PromotionSection({
 }: Props): JSX.Element {
   const { t } = useLocalization();
   const [loading, setLoading] = React.useState(false);
-  // console.log(promotionListValue.length === promotionList.length);
   const {
     cartList,
-    setCartList,
     setPromotionListValue,
     cartDetail,
+    setCartList,
     promotionListValue,
     cartApi: { postCartItem, getSelectPromotion },
   } = useCart();
@@ -47,12 +46,16 @@ export default function PromotionSection({
             : false,
         };
       });
-      await postCartItem(cartList, newAllPromotion);
+      const { cartList: cl } = await postCartItem(cartList, newAllPromotion);
       await getSelectPromotion(newAllPromotion);
+
+      setCartList(cl);
       setPromotionListValue(currentPromotionList);
       setLoading(false);
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
   return (

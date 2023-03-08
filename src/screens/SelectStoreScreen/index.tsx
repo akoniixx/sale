@@ -19,7 +19,7 @@ interface Props {
 }
 export default function SelectStoreScreen({ navigation }: Props): JSX.Element {
   const { t } = useLocalization();
-  const { setCartList } = useCart();
+  const { setCartList, setPromotionList, setFreebieListItem } = useCart();
   const [searchValue, setSearchValue] = React.useState<string | undefined>(
     undefined,
   );
@@ -66,7 +66,9 @@ export default function SelectStoreScreen({ navigation }: Props): JSX.Element {
       getListStore();
     }
     setCartList([]);
-  }, [user, setCartList]);
+    setPromotionList([]);
+    setFreebieListItem([]);
+  }, [user, setCartList, setPromotionList, setFreebieListItem]);
   const data = useMemo(() => {
     // console.log('listStore', JSON.stringify(listStore, null, 2));
 

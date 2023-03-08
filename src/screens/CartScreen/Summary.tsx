@@ -9,7 +9,6 @@ import Checkbox from '../../components/Checkbox/Checkbox';
 import icons from '../../assets/icons';
 import { useCart } from '../../contexts/CartContext';
 import { TypeDataStepTwo } from '.';
-import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuth } from '../../contexts/AuthContext';
 interface Props {
@@ -46,7 +45,7 @@ export default function Summary({
     };
     getTerm();
   }, []);
-  const { cartDetail } = useCart();
+  const { cartDetail, promotionListValue } = useCart();
 
   const { dataObj } = useMemo(() => {
     const listDataDiscount: {
@@ -59,30 +58,36 @@ export default function Summary({
       valueLabel: string;
       value: string;
     }[] = [];
-    cartDetail.orderProducts.map((item: any) => {
-      const dataPush = {
-        label: item.productName,
-        valueLabel: `(฿${numberWithCommas(item.marketPrice)} x ${
-          item.quantity
-        } ${item.saleUomTH ? item.saleUomTH : item.saleUom})`,
-      };
-      if (item.specialRequestDiscount > 0) {
-        listDataDiscountSpecialRequest.push({
-          ...dataPush,
-          value: item.specialRequestDiscount,
-        });
-      }
-      if (item.orderProductPromotions.length > 0) {
-        item.orderProductPromotions.map((el: any) => {
-          if (el.isUse && el.promotionType === 'DISCOUNT_NOT_MIX') {
-            listDataDiscount.push({
-              ...dataPush,
-              value: el.conditionDetail.conditionDiscount,
-            });
-          }
-        });
-      }
-    });
+    cartDetail.orderProducts
+      .filter(el => !el.isFreebie)
+      .map((item: any) => {
+        const dataPush = {
+          label: item.productName,
+          valueLabel: `(฿${numberWithCommas(item.marketPrice)} x ${
+            item.quantity
+          } ${item.saleUomTH ? item.saleUomTH : item.saleUom})`,
+        };
+        if (item.specialRequestDiscount > 0) {
+          listDataDiscountSpecialRequest.push({
+            ...dataPush,
+            value: item.specialRequestDiscount,
+          });
+        }
+
+        if (item?.orderProductPromotions?.length > 0) {
+          item.orderProductPromotions.map((el: any) => {
+            const isFind = promotionListValue.find(
+              el2 => el2 === el.promotionId,
+            );
+            if (el.promotionType === 'DISCOUNT_NOT_MIX' && isFind) {
+              listDataDiscount.push({
+                ...dataPush,
+                value: el.conditionDetail.conditionDiscount,
+              });
+            }
+          });
+        }
+      });
     const dataObj = {
       priceBeforeDiscount: {
         label: 'ราคาก่อนลด',
@@ -114,6 +119,7 @@ export default function Summary({
     return {
       dataObj,
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cartDetail]);
 
   const renderDiscountList = () => {
@@ -125,6 +131,7 @@ export default function Summary({
             {
               backgroundColor: colors.background1,
               minHeight: 52,
+              marginBottom: 0,
             },
           ]}
           key={idx}>

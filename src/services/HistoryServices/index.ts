@@ -14,7 +14,11 @@ interface PayloadHistory {
   isSpecialRequest?: boolean;
 }
 const getHistory = async (payload: PayloadHistory) => {
-  const query = Object.entries(payload).reduce((acc, [key, value]) => {
+  const { status, ...rest } = payload;
+  const queryStatus = status?.reduce((acc, value) => {
+    return `${acc}&status=${value}`;
+  }, '');
+  const query = Object.entries(rest).reduce((acc, [key, value]) => {
     if (value !== undefined) {
       return `${acc}&${key}=${value}`;
     }
@@ -22,7 +26,7 @@ const getHistory = async (payload: PayloadHistory) => {
   }, '');
 
   return await request
-    .get(`/cart/order?${query}`)
+    .get(`/cart/order?${query}${queryStatus}`)
     .then(res => res.data)
     .catch(err => {
       throw err;
@@ -31,7 +35,9 @@ const getHistory = async (payload: PayloadHistory) => {
 const getHistoryStore = async (userStaffId: string) => {
   return await request
     .get(`/cart/order/customer-company/${userStaffId}`)
-    .then(res => res.data)
+    .then(res => {
+      return res.data;
+    })
     .catch(err => {
       throw err;
     });

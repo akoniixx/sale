@@ -1,5 +1,3 @@
-import { colors } from '../assets/colors/colors';
-
 export const statusHistory = {
   WAIT_APPROVE_ORDER: 'รออนุมัติคำสั่งซื้อ',
   REJECT_ORDER: 'ยกเลิกคำสั่งซื้อ',

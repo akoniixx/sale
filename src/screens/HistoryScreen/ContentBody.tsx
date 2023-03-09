@@ -1,4 +1,4 @@
-import { Dimensions, FlatList, Image, StyleSheet, View } from 'react-native';
+import { Dimensions, FlatList, Image, View } from 'react-native';
 import React, { useMemo } from 'react';
 import Text from '../../components/Text/Text';
 import images from '../../assets/images';

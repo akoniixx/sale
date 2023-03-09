@@ -9,7 +9,7 @@
     "start": "react-native start",
     "test": "jest",
     "lint": "tsc --noEmit && eslint --ext .js,.jsx,.ts,.tsx ./",
-    "prettier:write": "npx prettier --write **/*.{js,jsx,ts,tsx,json} && npx prettier --write *.{js,jsx,ts,tsx,json}"
+    "prettier:write": "npx prettier --write '**/*.{js,jsx,ts,tsx,json}' && npx prettier --write '*.{js,jsx,ts,tsx,json}'"
   },
   "dependencies": {
     "@hookform/resolvers": "^2.9.10",

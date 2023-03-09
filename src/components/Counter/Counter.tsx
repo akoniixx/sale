@@ -2,7 +2,7 @@ import { StyleSheet, TextInput, Image, View, Pressable } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import Button from '../Button/Button';
 import icons from '../../assets/icons';
-import { debounce } from 'lodash';
+
 import { useLocalization } from '../../contexts/LocalizationContext';
 import ModalWarning from '../Modal/ModalWarning';
 import { numberWithCommas } from '../../utils/functions';

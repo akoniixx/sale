@@ -3,7 +3,9 @@ import { createStackNavigator } from '@react-navigation/stack';
 import LoginScreen from '../screens/LoginScreen';
 import OtpScreen from '../screens/OtpScreen';
 import WelcomeScreen from '../screens/WelcomeScreen';
-import LoginSuccessScreen from '../screens/LoginSuccessScreen';
+import { useFocusEffect } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { navigate } from './RootNavigator';
 
 export type AuthStackParamList = {
   LoginScreen: undefined;
@@ -13,22 +15,30 @@ export type AuthStackParamList = {
     tel: string;
   };
   WelcomeScreen: undefined;
-  LoginSuccessScreen: undefined;
 };
 const Stack = createStackNavigator<AuthStackParamList>();
 export default function AuthNavigator() {
+  useFocusEffect(
+    React.useCallback(() => {
+      const getIsFirstOpenApp = async () => {
+        const firstOpenApp = await AsyncStorage.getItem('firstOpenApp');
+        if (firstOpenApp === null) {
+          navigate('WelcomeScreen');
+        } else {
+          navigate('LoginScreen');
+        }
+      };
+      getIsFirstOpenApp();
+    }, []),
+  );
   return (
     <Stack.Navigator
       screenOptions={{ headerShown: false }}
-      initialRouteName="LoginScreen">
+      initialRouteName={'LoginScreen'}>
       <Stack.Group>
-        <Stack.Screen name="LoginScreen" component={LoginScreen} />
-        <Stack.Screen name="OtpScreen" component={OtpScreen} />
         <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} />
-        <Stack.Screen
-          name="LoginSuccessScreen"
-          component={LoginSuccessScreen}
-        />
+        <Stack.Screen name="OtpScreen" component={OtpScreen} />
+        <Stack.Screen name="LoginScreen" component={LoginScreen} />
       </Stack.Group>
     </Stack.Navigator>
   );

@@ -9,21 +9,27 @@ interface Props {
     value: string;
     key: string;
   }[];
+  onChange?: (value: string) => void;
+  value?: string;
   label?: string;
 }
-export default function Radio({ radioLists }: Props): JSX.Element {
-  const [selected, setSelected] = React.useState<string | undefined>();
+export default function Radio({
+  radioLists,
+  value,
+  onChange,
+}: Props): JSX.Element {
   return (
     <View>
       {radioLists.map((item, idx) => {
         const isLast = idx === radioLists.length - 1;
+
         return (
           <View key={item.key} style={styles({ isLast }).container}>
             <TouchableOpacity
-              onPress={() => setSelected(item.value)}
+              onPress={() => onChange?.(item.value)}
               style={
                 styles({
-                  selected: selected === item.value,
+                  selected: value === item.value,
                 }).radio
               }
             />

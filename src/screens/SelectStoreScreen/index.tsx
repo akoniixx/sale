@@ -12,12 +12,14 @@ import ListSearchResult from './ListSearchResult';
 import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
 import { customerServices } from '../../services/CustomerServices';
 import { useAuth } from '../../contexts/AuthContext';
+import { useCart } from '../../contexts/CartContext';
 
 interface Props {
   navigation: StackNavigationHelpers;
 }
 export default function SelectStoreScreen({ navigation }: Props): JSX.Element {
   const { t } = useLocalization();
+  const { setCartList, setPromotionList, setFreebieListItem } = useCart();
   const [searchValue, setSearchValue] = React.useState<string | undefined>(
     undefined,
   );
@@ -28,15 +30,22 @@ export default function SelectStoreScreen({ navigation }: Props): JSX.Element {
   const [loading, setLoading] = React.useState<boolean>(false);
   const [listStore, setListStore] = React.useState<
     {
+      address: string;
+      province: string;
+      district: string;
+      subdistrict: string;
+      postcode: string;
+
       customerCompany: {
         customerId: string;
         customerName: string;
         customerNo: string;
+        customerCompanyId: string;
+        termPayment: string;
         productBrand: [];
       }[];
     }[]
   >([]);
-
   useEffect(() => {
     const getListStore = async () => {
       try {
@@ -56,16 +65,27 @@ export default function SelectStoreScreen({ navigation }: Props): JSX.Element {
     if (user?.userStaffId) {
       getListStore();
     }
-  }, [user]);
+    setCartList([]);
+    setPromotionList([]);
+    setFreebieListItem([]);
+  }, [user, setCartList, setPromotionList, setFreebieListItem]);
   const data = useMemo(() => {
+    // console.log('listStore', JSON.stringify(listStore, null, 2));
+
     const newFormat = listStore.map(el => {
       const c = el.customerCompany?.[0];
       return {
         name: c.customerName,
         id: c.customerId,
+        customerCompanyId: c.customerCompanyId,
         customerNo: c.customerNo,
         productBrand: c.productBrand,
         moreThanOneBrand: c.productBrand?.length > 1,
+        termPayment: c.termPayment,
+        address: {
+          addressText: `${el.address} ${el.subdistrict} ${el.district} ${el.province} ${el.postcode}`,
+          name: c.customerName,
+        },
       };
     });
     return newFormat.filter(i => {

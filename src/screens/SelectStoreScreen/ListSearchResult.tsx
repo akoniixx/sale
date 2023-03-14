@@ -4,6 +4,7 @@ import Text from '../../components/Text/Text';
 import images from '../../assets/images';
 import { useLocalization } from '../../contexts/LocalizationContext';
 import { StackNavigationHelpers } from '@react-navigation/stack/lib/typescript/src/types';
+import { useAsyncStorage } from '@react-native-async-storage/async-storage';
 
 interface Props {
   data: {
@@ -11,6 +12,12 @@ interface Props {
     name: string;
     customerNo: string;
     moreThanOneBrand: boolean;
+    customerCompanyId: string;
+    termPayment: string;
+    address: {
+      addressText: string;
+      name: string;
+    };
     productBrand: {
       product_brand_id: string;
       product_brand_name: string;
@@ -25,6 +32,13 @@ export default function ListSearchResult({
   navigation,
 }: Props): JSX.Element {
   const { t } = useLocalization();
+  const { setItem } = useAsyncStorage('customerCompanyId');
+  const { setItem: setTermPayment } = useAsyncStorage('termPayment');
+  const { setItem: setCustomerNo } = useAsyncStorage('customerNo');
+  const { setItem: setCustomerName } = useAsyncStorage('customerName');
+  const { setItem: setProductBrand } = useAsyncStorage('productBrand');
+  const { setItem: setAddress } = useAsyncStorage('address');
+  // console.log('data', JSON.stringify(data, null, 2));
   return (
     <FlatList
       data={data}
@@ -53,6 +67,11 @@ export default function ListSearchResult({
         return (
           <TouchableOpacity
             onPress={() => {
+              setItem(item.customerCompanyId);
+              setTermPayment(item.termPayment);
+              setCustomerNo(item.customerNo);
+              setCustomerName(item.name);
+              setAddress(JSON.stringify(item.address));
               if (item.moreThanOneBrand) {
                 navigation.navigate('SelectBrandBeforeDetailScreen', {
                   id: item.id,
@@ -60,9 +79,11 @@ export default function ListSearchResult({
                   productBrand: item.productBrand,
                 });
               } else {
+                setProductBrand(JSON.stringify(item.productBrand[0]));
                 navigation.navigate('StoreDetailScreen', {
                   id: item.id,
                   name: item.name,
+
                   productBrand:
                     item.productBrand.length > 0 && item.productBrand[0],
                 });
@@ -73,7 +94,7 @@ export default function ListSearchResult({
               borderBottomWidth: 1,
               borderBottomColor: '#E5E5E5',
             }}>
-            <Text>{item.name}</Text>
+            <Text lineHeight={36}>{item.name}</Text>
           </TouchableOpacity>
         );
       }}

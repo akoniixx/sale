@@ -16,6 +16,8 @@ import { useCart } from '../../contexts/CartContext';
 import Counter from '../../components/Counter/Counter';
 import { ProductType } from '../../entities/productType';
 import images from '../../assets/images';
+import FastImage from 'react-native-fast-image';
+import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
 
 interface Props extends ProductType {
   name?: string;
@@ -28,6 +30,7 @@ interface Props extends ProductType {
   setIsDelCart: (v: boolean) => void;
   navigation: any;
   idItem: string;
+  promotion?: any;
 }
 export default function Item({
   setIsAddCart,
@@ -37,26 +40,54 @@ export default function Item({
   productName,
   unitPrice,
   productImage,
+  promotion,
   ...props
 }: Props): JSX.Element {
-  const isPromo = false;
+  const isPromo = promotion && promotion?.length > 0;
+  const orderProductPromotions = promotion?.map((el: any) => {
+    return {
+      promotionId: el?.promotionId,
+      isUse: true,
+    };
+  });
 
   const { t } = useLocalization();
-  const { setCartList, cartList } = useCart();
+  const {
+    setCartList,
+    cartList,
+    cartApi: { postCartItem },
+  } = useCart();
+  const [loading, setLoading] = React.useState(false);
 
   const isAlreadyInCart = cartList?.find(
     item => item?.productId.toString() === idItem.toString(),
   );
-  const onChangeText = (text: string, id: string) => {
+  const onChangeText = async ({
+    quantity,
+    id,
+  }: {
+    quantity: string;
+    id?: any;
+  }) => {
+    setLoading(true);
     const findIndex = cartList?.findIndex(item => item?.productId === id);
-
+    if (+quantity < 1 && findIndex !== -1) {
+      const newCartList = [...cartList];
+      newCartList.splice(findIndex, 1);
+      setCartList(newCartList);
+      await postCartItem(newCartList);
+      setIsDelCart(true);
+      return null;
+    }
     if (findIndex !== -1) {
       const newCartList = [...cartList];
-      newCartList[findIndex].amount = Number(text);
+      newCartList[findIndex].amount = Number(quantity);
       setCartList(newCartList);
+      await postCartItem(newCartList);
+      setLoading(false);
     }
   };
-  const onAddCartByIndex = (id: string | number) => {
+  const onAddCartByIndex = async (id: string | number) => {
     const findIndex = cartList?.findIndex(item => item?.productId === id);
 
     if (findIndex !== -1) {
@@ -64,9 +95,11 @@ export default function Item({
 
       newCartList[findIndex].amount += 5;
       setCartList(newCartList);
+
+      await postCartItem(newCartList);
     }
   };
-  const onSubtractCartByIndex = (id: string | number) => {
+  const onSubtractCartByIndex = async (id: string | number) => {
     const findIndex = cartList?.findIndex(item => item?.productId === id);
 
     if (findIndex !== -1) {
@@ -75,10 +108,12 @@ export default function Item({
       if (amount > 5) {
         newCartList[findIndex].amount -= 5;
         setCartList(newCartList);
+        await postCartItem(newCartList);
       } else {
         newCartList.splice(findIndex, 1);
         setCartList(newCartList);
         setIsDelCart(true);
+        await postCartItem(newCartList);
       }
     }
   };
@@ -104,18 +139,21 @@ export default function Item({
         />
       )}
       <View>
-        {productImage ? (
+        {!!productImage ? (
           <View
             style={{
               height: 100,
               marginBottom: 8,
             }}>
-            <Image
-              source={{ uri: getNewPath(productImage) }}
+            <FastImage
+              source={{
+                uri: getNewPath(productImage),
+                priority: FastImage.priority.normal,
+              }}
               style={{
                 height: 100,
               }}
-              resizeMode="contain"
+              resizeMode={FastImage.resizeMode.contain}
             />
           </View>
         ) : (
@@ -178,7 +216,9 @@ export default function Item({
             {t('screens.StoreDetailScreen.price', {
               price: numberWithCommas(+unitPrice),
             })}
-            <Text color="text3"> /{props.baseUOM}</Text>
+            {props?.saleUOMTH && (
+              <Text color="text3"> /{props?.saleUOMTH}</Text>
+            )}
           </Text>
         </View>
         {!!isAlreadyInCart ? (
@@ -203,22 +243,25 @@ export default function Item({
                 }}
               />
             }
-            onPress={() => {
+            onPress={async () => {
+              const newCartList: any = [
+                ...cartList,
+                {
+                  ...props,
+                  promotion,
+                  productId: idItem,
+                  productName,
+                  unitPrice,
+                  amount: 5,
+                  productImage,
+                  order: cartList.length + 1,
+                  orderProductPromotions,
+                },
+              ];
               setIsAddCart(true);
-              setCartList((prev: any) => {
-                return [
-                  ...prev,
-                  {
-                    ...props,
-                    productId: idItem,
-                    productName,
-                    unitPrice,
-                    amount: 5,
-                    productImage,
-                    order: prev.length + 1,
-                  },
-                ];
-              });
+
+              setCartList(newCartList);
+              await postCartItem(newCartList);
               props.onPressCart && props.onPressCart();
             }}
             style={{
@@ -228,6 +271,7 @@ export default function Item({
           />
         )}
       </View>
+      <LoadingSpinner visible={loading} />
     </TouchableOpacity>
   );
 }

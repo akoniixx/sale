@@ -4,8 +4,10 @@ import { colors } from '../../assets/colors/colors';
 import Text from '../../components/Text/Text';
 import { getNewPath, numberWithCommas } from '../../utils/functions';
 import { useLocalization } from '../../contexts/LocalizationContext';
-import dayjs from 'dayjs';
 import PromotionItem from './PromotionItem';
+import images from '../../assets/images';
+import { PromotionType } from '../../entities/productType';
+import ImageCache from '../../components/ImageCache/ImageCache';
 
 type Props = {
   packSize?: string;
@@ -14,34 +16,24 @@ type Props = {
   unitPrice?: string;
   baseUOM?: string;
   commonName?: string;
+  saleUOMTH?: string | null;
+  description?: string | null;
+  promotion?: PromotionType[];
+  productId?: string;
 };
 export default function Body({
-  baseUOM,
   packSize,
   productImage,
   productName,
   unitPrice = '0',
   commonName,
+  description,
+  saleUOMTH,
+  promotion,
+  productId,
 }: Props): JSX.Element {
   const { t } = useLocalization();
   const [isShowMore, setIsShowMore] = React.useState(false);
-  const mockDataPromotion = [
-    {
-      id: 1,
-      title: 'ของแถมขั้นบันได - โปรโมชัน ไซม๊อกซิเมท',
-      listPromotions: [
-        {
-          text: 'ซื้อ 10 ลัง แถม 1 ลัง',
-        },
-        {
-          text: 'ซื้อ 20 ลัง แถม 2 ลัง',
-        },
-      ],
-      dateStart: dayjs(),
-      dateEnd: dayjs().add(1, 'month'),
-    },
-  ];
-
   return (
     <ScrollView>
       <View
@@ -55,13 +47,12 @@ export default function Body({
             alignItems: 'center',
           }}>
           {productImage ? (
-            <Image
-              source={{ uri: getNewPath(productImage) }}
+            <ImageCache
+              uri={getNewPath(productImage)}
               style={{
                 width: '100%',
                 height: 220,
               }}
-              resizeMode="contain"
             />
           ) : (
             <View
@@ -71,9 +62,7 @@ export default function Body({
                 justifyContent: 'center',
                 alignItems: 'center',
               }}>
-              <Text bold fontFamily="NotoSans">
-                No Image
-              </Text>
+              <Image source={images.emptyProduct} />
             </View>
           )}
         </View>
@@ -104,8 +93,8 @@ export default function Body({
               marginTop: 8,
             }}>
             {packSize
-              ? `${packSize} | ฿${numberWithCommas(+unitPrice)}/${baseUOM}`
-              : `฿${numberWithCommas(+unitPrice)}/${baseUOM}`}
+              ? `${packSize} | ฿${numberWithCommas(+unitPrice)}/${saleUOMTH}`
+              : `฿${numberWithCommas(+unitPrice)}/${saleUOMTH}`}
           </Text>
         </View>
       </View>
@@ -142,40 +131,31 @@ export default function Body({
               justifyContent: 'space-between',
               marginTop: 8,
               alignItems: 'center',
+              width: '100%',
             }}>
             <Text semiBold>
               {t('screens.ProductDetailScreen.featuresAndBenefits')}
             </Text>
-            <TouchableOpacity
-              onPress={() => {
-                setIsShowMore(!isShowMore);
-              }}>
-              <Text fontSize={14} color="text3">
-                {isShowMore
-                  ? t('screens.ProductDetailScreen.seeLess')
-                  : t('screens.ProductDetailScreen.seeMore')}
-              </Text>
-            </TouchableOpacity>
+            {description && description.length > 80 && (
+              <TouchableOpacity
+                onPress={() => {
+                  setIsShowMore(!isShowMore);
+                }}>
+                <Text fontSize={14} color="text3">
+                  {isShowMore
+                    ? t('screens.ProductDetailScreen.seeLess')
+                    : t('screens.ProductDetailScreen.seeMore')}
+                </Text>
+              </TouchableOpacity>
+            )}
           </View>
           <Text
             color="text3"
-            style={{ width: '80%' }}
+            style={{
+              width: '100%',
+            }}
             numberOfLines={isShowMore ? undefined : 2}>
-            Lorem ipsum dolor sit, amet consectetur adipisicing elit. Sit
-            expedita impedit vitae exercitationem voluptatem quas repellat dicta
-            quod. Sunt voluptatibus nulla praesentium fugiat itaque, corporis
-            commodi animi repellat cum veritatis! Lorem ipsum dolor sit, amet
-            consectetur adipisicing elit. Sit expedita impedit vitae
-            exercitationem voluptatem quas repellat dicta quod. Sunt
-            voluptatibus nulla praesentium fugiat itaque, corporis commodi animi
-            repellat cum veritatis! Lorem ipsum dolor sit, amet consectetur
-            adipisicing elit. Sit expedita impedit vitae exercitationem
-            voluptatem quas repellat dicta quod. Sunt voluptatibus nulla
-            praesentium fugiat itaque, corporis commodi animi repellat cum
-            veritatis! Lorem ipsum dolor sit, amet consectetur adipisicing elit.
-            Sit expedita impedit vitae exercitationem voluptatem quas repellat
-            dicta quod. Sunt voluptatibus nulla praesentium fugiat itaque,
-            corporis commodi animi repellat cum veritatis!
+            {description}
           </Text>
           {isShowMore && (
             <View
@@ -186,14 +166,25 @@ export default function Body({
             />
           )}
         </View>
-        {mockDataPromotion.length > 0 && (
+        {promotion && promotion.length > 0 && (
           <View
             style={{
               backgroundColor: colors.white,
               padding: 16,
             }}>
-            {mockDataPromotion.map((item, index) => {
-              return <PromotionItem key={index} {...item} index={index} />;
+            {promotion.map((item, index) => {
+              return (
+                <PromotionItem
+                  key={index}
+                  {...item}
+                  index={index}
+                  promotionLength={promotion.length}
+                  productName={productName}
+                  currentProductId={productId}
+                  unitBuy={saleUOMTH}
+                  promotionType={item.promotionType}
+                />
+              );
             })}
           </View>
         )}

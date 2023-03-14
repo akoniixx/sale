@@ -14,6 +14,8 @@ import { useFocusEffect } from '@react-navigation/native';
 import { productServices } from '../../services/ProductServices';
 import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
 import { ProductSummary } from '../../entities/productType';
+import { KeyboardAvoidingView, Platform } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function ProductDetailScreen({
   route,
@@ -31,7 +33,13 @@ export default function ProductDetailScreen({
       const getProductById = async () => {
         try {
           setLoading(true);
-          const result = await productServices.getProductById(id);
+          const customerCompanyId = await AsyncStorage.getItem(
+            'customerCompanyId',
+          );
+          const result = await productServices.getProductById(
+            id,
+            customerCompanyId || '',
+          );
 
           setProductItem(result);
         } catch (e) {
@@ -46,29 +54,35 @@ export default function ProductDetailScreen({
   return (
     <Container>
       <Header componentRight={<CartBadge navigation={navigation} />} />
-      <Content
-        style={{
-          backgroundColor: colors.background1,
-          padding: 0,
-        }}>
-        <Body
-          baseUOM={productItem?.baseUOM}
-          packSize={productItem?.packSize}
-          productImage={productItem?.productImage}
-          productName={productItem?.productName}
-          unitPrice={productItem?.unitPrice}
-          commonName={productItem?.commonName}
-        />
-        {productItem && (
-          <Footer
-            navigation={navigation}
-            id={id}
-            setIsAddCart={setIsAddCart}
-            setIsDelCart={setIsDelCart}
-            productItem={productItem}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1, padding: 0, width: '100%' }}>
+        <Content
+          style={{
+            backgroundColor: colors.background1,
+            padding: 0,
+          }}>
+          <Body
+            {...productItem}
+            saleUOMTH={productItem?.saleUOMTH}
+            packSize={productItem?.packSize}
+            productImage={productItem?.productImage}
+            productName={productItem?.productName}
+            unitPrice={productItem?.unitPrice}
+            commonName={productItem?.commonName}
           />
-        )}
-      </Content>
+          {productItem && (
+            <Footer
+              navigation={navigation}
+              id={id}
+              setIsAddCart={setIsAddCart}
+              setIsDelCart={setIsDelCart}
+              setLoading={setLoading}
+              productItem={productItem}
+            />
+          )}
+        </Content>
+      </KeyboardAvoidingView>
       <LoadingSpinner visible={loading} />
       <ModalMessage
         visible={isAddCart}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import MainTabBottomNavigator from './MainTabBottomNavigator';
 import SelectStoreScreen from '../../screens/SelectStoreScreen';
@@ -7,13 +7,21 @@ import ProductDetailScreen from '../../screens/ProductDetailScreen';
 import CartScreen from '../../screens/CartScreen';
 import SelectBrandBeforeDetailScreen from '../../screens/SelectBrandBeforeDetailScreen';
 import OrderSuccessScreen from '../../screens/OrderSuccessScreen';
+import LoginSuccessScreen from '../../screens/LoginSuccessScreen';
+import TermAndConditionScreen from '../../screens/TermAndConditionScreen';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { navigate } from '../RootNavigator';
+import SpecialRequestScreen from '../../screens/SpecialRequestScreen';
+import HistoryDetailScreen from '../../screens/HistoryDetailScreen';
 
 export type MainStackParamList = {
-  MainScreen: undefined;
+  MainScreen: {
+    screen?: string;
+  };
 
   SelectStoreScreen: undefined;
   StoreDetailScreen: {
-    id: string;
+    id?: string;
     name: string;
     productBrand?: {
       product_brand_id: string;
@@ -30,19 +38,46 @@ export type MainStackParamList = {
       product_brand_name: string;
       product_brand_logo: string;
     }[];
+    customerCompanyId: string;
   };
   ProductDetailScreen: {
     id: string;
+    customerCompanyId: string;
   };
-  CartScreen: undefined;
+  CartScreen: {
+    step?: number;
+    specialRequestRemark?: string | undefined;
+  };
   OrderSuccessScreen: {
     orderId: string;
+  };
+  TermAndConditionScreen: undefined;
+  LoginSuccessScreen: undefined;
+  SpecialRequestScreen: {
+    specialRequestRemark: string | undefined;
+  };
+  HistoryScreen: undefined;
+  HistoryDetailScreen: {
+    orderId: string;
+    headerTitle: string;
   };
 };
 const Stack = createStackNavigator<MainStackParamList>();
 export default function MainNavigator() {
+  useEffect(() => {
+    const getAlreadyAcceptTerm = async () => {
+      const alreadyAcceptTerm = await AsyncStorage.getItem('alreadyAcceptTerm');
+      if (alreadyAcceptTerm === null) {
+        navigate('TermAndConditionScreen');
+      } else {
+        navigate('MainScreen');
+      }
+    };
+    getAlreadyAcceptTerm();
+  }, []);
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Navigator
+      screenOptions={{ headerShown: false, gestureEnabled: false }}>
       <Stack.Group>
         <Stack.Screen
           name="MainScreen"
@@ -66,6 +101,22 @@ export default function MainNavigator() {
         <Stack.Screen
           name="OrderSuccessScreen"
           component={OrderSuccessScreen}
+        />
+        <Stack.Screen
+          name="LoginSuccessScreen"
+          component={LoginSuccessScreen}
+        />
+        <Stack.Screen
+          name="TermAndConditionScreen"
+          component={TermAndConditionScreen}
+        />
+        <Stack.Screen
+          name="SpecialRequestScreen"
+          component={SpecialRequestScreen}
+        />
+        <Stack.Screen
+          name="HistoryDetailScreen"
+          component={HistoryDetailScreen}
         />
       </Stack.Group>
     </Stack.Navigator>

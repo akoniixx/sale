@@ -33,7 +33,8 @@ const InputTel = ({ name, errorManual }: Props): JSX.Element => {
                   alignItems: 'center',
                   justifyContent: 'space-between',
                   borderWidth: 1,
-                  borderColor: errors[name] ? colors.error : colors.border1,
+                  borderColor:
+                    errors[name] || errorManual ? colors.error : colors.border1,
                   borderRadius: 6,
                   padding: Platform.OS === 'ios' ? 12 : 0,
                   paddingHorizontal: 16,
@@ -64,6 +65,8 @@ const InputTel = ({ name, errorManual }: Props): JSX.Element => {
                     onChangeText={value => onChange(value)}
                     value={value}
                     placeholder="081xxxxxxx"
+                    maxLength={10}
+                    autoFocus
                     keyboardType="phone-pad"
                     placeholderTextColor={colors.text3}
                   />

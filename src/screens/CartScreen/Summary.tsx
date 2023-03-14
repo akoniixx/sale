@@ -1,5 +1,5 @@
 import { View, StyleSheet, TouchableOpacity, Image } from 'react-native';
-import React from 'react';
+import React, { useEffect, useMemo } from 'react';
 import Text from '../../components/Text/Text';
 import { useLocalization } from '../../contexts/LocalizationContext';
 import { colors } from '../../assets/colors/colors';
@@ -8,43 +8,137 @@ import { numberWithCommas } from '../../utils/functions';
 import Checkbox from '../../components/Checkbox/Checkbox';
 import icons from '../../assets/icons';
 import { useCart } from '../../contexts/CartContext';
-
-export default function Summary(): JSX.Element {
+import { TypeDataStepTwo } from '.';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useAuth } from '../../contexts/AuthContext';
+interface Props {
+  setDataStepTwo: React.Dispatch<React.SetStateAction<TypeDataStepTwo>>;
+  dataStepTwo: TypeDataStepTwo;
+}
+export default function Summary({
+  setDataStepTwo,
+  dataStepTwo,
+}: Props): JSX.Element {
   const { t } = useLocalization();
+  const {
+    state: { user },
+  } = useAuth();
   const [valueCheckbox, setValueCheckbox] = React.useState<string[]>([]);
+  const [termPayment, setTermPayment] = React.useState<string>('');
   const [isCollapsed, setIsCollapsed] = React.useState<{
     [key: string]: boolean;
   }>({
     discountList: true,
     specialListDiscount: true,
   });
-  const { cartList } = useCart();
-  const totalPrice = cartList.reduce((a, b) => a + b.amount * +b.unitPrice, 0);
-  const renderDiscountList = () => {
-    const mockData = [
-      {
-        productName: 'โบร์แลน',
-        discountPrice: 15000,
-        unit: 5,
-        unitType: 'ลัง',
+
+  useEffect(() => {
+    const getTerm = async () => {
+      const termPayment = await AsyncStorage.getItem('termPayment');
+      if (termPayment) {
+        setTermPayment(termPayment);
+        setDataStepTwo({
+          ...dataStepTwo,
+          paymentMethod: 'CASH',
+        });
+      }
+    };
+    getTerm();
+  }, []);
+  const { cartDetail, promotionListValue } = useCart();
+
+  const { dataObj } = useMemo(() => {
+    const listDataDiscount: {
+      label: string;
+      valueLabel: string;
+      value: string;
+    }[] = [];
+    const listDataDiscountSpecialRequest: {
+      label: string;
+      valueLabel: string;
+      value: string;
+    }[] = [];
+    cartDetail.orderProducts
+      .filter(el => !el.isFreebie)
+      .map((item: any) => {
+        const dataPush = {
+          label: item.productName,
+          valueLabel: `(฿${numberWithCommas(item.marketPrice)} x ${
+            item.quantity
+          } ${item.saleUomTH ? item.saleUomTH : item.saleUom})`,
+        };
+        if (item.specialRequestDiscount > 0) {
+          listDataDiscountSpecialRequest.push({
+            ...dataPush,
+            value: item.specialRequestDiscount,
+          });
+        }
+
+        if (item?.orderProductPromotions?.length > 0) {
+          item.orderProductPromotions.map((el: any) => {
+            const isFind = promotionListValue.find(
+              el2 => el2 === el.promotionId,
+            );
+            if (el.promotionType === 'DISCOUNT_NOT_MIX' && isFind) {
+              listDataDiscount.push({
+                ...dataPush,
+                value: el.conditionDetail.conditionDiscount,
+              });
+            }
+          });
+        }
+      });
+    const dataObj = {
+      priceBeforeDiscount: {
+        label: 'ราคาก่อนลด',
+        value: cartDetail.price,
       },
-    ];
-    return mockData?.map((el, idx) => {
+      discountList: {
+        label: 'ส่วนลดจากรายการ',
+        value: cartDetail.discount,
+        listData: listDataDiscount,
+      },
+      discountSpecialRequest: {
+        label: 'ส่วนลดพิเศษ (Special Req.)',
+        value: cartDetail.specialRequestDiscount,
+        listData: listDataDiscountSpecialRequest,
+      },
+      discountCo: {
+        label: 'ส่วนลดดูราคา (CO. ดูแลราคา / วงเงินเคลม)',
+        value: cartDetail.coDiscount,
+      },
+      discountCash: {
+        label: 'ส่วนลดเงินสด',
+        value: cartDetail.cashDiscount,
+      },
+      totalDiscount: {
+        label: 'ส่วนลดรวม',
+        value: cartDetail.totalDiscount,
+      },
+    };
+    return {
+      dataObj,
+    };
+  }, [cartDetail]);
+
+  const renderDiscountList = () => {
+    return dataObj.discountList.listData?.map((el, idx) => {
       return (
         <View
           style={[
             styles.row,
-            { backgroundColor: colors.background1, minHeight: 40 },
+            {
+              backgroundColor: colors.background1,
+              minHeight: 52,
+              marginBottom: 0,
+            },
           ]}
           key={idx}>
           <Text fontSize={14} color="text3">
-            {el.productName}
-            {` ฿${numberWithCommas(el.discountPrice)} x ${el.unit} ${
-              el.unitType
-            }`}
+            {el.label + ' ' + el.valueLabel}
           </Text>
           <Text fontSize={14} color="text3">
-            {`-฿${numberWithCommas(el.discountPrice * el.unit)}`}
+            {`-฿${numberWithCommas(el.value)}`}
           </Text>
         </View>
       );
@@ -52,30 +146,23 @@ export default function Summary(): JSX.Element {
   };
 
   const renderSpecialRequest = () => {
-    const mockData = [
-      {
-        productName: 'ไฮซีส',
-        discountPrice: 100,
-        unit: 10,
-        unitType: 'ลัง',
-      },
-    ];
-    return mockData?.map((el, idx) => {
+    return dataObj.discountSpecialRequest.listData?.map((el, idx) => {
       return (
         <View
           style={[
             styles.row,
-            { backgroundColor: colors.background1, minHeight: 40 },
+            {
+              backgroundColor: colors.background1,
+              minHeight: 52,
+              marginBottom: 0,
+            },
           ]}
           key={idx}>
           <Text fontSize={14} color="text3">
-            {el.productName}
-            {` ฿${numberWithCommas(el.discountPrice)} x ${el.unit} ${
-              el.unitType
-            }`}
+            {el.label + ' ' + el.valueLabel}
           </Text>
           <Text fontSize={14} color="text3">
-            {`-฿${numberWithCommas(el.discountPrice * el.unit)}`}
+            {`-฿${numberWithCommas(el.value)}`}
           </Text>
         </View>
       );
@@ -113,18 +200,28 @@ export default function Summary(): JSX.Element {
               borderBottomWidth: 1,
             }}>
             <Radio
+              value={dataStepTwo.paymentMethod}
+              onChange={value => {
+                setDataStepTwo(prev => ({
+                  ...prev,
+                  paymentMethod: value,
+                }));
+              }}
               radioLists={[
                 {
-                  title: 'เงินสด (รับส่วนลดเพิ่ม 1.5%)',
-                  value: 'cash',
+                  title:
+                    user?.company === 'ICPF'
+                      ? 'เงินสด'
+                      : 'เงินสด (รับส่วนลดเพิ่ม 1.5%)',
+                  value: 'CASH',
                   key: 'cash',
                 },
                 {
                   title: 'เครดิต',
-                  value: 'credit',
+                  value: 'CREDIT',
                   key: 'credit',
                 },
-              ]}
+              ].slice(0, termPayment.toUpperCase().startsWith('N') ? 2 : 1)}
             />
           </View>
           <View
@@ -142,7 +239,9 @@ export default function Summary(): JSX.Element {
               </Text>
               <Text color="text3" fontSize={14}>
                 {t('screens.CartScreen.summary.remainingMoney', {
-                  remainingMoney: numberWithCommas(2000 * 200),
+                  remainingMoney: numberWithCommas(
+                    cartDetail.creditMemoBalance,
+                  ),
                 })}
               </Text>
             </View>
@@ -151,6 +250,10 @@ export default function Summary(): JSX.Element {
                 marginTop: 10,
               }}>
               <Checkbox
+                disabled={
+                  cartDetail.creditMemoBalance <= 0 ||
+                  +cartDetail?.coAmount <= 0
+                }
                 onPress={v => {
                   const haveValue = valueCheckbox.includes(v);
                   if (haveValue) {
@@ -165,7 +268,7 @@ export default function Summary(): JSX.Element {
                     title: 'ใช้ส่วนลด',
                     value: 'discount',
                     key: 'discount',
-                    amount: 26600,
+                    amount: cartDetail ? +cartDetail.coAmount : 0,
                   },
                 ]}
               />
@@ -179,7 +282,7 @@ export default function Summary(): JSX.Element {
             {t('screens.CartScreen.summary.priceBeforeDiscount')}
           </Text>
           <Text color="text2" semiBold>{`฿${numberWithCommas(
-            277000,
+            dataObj.priceBeforeDiscount.value,
             true,
           )}`}</Text>
         </View>
@@ -207,7 +310,10 @@ export default function Summary(): JSX.Element {
           <Text
             color="current"
             semiBold
-            fontFamily="NotoSans">{`-฿${numberWithCommas(10000, true)}`}</Text>
+            fontFamily="NotoSans">{`-฿${numberWithCommas(
+            dataObj.discountList.value,
+            true,
+          )}`}</Text>
         </View>
         {!isCollapsed.discountList && <>{renderDiscountList()}</>}
         <View style={styles.row}>
@@ -236,7 +342,10 @@ export default function Summary(): JSX.Element {
           <Text
             color="specialRequest"
             semiBold
-            fontFamily="NotoSans">{`-฿${numberWithCommas(0, true)}`}</Text>
+            fontFamily="NotoSans">{`-฿${numberWithCommas(
+            dataObj.discountSpecialRequest.value,
+            true,
+          )}`}</Text>
         </View>
         {!isCollapsed.specialListDiscount && <>{renderSpecialRequest()}</>}
 
@@ -247,7 +356,10 @@ export default function Summary(): JSX.Element {
           <Text
             color="error"
             semiBold
-            fontFamily="NotoSans">{`-฿${numberWithCommas(5, true)}`}</Text>
+            fontFamily="NotoSans">{`-฿${numberWithCommas(
+            dataObj.discountCo.value,
+            true,
+          )}`}</Text>
         </View>
         <View style={styles.row}>
           <Text color="text2">
@@ -256,7 +368,10 @@ export default function Summary(): JSX.Element {
           <Text
             color="waiting"
             fontFamily="NotoSans"
-            semiBold>{`-฿${numberWithCommas(3591, true)}`}</Text>
+            semiBold>{`-฿${numberWithCommas(
+            dataObj.discountCash.value,
+            true,
+          )}`}</Text>
         </View>
         <View
           style={[
@@ -269,7 +384,7 @@ export default function Summary(): JSX.Element {
             {t('screens.CartScreen.summary.totalDiscount')}
           </Text>
           <Text color="text2" semiBold fontFamily="NotoSans">
-            {`-฿${numberWithCommas(14000, true)}`}
+            {`-฿${numberWithCommas(dataObj.totalDiscount.value, true)}`}
           </Text>
         </View>
       </View>
@@ -281,7 +396,10 @@ export default function Summary(): JSX.Element {
           fontFamily="NotoSans"
           color="primary"
           bold
-          fontSize={20}>{`฿${numberWithCommas(totalPrice, true)}`}</Text>
+          fontSize={20}>{`฿${numberWithCommas(
+          cartDetail.totalPrice,
+          true,
+        )}`}</Text>
       </View>
     </View>
   );
@@ -311,6 +429,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 10,
     alignItems: 'center',
+    minHeight: 42,
+
     paddingHorizontal: 16,
   },
   summary: {

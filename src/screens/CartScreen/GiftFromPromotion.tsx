@@ -2,30 +2,44 @@ import { View, StyleSheet, ScrollView, Image } from 'react-native';
 import React from 'react';
 import Text from '../../components/Text/Text';
 import { useLocalization } from '../../contexts/LocalizationContext';
-import { useCart } from '../../contexts/CartContext';
 import { colors } from '../../assets/colors/colors';
 import { getNewPath } from '../../utils/functions';
+import images from '../../assets/images';
+import ImageCache from '../../components/ImageCache/ImageCache';
 
-export default function GiftFromPromotion(): JSX.Element {
+interface Props {
+  freebieListItem: {
+    productName: string;
+    id: string;
+    quantity: number;
+    baseUnit: string | undefined;
+    status: string | undefined;
+    productImage: string | undefined;
+  }[];
+}
+
+export default function GiftFromPromotion({
+  freebieListItem = [],
+}: Props): JSX.Element {
   const { t } = useLocalization();
-  const { cartList } = useCart();
-  console.log('cartList', JSON.stringify(cartList, null, 2));
-  if (cartList.length < 1) return <></>;
+  console.log(JSON.stringify(freebieListItem, null, 2));
+
+  if (freebieListItem.length < 1) return <></>;
   return (
     <View style={styles().container}>
       <View style={styles().header}>
         <Text fontSize={18} bold fontFamily="NotoSans">
           {t('screens.CartScreen.giftFromPromotion.title')}
         </Text>
-        <Text color="text3">
+        <Text color="text3" lineHeight={24}>
           {t('screens.CartScreen.giftFromPromotion.allListCount', {
-            count: 3,
+            count: freebieListItem.length,
           })}
         </Text>
       </View>
       <View style={styles().content}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          {cartList.map((item, index) => {
+          {freebieListItem.map((item, index) => {
             return (
               <View key={index} style={styles().list}>
                 <View
@@ -36,21 +50,32 @@ export default function GiftFromPromotion(): JSX.Element {
                     backgroundColor: colors.white,
                     justifyContent: 'center',
                     alignItems: 'center',
+                    marginRight: 8,
                   }}>
-                  <Image
-                    source={{ uri: getNewPath(item.productImage) }}
-                    style={{
-                      width: 40,
-                      height: 40,
-                    }}
-                  />
+                  {item.productImage ? (
+                    <ImageCache
+                      uri={getNewPath(item.productImage)}
+                      style={{
+                        width: 40,
+                        height: 40,
+                      }}
+                    />
+                  ) : (
+                    <Image
+                      style={{
+                        width: 40,
+                        height: 40,
+                      }}
+                      source={images.emptyProduct}
+                    />
+                  )}
                 </View>
                 <View>
-                  <Text fontSize={14} color="text3">
+                  <Text fontSize={14} color="text3" lineHeight={24}>
                     {item.productName}
                   </Text>
-                  <Text semiBold fontSize={12}>
-                    {item.qtySaleUnit} {item.baseUOM}
+                  <Text semiBold fontSize={12} lineHeight={22}>
+                    {item.quantity} {item.baseUnit}
                   </Text>
                 </View>
               </View>

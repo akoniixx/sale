@@ -29,6 +29,9 @@ const styles = ({ isError = false }: InputStyledProps) => {
       borderColor: isError ? colors.error : colors.border1,
       borderRadius: 6,
       paddingLeft: 16,
+      paddingVertical: 16,
+      fontSize: 16,
+      fontFamily: 'Sarabun-Regular',
     },
   });
 };

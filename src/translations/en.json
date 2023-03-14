@@ -4,13 +4,16 @@
       "telInput": {
         "label": "ใส่หมายเลขโทรศัพท์ของคุณเพื่อรับ  รหัส OTP \n ยืนยันการลงทะเบียน",
         "required": "กรุณากรอกเบอร์โทรศัพท์",
-        "invalid": "กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง"
+        "invalid": "กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง",
+        "notFound": "ไม่พบเบอร์โทรศัพท์ในระบบ",
+        "somethingWrong": "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง ภายหลัง"
       }
     },
     "OtpScreen": {
       "otpInput": {
         "label": "ใส่รหัส OTP",
-        "subLabel": "ใส่หมายเลขโทรศัพท์ของคุณเพื่อรับ รหัส OTP \n ยืนยันการลงทะเบียน",
+        "subLabel": "กรุณาใส่รหัสยืนยันตัวตนที่ถูกต้องไปยังหมายเลข  \n %{tel}",
+
         "required": "กรุณากรอกรหัส OTP"
       },
       "timer": {
@@ -58,7 +61,8 @@
       "empty": "ไม่พบสินค้าที่คุณต้องการ",
       "price": "฿%{price}",
       "buttonAddCart": "เพิ่มเข้าตระกร้า",
-      "allCategory": "กลุ่มทั้งหมด"
+      "allCategory": "กลุ่มทั้งหมด",
+      "searchPlaceholder": "ค้นหาสินค้า..."
     },
     "SelectBrandBeforeDetailScreen": {
       "title": "เลือกแบรนด์"
@@ -71,7 +75,8 @@
       "seeLess": "ดูน้อยลง",
       "promotion": "โปรโมชั่น",
       "orderButton": "สั่งซื้อสินค้า",
-      "durationPromotion": "ระยะเวลา %{dateStart} - %{dateEnd}"
+      "durationPromotion": "ระยะเวลา %{dateStart} - %{dateEnd}",
+      "promotionTextConvert": "ซื้อ %{buy} %{unitBuy} แถม %{productNameFree} %{free}  %{unitFree}"
     },
     "CartScreen": {
       "title": "ตระกร้าสินค้า",
@@ -131,6 +136,10 @@
   "modalMessage": {
     "addCart": "เพิ่มสินค้าไปยังตระกร้าแล้ว",
     "deleteCart": "ลบสินค้าออกจากตระกร้าแล้ว"
+  },
+  "modalWarning": {
+    "cartDeleteTitle": "ยืนยันการลบสินค้า",
+    "cartDeleteDesc": "ต้องการลบสินค้าใช่หรือไม่"
   },
   "dropDownModal": {
     "buttonCancel": "ยกเลิก",

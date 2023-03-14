@@ -9,6 +9,9 @@ const LoadingNavigator: React.FC<any> = ({ navigation }) => {
         try {
           const value = await AsyncStorage.getItem('token');
           console.log('tokenForTest', value);
+          const alreadyAcceptTerm = await AsyncStorage.getItem(
+            'alreadyAcceptTerm',
+          );
 
           if (!!value) {
             navigation.push('Main');

@@ -10,15 +10,20 @@ interface Props {
   customStyles?: StepIndicatorStyles;
   labelList: string[];
   stepCount?: number;
+  onPress?: (step: number) => void;
 }
 export default function Step({
   currentStep,
   customStyles,
   labelList = [],
   stepCount = 3,
+  onPress,
 }: Props): JSX.Element {
   return (
     <StepIndicator
+      onPress={(step: number) => {
+        onPress && onPress(step);
+      }}
       stepCount={stepCount}
       customStyles={{
         stepStrokeWidth: 1,

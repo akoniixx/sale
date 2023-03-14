@@ -14,6 +14,7 @@ import { useLocalization } from '../../contexts/LocalizationContext';
 import Content from '../../components/Content/Content';
 import { colors } from '../../assets/colors/colors';
 import Text from '../../components/Text/Text';
+import { useAsyncStorage } from '@react-native-async-storage/async-storage';
 
 export default function SelectBrandBeforeDetailScreen({
   navigation,
@@ -21,6 +22,8 @@ export default function SelectBrandBeforeDetailScreen({
 }: StackScreenProps<MainStackParamList, 'SelectBrandBeforeDetailScreen'>) {
   const { id, name: nameCompany, productBrand } = route.params;
   const { t } = useLocalization();
+  const { setItem: setProductBrand } = useAsyncStorage('productBrand');
+
   return (
     <Container>
       <Header title={t('screens.SelectBrandBeforeDetailScreen.title')} />
@@ -38,6 +41,13 @@ export default function SelectBrandBeforeDetailScreen({
                 <TouchableOpacity
                   style={styled().item}
                   onPress={() => {
+                    setProductBrand(
+                      JSON.stringify({
+                        product_brand_id: item.product_brand_id,
+                        product_brand_name: item.product_brand_name,
+                        company: item.company,
+                      }),
+                    );
                     navigation.navigate('StoreDetailScreen', {
                       id,
                       name: nameCompany,

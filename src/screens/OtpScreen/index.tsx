@@ -9,10 +9,7 @@ import React, { useEffect, useState } from 'react';
 import Container from '../../components/Container/Container';
 import images from '../../assets/images';
 import Content from '../../components/Content/Content';
-import {
-  StackNavigationHelpers,
-  StackScreenProps,
-} from '@react-navigation/stack/lib/typescript/src/types';
+import { StackScreenProps } from '@react-navigation/stack/lib/typescript/src/types';
 import Text from '../../components/Text/Text';
 import { useLocalization } from '../../contexts/LocalizationContext';
 import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
@@ -20,9 +17,9 @@ import OtpInput from '../../components/OtpInput/OtpInput';
 import { AuthServices } from '../../services/AuthServices';
 import { useAuth } from '../../contexts/AuthContext';
 import { AuthStackParamList } from '../../navigations/AuthNavigator';
+import { navigate } from '../../navigations/RootNavigator';
 
 export default function OtpScreen({
-  navigation,
   route,
 }: StackScreenProps<AuthStackParamList, 'OtpScreen'>): JSX.Element {
   const { t } = useLocalization();
@@ -72,8 +69,11 @@ export default function OtpScreen({
       };
 
       try {
-        await login(payload);
-        navigation.navigate('WelcomeScreen');
+        const res = await login(payload);
+
+        if (res.accessToken) {
+          navigate('Main');
+        }
       } catch (e) {
         setIsError(true);
       } finally {
@@ -97,6 +97,9 @@ export default function OtpScreen({
     }, 1000);
     return () => clearInterval(timer);
   });
+  const censorTelSixLength = (tel: string) => {
+    return tel.replace(/.(?=.{4})/g, 'X');
+  };
   return (
     <Container>
       <Image
@@ -126,7 +129,9 @@ export default function OtpScreen({
           </Text>
 
           <Text color="text2" left>
-            {t('screens.OtpScreen.otpInput.subLabel')}
+            {t('screens.OtpScreen.otpInput.subLabel', {
+              tel: censorTelSixLength(paramsData.tel),
+            })}
           </Text>
         </View>
         <View
@@ -142,7 +147,9 @@ export default function OtpScreen({
             alignItems: 'center',
           }}>
           {isError ? (
-            <Text color="error">รหัส OTP ไม่ถูกต้อง ลองใหม่อีกครั้ง</Text>
+            <Text
+              color="error"
+              center>{`รหัส OTP ไม่ถูกต้อง ลองใหม่อีกครั้ง`}</Text>
           ) : (
             <View
               style={{

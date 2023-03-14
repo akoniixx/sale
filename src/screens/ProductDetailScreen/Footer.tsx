@@ -14,6 +14,7 @@ interface Props {
   setIsAddCart: React.Dispatch<React.SetStateAction<boolean>>;
   setIsDelCart: React.Dispatch<React.SetStateAction<boolean>>;
   productItem: ProductSummary;
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
 export default function Footer({
   id,
@@ -21,33 +22,66 @@ export default function Footer({
   setIsDelCart,
   navigation,
   productItem,
+  setLoading,
 }: Props): JSX.Element {
   const { t } = useLocalization();
-  const { cartList, setCartList } = useCart();
+  const {
+    cartList,
+    setCartList,
+    cartApi: { postCartItem },
+  } = useCart();
   const currentProduct = cartList?.find(
     item => item?.productId.toString() === id,
   );
-  const onChangeText = (text: string, id: string) => {
+  const promotionIdList = (productItem?.promotion || []).map(el => {
+    return {
+      promotionId: el?.promotionId,
+      isUse: true,
+    };
+  });
+  const onChangeText = async ({
+    quantity,
+    id,
+  }: {
+    quantity: string;
+    id?: any;
+  }) => {
+    setLoading(true);
     const findIndex = cartList?.findIndex(
       item => item?.productId.toString() === id.toString(),
     );
     if (findIndex !== -1) {
       const newCartList = [...cartList];
-      newCartList[findIndex].amount = Number(text);
-      setCartList(newCartList);
+      if (+quantity < 1) {
+        newCartList.splice(findIndex, 1);
+        setCartList(newCartList);
+        await postCartItem(newCartList);
+        setIsDelCart(true);
+        setLoading(false);
+        return;
+      } else {
+        newCartList[findIndex].amount = Number(quantity);
+        setCartList(newCartList);
+        await postCartItem(newCartList);
+        setLoading(false);
+      }
     } else {
-      setCartList(prev => [
-        ...prev,
+      const newCartList: any = [
+        ...cartList,
         {
           ...productItem,
           productId: id,
-          amount: Number(text),
-          order: prev.length + 1,
+          amount: Number(quantity),
+          orderProductPromotions: promotionIdList || [],
+          order: cartList.length + 1,
         },
-      ]);
+      ];
+      await postCartItem(newCartList);
+      setCartList(newCartList);
+      setLoading(false);
     }
   };
-  const onIncrease = () => {
+  const onIncrease = async () => {
     const findIndex = cartList?.findIndex(
       item => item?.productId.toString() === id,
     );
@@ -57,15 +91,24 @@ export default function Footer({
       newCartList[findIndex].amount += 5;
 
       setCartList(newCartList);
+      await postCartItem(newCartList);
     } else {
-      setCartList(prev => [
-        ...prev,
-        { ...productItem, productId: id, amount: 5, order: prev.length + 1 },
-      ]);
+      const newCartList: any = [
+        ...cartList,
+        {
+          ...productItem,
+          productId: id,
+          amount: 5,
+          orderProductPromotions: promotionIdList,
+          order: cartList.length + 1,
+        },
+      ];
+      setCartList(newCartList);
+      await postCartItem(newCartList);
     }
     setIsAddCart(true);
   };
-  const onDecrease = () => {
+  const onDecrease = async () => {
     const findIndex = cartList?.findIndex(
       item => item?.productId.toString() === id,
     );
@@ -76,27 +119,37 @@ export default function Footer({
       if (amount > 5) {
         newCartList[findIndex].amount -= 5;
         setCartList(newCartList);
+        await postCartItem(newCartList);
       } else {
         newCartList.splice(findIndex, 1);
         setCartList(newCartList);
         setIsDelCart(true);
+        await postCartItem(newCartList);
       }
     }
   };
-  const onOrder = () => {
+  const onOrder = async () => {
     const findIndex = cartList?.findIndex(
       item => item?.productId.toString() === id,
     );
     if (findIndex !== -1) {
       const newCartList = [...cartList];
       newCartList[findIndex].amount += 5;
-      newCartList[findIndex].order = newCartList.length + 1;
       setCartList(newCartList);
+      await postCartItem(newCartList);
     } else {
-      setCartList(prev => [
-        ...prev,
-        { ...productItem, productId: id, amount: 5, order: prev?.length + 1 },
-      ]);
+      const newCartList: any = [
+        ...cartList,
+        {
+          ...productItem,
+          productId: id,
+          amount: 5,
+          orderProductPromotions: promotionIdList,
+          order: cartList?.length + 1,
+        },
+      ];
+      setCartList(newCartList);
+      await postCartItem(newCartList);
     }
     setIsAddCart(true);
     navigation.navigate('CartScreen');
@@ -108,7 +161,11 @@ export default function Footer({
           flex: 0.8,
         }}>
         <Counter
-          currentQuantity={currentProduct?.amount ? currentProduct.amount : 0}
+          currentQuantity={
+            currentProduct?.amount && currentProduct.amount > 0
+              ? currentProduct.amount
+              : 0
+          }
           id={id}
           onChangeText={onChangeText}
           onDecrease={onDecrease}

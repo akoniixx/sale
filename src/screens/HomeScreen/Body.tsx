@@ -1,37 +1,51 @@
 import { View, StyleSheet, TouchableOpacity, Image } from 'react-native';
-import React from 'react';
+import React, { useMemo } from 'react';
 import images from '../../assets/images';
 import Text from '../../components/Text/Text';
 import { useLocalization } from '../../contexts/LocalizationContext';
 import { StackNavigationHelpers } from '@react-navigation/stack/lib/typescript/src/types';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface Props {
   navigation: StackNavigationHelpers;
 }
 export default function Body({ navigation }: Props): JSX.Element {
   const { t } = useLocalization();
-  const ListMenus = [
-    {
-      title: t('menu.order'),
-      image: images.Order,
-      name: 'Order',
-      onPress: () => {
-        navigation.navigate('SelectStoreScreen');
+  const {
+    state: { user },
+  } = useAuth();
+
+  const memoListMenus = useMemo(() => {
+    const ListMenus = [
+      {
+        title: t('menu.order'),
+        image: images.Order,
+        name: 'Order',
+        onPress: () => {
+          navigation.navigate('SelectStoreScreen');
+        },
       },
-    },
-    {
-      title: t('menu.history'),
-      image: images.History,
-      name: 'History',
-      onPress: () => {
-        navigation.navigate('HistoryScreen');
+      {
+        title: t('menu.history'),
+        image: images.History,
+        name: 'History',
+        onPress: () => {
+          navigation.navigate('HistoryScreen');
+        },
       },
-    },
-  ];
+    ];
+    if (user?.company === 'ICPI') {
+      return ListMenus.filter(el => {
+        return el.name !== 'Order';
+      });
+    }
+
+    return ListMenus;
+  }, [navigation, t, user?.company]);
   return (
     <View style={styles.container}>
       <View style={styles.containerMenu}>
-        {ListMenus.map((item, index) => {
+        {memoListMenus.map((item, index) => {
           return (
             <View
               key={index}

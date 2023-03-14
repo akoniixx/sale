@@ -18,6 +18,7 @@ interface UserType {
   telephone: string;
   userStaffId: string;
   zone: string;
+  profileImage?: string;
 }
 
 interface State {
@@ -34,7 +35,7 @@ interface Action {
 interface Context {
   authContext: {
     getUser: () => Promise<any>;
-    login: (user: any) => Promise<void>;
+    login: (user: any) => Promise<any>;
     logout: () => Promise<void>;
   };
   state: State;
@@ -48,7 +49,7 @@ const initialState = {
 const AuthContext = React.createContext<Context>({
   authContext: {
     getUser: Promise.resolve,
-    login: Promise.resolve,
+    login: () => Promise.resolve(),
     logout: Promise.resolve,
   },
   state: initialState,
@@ -101,6 +102,7 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
           await AsyncStorage.setItem('token', data.accessToken);
           await AsyncStorage.setItem('user', JSON.stringify(data.data));
           dispatch({ type: 'LOGIN', user: data.data });
+          return data;
         } catch (e: any) {
           console.log(e);
         }

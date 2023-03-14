@@ -5,6 +5,7 @@ import {
   TextInput,
   Pressable,
   Dimensions,
+  ViewStyle,
 } from 'react-native';
 import React from 'react';
 import { colors } from '../../assets/colors/colors';
@@ -14,11 +15,13 @@ interface Props {
   value: string | undefined;
   onChange: (value: string | undefined) => void;
   placeholder?: string;
+  style?: ViewStyle;
 }
 export default function SearchInput({
   value,
   onChange,
   placeholder,
+  style,
 }: Props): JSX.Element {
   const [isFocused, setIsFocused] = React.useState<boolean>(false);
   const ref = React.useRef<TextInput>(null);
@@ -35,6 +38,7 @@ export default function SearchInput({
         borderRadius: 6,
 
         paddingHorizontal: 16,
+        ...style,
       }}>
       <View
         style={{

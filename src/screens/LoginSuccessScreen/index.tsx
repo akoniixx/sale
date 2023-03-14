@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import Text from '../../components/Text/Text';
 import Container from '../../components/Container/Container';
 import Content from '../../components/Content/Content';
-import { StackNavigationHelpers } from '@react-navigation/stack/lib/typescript/src/types';
 import {
   Dimensions,
   Image,
@@ -18,8 +17,8 @@ const LoginSuccessScreen = (): JSX.Element => {
   const { t } = useLocalization();
   useEffect(() => {
     setTimeout(() => {
-      navigate('Main');
-    }, 2000);
+      navigate('MainScreen');
+    }, 3000);
   }, []);
 
   return (
@@ -27,7 +26,7 @@ const LoginSuccessScreen = (): JSX.Element => {
       <Content>
         <TouchableOpacity
           onPress={() => {
-            navigate('Main');
+            navigate('MainScreen');
           }}
           style={{
             justifyContent: 'flex-start',

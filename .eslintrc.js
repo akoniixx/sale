@@ -9,7 +9,7 @@ module.exports = {
     'eslint:recommended',
   ],
   parser: '@typescript-eslint/parser',
-  plugins: ['@typescript-eslint'],
+  plugins: ['@typescript-eslint', 'react-hooks', 'prettier', 'react'],
   overrides: [
     {
       files: ['*.ts', '*.tsx'],

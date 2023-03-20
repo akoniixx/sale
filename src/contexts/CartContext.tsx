@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as React from 'react';
 import { ProductType, PromotionTypeCart } from '../entities/productType';
 import { cartServices } from '../services/CartServices';
+import { useAuth } from './AuthContext';
 
 interface Props {
   children: JSX.Element;
@@ -184,6 +185,9 @@ const CartContext = React.createContext<ContextCart>({
 });
 
 export const CartProvider: React.FC<Props> = ({ children }) => {
+  const {
+    state: { user },
+  } = useAuth();
   const [cartList, setCartList] = React.useState<newProductType[]>([]);
   const [promotionListValue, setPromotionListValue] = React.useState<string[]>(
     [],
@@ -253,8 +257,7 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
   const cartApi = React.useMemo(() => {
     const getCartList = async () => {
       const customerCompanyId = await AsyncStorage.getItem('customerCompanyId');
-      const user = await AsyncStorage.getItem('user');
-      const userStaffId = JSON.parse(user || '')?.userStaffId;
+      const userStaffId = user?.userStaffId;
 
       const result = await cartServices.getCartList({
         customerCompanyId: JSON.parse(customerCompanyId || '') || '',
@@ -303,11 +306,9 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
         const customerCompanyId = await AsyncStorage.getItem(
           'customerCompanyId',
         );
-        const user = await AsyncStorage.getItem('user');
-        const userParse = JSON.parse(user || '');
         const payload: any = {
-          company: userParse?.company || '',
-          userStaffId: userParse?.userStaffId || '',
+          company: user?.company || '',
+          userStaffId: user?.userStaffId || '',
           orderProducts,
           customerCompanyId: JSON.parse(customerCompanyId || '') || 0,
           paymentMethod: 'CASH',

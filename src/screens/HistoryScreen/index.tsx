@@ -115,7 +115,7 @@ export default function HistoryScreen({ navigation }: any): JSX.Element {
     const fetchData = async () => {
       setLoading(true);
       const payload: any = {
-        status: tabValue.length > 0 ? tabValue : tabData.map(el => el.value),
+        status: [],
         search: debounceSearchValue,
         take: limit,
         company: user?.company || '',
@@ -126,6 +126,10 @@ export default function HistoryScreen({ navigation }: any): JSX.Element {
       if (isHasCustomerId) {
         payload.customerCompanyId = customerCompanyId;
       }
+      if (tabValue.length > 0) {
+        payload.status = tabValue;
+      }
+
       try {
         const data = await historyServices.getHistory(payload);
         setHistoryData(data);
@@ -154,9 +158,17 @@ export default function HistoryScreen({ navigation }: any): JSX.Element {
   useEffect(() => {
     const fetchDataStore = async () => {
       try {
-        const data = await historyServices.getHistoryStore(
-          user?.userStaffId || '',
-        );
+        const payload: any = {
+          userStaffId: user?.userStaffId || '',
+          endDate: dateRange.endDate,
+          startDate: dateRange.startDate,
+          status: [],
+          search: debounceSearchValue,
+        };
+        if (tabValue.length > 0) {
+          payload.status = tabValue;
+        }
+        const data = await historyServices.getHistoryStore(payload);
         setHistoryDataStore(data);
       } catch (e) {
         console.log('e', e);
@@ -165,12 +177,19 @@ export default function HistoryScreen({ navigation }: any): JSX.Element {
     if (typeSearch === 'store') {
       fetchDataStore();
     }
-  }, [user?.userStaffId, typeSearch]);
+  }, [
+    user?.userStaffId,
+    typeSearch,
+    tabValue,
+    debounceSearchValue,
+    dateRange.endDate,
+    dateRange.startDate,
+  ]);
   const fetchDataMore = async () => {
     if (historyData.data.length < historyData.count) {
       try {
         const payload: any = {
-          status: tabValue.length > 0 ? tabValue : tabData.map(el => el.value),
+          status: [],
           search: debounceSearchValue,
           take: limit,
           company: user?.company || '',
@@ -180,6 +199,9 @@ export default function HistoryScreen({ navigation }: any): JSX.Element {
         };
         if (isHasCustomerId) {
           payload.customerCompanyId = customerCompanyId;
+        }
+        if (tabValue.length > 0) {
+          payload.status = tabValue;
         }
         const data = await historyServices.getHistory(payload);
         setHistoryData({

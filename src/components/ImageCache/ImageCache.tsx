@@ -1,5 +1,5 @@
 import React from 'react';
-import FastImage, { ImageStyle } from 'react-native-fast-image';
+import FastImage from 'react-native-fast-image';
 
 export default function ImageCache({
   uri,
@@ -7,7 +7,7 @@ export default function ImageCache({
   resizeMode,
 }: {
   uri: string;
-  style?: ImageStyle;
+  style?: any;
   resizeMode?: 'cover' | 'contain' | 'stretch' | 'center';
 }) {
   return (

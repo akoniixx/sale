@@ -32,9 +32,39 @@ const getHistory = async (payload: PayloadHistory) => {
       throw err;
     });
 };
-const getHistoryStore = async (userStaffId: string) => {
+const getHistoryStore = async ({
+  userStaffId,
+  startDate,
+  endDate,
+  status,
+  search,
+}: {
+  userStaffId: string;
+  startDate?: Date;
+  endDate?: Date;
+  status?: string[];
+  search?: string;
+}) => {
+  const queryStatus = status?.reduce((acc, value) => {
+    return `${acc}&status=${value}`;
+  }, '');
+  const query = Object.entries({
+    startDate,
+    endDate,
+    search,
+  }).reduce((acc, [key, value]) => {
+    if (value !== undefined) {
+      return `${acc}&${key}=${value}`;
+    }
+    return acc;
+  }, '');
+
   return await request
-    .get(`/cart/order/customer-company/${userStaffId}`)
+    .post(
+      `/cart/order/get-customer-company?
+    userStaffId=${userStaffId}
+    ${query}${queryStatus}`,
+    )
     .then(res => {
       return res.data;
     })

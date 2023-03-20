@@ -7,6 +7,7 @@
     "start-iphone8": "react-native run-ios --simulator='iPhone 8'",
     "ios": "react-native run-ios",
     "start": "react-native start",
+    "port": "react-native start --port 8999",
     "test": "jest",
     "lint": "tsc --noEmit && eslint --ext .js,.jsx,.ts,.tsx ./",
     "prettier:write": "npx prettier --write '**/*.{js,jsx,ts,tsx,json}' && npx prettier --write '*.{js,jsx,ts,tsx,json}'"
@@ -36,6 +37,7 @@
     "react-native-date-picker": "^4.2.9",
     "react-native-fast-image": "^8.6.3",
     "react-native-gesture-handler": "^2.8.0",
+    "react-native-image-picker": "^5.3.1",
     "react-native-linear-gradient": "^2.6.2",
     "react-native-loading-spinner-overlay": "^3.0.1",
     "react-native-reanimated": "^2.12.0",

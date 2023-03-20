@@ -6,10 +6,10 @@ import { colors } from '../../assets/colors/colors';
 import { useLocalization } from '../../contexts/LocalizationContext';
 import icons from '../../assets/icons';
 import HomeScreen from '../../screens/HomeScreen';
-import ProfileScreen from '../../screens/ProfileScreen';
 import { StackScreenProps } from '@react-navigation/stack';
 import { MainStackParamList } from '.';
 import HistoryScreen from '../../screens/HistoryScreen';
+import ProfileScreen from '../../screens/ProfileScreen';
 const Tab = createBottomTabNavigator();
 export default function MainTabBottomNavigator({
   route,

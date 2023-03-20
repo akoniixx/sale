@@ -19,7 +19,7 @@ const StoreDetailScreen = ({
 }: StackScreenProps<MainStackParamList, 'StoreDetailScreen'>) => {
   const { name, productBrand } = route.params;
   const {
-    cartApi: { getCartList },
+    cartApi: { getCartList, postCartItem },
     setCartList,
   } = useCart();
   const [loadingApi, setLoadingApi] = React.useState<boolean>(false);
@@ -27,7 +27,8 @@ const StoreDetailScreen = ({
     const fetchData = async () => {
       try {
         setLoadingApi(true);
-        await getCartList();
+        const { orderProducts } = await getCartList();
+        await postCartItem(orderProducts);
       } catch (e) {
         console.log(e);
       } finally {
@@ -35,7 +36,7 @@ const StoreDetailScreen = ({
       }
     };
     fetchData();
-  }, [getCartList]);
+  }, [getCartList, postCartItem]);
   const { t } = useLocalization();
   const [searchValue, setSearchValue] = React.useState<string | undefined>(
     undefined,

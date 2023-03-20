@@ -57,6 +57,7 @@ export default function HomeScreen({ navigation }: Props): JSX.Element {
                 <Image
                   source={{
                     uri: state.user?.profileImage,
+                    cache: 'reload',
                   }}
                   style={{
                     width: 62,

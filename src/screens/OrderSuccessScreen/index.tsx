@@ -16,11 +16,12 @@ import Content from '../../components/Content/Content';
 import Text from '../../components/Text/Text';
 import images from '../../assets/images';
 import DashedLine from 'react-native-dashed-line';
-import { numberWithCommas } from '../../utils/functions';
+import { getNewPath, numberWithCommas } from '../../utils/functions';
 import Button from '../../components/Button/Button';
 import { orderServices } from '../../services/OrderServices';
 import { OrderDetailType } from '../../entities/orderTypes';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import ImageCache from '../../components/ImageCache/ImageCache';
 
 const mappingStatusHeader = {
   WAIT_APPROVE_ORDER: 'รอยืนยันคำสั่งซื้อ',
@@ -119,6 +120,7 @@ export default function OrderSuccessScreen({
       unit: el.saleUom,
       totalPrice: el.totalPrice,
       quantity: el.quantity,
+      isFreebie: el.isFreebie,
     };
   });
   return (
@@ -247,6 +249,9 @@ export default function OrderSuccessScreen({
                     </Text>
                   </View>
                   {(listProduct || []).map((el, idx) => {
+                    if (el.isFreebie) {
+                      return null;
+                    }
                     return (
                       <View
                         key={idx}
@@ -311,13 +316,23 @@ export default function OrderSuccessScreen({
                               flexDirection: 'row',
                               alignItems: 'center',
                             }}>
-                            <Image
-                              source={images.emptyProduct}
-                              style={{
-                                width: 56,
-                                height: 56,
-                              }}
-                            />
+                            {el.productImage ? (
+                              <ImageCache
+                                uri={getNewPath(el.productImage)}
+                                style={{
+                                  width: 56,
+                                  height: 56,
+                                }}
+                              />
+                            ) : (
+                              <Image
+                                source={images.emptyProduct}
+                                style={{
+                                  width: 56,
+                                  height: 56,
+                                }}
+                              />
+                            )}
                             <View
                               style={{
                                 marginLeft: 8,

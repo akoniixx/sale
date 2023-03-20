@@ -30,6 +30,7 @@ export interface OrderDetailType {
       saleUomTh: string;
       shipmentOrder: number;
       totalPrice: number;
+      isFreebie: boolean;
     },
   ];
   paymentMethod: string;

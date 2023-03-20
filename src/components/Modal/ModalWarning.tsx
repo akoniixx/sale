@@ -13,9 +13,10 @@ type Props = {
   onRequestClose?: () => void;
   onConfirm?: () => void;
   visible: boolean;
-  width?: string;
+  width?: string | number;
   title: string;
   desc?: string;
+  minHeight?: number;
   textCancel?: string;
   textConfirm?: string;
   onlyCancel?: boolean;
@@ -31,6 +32,7 @@ export default function ModalWarning({
   textCancel = 'ยกเลิก',
   textConfirm = 'ยืนยัน',
   onlyCancel = false,
+  minHeight = 100,
 }: Props): JSX.Element {
   return (
     <ModalRN
@@ -50,7 +52,7 @@ export default function ModalWarning({
             style={{
               paddingVertical: 16,
               paddingHorizontal: 16,
-              minHeight: 100,
+              minHeight,
             }}>
             <Text semiBold>{title}</Text>
             {desc && (

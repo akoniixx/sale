@@ -3,21 +3,23 @@ import * as React from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthServices } from '../services/AuthServices';
 import { navigate } from '../navigations/RootNavigator';
+import { userServices } from '../services/UserServices';
 
 interface Props {
   children: JSX.Element;
 }
 interface UserType {
-  company: string;
-  email: string;
-  firstname: string;
-  lastname: string;
-  nickname: string;
-  role: string;
-  status: string;
-  telephone: string;
-  userStaffId: string;
-  zone: string;
+  company?: string;
+  email?: string;
+  notiStatus?: boolean;
+  firstname?: string;
+  lastname?: string;
+  nickname?: string;
+  role?: string;
+  status?: string;
+  telephone?: string;
+  userStaffId?: string;
+  zone?: string;
   profileImage?: string;
 }
 
@@ -34,11 +36,12 @@ interface Action {
 
 interface Context {
   authContext: {
-    getUser: () => Promise<any>;
+    getUser: (userStaffId?: string) => Promise<any>;
     login: (user: any) => Promise<any>;
     logout: () => Promise<void>;
   };
   state: State;
+  dispatch: React.Dispatch<Action>;
 }
 
 const initialState = {
@@ -53,6 +56,7 @@ const AuthContext = React.createContext<Context>({
     logout: Promise.resolve,
   },
   state: initialState,
+  dispatch: () => null,
 });
 
 export const AuthProvider: React.FC<Props> = ({ children }) => {
@@ -75,6 +79,18 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
           user: action.user,
         };
 
+      case 'SET_PROFILE_IMAGE':
+        if (!action.user) {
+          return prevState;
+        }
+        return {
+          ...prevState,
+          user: {
+            ...prevState.user,
+            profileImage: action.user.profileImage,
+          },
+        };
+
       default:
         return prevState;
     }
@@ -86,11 +102,18 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
 
   const authContext = React.useMemo(
     () => ({
-      getUser: async () => {
+      getUser: async (id?: string) => {
         try {
-          const user = await AsyncStorage.getItem('user');
+          const userStaffId = await AsyncStorage.getItem('userStaffId');
+          if (!userStaffId && !id) {
+            return;
+          }
+
+          const user = await userServices.getUserProfile(
+            id || userStaffId || '',
+          );
           if (user) {
-            dispatch({ type: 'GET_ME', user: JSON.parse(user) });
+            dispatch({ type: 'GET_ME', user: user });
           }
         } catch (e: any) {
           console.log(e);
@@ -99,10 +122,12 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
       login: async (payload: any) => {
         try {
           const { data } = await AuthServices.verifyOtp(payload);
-          await AsyncStorage.setItem('token', data.accessToken);
-          await AsyncStorage.setItem('user', JSON.stringify(data.data));
-          dispatch({ type: 'LOGIN', user: data.data });
-          return data;
+          if (data) {
+            await AsyncStorage.setItem('token', data.accessToken);
+            await AsyncStorage.setItem('userStaffId', data.data.userStaffId);
+            dispatch({ type: 'LOGIN', user: data.data });
+            return data;
+          }
         } catch (e: any) {
           console.log(e);
         }
@@ -122,7 +147,7 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
   );
 
   return (
-    <AuthContext.Provider value={{ authContext, state }}>
+    <AuthContext.Provider value={{ authContext, state, dispatch }}>
       {children}
     </AuthContext.Provider>
   );

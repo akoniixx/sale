@@ -5,7 +5,7 @@ import {
   TouchableOpacity,
   Platform,
 } from 'react-native';
-import React from 'react';
+import React, { useMemo } from 'react';
 import Text from '../../components/Text/Text';
 import { colors } from '../../assets/colors/colors';
 import { useLocalization } from '../../contexts/LocalizationContext';
@@ -59,9 +59,11 @@ export default function Item({
   } = useCart();
   const [loading, setLoading] = React.useState(false);
 
-  const isAlreadyInCart = cartList?.find(
-    item => item?.productId.toString() === idItem.toString(),
-  );
+  const isAlreadyInCart = useMemo(() => {
+    return cartList?.find(
+      item => item?.productId.toString() === idItem.toString(),
+    );
+  }, [cartList, idItem]);
   const onChangeText = async ({
     quantity,
     id,

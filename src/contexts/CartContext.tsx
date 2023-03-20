@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as React from 'react';
+import LoadingSpinner from '../components/LoadingSpinner/LoadingSpinner';
 import { ProductType, PromotionTypeCart } from '../entities/productType';
 import { cartServices } from '../services/CartServices';
 import { useAuth } from './AuthContext';
@@ -206,6 +207,7 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
   });
 
   const [promotionList, setPromotionList] = React.useState<any>([]);
+  const [loading, setLoading] = React.useState<boolean>(false);
   const [freebieListItem, setFreebieListItem] = React.useState<any>([]);
   const value = React.useMemo(
     () => ({
@@ -293,6 +295,7 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
       cl: newProductType[],
       allPromotions?: PromotionTypeCart[],
     ) => {
+      setLoading(true);
       try {
         const orderProducts = cl.map(item => {
           return {
@@ -366,6 +369,8 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
         };
       } catch (e) {
         console.log(e);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -394,6 +399,7 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
         },
       }}>
       {children}
+      <LoadingSpinner visible={loading} />
     </CartContext.Provider>
   );
 };

@@ -25,8 +25,10 @@ export default function CustomerItem({ ...props }: Props) {
         }}>
         {props.customerImage ? (
           <ImageCache
-            uri={getNewPath(props.customerImage)}
+            resizeMode="cover"
+            uri={props.customerImage}
             style={{
+              borderRadius: 12,
               width: 60,
               height: 60,
             }}
@@ -63,7 +65,7 @@ export default function CustomerItem({ ...props }: Props) {
             fontSize={14}
             style={{
               marginTop: 4,
-            }}>{`${props.zone}`}</Text>
+            }}>{`${props.zone} | ${props.customerProvince} `}</Text>
           <TouchableOpacity style={styles.invoiceButton}>
             <Image
               source={icons.invoice}

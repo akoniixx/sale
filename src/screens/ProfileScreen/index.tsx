@@ -27,10 +27,10 @@ export default function ProfileScreen({ navigation }: Props) {
     authContext: { logout, getUser },
     dispatch,
   } = useAuth();
-  console.log('user :>> ', JSON.stringify(user, null, 2));
   useEffect(() => {
     getUser();
   }, [getUser]);
+  console.log('user :>> ', user?.userStaffId);
   const onLogout = async () => {
     await logout();
     setModalVisible(false);

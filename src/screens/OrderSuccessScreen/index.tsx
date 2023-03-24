@@ -47,6 +47,7 @@ export default function OrderSuccessScreen({
   const [orderData, setOrderData] = React.useState<
     OrderDetailType | undefined
   >();
+  console.log('orderData', JSON.stringify(orderData, null, 2));
   const [productBrand, setProductBrand] = React.useState<{
     product_brand_id: string;
     product_brand_name: string;
@@ -117,7 +118,7 @@ export default function OrderSuccessScreen({
   const listProduct = orderData?.orderProducts.map(el => {
     return {
       productName: el.productName,
-      unit: el.saleUom,
+      unit: el.saleUOMTH || el.saleUOM || '',
       totalPrice: el.totalPrice,
       quantity: el.quantity,
       isFreebie: el.isFreebie,
@@ -373,7 +374,14 @@ export default function OrderSuccessScreen({
                     alignItems: 'center',
                     marginTop: 16,
                   }}>
-                  <TouchableOpacity style={{ height: 40 }}>
+                  <TouchableOpacity
+                    style={{ height: 40 }}
+                    onPress={() => {
+                      navigation.navigate('HistoryDetailScreen', {
+                        orderId: orderData.orderId,
+                        headerTitle: 'รายละเอียดคำสั่งซื้อ',
+                      });
+                    }}>
                     <Text color="primary" fontSize={14} lineHeight={24}>
                       ดูรายละเอียดคำสั่งซื้อนี้
                     </Text>

@@ -34,6 +34,7 @@ export interface HistoryTypeStore {
   customerImage: string | null;
   zone: string;
   orderCount: number;
+  customerProvince: string;
 }
 export default function HistoryScreen({ navigation }: any): JSX.Element {
   const [searchValue, setSearchValue] = React.useState<string | undefined>();
@@ -169,6 +170,7 @@ export default function HistoryScreen({ navigation }: any): JSX.Element {
           payload.status = tabValue;
         }
         const data = await historyServices.getHistoryStore(payload);
+        console.log('data', JSON.stringify(data, null, 2));
         setHistoryDataStore(data);
       } catch (e) {
         console.log('e', e);

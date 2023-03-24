@@ -11,9 +11,11 @@ import Text from '../Text/Text';
 export default function TabSelector({
   active,
   tabs,
+  tabWidth = 140,
   onChangeTab,
 }: {
-  active: number;
+  tabWidth?: number;
+  active: number | string;
   onChangeTab: (value: string) => void;
   tabs: {
     value: string;
@@ -30,7 +32,6 @@ export default function TabSelector({
     }).start();
   };
 
-  const tabWidth = 140;
   const translateX = animation.interpolate({
     inputRange: tabs.map((_, index) => index),
     outputRange: tabs.map((_, index) => index * tabWidth),
@@ -73,7 +74,11 @@ export default function TabSelector({
               handleTabPress(index);
             }}
             key={tab.value}
-            style={[styles.tab]}>
+            style={[
+              styles({
+                tabWidth,
+              }).tab,
+            ]}>
             <Text
               lineHeight={24}
               semiBold
@@ -87,32 +92,37 @@ export default function TabSelector({
       })}
       {active !== -1 && (
         <Animated.View
-          style={[styles.tabSelector, { transform: [{ translateX }] }]}
+          style={[
+            styles({ tabWidth }).tabSelector,
+            { transform: [{ translateX }] },
+          ]}
         />
       )}
     </ScrollView>
   );
 }
 
-const styles = StyleSheet.create({
-  tab: {
-    height: 40,
-    width: 140,
+const styles = ({ tabWidth }: { tabWidth?: number }) => {
+  return StyleSheet.create({
+    tab: {
+      height: 40,
+      width: tabWidth,
 
-    borderRadius: 32,
+      borderRadius: 32,
 
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  tabSelector: {
-    position: 'absolute',
-    zIndex: -1,
-    width: 140,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    tabSelector: {
+      position: 'absolute',
+      zIndex: -1,
+      width: tabWidth,
 
-    height: 40,
+      height: 40,
 
-    backgroundColor: colors.primary,
-    opacity: 0.16,
-    borderRadius: 32,
-  },
-});
+      backgroundColor: colors.primary,
+      opacity: 0.16,
+      borderRadius: 32,
+    },
+  });
+};

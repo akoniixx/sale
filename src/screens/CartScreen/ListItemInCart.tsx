@@ -254,15 +254,15 @@ export default function ListItemInCart() {
                       {item.packSize
                         ? `${item.packSize} | ฿${numberWithCommas(
                             +item.marketPrice,
-                          )}/${item.saleUom}`
+                          )}/${item.saleUOMTH}`
                         : `฿${numberWithCommas(+item.marketPrice)}/${
-                            item.saleUom
+                            item.saleUOMTH
                           }`}
                     </Text>
                     <Text fontSize={14} color="text2">
                       {`฿${numberWithCommas(+item.marketPrice)}/${
-                        item.saleUom
-                      } x ${item.amount} ${item.saleUom}`}
+                        item.saleUOMTH
+                      } x ${item.amount} ${item.saleUOMTH}`}
                       {sumDiscount > 0 && (
                         <Text color="current">
                           {`  ส่วนลด ฿${numberWithCommas(sumDiscount)}`}

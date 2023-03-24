@@ -33,6 +33,7 @@ const App = () => {
     requestUserPermission();
     getTestFirebaseToken();
   }, []);
+
   return (
     <NavigationContainer ref={navigationRef}>
       <LocalizationProvider>

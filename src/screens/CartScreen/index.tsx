@@ -7,7 +7,7 @@ import {
   Platform,
   Keyboard,
 } from 'react-native';
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import Container from '../../components/Container/Container';
 import Content from '../../components/Content/Content';
 import { useLocalization } from '../../contexts/LocalizationContext';
@@ -120,7 +120,7 @@ export default function CartScreen({
       if (dataStepTwo.saleCoRemark) {
         payload.saleCoRemark = dataStepTwo.saleCoRemark;
       }
-
+      // console.log('payload', JSON.stringify(payload, null, 2));
       const result = await orderServices.createOrder(payload);
       if (result) {
         setCartList([]);
@@ -200,7 +200,9 @@ export default function CartScreen({
       getPromotion();
       const getInitData = async () => {
         const getFactory = async () => {
-          const factoryData = await factoryServices.getFactory();
+          const factoryData = await factoryServices.getFactory(
+            user?.company || '',
+          );
           setAddressDelivery(prev => ({
             ...prev,
             name: factoryData.name,

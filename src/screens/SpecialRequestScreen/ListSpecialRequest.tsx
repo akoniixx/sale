@@ -141,7 +141,7 @@ export default function ListSpecialRequest({
           </View>
         </View>
         <View>
-          <Text>{`${item?.amount}x (${item.saleUomTH || item.saleUom})`}</Text>
+          <Text>{`${item?.amount}x (${item.saleUOMTH || item.saleUOM})`}</Text>
         </View>
       </View>
       <View style={styles.card}>
@@ -264,7 +264,7 @@ export default function ListSpecialRequest({
                     flex: 0.3,
                     textAlign: 'right',
                   }}>
-                  {`฿/${item?.saleUomTH || item?.saleUom}`}
+                  {`฿/${item?.saleUOMTH || item?.saleUOM}`}
                 </Text>
               </View>
               <Button
@@ -306,7 +306,7 @@ export default function ListSpecialRequest({
                     style={{
                       textAlign: 'right',
                     }}>
-                    {`/${item?.saleUomTH || item?.saleUom}`}
+                    {`/${item?.saleUOMTH || item?.saleUOM}`}
                   </Text>
                 </View>
               ) : (

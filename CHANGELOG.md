@@ -1,5 +1,8 @@
 
 ## [Version - 2]
+## Features [v2.5.0] - Release Date: 2023-03-24
+- Profile Features
+- Resolved Bug & Defects
 ## Features [v2.4.0] - Release Date: 2023-03-08
 - History Features
 - Promotion Features

@@ -61,9 +61,7 @@ const getHistoryStore = async ({
 
   return await request
     .post(
-      `/cart/order/get-customer-company?
-    userStaffId=${userStaffId}
-    ${query}${queryStatus}`,
+      `/cart/order/get-customer-company?userStaffId=${userStaffId}${query}${queryStatus}`,
     )
     .then(res => {
       return res.data;

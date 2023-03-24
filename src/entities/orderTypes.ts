@@ -26,8 +26,8 @@ export interface OrderDetailType {
       productName: string;
       qtySaleUnit: number;
       quantity: number;
-      saleUom: string;
-      saleUomTh: string;
+      saleUOM: string;
+      saleUOMTH: string;
       shipmentOrder: number;
       totalPrice: number;
       isFreebie: boolean;

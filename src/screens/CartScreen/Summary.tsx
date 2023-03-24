@@ -65,7 +65,7 @@ export default function Summary({
           label: item.productName,
           valueLabel: `(฿${numberWithCommas(item.marketPrice)} x ${
             item.quantity
-          } ${item.saleUomTH ? item.saleUomTH : item.saleUom})`,
+          } ${item.saleUOMTH ? item.saleUOMTH : item.saleUOM})`,
         };
         if (item.specialRequestDiscount > 0) {
           listDataDiscountSpecialRequest.push({
@@ -135,7 +135,12 @@ export default function Summary({
             },
           ]}
           key={idx}>
-          <Text fontSize={14} color="text3">
+          <Text
+            fontSize={14}
+            color="text3"
+            style={{
+              flex: 0.7,
+            }}>
             {el.label + ' ' + el.valueLabel}
           </Text>
           <Text fontSize={14} color="text3">
@@ -159,7 +164,7 @@ export default function Summary({
             },
           ]}
           key={idx}>
-          <Text fontSize={14} color="text3">
+          <Text fontSize={14} color="text3" style={{}}>
             {el.label + ' ' + el.valueLabel}
           </Text>
           <Text fontSize={14} color="text3">

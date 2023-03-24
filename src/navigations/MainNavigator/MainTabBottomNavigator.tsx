@@ -10,6 +10,7 @@ import { StackScreenProps } from '@react-navigation/stack';
 import { MainStackParamList } from '.';
 import HistoryScreen from '../../screens/HistoryScreen';
 import ProfileScreen from '../../screens/ProfileScreen';
+import NotificationScreen from '../../screens/NotificationScreen';
 const Tab = createBottomTabNavigator();
 export default function MainTabBottomNavigator({
   route,
@@ -43,7 +44,7 @@ export default function MainTabBottomNavigator({
       title: t('tabs.NotificationTab.title'),
       iconActive: icons.NotificationActive,
       iconInactive: icons.NotificationInactive,
-      component: View,
+      component: NotificationScreen,
     },
     {
       name: 'profile',

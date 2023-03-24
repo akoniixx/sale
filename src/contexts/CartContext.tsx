@@ -262,7 +262,7 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
       const userStaffId = user?.userStaffId;
 
       const result = await cartServices.getCartList({
-        customerCompanyId: JSON.parse(customerCompanyId || '') || '',
+        customerCompanyId: customerCompanyId ? +customerCompanyId : 0,
         userStaffId,
       });
       setCartDetail(result);
@@ -313,7 +313,7 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
           company: user?.company || '',
           userStaffId: user?.userStaffId || '',
           orderProducts,
-          customerCompanyId: JSON.parse(customerCompanyId || '') || 0,
+          customerCompanyId: customerCompanyId ? +customerCompanyId : 0,
           paymentMethod: 'CASH',
         };
         if (allPromotions) {
@@ -321,7 +321,7 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
         }
         const result = await cartServices.postCart(payload);
         setCartDetail(result);
-        const newFormat = (result.orderProducts || [])
+        const newFormat = (result?.orderProducts || [])
           .map((item: any): newProductType => {
             return {
               ...item,

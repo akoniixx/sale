@@ -87,7 +87,7 @@ export default function HistoryDetailScreen({
         label: item.productName,
         valueLabel: `(฿${numberWithCommas(item.marketPrice)} x ${
           item.quantity
-        } ${item.saleUomTH ? item.saleUomTH : item.saleUom})`,
+        } ${item.saleUOMTH ? item.saleUOMTH : item.saleUOMTH})`,
       };
       if (item.specialRequestDiscount > 0) {
         listDataDiscountSpecialRequest.push({
@@ -489,7 +489,7 @@ export default function HistoryDetailScreen({
                       <View>
                         <Text>
                           {numberWithCommas(el.quantity)}x
-                          {`  ${el.saleUomTh || el.saleUom}`}
+                          {`  ${el.saleUOMTH || el.saleUOM}`}
                         </Text>
                       </View>
                     </View>
@@ -698,13 +698,24 @@ export default function HistoryDetailScreen({
                           flexDirection: 'row',
                           alignItems: 'center',
                         }}>
-                        <Image
-                          source={images.emptyProduct}
-                          style={{
-                            width: 56,
-                            height: 56,
-                          }}
-                        />
+                        {el.productImage ? (
+                          <Image
+                            resizeMode="contain"
+                            source={{ uri: getNewPath(el.productImage) }}
+                            style={{
+                              width: 56,
+                              height: 56,
+                            }}
+                          />
+                        ) : (
+                          <Image
+                            source={images.emptyProduct}
+                            style={{
+                              width: 56,
+                              height: 56,
+                            }}
+                          />
+                        )}
                         <View
                           style={{
                             marginLeft: 8,

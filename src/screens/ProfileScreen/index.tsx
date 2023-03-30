@@ -1,4 +1,4 @@
-import { View, StyleSheet, Image } from 'react-native';
+import { View, StyleSheet, Image, Platform } from 'react-native';
 import React, { useEffect } from 'react';
 import Container from '../../components/Container/Container';
 import LinearGradient from 'react-native-linear-gradient';
@@ -13,14 +13,12 @@ import Body from './Body';
 
 import { userServices } from '../../services/UserServices';
 import { navigate } from '../../navigations/RootNavigator';
-import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
 import FastImage from 'react-native-fast-image';
 
 interface Props {
   navigation?: any;
 }
 export default function ProfileScreen({ navigation }: Props) {
-  const [loading, setLoading] = React.useState(false);
   const [modalVisible, setModalVisible] = React.useState<boolean>(false);
   const {
     state: { user },
@@ -30,7 +28,6 @@ export default function ProfileScreen({ navigation }: Props) {
   useEffect(() => {
     getUser();
   }, [getUser]);
-  console.log('user :>> ', user?.userStaffId);
   const onLogout = async () => {
     await logout();
     setModalVisible(false);
@@ -39,11 +36,9 @@ export default function ProfileScreen({ navigation }: Props) {
 
   const onEditProfile = async (value: any) => {
     try {
-      setLoading(true);
       const { uri, type, fileName } = value;
-
-      const localFilePath = uri.replace('file://', '');
-
+      const isIOS = Platform.OS === 'ios';
+      const localFilePath = isIOS ? uri : uri.replace('file://', '');
       const data = new FormData();
       data.append('profileImage', {
         uri: localFilePath,
@@ -53,6 +48,7 @@ export default function ProfileScreen({ navigation }: Props) {
       data.append('userStaffId', user?.userStaffId);
 
       const res = await userServices.postUserProfile(data);
+      FastImage.preload([{ uri }]);
       await FastImage.clearMemoryCache();
       await FastImage.clearDiskCache();
 
@@ -67,8 +63,6 @@ export default function ProfileScreen({ navigation }: Props) {
       }
     } catch (e) {
       console.log('e :>> ', e);
-    } finally {
-      setLoading(false);
     }
   };
   return (
@@ -122,7 +116,6 @@ export default function ProfileScreen({ navigation }: Props) {
             />
           </View>
         </View>
-        <LoadingSpinner visible={loading} />
       </Content>
       <ModalWarning
         title="ต้องการออกจากระบบ"

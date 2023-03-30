@@ -3,7 +3,6 @@ import {
   View,
   Modal as ModalRN,
   StyleSheet,
-  Dimensions,
   TouchableOpacity,
 } from 'react-native';
 import { colors } from '../../assets/colors/colors';

@@ -19,7 +19,9 @@ export default function HomeScreen({ navigation }: Props): JSX.Element {
   } = useAuth();
 
   useEffect(() => {
-    if (!state?.user) {
+    if (!state?.user?.userStaffId) {
+      console.log(JSON.stringify(state.user, null, 2));
+
       getUser();
     }
   }, [state?.user, getUser]);

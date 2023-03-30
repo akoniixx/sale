@@ -1,6 +1,5 @@
 import {
   View,
-  ImageSourcePropType,
   Image,
   ImageStyle,
   ViewStyle,
@@ -23,6 +22,7 @@ const options: ImageLibraryOptions = {
   maxHeight: 200,
   mediaType: 'photo',
   quality: 0.5,
+  selectionLimit: 1,
 };
 interface Props {
   source: any;

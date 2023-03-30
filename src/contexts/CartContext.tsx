@@ -259,7 +259,7 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
   const cartApi = React.useMemo(() => {
     const getCartList = async () => {
       const customerCompanyId = await AsyncStorage.getItem('customerCompanyId');
-      const userStaffId = user?.userStaffId;
+      const userStaffId = user?.userStaffId || '';
 
       const result = await cartServices.getCartList({
         customerCompanyId: customerCompanyId ? +customerCompanyId : 0,
@@ -379,7 +379,7 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
       postCartItem,
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [user?.userStaffId]);
   return (
     <CartContext.Provider
       value={{

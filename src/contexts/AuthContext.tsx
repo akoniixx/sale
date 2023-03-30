@@ -104,16 +104,19 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
     () => ({
       getUser: async (id?: string) => {
         try {
-          const userStaffId = await AsyncStorage.getItem('userStaffId');
+          const userStaffId = (await AsyncStorage.getItem('userStaffId')) || '';
           if (!userStaffId && !id) {
             return;
           }
 
-          const user = await userServices.getUserProfile(
-            id || userStaffId || '',
-          );
+          const user = await userServices.getUserProfile(id ? id : userStaffId);
           if (user) {
-            dispatch({ type: 'GET_ME', user: user });
+            dispatch({
+              type: 'GET_ME',
+              user: {
+                ...user,
+              },
+            });
           }
         } catch (e: any) {
           console.log(e);
@@ -125,6 +128,19 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
           if (data) {
             await AsyncStorage.setItem('token', data.accessToken);
             await AsyncStorage.setItem('userStaffId', data.data.userStaffId);
+            const fcmtoken = await AsyncStorage.getItem('fcmtoken');
+
+            if (fcmtoken) {
+              try {
+                await userServices.updateFcmToken({
+                  deviceToken: fcmtoken,
+                  userStaffId: data.data.userStaffId,
+                  token: data.accessToken,
+                });
+              } catch (e) {
+                console.log('e, :>>', e);
+              }
+            }
             dispatch({ type: 'LOGIN', user: data.data });
             return data;
           }
@@ -136,6 +152,11 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
         try {
           await AsyncStorage.removeItem('token');
           await AsyncStorage.removeItem('user');
+          const fmctoken = await AsyncStorage.getItem('fcmtoken');
+          if (fmctoken) {
+            await userServices.removeDeviceToken(fmctoken);
+          }
+          await AsyncStorage.removeItem('fcmtoken');
           dispatch({ type: 'LOGOUT' });
           navigate('LoginScreen');
         } catch (e) {

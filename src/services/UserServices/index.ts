@@ -20,9 +20,34 @@ const getUserProfile = async (userStaffId: string) => {
     .get(`/auth/user-staff/${userStaffId}`)
     .then(res => res.data);
 };
+const updateFcmToken = async (payload: {
+  userStaffId: string;
+  deviceToken: string;
+  token: string;
+}) => {
+  return await request
+    .post('/noti/user-device', payload, {
+      headers: {
+        accept: 'application/json',
+        Authorization: `Bearer ${payload.token}`,
+      },
+    })
+    .then(res => {
+      return res.data;
+    })
+    .catch(err => {
+      console.log('err', err);
+      throw err;
+    });
+};
+const removeDeviceToken = async (token: string) => {
+  return await request.delete(`/noti/user-device/${token}`);
+};
 
 export const userServices = {
   postUserProfile,
   updateProfileNotification,
   getUserProfile,
+  updateFcmToken,
+  removeDeviceToken,
 };

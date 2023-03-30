@@ -1,9 +1,15 @@
 export const numberWithCommas = (x?: number | string, isDecimal = false) => {
-  if (x === undefined) return 0;
-  if (isDecimal && typeof x === 'number') {
-    return x.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  if (!x) return 0;
+
+  const isHaveDot = x?.toString()?.includes('.');
+  if (isHaveDot) {
+    const d = x?.toString().split('.');
+    return `${d?.[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')}.${d?.[1]}`;
   }
-  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  if (isDecimal && typeof x === 'number') {
+    return x?.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+  return x?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 };
 
 // image

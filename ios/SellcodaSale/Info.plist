@@ -2,10 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-<key>NSCameraUsageDescription</key>
-<string>allow access to camera.</string>
 <key>NSPhotoLibraryUsageDescription</key>
-<string>allow access to Photos.</string>
+<string>Your app requires access to the photo library to select profile images.</string>
+<key>NSCameraUsageDescription</key>
+<string>Your app requires access to the camera to take profile images.</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>

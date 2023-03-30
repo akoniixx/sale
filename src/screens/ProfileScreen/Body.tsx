@@ -76,14 +76,25 @@ export default function Body({ navigation }: Props) {
               flexDirection: 'row',
               alignItems: 'center',
             }}>
-            <Text
-              color="text3"
-              fontSize={14}
-              style={{
-                marginRight: 8,
-              }}>
-              เปิด
-            </Text>
+            {user?.notiStatus ? (
+              <Text
+                color="current"
+                fontSize={14}
+                style={{
+                  marginRight: 8,
+                }}>
+                เปิด
+              </Text>
+            ) : (
+              <Text
+                color="text3"
+                fontSize={14}
+                style={{
+                  marginRight: 8,
+                }}>
+                ปิด
+              </Text>
+            )}
             <Image
               source={icons.iconNext}
               style={{

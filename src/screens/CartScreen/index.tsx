@@ -39,6 +39,7 @@ export interface TypeDataStepTwo {
   deliveryAddress?: string | null;
   deliveryRemark?: string | null;
   deliveryDest: string;
+  isUseCOD: boolean;
 }
 export default function CartScreen({
   navigation,
@@ -75,6 +76,7 @@ export default function CartScreen({
     deliveryAddress: null,
     deliveryRemark: null,
     deliveryDest: '',
+    isUseCOD: false,
   });
 
   const onCreateOrder = async () => {
@@ -113,6 +115,7 @@ export default function CartScreen({
         deliveryRemark: dataStepTwo.deliveryRemark || '',
         updateBy: `${user?.firstname} ${user?.lastname}`,
         orderProducts,
+        isUseCOD: dataStepTwo.isUseCOD,
       };
       if (dataStepTwo.specialRequestRemark) {
         payload.specialRequestRemark = dataStepTwo.specialRequestRemark;
@@ -120,7 +123,6 @@ export default function CartScreen({
       if (dataStepTwo.saleCoRemark) {
         payload.saleCoRemark = dataStepTwo.saleCoRemark;
       }
-      // console.log('payload', JSON.stringify(payload, null, 2));
       const result = await orderServices.createOrder(payload);
       if (result) {
         setCartList([]);

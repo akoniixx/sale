@@ -15,19 +15,17 @@ export default function SettingNotificationScreen() {
     state: { user },
     authContext: { getUser },
   } = useAuth();
-  const [isEnabled, setIsEnabled] = React.useState(user?.notiStatus);
   const [loading, setLoading] = React.useState(false);
 
   const toggleSwitch = async () => {
     setLoading(true);
     try {
       const res = await userServices.updateProfileNotification({
-        notiStatus: !isEnabled,
+        notiStatus: !user?.notiStatus,
         userStaffId: user?.userStaffId || '',
       });
       if (res && res.success) {
         await getUser();
-        setIsEnabled(!isEnabled);
       }
     } catch (error) {
       console.log(error);
@@ -65,9 +63,9 @@ export default function SettingNotificationScreen() {
                 style={{
                   marginRight: 16,
                 }}>
-                เปิด
+                {user?.notiStatus ? 'ปิด' : 'เปิด'}
               </Text>
-              <Switch onValueChange={toggleSwitch} value={!!isEnabled} />
+              <Switch onValueChange={toggleSwitch} value={!!user?.notiStatus} />
             </View>
           </View>
         </View>

@@ -15,10 +15,10 @@ export default function NotificationScreen({ navigation }: Props) {
       value: 'order',
       label: 'คำสั่งซื้อ',
     },
-    {
-      value: 'promotion',
-      label: 'โปรโมชั่น',
-    },
+    // {
+    //   value: 'promotion',
+    //   label: 'โปรโมชั่น',
+    // },
   ];
   const [currentTab, setCurrentTab] = React.useState('order');
   return (

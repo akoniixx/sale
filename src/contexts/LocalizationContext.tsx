@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { I18n, TranslateOptions } from 'i18n-js';
 import th from '../translations/th.json';
 import { Scope } from 'i18n-js/typings/typing';

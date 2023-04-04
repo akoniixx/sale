@@ -10,6 +10,7 @@ export interface ProductTypeParams {
   page?: number;
   take?: number;
   customerCompanyId?: string;
+  productStatus?: 'ACTIVE' | 'INACTIVE';
 }
 export interface ProductType {
   productId: string;

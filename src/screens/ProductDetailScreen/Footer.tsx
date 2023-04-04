@@ -7,6 +7,7 @@ import { useLocalization } from '../../contexts/LocalizationContext';
 import { useCart } from '../../contexts/CartContext';
 import icons from '../../assets/icons';
 import { ProductSummary } from '../../entities/productType';
+import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
 
 interface Props {
   id: string;
@@ -129,30 +130,39 @@ export default function Footer({
     }
   };
   const onOrder = async () => {
-    const findIndex = cartList?.findIndex(
-      item => item?.productId.toString() === id,
-    );
-    if (findIndex !== -1) {
-      const newCartList = [...cartList];
-      newCartList[findIndex].amount += 5;
-      setCartList(newCartList);
-      await postCartItem(newCartList);
-    } else {
-      const newCartList: any = [
-        ...cartList,
-        {
-          ...productItem,
-          productId: id,
-          amount: 5,
-          orderProductPromotions: promotionIdList,
-          order: cartList?.length + 1,
-        },
-      ];
-      setCartList(newCartList);
-      await postCartItem(newCartList);
+    try {
+      setLoading(true);
+      const findIndex = cartList?.findIndex(
+        item => item?.productId.toString() === id,
+      );
+
+      if (findIndex !== -1) {
+        const newCartList = [...cartList];
+        newCartList[findIndex].amount += 5;
+        setCartList(newCartList);
+        await postCartItem(newCartList);
+      } else {
+        const newCartList: any = [
+          ...cartList,
+          {
+            ...productItem,
+            productId: id,
+            amount: 5,
+            orderProductPromotions: promotionIdList,
+            order: cartList?.length + 1,
+          },
+        ];
+        setCartList(newCartList);
+        await postCartItem(newCartList);
+      }
+      setIsAddCart(true);
+      setLoading(false);
+      navigation.navigate('CartScreen');
+    } catch (e) {
+      console.log(e);
+    } finally {
+      setLoading(false);
     }
-    setIsAddCart(true);
-    navigation.navigate('CartScreen');
   };
   return (
     <View style={styles().container}>

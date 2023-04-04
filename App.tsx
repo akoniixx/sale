@@ -8,6 +8,7 @@ import Toast from 'react-native-toast-message';
 import { LocalizationProvider } from './src/contexts/LocalizationContext';
 import { toastConfig } from './src/Toast/ToastConfig';
 import { CartProvider } from './src/contexts/CartContext';
+import messaging from '@react-native-firebase/messaging';
 
 import buddhaEra from 'dayjs/plugin/buddhistEra';
 import dayjs from 'dayjs';
@@ -34,6 +35,15 @@ const App = () => {
     getTestFirebaseToken();
   }, []);
 
+  React.useEffect(() => {
+    messaging()
+      .getInitialNotification()
+      .then(remoteMessage => {
+        if (remoteMessage) {
+          console.log(remoteMessage);
+        }
+      });
+  }, []);
   return (
     <NavigationContainer ref={navigationRef}>
       <LocalizationProvider>

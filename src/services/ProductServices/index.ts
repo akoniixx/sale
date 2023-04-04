@@ -21,6 +21,7 @@ const getAllProducts = async ({
     company,
     productBrandId,
     customerCompanyId,
+    productStatus: 'ACTIVE',
   };
   if (isPromotion) {
     payload.isPromotion = isPromotion;

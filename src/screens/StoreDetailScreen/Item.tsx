@@ -273,7 +273,7 @@ export default function Item({
           />
         )}
       </View>
-      <LoadingSpinner visible={loading} />
+      <LoadingSpinner visible={loading} setLoading={setLoading} />
     </TouchableOpacity>
   );
 }

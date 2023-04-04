@@ -1,5 +1,8 @@
 
 ## [Version - 2]
+## Features [v2.5.1] - Release Date: 2023-03-24
+- Terms & Conditions
+- Fixed Counter
 ## Features [v2.5.0] - Release Date: 2023-03-24
 - Profile Features
 - Resolved Bug & Defects

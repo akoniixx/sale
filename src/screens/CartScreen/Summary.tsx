@@ -23,7 +23,6 @@ export default function Summary({
   const {
     state: { user },
   } = useAuth();
-  const [valueCheckbox, setValueCheckbox] = React.useState<string[]>([]);
   const [termPayment, setTermPayment] = React.useState<string>('');
   const [isCollapsed, setIsCollapsed] = React.useState<{
     [key: string]: boolean;
@@ -261,14 +260,20 @@ export default function Summary({
                   +cartDetail?.coAmount <= 0
                 }
                 onPress={v => {
-                  const haveValue = valueCheckbox.includes(v);
+                  const haveValue = dataStepTwo.isUseCOD;
                   if (haveValue) {
-                    setValueCheckbox(valueCheckbox.filter(item => item !== v));
+                    setDataStepTwo(prev => ({
+                      ...prev,
+                      isUseCOD: false,
+                    }));
                   } else {
-                    setValueCheckbox([...valueCheckbox, v]);
+                    setDataStepTwo(prev => ({
+                      ...prev,
+                      isUseCOD: true,
+                    }));
                   }
                 }}
-                valueCheckbox={valueCheckbox}
+                valueCheckbox={dataStepTwo.isUseCOD ? ['discount'] : []}
                 listCheckbox={[
                   {
                     title: 'ใช้ส่วนลด',

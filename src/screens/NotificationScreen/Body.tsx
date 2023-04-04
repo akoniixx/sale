@@ -5,7 +5,7 @@ import Text from '../../components/Text/Text';
 import ItemNotification from './ItemNotification';
 
 export default function Body() {
-  const [data, setData] = React.useState([1, 2]);
+  const [data, setData] = React.useState([]);
   const EmptyItem = () => {
     return (
       <View

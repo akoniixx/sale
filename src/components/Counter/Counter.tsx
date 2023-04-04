@@ -18,7 +18,6 @@ interface Props {
 export default function Counter({
   currentQuantity,
   onChangeText,
-  onBlur,
   onDecrease,
   onIncrease,
   id,
@@ -60,10 +59,10 @@ export default function Counter({
           if (onDecrease) {
             onDecrease(id);
             setQuantity(prev => {
-              if (+prev > 0) {
+              if (+prev >= 5) {
                 return (+prev - 5).toFixed(2);
               }
-              return +prev < 1 ? '0.00' : prev;
+              return +prev - 5 < 1 ? '0' : prev;
             });
           }
         }}

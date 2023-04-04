@@ -82,6 +82,7 @@ export default function MainNavigator() {
     };
     getAlreadyAcceptTerm();
   }, []);
+
   return (
     <Stack.Navigator
       screenOptions={{ headerShown: false, gestureEnabled: false }}>

@@ -399,7 +399,6 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
         },
       }}>
       {children}
-      <LoadingSpinner visible={loading} />
     </CartContext.Provider>
   );
 };

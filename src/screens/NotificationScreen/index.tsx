@@ -22,7 +22,7 @@ export default function NotificationScreen({ navigation }: Props) {
   ];
   const [currentTab, setCurrentTab] = React.useState('order');
   return (
-    <Container>
+    <Container edges={['left', 'right', 'top']}>
       <Header componentLeft={<View />} title="การแจ้งเตือน" />
 
       <Content

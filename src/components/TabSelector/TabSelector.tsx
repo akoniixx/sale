@@ -32,10 +32,13 @@ export default function TabSelector({
     }).start();
   };
 
-  const translateX = animation.interpolate({
-    inputRange: tabs.map((_, index) => index),
-    outputRange: tabs.map((_, index) => index * tabWidth),
-  });
+  const translateX =
+    tabs.length > 1
+      ? animation.interpolate({
+          inputRange: tabs.map((_, index) => index),
+          outputRange: tabs.map((_, index) => index * tabWidth),
+        })
+      : 0;
   return (
     <ScrollView
       automaticallyAdjustsScrollIndicatorInsets={false}

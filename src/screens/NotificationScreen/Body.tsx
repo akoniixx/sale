@@ -30,9 +30,9 @@ export default function Body() {
   return (
     <FlatList
       ListEmptyComponent={<EmptyItem />}
-      data={data}
+      data={[]}
       renderItem={({ item }) => {
-        return <ItemNotification {...item} />;
+        return <ItemNotification />;
       }}
     />
   );

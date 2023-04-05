@@ -64,6 +64,7 @@ const InputTel = ({ name, errorManual }: Props): JSX.Element => {
                     }}
                     onChangeText={value => onChange(value)}
                     value={value}
+                    allowFontScaling={false}
                     placeholder="081xxxxxxx"
                     maxLength={10}
                     autoFocus

@@ -5,7 +5,7 @@ import icons from '../../assets/icons';
 
 import { useLocalization } from '../../contexts/LocalizationContext';
 import ModalWarning from '../Modal/ModalWarning';
-import { numberWithCommas } from '../../utils/functions';
+import { numberReturnString } from '../../utils/functions';
 
 interface Props {
   currentQuantity: number;
@@ -32,15 +32,7 @@ export default function Counter({
       setQuantity('0');
     }
   }, [currentQuantity]);
-  // const debouncedSearch = useRef(
-  //   debounce(quantity => {
-  //     if (+quantity < 1 && currentQuantity > 0) {
-  //       setIsModalVisible(true);
-  //     } else {
-  //       onChangeText?.({ id, quantity });
-  //     }
-  //   }, 1000),
-  // ).current;
+
   const onBlurInput = () => {
     if (currentQuantity.toString() === quantity.toString()) {
       return;
@@ -90,7 +82,8 @@ export default function Counter({
           autoCapitalize="none"
           ref={inputRef}
           maxLength={5}
-          value={numberWithCommas(quantity).toString()}
+          allowFontScaling={false}
+          value={numberReturnString(quantity).toString()}
           keyboardType="numeric"
           style={{
             fontFamily: 'NotoSansThai-Bold',

@@ -32,13 +32,13 @@ export default function MainTabBottomNavigator({
       iconInactive: icons.HistoryInactive,
       component: HistoryScreen,
     },
-    {
-      name: 'order',
-      title: t('tabs.OrderTab.title'),
-      iconActive: icons.OrderActive,
-      iconInactive: icons.OrderInactive,
-      component: View,
-    },
+    // {
+    //   name: 'order',
+    //   title: t('tabs.OrderTab.title'),
+    //   iconActive: icons.OrderActive,
+    //   iconInactive: icons.OrderInactive,
+    //   component: View,
+    // },
     {
       name: 'notification',
       title: t('tabs.NotificationTab.title'),

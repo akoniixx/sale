@@ -2,7 +2,7 @@ import { request } from '../../config/request';
 
 interface CartItemType {
   company: string;
-  customerCompanyId: string;
+  customerCompanyId: string | number;
   isUseCod?: boolean;
   orderProducts: {
     productId: number;

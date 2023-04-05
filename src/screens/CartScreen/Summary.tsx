@@ -8,17 +8,12 @@ import { numberWithCommas } from '../../utils/functions';
 import Checkbox from '../../components/Checkbox/Checkbox';
 import icons from '../../assets/icons';
 import { useCart } from '../../contexts/CartContext';
-import { TypeDataStepTwo } from '.';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuth } from '../../contexts/AuthContext';
 interface Props {
-  setDataStepTwo: React.Dispatch<React.SetStateAction<TypeDataStepTwo>>;
-  dataStepTwo: TypeDataStepTwo;
+  setLoading: (value: boolean) => void;
 }
-export default function Summary({
-  setDataStepTwo,
-  dataStepTwo,
-}: Props): JSX.Element {
+export default function Summary({ setLoading }: Props): JSX.Element {
   const { t } = useLocalization();
   const {
     state: { user },
@@ -36,15 +31,15 @@ export default function Summary({
       const termPayment = await AsyncStorage.getItem('termPayment');
       if (termPayment) {
         setTermPayment(termPayment);
-        setDataStepTwo({
-          ...dataStepTwo,
-          paymentMethod: 'CASH',
-        });
       }
     };
     getTerm();
   }, []);
-  const { cartDetail, promotionListValue } = useCart();
+  const {
+    cartDetail,
+    promotionListValue,
+    cartApi: { postEditIsUseCod, postEditPaymentMethod },
+  } = useCart();
 
   const { dataObj } = useMemo(() => {
     const listDataDiscount: {
@@ -205,12 +200,17 @@ export default function Summary({
               borderBottomWidth: 1,
             }}>
             <Radio
-              value={dataStepTwo.paymentMethod}
-              onChange={value => {
-                setDataStepTwo(prev => ({
-                  ...prev,
-                  paymentMethod: value,
-                }));
+              value={cartDetail.paymentMethod}
+              onChange={async value => {
+                try {
+                  setLoading(true);
+                  await postEditPaymentMethod(value);
+                  setLoading(false);
+                } catch (error) {
+                  console.log(error);
+                } finally {
+                  setLoading(false);
+                }
               }}
               radioLists={[
                 {
@@ -259,21 +259,20 @@ export default function Summary({
                   cartDetail.creditMemoBalance <= 0 ||
                   +cartDetail?.coAmount <= 0
                 }
-                onPress={v => {
-                  const haveValue = dataStepTwo.isUseCOD;
-                  if (haveValue) {
-                    setDataStepTwo(prev => ({
-                      ...prev,
-                      isUseCOD: false,
-                    }));
-                  } else {
-                    setDataStepTwo(prev => ({
-                      ...prev,
-                      isUseCOD: true,
-                    }));
+                onPress={async () => {
+                  try {
+                    setLoading(true);
+                    await postEditIsUseCod({
+                      isUseCOD: !cartDetail.isUseCOD,
+                    });
+                    setLoading(false);
+                  } catch (error) {
+                    console.log(error);
+                  } finally {
+                    setLoading(false);
                   }
                 }}
-                valueCheckbox={dataStepTwo.isUseCOD ? ['discount'] : []}
+                valueCheckbox={cartDetail.isUseCOD ? ['discount'] : []}
                 listCheckbox={[
                   {
                     title: 'ใช้ส่วนลด',

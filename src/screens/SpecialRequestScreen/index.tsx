@@ -120,7 +120,7 @@ export default function SpecialRequestScreen({
     return {
       dataObj,
     };
-  }, [cartDetail]);
+  }, [cartDetail, promotionListValue]);
 
   return (
     <Container>

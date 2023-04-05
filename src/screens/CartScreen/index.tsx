@@ -33,13 +33,11 @@ import { useAuth } from '../../contexts/AuthContext';
 import { factoryServices } from '../../services/FactorySevices';
 
 export interface TypeDataStepTwo {
-  paymentMethod: string;
   specialRequestRemark?: string | null;
   saleCoRemark?: string | null;
   deliveryAddress?: string | null;
   deliveryRemark?: string | null;
   deliveryDest: string;
-  isUseCOD: boolean;
 }
 export default function CartScreen({
   navigation,
@@ -70,13 +68,11 @@ export default function CartScreen({
     name: '',
   });
   const [dataStepTwo, setDataStepTwo] = React.useState<TypeDataStepTwo>({
-    paymentMethod: '',
     specialRequestRemark: null,
     saleCoRemark: null,
     deliveryAddress: null,
     deliveryRemark: null,
     deliveryDest: '',
-    isUseCOD: false,
   });
 
   const onCreateOrder = async () => {
@@ -108,14 +104,15 @@ export default function CartScreen({
         customerCompanyId: data.customerCompanyId,
         customerName: customerName || '',
         customerNo: customerNo || '',
+        isUseCOD: cartDetail.isUseCOD,
+        paymentMethod: cartDetail.paymentMethod,
         sellerName: `${user?.firstname} ${user?.lastname}`,
-        paymentMethod: dataStepTwo.paymentMethod,
+
         deliveryDest: dataStepTwo.deliveryDest,
         deliveryAddress: dataStepTwo.deliveryAddress,
         deliveryRemark: dataStepTwo.deliveryRemark || '',
         updateBy: `${user?.firstname} ${user?.lastname}`,
         orderProducts,
-        isUseCOD: dataStepTwo.isUseCOD,
       };
       if (dataStepTwo.specialRequestRemark) {
         payload.specialRequestRemark = dataStepTwo.specialRequestRemark;
@@ -147,6 +144,7 @@ export default function CartScreen({
       case 1: {
         return (
           <StepTwo
+            setLoading={setLoading}
             setDataStepTwo={setDataStepTwo}
             dataStepTwo={dataStepTwo}
             navigation={navigation}
@@ -235,12 +233,7 @@ export default function CartScreen({
         if (user?.company && user?.company === 'ICPF') {
           getFactory();
         }
-        if (params?.specialRequestRemark) {
-          setDataStepTwo(prev => ({
-            ...prev,
-            specialRequestRemark: params.specialRequestRemark,
-          }));
-        }
+
         if (params?.step) {
           setCurrentStep(params.step);
         }
@@ -267,6 +260,14 @@ export default function CartScreen({
       keyboardDidShowListener.remove();
     };
   }, []);
+  useEffect(() => {
+    if (params?.specialRequestRemark) {
+      setDataStepTwo(prev => ({
+        ...prev,
+        specialRequestRemark: params.specialRequestRemark,
+      }));
+    }
+  }, [params?.specialRequestRemark]);
 
   return (
     <KeyboardAvoidingView

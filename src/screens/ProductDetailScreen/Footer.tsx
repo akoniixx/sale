@@ -7,7 +7,6 @@ import { useLocalization } from '../../contexts/LocalizationContext';
 import { useCart } from '../../contexts/CartContext';
 import icons from '../../assets/icons';
 import { ProductSummary } from '../../entities/productType';
-import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
 
 interface Props {
   id: string;
@@ -171,11 +170,7 @@ export default function Footer({
           flex: 0.8,
         }}>
         <Counter
-          currentQuantity={
-            currentProduct?.amount && currentProduct.amount > 0
-              ? currentProduct.amount
-              : 0
-          }
+          currentQuantity={currentProduct?.amount ? +currentProduct?.amount : 0}
           id={id}
           onChangeText={onChangeText}
           onDecrease={onDecrease}

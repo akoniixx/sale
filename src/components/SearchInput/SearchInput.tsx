@@ -72,6 +72,7 @@ export default function SearchInput({
           onChangeText={value => onChange(value)}
           value={value}
           placeholder={placeholder}
+          allowFontScaling={false}
           placeholderTextColor={colors.text3}
         />
       </View>

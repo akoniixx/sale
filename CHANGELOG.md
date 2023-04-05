@@ -1,5 +1,10 @@
 
 ## [Version - 2]
+## Features [v2.5.3] - Release Date: 2023-04-05
+- Defect & Bug Resolved Special Request
+## Features [v2.5.2] - Release Date: 2023-04-04
+- ADD COD
+-  ADD PaymentMethod
 ## Features [v2.5.1] - Release Date: 2023-03-24
 - Terms & Conditions
 - Fixed Counter

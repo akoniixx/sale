@@ -1,6 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as React from 'react';
-import LoadingSpinner from '../components/LoadingSpinner/LoadingSpinner';
 import { ProductType, PromotionTypeCart } from '../entities/productType';
 import { cartServices } from '../services/CartServices';
 import { useAuth } from './AuthContext';
@@ -141,6 +140,8 @@ interface ContextCart {
       cl: newProductType[],
       newAllPromotion?: PromotionTypeCart[],
     ) => Promise<any>;
+    postEditIsUseCod: ({ isUseCOD }: { isUseCOD: boolean }) => Promise<any>;
+    postEditPaymentMethod: (paymentMethod: string) => Promise<any>;
   };
   setCartList: React.Dispatch<React.SetStateAction<newProductType[]>>;
   cartDetail: CartDetailType;
@@ -171,6 +172,7 @@ const CartContext = React.createContext<ContextCart>({
     specialRequestDiscount: 0,
     coDiscount: 0,
     cashDiscount: 0,
+    paymentMethod: 'CASH',
     allPromotions: [],
   },
 
@@ -182,6 +184,8 @@ const CartContext = React.createContext<ContextCart>({
         cartDetail: {} as CartDetailType,
       }),
     getSelectPromotion: async () => Promise.resolve(),
+    postEditIsUseCod: async () => Promise.resolve(),
+    postEditPaymentMethod: async () => Promise.resolve(),
   },
 });
 
@@ -204,10 +208,10 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
     allPromotions: [],
     cashDiscount: 0,
     coAmount: '0',
+    isUseCOD: false,
   });
 
   const [promotionList, setPromotionList] = React.useState<any>([]);
-  const [loading, setLoading] = React.useState<boolean>(false);
   const [freebieListItem, setFreebieListItem] = React.useState<any>([]);
   const value = React.useMemo(
     () => ({
@@ -217,6 +221,57 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [cartList],
   );
+  const postEditPaymentMethod = async (paymentMethod: string) => {
+    const orderProducts = cartList.map(item => {
+      return {
+        productId: +item.productId,
+        quantity: item.amount,
+        shipmentOrder: item.order,
+        orderProductPromotions: item.orderProductPromotions,
+        specialRequest: item.specialRequest,
+      };
+    });
+    const customerCompanyId = await AsyncStorage.getItem('customerCompanyId');
+    const payload: any = {
+      paymentMethod,
+      isUseCOD: !!cartDetail.isUseCOD,
+      company: user?.company || '',
+      userStaffId: user?.userStaffId || '',
+      orderProducts,
+      customerCompanyId: customerCompanyId ? +customerCompanyId : 0,
+    };
+
+    const data = await cartServices.postCart(payload);
+
+    setCartDetail(data);
+  };
+  const postEditIsUseCod = async ({ isUseCOD }: { isUseCOD: boolean }) => {
+    try {
+      const orderProducts = cartList.map(item => {
+        return {
+          isUseCOD,
+          productId: +item.productId,
+          quantity: item.amount,
+          shipmentOrder: item.order,
+          orderProductPromotions: item.orderProductPromotions,
+          specialRequest: item.specialRequest,
+        };
+      });
+      const customerCompanyId = await AsyncStorage.getItem('customerCompanyId');
+      const payload: any = {
+        isUseCOD,
+        company: user?.company || '',
+        userStaffId: user?.userStaffId || '',
+        orderProducts,
+        paymentMethod: cartDetail.paymentMethod || '',
+        customerCompanyId: customerCompanyId ? +customerCompanyId : 0,
+      };
+      const data = await cartServices.postCart(payload);
+      setCartDetail(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const getSelectPromotion = React.useCallback(
     async (cl: PromotionTypeCart[]) => {
@@ -295,7 +350,6 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
       cl: newProductType[],
       allPromotions?: PromotionTypeCart[],
     ) => {
-      setLoading(true);
       try {
         const orderProducts = cl.map(item => {
           return {
@@ -313,8 +367,9 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
           company: user?.company || '',
           userStaffId: user?.userStaffId || '',
           orderProducts,
+          isUseCOD: !!cartDetail.isUseCOD,
           customerCompanyId: customerCompanyId ? +customerCompanyId : 0,
-          paymentMethod: 'CASH',
+          paymentMethod: cartDetail.paymentMethod || 'CASH',
         };
         if (allPromotions) {
           payload.allPromotions = allPromotions;
@@ -369,8 +424,6 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
         };
       } catch (e) {
         console.log(e);
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -396,6 +449,8 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
           getCartList: cartApi.getCartList,
           postCartItem: cartApi.postCartItem,
           getSelectPromotion,
+          postEditIsUseCod,
+          postEditPaymentMethod,
         },
       }}>
       {children}

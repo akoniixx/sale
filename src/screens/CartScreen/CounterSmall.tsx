@@ -75,6 +75,7 @@ const CounterSmall = ({
         />
       </TouchableOpacity>
       <TextInput
+        allowFontScaling={false}
         value={numberWithCommas(quantity).toString()}
         keyboardType="number-pad"
         ref={inputRef}

@@ -19,6 +19,7 @@ import { MainStackParamList } from '../../navigations/MainNavigator';
 import { useAuth } from '../../contexts/AuthContext';
 
 interface Props {
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   setDataStepTwo: React.Dispatch<React.SetStateAction<TypeDataStepTwo>>;
   dataStepTwo: TypeDataStepTwo;
   setAddressDelivery: React.Dispatch<
@@ -39,6 +40,7 @@ export default function StepTwo({
   navigation,
   addressDelivery,
   setAddressDelivery,
+  setLoading,
 }: Props) {
   const {
     state: { user },
@@ -196,7 +198,7 @@ export default function StepTwo({
           </View>
         </View>
       </View>
-      <Summary dataStepTwo={dataStepTwo} setDataStepTwo={setDataStepTwo} />
+      <Summary setLoading={setLoading} />
     </>
   );
 }

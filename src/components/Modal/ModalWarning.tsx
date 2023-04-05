@@ -53,7 +53,9 @@ export default function ModalWarning({
               paddingHorizontal: 16,
               minHeight,
             }}>
-            <Text semiBold>{title}</Text>
+            <Text semiBold lineHeight={28}>
+              {title}
+            </Text>
             {desc && (
               <Text
                 fontSize={14}

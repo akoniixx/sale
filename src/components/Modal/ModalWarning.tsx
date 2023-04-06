@@ -61,6 +61,7 @@ export default function ModalWarning({
                 fontSize={14}
                 fontFamily="Sarabun"
                 color="text3"
+                lineHeight={26}
                 style={{
                   width: 250,
                 }}>

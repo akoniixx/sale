@@ -216,7 +216,7 @@ export default function Item({
           )}
           <Text fontSize={18} bold>
             {t('screens.StoreDetailScreen.price', {
-              price: numberWithCommas(+unitPrice),
+              price: numberWithCommas(+props.marketPrice),
             })}
             {props?.saleUOMTH && (
               <Text color="text3"> /{props?.saleUOMTH}</Text>

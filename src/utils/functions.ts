@@ -18,8 +18,8 @@ export const numberWithCommas = (x?: number | string, isDecimal = false) => {
   return x?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 };
 export const numberReturnString = (x?: number | string, isDecimal = false) => {
+  if (Number(x) === 0 && x !== '') return '0';
   if (!x) return '';
-
   const isHaveDot = x?.toString()?.includes('.');
   if (isHaveDot) {
     const d = x?.toString().split('.');

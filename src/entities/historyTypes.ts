@@ -50,5 +50,6 @@ export interface HistoryDataType {
     saleUOMTH: string;
     shipmentOrder: number;
     totalPrice: number;
+    isFreebie: boolean;
   }[];
 }

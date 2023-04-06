@@ -1,5 +1,5 @@
 import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
-import React, { useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import Container from '../../components/Container/Container';
 import Content from '../../components/Content/Content';
 import Header from '../../components/Header/Header';
@@ -14,7 +14,7 @@ import { SheetManager } from 'react-native-actions-sheet';
 import { historyServices } from '../../services/HistoryServices';
 import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
 import { HistoryDataType } from '../../entities/historyTypes';
-import { useDebounce } from '../../hook';
+import { useFocusEffect } from '@react-navigation/native';
 
 interface TypeHistory {
   data: HistoryDataType[];
@@ -100,29 +100,32 @@ export default function HistoryScreen({ navigation }: any): JSX.Element {
     HistoryTypeStore[]
   >([]);
   const [loading, setLoading] = React.useState<boolean>(false);
-  const [debounceSearchValue] = useDebounce(searchValue, 500);
+  const [debounceSearchValue, setDebounceSearchValue] = React.useState<
+    string | undefined
+  >('');
   const isHasCustomerId = useMemo(() => {
     return customerCompanyId !== undefined;
   }, [customerCompanyId]);
-  const currentCustomerName = useMemo(() => {
-    if (isHasCustomerId) {
-      const customer = historyDataStore.find(
-        el => el.customerCompanyId === customerCompanyId,
-      );
-      return customer?.customerName || '';
-    }
-  }, [historyDataStore, customerCompanyId, isHasCustomerId]);
+  const [customerName, setCustomerName] = React.useState<string | undefined>(
+    '',
+  );
+  const onSearch = (v: string | undefined) => {
+    setDebounceSearchValue(v);
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       const payload: any = {
-        status: [],
+        status: tabValue.length > 0 ? tabValue : [],
         search: debounceSearchValue,
         take: limit,
         company: user?.company || '',
         page: 1,
         endDate: dateRange.endDate,
         startDate: dateRange.startDate,
+        userStaffId: user?.userStaffId,
+        zone: user?.zone,
       };
       if (isHasCustomerId) {
         payload.customerCompanyId = customerCompanyId;
@@ -154,7 +157,45 @@ export default function HistoryScreen({ navigation }: any): JSX.Element {
     tabData,
     isHasCustomerId,
     customerCompanyId,
+    user?.zone,
   ]);
+  useFocusEffect(
+    useCallback(() => {
+      const fetchData = async () => {
+        setLoading(true);
+        const payload: any = {
+          userStaffId: user?.userStaffId,
+          status: tabValue.length > 0 ? tabValue : [],
+          search: debounceSearchValue,
+          take: limit,
+          company: user?.company || '',
+          page: 1,
+          endDate: dateRange.endDate,
+          startDate: dateRange.startDate,
+          zone: user?.zone,
+          customerCompanyId: customerCompanyId,
+        };
+        if (isHasCustomerId) {
+          payload.customerCompanyId = customerCompanyId;
+        }
+        if (tabValue.length > 0) {
+          payload.status = tabValue;
+        }
+
+        try {
+          const data = await historyServices.getHistory(payload);
+          setHistoryData(data);
+          setLoading(false);
+        } catch (e) {
+          console.log('error', e);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchData();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [debounceSearchValue, tabValue]),
+  );
 
   useEffect(() => {
     const fetchDataStore = async () => {
@@ -163,14 +204,14 @@ export default function HistoryScreen({ navigation }: any): JSX.Element {
           userStaffId: user?.userStaffId || '',
           endDate: dateRange.endDate,
           startDate: dateRange.startDate,
-          status: [],
+          status: tabValue.length > 0 ? tabValue : [],
+
           search: debounceSearchValue,
         };
         if (tabValue.length > 0) {
           payload.status = tabValue;
         }
         const data = await historyServices.getHistoryStore(payload);
-        console.log('data', JSON.stringify(data, null, 2));
         setHistoryDataStore(data);
       } catch (e) {
         console.log('e', e);
@@ -191,13 +232,15 @@ export default function HistoryScreen({ navigation }: any): JSX.Element {
     if (historyData.data.length < historyData.count) {
       try {
         const payload: any = {
-          status: [],
+          status: tabValue.length > 0 ? tabValue : [],
           search: debounceSearchValue,
           take: limit,
           company: user?.company || '',
-          page: 1,
+          page: page + 1,
           endDate: dateRange.endDate,
           startDate: dateRange.startDate,
+          zone: user?.zone,
+          userStaffId: user?.userStaffId,
         };
         if (isHasCustomerId) {
           payload.customerCompanyId = customerCompanyId;
@@ -230,6 +273,7 @@ export default function HistoryScreen({ navigation }: any): JSX.Element {
           width: '100%',
         }}>
         <SearchInput
+          onSearch={onSearch}
           value={searchValue}
           style={{
             width: '100%',
@@ -249,6 +293,7 @@ export default function HistoryScreen({ navigation }: any): JSX.Element {
               setTypeSearch('area');
               setCustomerCompanyId(undefined);
               setTabValue([]);
+              setPage(1);
             }}
             style={styles().flexRow}>
             <Image
@@ -270,6 +315,7 @@ export default function HistoryScreen({ navigation }: any): JSX.Element {
             onPress={() => {
               setTypeSearch('store');
               setTabValue([]);
+              setPage(1);
             }}
             style={styles().flexRow}>
             <Image
@@ -354,8 +400,10 @@ export default function HistoryScreen({ navigation }: any): JSX.Element {
               }}>
               <TouchableOpacity
                 onPress={() => {
+                  setCustomerName('');
                   setCustomerCompanyId(undefined);
                   setTabValue([]);
+                  setPage(1);
                 }}
                 style={{
                   marginRight: 8,
@@ -374,7 +422,7 @@ export default function HistoryScreen({ navigation }: any): JSX.Element {
                   คำสั่งซื้อของ
                 </Text>
                 <Text color="text2" lineHeight={26}>
-                  {currentCustomerName}
+                  {customerName}
                 </Text>
               </View>
             </View>
@@ -418,6 +466,8 @@ export default function HistoryScreen({ navigation }: any): JSX.Element {
           backgroundColor: colors.background1,
         }}>
         <ContentBody
+          setPage={setPage}
+          setCustomerName={setCustomerName}
           data={historyData.data}
           dataCustomer={historyDataStore}
           navigation={navigation}

@@ -6,6 +6,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Keyboard,
+  ActivityIndicator,
 } from 'react-native';
 import React, { useEffect, useMemo } from 'react';
 import Container from '../../components/Container/Container';
@@ -107,6 +108,7 @@ export default function CartScreen({
         isUseCOD: cartDetail.isUseCOD,
         paymentMethod: cartDetail.paymentMethod,
         sellerName: `${user?.firstname} ${user?.lastname}`,
+        customerZone: user?.zone,
 
         deliveryDest: dataStepTwo.deliveryDest,
         deliveryAddress: dataStepTwo.deliveryAddress,
@@ -145,6 +147,7 @@ export default function CartScreen({
         return (
           <StepTwo
             setLoading={setLoading}
+            loading={loading}
             setDataStepTwo={setDataStepTwo}
             dataStepTwo={dataStepTwo}
             navigation={navigation}
@@ -154,10 +157,10 @@ export default function CartScreen({
         );
       }
       default: {
-        return <StepOne />;
+        return <StepOne loading={loading} />;
       }
     }
-  }, [currentStep, dataStepTwo, addressDelivery, navigation]);
+  }, [currentStep, dataStepTwo, addressDelivery, navigation, loading]);
   useFocusEffect(
     React.useCallback(() => {
       const getPromotion = async () => {
@@ -378,7 +381,6 @@ export default function CartScreen({
             </TouchableOpacity>
           )}
         </FooterShadow>
-        <LoadingSpinner visible={loading} />
         <ModalWarning
           visible={visible}
           onlyCancel

@@ -14,6 +14,7 @@ interface Props {
   id: string | number;
   onIncrease?: (id: string | number) => void;
   onDecrease?: (id: string | number) => void;
+  setCounter?: React.Dispatch<React.SetStateAction<number>>;
 }
 export default function Counter({
   currentQuantity,
@@ -21,6 +22,7 @@ export default function Counter({
   onDecrease,
   onIncrease,
   id,
+  setCounter,
 }: Props): JSX.Element {
   const [quantity, setQuantity] = useState('0');
   const { t } = useLocalization();
@@ -41,6 +43,7 @@ export default function Counter({
       setIsModalVisible(true);
     } else {
       onChangeText?.({ id, quantity });
+      setQuantity('0');
     }
   };
   const inputRef = useRef<TextInput>(null);
@@ -56,6 +59,14 @@ export default function Counter({
               }
               return +prev - 5 < 1 ? '0' : prev;
             });
+            if (setCounter) {
+              setCounter(prev => {
+                if (+prev >= 5) {
+                  return +prev - 5;
+                }
+                return +prev - 5 < 1 ? 0 : prev;
+              });
+            }
           }
         }}
         iconFont={
@@ -99,6 +110,9 @@ export default function Counter({
             const value = text.replace(/[^0-9.]/g, '');
 
             setQuantity(value);
+            if (setCounter) {
+              setCounter(+value);
+            }
           }}
           onBlur={onBlurInput}
         />
@@ -109,6 +123,11 @@ export default function Counter({
           setQuantity(prev => {
             return (+prev + 5).toString();
           });
+          if (setCounter) {
+            setCounter(prev => {
+              return prev + 5;
+            });
+          }
         }}
         iconFont={
           <Image

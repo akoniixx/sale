@@ -20,8 +20,6 @@ export default function HomeScreen({ navigation }: Props): JSX.Element {
 
   useEffect(() => {
     if (!state?.user?.userStaffId) {
-      console.log(JSON.stringify(state.user, null, 2));
-
       getUser();
     }
   }, [state?.user, getUser]);

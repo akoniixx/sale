@@ -17,8 +17,10 @@ import { SheetManager } from 'react-native-actions-sheet';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { MainStackParamList } from '../../navigations/MainNavigator';
 import { useAuth } from '../../contexts/AuthContext';
+import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
 
 interface Props {
+  loading: boolean;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   setDataStepTwo: React.Dispatch<React.SetStateAction<TypeDataStepTwo>>;
   dataStepTwo: TypeDataStepTwo;
@@ -41,6 +43,7 @@ export default function StepTwo({
   addressDelivery,
   setAddressDelivery,
   setLoading,
+  loading,
 }: Props) {
   const {
     state: { user },
@@ -55,9 +58,11 @@ export default function StepTwo({
           </Text>
           <InputText
             multiline
+            returnKeyType="done"
             value={dataStepTwo?.saleCoRemark || ''}
             placeholder="ใส่หมายเหตุ..."
             numberOfLines={5}
+            blurOnSubmit
             onChangeText={text =>
               setDataStepTwo(prev => ({ ...prev, saleCoRemark: text }))
             }
@@ -199,6 +204,7 @@ export default function StepTwo({
         </View>
       </View>
       <Summary setLoading={setLoading} />
+      <LoadingSpinner visible={loading} />
     </>
   );
 }

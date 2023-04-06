@@ -25,6 +25,11 @@ import { getNewPath, numberWithCommas } from '../../utils/functions';
 import ImageCache from '../../components/ImageCache/ImageCache';
 import images from '../../assets/images';
 
+const locationMapping = {
+  SHOP: 'จัดส่งที่ร้าน',
+  FACTORY: 'รับที่โรงงาน',
+  OTHER: 'ส่ง/รับ ที่อื่นๆ',
+};
 export default function HistoryDetailScreen({
   route,
   navigation,
@@ -135,40 +140,32 @@ export default function HistoryDetailScreen({
       },
     };
     const fbList: any = [];
-    orderDetail?.orderProducts.map((el: any) => {
-      return el.orderProductPromotions.map((el2: any) => {
-        if (el2.promotionType === 'FREEBIES_NOT_MIX') {
-          const freebieList = el2.conditionDetail.condition;
-          freebieList.forEach((f: any) => {
-            const freebies = f.freebies;
-            freebies.forEach((fr: any) => {
-              if (fr.productFreebiesId) {
-                const newObj = {
-                  productName: fr.productName,
-                  id: fr.productFreebiesId,
-                  quantity: fr.quantity,
-                  baseUnit: fr.baseUnitOfMeaTh || fr.baseUnitOfMeaEn,
-                  status: fr.productFreebiesStatus,
-                  productImage: fr.productFreebiesImage,
-                };
-                fbList.push(newObj);
-              } else {
-                const newObj = {
-                  productName: fr.productName,
-                  id: fr.productId,
-                  quantity: fr.quantity,
-                  baseUnit: fr.saleUOMTH || fr.saleUOM || '',
-                  status: fr.productStatus,
-                  productImage: fr.productImage,
-                };
+    orderDetail?.orderProducts
+      .filter((el: any) => el.isFreebie)
+      .map((fr: any) => {
+        if (fr.productFreebiesId) {
+          const newObj = {
+            productName: fr.productName,
+            id: fr.productFreebiesId,
+            quantity: fr.quantity,
+            baseUnit: fr.baseUnitOfMeaTh || fr.baseUnitOfMeaEn,
+            status: fr.productFreebiesStatus,
+            productImage: fr.productFreebiesImage,
+          };
+          fbList.push(newObj);
+        } else {
+          const newObj = {
+            productName: fr.productName,
+            id: fr.productId,
+            quantity: fr.quantity,
+            baseUnit: fr.saleUOMTH || fr.saleUOM || '',
+            status: fr.productStatus,
+            productImage: fr.productImage,
+          };
 
-                fbList.push(newObj);
-              }
-            });
-          });
+          fbList.push(newObj);
         }
       });
-    });
     return {
       dataObj,
       freebieList: fbList,
@@ -234,6 +231,77 @@ export default function HistoryDetailScreen({
           style={{
             padding: 16,
           }}>
+          {(orderDetail?.status === 'SHOPAPP_CANCEL_ORDER' ||
+            orderDetail?.status === 'COMPANY_CANCEL_ORDER') && (
+            <>
+              <View
+                style={{
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '100%',
+                  paddingBottom: 16,
+                }}>
+                <Image
+                  source={images.CancelImage}
+                  style={{
+                    width: 120,
+                    height: 120,
+                  }}
+                />
+              </View>
+              <View
+                style={{
+                  backgroundColor: 'white',
+                  borderRadius: 10,
+                  shadowColor: '#000',
+                  shadowOffset: {
+                    width: 0,
+                    height: 2,
+                  },
+                  shadowOpacity: 0.25,
+                  shadowRadius: 2.84,
+                  elevation: 5,
+                  marginBottom: 18,
+                  zIndex: 0,
+                  paddingVertical: 16,
+                }}>
+                <View
+                  style={{
+                    paddingHorizontal: 16,
+                    borderBottomColor: colors.border1,
+                    borderBottomWidth: 1,
+                    paddingBottom: 16,
+                  }}>
+                  <Text fontFamily="NotoSans" semiBold>
+                    รายละเอียดการยกเลิก
+                  </Text>
+                  <Text color="text2" lineHeight={34}>
+                    หมายเลขคำสั่งซื้อ : {orderDetail?.orderNo}
+                  </Text>
+                  <Text color="text2" lineHeight={34}>
+                    วันที่ยกเลิก :{' '}
+                    {dayjs(orderDetail?.updateAt)
+                      .locale('th')
+                      .format('DD MMM BBBB HH:mm น.')}
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    paddingHorizontal: 16,
+                    paddingTop: 16,
+                  }}>
+                  <Text fontFamily="NotoSans" semiBold>
+                    เหตุผลที่ยกเลิก (
+                    {orderDetail?.status === 'SHOPAPP_CANCEL_ORDER'
+                      ? 'ลูกค้า'
+                      : 'บริษัท'}
+                    )
+                  </Text>
+                  <Text color="text2">{orderDetail?.cancelRemark}</Text>
+                </View>
+              </View>
+            </>
+          )}
           <View
             style={{
               backgroundColor: 'white',
@@ -362,7 +430,11 @@ export default function HistoryDetailScreen({
                   การจัดส่ง
                 </Text>
                 <Text fontSize={18} semiBold fontFamily="NotoSans">
-                  รับที่โรงงาน
+                  {
+                    locationMapping[
+                      orderDetail?.deliveryDest as keyof typeof locationMapping
+                    ]
+                  }
                 </Text>
                 <Text
                   style={{
@@ -428,73 +500,75 @@ export default function HistoryDetailScreen({
                   รายละเอียดสินค้า
                 </Text>
 
-                {orderDetail?.orderProducts.map((el, idx) => {
-                  return (
-                    <View
-                      key={idx}
-                      style={{
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        marginTop: 32,
-                      }}>
+                {orderDetail?.orderProducts
+                  .filter(el => !el.isFreebie)
+                  .map((el, idx) => {
+                    return (
                       <View
+                        key={idx}
                         style={{
                           flexDirection: 'row',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          marginTop: 32,
                         }}>
-                        {el.productImage ? (
-                          <ImageCache
-                            uri={getNewPath(el.productImage)}
-                            style={{
-                              width: 72,
-                              height: 72,
-                            }}
-                          />
-                        ) : (
-                          <Image
-                            source={images.emptyProduct}
-                            style={{
-                              width: 72,
-                              height: 72,
-                            }}
-                          />
-                        )}
                         <View
                           style={{
-                            marginLeft: 16,
+                            flexDirection: 'row',
                           }}>
-                          <Text semiBold>{el.productName}</Text>
+                          {el.productImage ? (
+                            <ImageCache
+                              uri={getNewPath(el.productImage)}
+                              style={{
+                                width: 72,
+                                height: 72,
+                              }}
+                            />
+                          ) : (
+                            <Image
+                              source={images.emptyProduct}
+                              style={{
+                                width: 72,
+                                height: 72,
+                              }}
+                            />
+                          )}
                           <View
                             style={{
-                              flexDirection: 'row',
-                              alignItems: 'center',
+                              marginLeft: 16,
                             }}>
-                            <Text color="text3" fontSize={14}>
-                              {`${el.packSize || '-'}`}
-                              {' | '}
-                              {`฿${numberWithCommas(el.marketPrice)}`}
+                            <Text semiBold>{el.productName}</Text>
+                            <View
+                              style={{
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                              }}>
+                              <Text color="text3" fontSize={14}>
+                                {`${el.packSize || '-'}`}
+                                {' | '}
+                                {`฿${numberWithCommas(el.marketPrice)}`}
+                              </Text>
+                            </View>
+                            <Text
+                              color="primary"
+                              fontSize={18}
+                              bold
+                              style={{
+                                marginTop: 8,
+                              }}>
+                              {`฿${numberWithCommas(el.totalPrice)}`}
                             </Text>
                           </View>
-                          <Text
-                            color="primary"
-                            fontSize={18}
-                            bold
-                            style={{
-                              marginTop: 8,
-                            }}>
-                            {`฿${numberWithCommas(el.totalPrice)}`}
+                        </View>
+                        <View>
+                          <Text>
+                            {numberWithCommas(el.quantity)}x
+                            {`  ${el.saleUOMTH || el.saleUOM}`}
                           </Text>
                         </View>
                       </View>
-                      <View>
-                        <Text>
-                          {numberWithCommas(el.quantity)}x
-                          {`  ${el.saleUOMTH || el.saleUOM}`}
-                        </Text>
-                      </View>
-                    </View>
-                  );
-                })}
+                    );
+                  })}
               </View>
               <DashedLine
                 dashColor={colors.border1}
@@ -696,6 +770,7 @@ export default function HistoryDetailScreen({
                         key={idx}
                         style={{
                           flexDirection: 'row',
+                          marginBottom: 10,
                           alignItems: 'center',
                         }}>
                         {el.productImage ? (

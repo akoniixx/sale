@@ -47,7 +47,6 @@ export default function OrderSuccessScreen({
   const [orderData, setOrderData] = React.useState<
     OrderDetailType | undefined
   >();
-  console.log('orderData', JSON.stringify(orderData, null, 2));
   const [productBrand, setProductBrand] = React.useState<{
     product_brand_id: string;
     product_brand_name: string;
@@ -68,40 +67,33 @@ export default function OrderSuccessScreen({
             status: string;
             productImage: string;
           }[] = [];
-          response.orderProducts.map((el: any) => {
-            return el.orderProductPromotions.map((el2: any) => {
-              if (el2.promotionType === 'FREEBIES_NOT_MIX') {
-                const freebieList = el2.conditionDetail.condition;
-                freebieList.forEach((f: any) => {
-                  const freebies = f.freebies;
-                  freebies.forEach((fr: any) => {
-                    if (fr.productFreebiesId) {
-                      const newObj = {
-                        productName: fr.productName,
-                        id: fr.productFreebiesId,
-                        quantity: fr.quantity,
-                        baseUnit: fr.baseUnitOfMeaTh || fr.baseUnitOfMeaEn,
-                        status: fr.productFreebiesStatus,
-                        productImage: fr.productFreebiesImage,
-                      };
-                      fbList.push(newObj);
-                    } else {
-                      const newObj = {
-                        productName: fr.productName,
-                        id: fr.productId,
-                        quantity: fr.quantity,
-                        baseUnit: fr.saleUOMTH || fr.saleUOM || '',
-                        status: fr.productStatus,
-                        productImage: fr.productImage,
-                      };
 
-                      fbList.push(newObj);
-                    }
-                  });
-                });
+          response.orderProducts
+            .filter((el: any) => el.isFreebie)
+            .map((fr: any) => {
+              if (fr.productFreebiesId) {
+                const newObj = {
+                  productName: fr.productName,
+                  id: fr.productFreebiesId,
+                  quantity: fr.quantity,
+                  baseUnit: fr.baseUnitOfMeaTh || fr.baseUnitOfMeaEn,
+                  status: fr.productFreebiesStatus,
+                  productImage: fr.productFreebiesImage,
+                };
+                fbList.push(newObj);
+              } else {
+                const newObj = {
+                  productName: fr.productName,
+                  id: fr.productId,
+                  quantity: fr.quantity,
+                  baseUnit: fr.saleUOMTH || fr.saleUOM || '',
+                  status: fr.productStatus,
+                  productImage: fr.productImage,
+                };
+
+                fbList.push(newObj);
               }
             });
-          });
           setFreebieList(fbList);
           setOrderData(response);
         }

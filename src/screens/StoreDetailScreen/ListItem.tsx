@@ -30,12 +30,17 @@ interface Props {
     company: string;
   };
   setLoadingApi: (v: boolean) => void;
+  loadingApi: boolean;
+  page: number;
+  setPage: React.Dispatch<React.SetStateAction<number>>;
 }
 export default function ListItem({
   nameDealer,
   navigation,
   debounceSearchValue,
   productBrand,
+  page,
+  setPage,
   setLoadingApi,
 }: Props): JSX.Element {
   const [type, setType] = React.useState<string>('all');
@@ -44,7 +49,6 @@ export default function ListItem({
   const [dataBrand, setDataBrand] = React.useState<ProductCategory[]>([]);
   const [isAddCart, setIsAddCart] = React.useState(false);
   const [isDelCart, setIsDelCart] = React.useState(false);
-  const [page, setPage] = React.useState(1);
   const {
     state: { user },
   } = useAuth();
@@ -76,7 +80,6 @@ export default function ListItem({
       const customerCompanyId = await AsyncStorage.getItem('customerCompanyId');
       const result = await productServices.getAllProducts({
         company: user?.company,
-        customerId: user?.userStaffId,
         page: 1,
         take: 10,
         searchText: debounceSearchValue,
@@ -95,7 +98,6 @@ export default function ListItem({
   }, [
     debounceSearchValue,
     user?.company,
-    user?.userStaffId,
     productBrand,
     type,
     currentBrand,
@@ -140,6 +142,7 @@ export default function ListItem({
     data.data,
     data.count,
     currentBrand,
+    setPage,
   ]);
   useEffect(() => {
     getAllProduct();
@@ -270,7 +273,7 @@ export default function ListItem({
           ) : (
             (newDataBrand || []).map((item, idx) => {
               const isLast = idx === newDataBrand.length - 1;
-              if (!item.productCategoryImage) {
+              if (!item?.productCategoryImage) {
                 return (
                   <TouchableOpacity
                     key={item.productCategoryId}
@@ -293,17 +296,17 @@ export default function ListItem({
               }
               return (
                 <TouchableOpacity
-                  key={item.productCategoryId}
+                  key={idx}
                   style={[
                     {
                       marginRight: isLast ? 32 : 8,
                     },
                   ]}
                   onPress={() => {
-                    setCurrentBrand(item.productCategoryId);
+                    setCurrentBrand(item?.productCategoryId);
                   }}>
                   <Image
-                    source={{ uri: item.productCategoryImage }}
+                    source={{ uri: item?.productCategoryImage }}
                     style={{
                       width: 106,
                       height: 40,
@@ -347,8 +350,10 @@ export default function ListItem({
         </>
       );
     };
+
     return renderItem;
   }, [setIsAddCart, setIsDelCart, navigation]);
+
   return (
     <>
       <FlatList
@@ -359,7 +364,7 @@ export default function ListItem({
         onEndReached={() => {
           getMoreProduct();
         }}
-        keyExtractor={(item, idx) => idx.toString()}
+        keyExtractor={(item, idx) => idx?.toString()}
         columnWrapperStyle={{
           paddingHorizontal: 16,
           justifyContent: 'space-between',
@@ -392,7 +397,12 @@ export default function ListItem({
           );
         }}
         ListHeaderComponent={<HeaderFlatList />}
-        renderItem={memorizeItem}
+        renderItem={({ item, index }) =>
+          memorizeItem({
+            item,
+            index,
+          })
+        }
       />
       <ModalMessage
         visible={isAddCart}

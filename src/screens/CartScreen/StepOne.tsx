@@ -1,11 +1,27 @@
-import { View } from 'react-native';
+import { ActivityIndicator, View } from 'react-native';
 import React from 'react';
 import ListItemInCart from './ListItemInCart';
 
-export default function StepOne(): JSX.Element {
+export default function StepOne({
+  loading,
+}: {
+  loading: boolean;
+}): JSX.Element {
   return (
     <View>
-      <ListItemInCart />
+      {loading ? (
+        <View
+          style={{
+            flex: 1,
+            minHeight: 400,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+          <ActivityIndicator size={'large'} />
+        </View>
+      ) : (
+        <ListItemInCart />
+      )}
       {/* <Summary /> */}
       <View
         style={{

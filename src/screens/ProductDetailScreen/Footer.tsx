@@ -1,5 +1,5 @@
 import { View, StyleSheet, Image } from 'react-native';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Counter from '../../components/Counter/Counter';
 import { colors } from '../../assets/colors/colors';
 import Button from '../../components/Button/Button';
@@ -25,6 +25,7 @@ export default function Footer({
   setLoading,
 }: Props): JSX.Element {
   const { t } = useLocalization();
+  const [currentCount, setCurrentCount] = useState(0);
   const {
     cartList,
     setCartList,
@@ -33,6 +34,11 @@ export default function Footer({
   const currentProduct = cartList?.find(
     item => item?.productId.toString() === id,
   );
+  useEffect(() => {
+    if (currentProduct) {
+      setCurrentCount(currentProduct.amount);
+    }
+  }, []);
   const promotionIdList = (productItem?.promotion || []).map(el => {
     return {
       promotionId: el?.promotionId,
@@ -137,7 +143,7 @@ export default function Footer({
 
       if (findIndex !== -1) {
         const newCartList = [...cartList];
-        newCartList[findIndex].amount += 5;
+        newCartList[findIndex].amount = currentCount;
         setCartList(newCartList);
         await postCartItem(newCartList);
       } else {
@@ -146,7 +152,7 @@ export default function Footer({
           {
             ...productItem,
             productId: id,
-            amount: 5,
+            amount: currentCount,
             orderProductPromotions: promotionIdList,
             order: cartList?.length + 1,
           },
@@ -174,6 +180,7 @@ export default function Footer({
           id={id}
           onChangeText={onChangeText}
           onDecrease={onDecrease}
+          setCounter={setCurrentCount}
           onIncrease={onIncrease}
         />
       </View>
@@ -187,8 +194,9 @@ export default function Footer({
           flex: 0.8,
         }}>
         <Button
-          title={t('screens.ProductDetailScreen.orderButton')}
           onPress={onOrder}
+          disabled={currentCount <= 0}
+          title={t('screens.ProductDetailScreen.orderButton')}
           iconBack={
             <Image
               source={icons.cartFill}

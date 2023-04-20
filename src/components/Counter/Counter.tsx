@@ -30,10 +30,12 @@ export default function Counter({
   useEffect(() => {
     if (+currentQuantity > 0) {
       setQuantity(currentQuantity.toString());
+      setCounter?.(currentQuantity);
     } else {
       setQuantity('0');
+      setCounter?.(0);
     }
-  }, [currentQuantity]);
+  }, [currentQuantity, setCounter]);
 
   const onBlurInput = () => {
     if (currentQuantity.toString() === quantity.toString()) {
@@ -44,6 +46,7 @@ export default function Counter({
     } else {
       onChangeText?.({ id, quantity });
       setQuantity('0');
+      setCounter?.(0);
     }
   };
   const inputRef = useRef<TextInput>(null);
@@ -151,10 +154,12 @@ export default function Counter({
         onConfirm={() => {
           setIsModalVisible(false);
           onChangeText?.({ id, quantity });
+          setCounter?.(0);
         }}
         onRequestClose={() => {
           setIsModalVisible(false);
           setQuantity(currentQuantity.toString());
+          setCounter?.(currentQuantity);
           onChangeText?.({
             id,
             quantity: currentQuantity.toString(),

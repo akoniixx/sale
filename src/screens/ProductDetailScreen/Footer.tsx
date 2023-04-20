@@ -38,7 +38,7 @@ export default function Footer({
     if (currentProduct) {
       setCurrentCount(currentProduct.amount);
     }
-  }, []);
+  }, [currentProduct]);
   const promotionIdList = (productItem?.promotion || []).map(el => {
     return {
       promotionId: el?.promotionId,

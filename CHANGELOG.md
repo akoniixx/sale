@@ -1,5 +1,8 @@
 
 ## [Version - 2]
+## Features [v2.5.4] - Release Date: 2023-04-20
+- Resolved Bug & Defects from UAT
+
 ## Features [v2.5.3] - Release Date: 2023-04-05
 - Defect & Bug Resolved Special Request
 ## Features [v2.5.2] - Release Date: 2023-04-04

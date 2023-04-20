@@ -391,6 +391,7 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
             };
           })
           .filter((item: any) => !item.isFreebie);
+
         const freebieList = (result.orderProducts || [])
           .filter((item: any) => item.isFreebie)
           .map((el: any) => {

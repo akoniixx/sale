@@ -8,7 +8,7 @@ import {
 import React, { useEffect, useRef } from 'react';
 import { colors } from '../../assets/colors/colors';
 import icons from '../../assets/icons';
-import { numberWithCommas } from '../../utils/functions';
+import { numberReturnString, numberWithCommas } from '../../utils/functions';
 import ModalWarning from '../../components/Modal/ModalWarning';
 import { useLocalization } from '../../contexts/LocalizationContext';
 interface Props {
@@ -51,7 +51,7 @@ const CounterSmall = ({
     if (currentQuantity.toString() === quantity.toString()) {
       return;
     }
-    if (+quantity < 1 && currentQuantity > 0) {
+    if ((+quantity < 1 && currentQuantity > 0) || !quantity) {
       setIsModalVisible(true);
     } else {
       onChangeText?.({ id, quantity });
@@ -76,7 +76,7 @@ const CounterSmall = ({
       </TouchableOpacity>
       <TextInput
         allowFontScaling={false}
-        value={numberWithCommas(quantity).toString()}
+        value={numberReturnString(quantity).toString()}
         keyboardType="number-pad"
         ref={inputRef}
         style={{
@@ -128,10 +128,6 @@ const CounterSmall = ({
         onRequestClose={() => {
           setIsModalVisible(false);
           setQuantity(currentQuantity.toString());
-          onChangeText?.({
-            id,
-            quantity: currentQuantity.toString(),
-          });
         }}
       />
     </View>

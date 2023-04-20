@@ -102,7 +102,7 @@ const styles = () => {
       flex: 1,
     },
     list: {
-      width: 190,
+      minWidth: 190,
       flexDirection: 'row',
       height: 72,
       padding: 8,

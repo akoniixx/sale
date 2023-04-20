@@ -24,6 +24,8 @@ import dayjs from 'dayjs';
 import { getNewPath, numberWithCommas } from '../../utils/functions';
 import ImageCache from '../../components/ImageCache/ImageCache';
 import images from '../../assets/images';
+import SummaryList from '../../components/SummaryList/SummaryList';
+import SummaryTotal from '../../components/SummaryList/SummaryTotal';
 
 const locationMapping = {
   SHOP: 'จัดส่งที่ร้าน',
@@ -38,10 +40,7 @@ export default function HistoryDetailScreen({
   const [orderDetail, setOrderDetail] = React.useState<HistoryDataType | null>(
     null,
   );
-  const [isCollapsed, setIsCollapsed] = React.useState({
-    discountList: true,
-    specialListDiscount: true,
-  });
+
   const [loading, setLoading] = React.useState<boolean>(false);
   React.useEffect(() => {
     const getOrderDetailById = async () => {
@@ -57,6 +56,7 @@ export default function HistoryDetailScreen({
     };
     getOrderDetailById();
   }, [params.orderId]);
+  console.log('orderDetail', JSON.stringify(orderDetail, null, 2));
 
   const BlockLine = () => {
     return (
@@ -171,52 +171,6 @@ export default function HistoryDetailScreen({
       freebieList: fbList,
     };
   }, [orderDetail]);
-  const renderDiscountList = () => {
-    return dataObj.discountList.listData?.map((el, idx) => {
-      return (
-        <View
-          style={[
-            styles.row,
-            {
-              backgroundColor: colors.background1,
-              minHeight: 52,
-            },
-          ]}
-          key={idx}>
-          <Text fontSize={14} color="text3">
-            {el.label + ' ' + el.valueLabel}
-          </Text>
-          <Text fontSize={14} color="text3">
-            {`-฿${numberWithCommas(el.value)}`}
-          </Text>
-        </View>
-      );
-    });
-  };
-
-  const renderSpecialRequest = () => {
-    return dataObj.discountSpecialRequest.listData?.map((el, idx) => {
-      return (
-        <View
-          style={[
-            styles.row,
-            {
-              backgroundColor: colors.background1,
-              minHeight: 52,
-              marginBottom: 0,
-            },
-          ]}
-          key={idx}>
-          <Text fontSize={14} color="text3">
-            {el.label + ' ' + el.valueLabel}
-          </Text>
-          <Text fontSize={14} color="text3">
-            {`-฿${numberWithCommas(el.value)}`}
-          </Text>
-        </View>
-      );
-    });
-  };
 
   return (
     <Container edges={['top', 'left', 'right']}>
@@ -294,10 +248,16 @@ export default function HistoryDetailScreen({
                     เหตุผลที่ยกเลิก (
                     {orderDetail?.status === 'SHOPAPP_CANCEL_ORDER'
                       ? 'ลูกค้า'
+                      : !!orderDetail.specialRequestRemark
+                      ? 'ผู้จัดการ'
                       : 'บริษัท'}
                     )
                   </Text>
-                  <Text color="text2">{orderDetail?.cancelRemark}</Text>
+                  <Text color="text2">
+                    {orderDetail?.specialRequestRemark
+                      ? orderDetail.specialRequestRemark
+                      : orderDetail?.cancelRemark}
+                  </Text>
                 </View>
               </View>
             </>
@@ -610,129 +570,9 @@ export default function HistoryDetailScreen({
                 dashLength={8}
                 style={{ marginVertical: 8 }}
               />
-              <View>
-                <View style={styles.row}>
-                  <Text color="text2">ราคาก่อนลด</Text>
-                  <Text color="text2" semiBold>{`฿${numberWithCommas(
-                    +dataObj.priceBeforeDiscount.value,
-                    true,
-                  )}`}</Text>
-                </View>
-                <View style={styles.row}>
-                  <TouchableOpacity
-                    onPress={() => {
-                      setIsCollapsed({
-                        ...isCollapsed,
-                        discountList: !isCollapsed.discountList,
-                      });
-                    }}
-                    style={{
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                    }}>
-                    <Text color="text2">ส่วนลดจากรายการ</Text>
-                    <Image
-                      source={icons.iconCollapse}
-                      style={
-                        stylesIcon({ isCollapsed: isCollapsed.discountList })
-                          .icon
-                      }
-                    />
-                  </TouchableOpacity>
-
-                  <Text
-                    color="current"
-                    semiBold
-                    fontFamily="NotoSans">{`-฿${numberWithCommas(
-                    +dataObj.discountList.value,
-                    true,
-                  )}`}</Text>
-                </View>
-                {!isCollapsed.discountList && <>{renderDiscountList()}</>}
-                <View style={styles.row}>
-                  <TouchableOpacity
-                    onPress={() => {
-                      setIsCollapsed({
-                        ...isCollapsed,
-                        specialListDiscount: !isCollapsed.specialListDiscount,
-                      });
-                    }}
-                    style={{
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                    }}>
-                    <Text color="text2">ขอส่วนลดพิเศษเพิ่ม</Text>
-                    <Image
-                      source={icons.iconCollapse}
-                      style={
-                        stylesIcon({
-                          isCollapsed: isCollapsed.specialListDiscount,
-                        }).icon
-                      }
-                    />
-                  </TouchableOpacity>
-                  <Text
-                    color="specialRequest"
-                    semiBold
-                    fontFamily="NotoSans">{`-฿${numberWithCommas(
-                    +dataObj.discountSpecialRequest.value,
-                    true,
-                  )}`}</Text>
-                </View>
-                {!isCollapsed.specialListDiscount && (
-                  <>{renderSpecialRequest()}</>
-                )}
-
-                <View style={styles.row}>
-                  <Text color="text2">ส่วนลดดูแลราคา</Text>
-                  <Text
-                    color="error"
-                    semiBold
-                    fontFamily="NotoSans">{`-฿${numberWithCommas(
-                    +dataObj.discountCo.value,
-                    true,
-                  )}`}</Text>
-                </View>
-                <View style={styles.row}>
-                  <Text color="text2">ส่วนลดเงินสด</Text>
-                  <Text
-                    color="waiting"
-                    fontFamily="NotoSans"
-                    semiBold>{`-฿${numberWithCommas(
-                    +dataObj.discountCash.value,
-                    true,
-                  )}`}</Text>
-                </View>
-                <View
-                  style={[
-                    styles.row,
-                    {
-                      marginBottom: 4,
-                    },
-                  ]}>
-                  <Text color="text2">ส่วนลดรวม</Text>
-                  <Text color="text2" semiBold fontFamily="NotoSans">
-                    {`-฿${numberWithCommas(
-                      +dataObj.totalDiscount.value,
-                      true,
-                    )}`}
-                  </Text>
-                </View>
-              </View>
+              <SummaryList dataObj={dataObj} />
             </View>
-            <View style={styles.summary}>
-              <Text color="text2" semiBold fontFamily="NotoSans">
-                จำนวนรวม
-              </Text>
-              <Text
-                fontFamily="NotoSans"
-                color="primary"
-                bold
-                fontSize={20}>{`฿${numberWithCommas(
-                orderDetail?.totalPrice ? +orderDetail?.totalPrice : 0,
-                true,
-              )}`}</Text>
-            </View>
+            <SummaryTotal orderDetail={orderDetail} />
             <DashedLine
               dashColor={colors.border1}
               dashGap={6}
@@ -847,15 +687,7 @@ export default function HistoryDetailScreen({
     </Container>
   );
 }
-const stylesIcon = ({ isCollapsed }: { isCollapsed: boolean }) => {
-  return StyleSheet.create({
-    icon: {
-      width: 20,
-      height: 20,
-      transform: [{ rotate: isCollapsed ? '0deg' : '180deg' }],
-    },
-  });
-};
+
 const styles = StyleSheet.create({
   card: {
     width: '100%',

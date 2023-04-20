@@ -10,6 +10,8 @@ import icons from '../../assets/icons';
 import { useCart } from '../../contexts/CartContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuth } from '../../contexts/AuthContext';
+import SummaryList from '../../components/SummaryList/SummaryList';
+import SummaryTotal from '../../components/SummaryList/SummaryTotal';
 interface Props {
   setLoading: (value: boolean) => void;
 }
@@ -19,12 +21,6 @@ export default function Summary({ setLoading }: Props): JSX.Element {
     state: { user },
   } = useAuth();
   const [termPayment, setTermPayment] = React.useState<string>('');
-  const [isCollapsed, setIsCollapsed] = React.useState<{
-    [key: string]: boolean;
-  }>({
-    discountList: true,
-    specialListDiscount: true,
-  });
 
   useEffect(() => {
     const getTerm = async () => {
@@ -38,6 +34,7 @@ export default function Summary({ setLoading }: Props): JSX.Element {
   const {
     cartDetail,
     promotionListValue,
+
     cartApi: { postEditIsUseCod, postEditPaymentMethod },
   } = useCart();
 
@@ -59,7 +56,7 @@ export default function Summary({ setLoading }: Props): JSX.Element {
           label: item.productName,
           valueLabel: `(฿${numberWithCommas(item.marketPrice)} x ${
             item.quantity
-          } ${item.saleUOMTH ? item.saleUOMTH : item.saleUOM})`,
+          } ${item.saleUOMTH ? item.saleUOMTH : item.saleUOM || 'Unit'})`,
         };
         if (item.specialRequestDiscount > 0) {
           listDataDiscountSpecialRequest.push({
@@ -116,58 +113,6 @@ export default function Summary({ setLoading }: Props): JSX.Element {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cartDetail]);
 
-  const renderDiscountList = () => {
-    return dataObj.discountList.listData?.map((el, idx) => {
-      return (
-        <View
-          style={[
-            styles.row,
-            {
-              backgroundColor: colors.background1,
-              minHeight: 52,
-              marginBottom: 0,
-            },
-          ]}
-          key={idx}>
-          <Text
-            fontSize={14}
-            color="text3"
-            style={{
-              flex: 0.7,
-            }}>
-            {el.label + ' ' + el.valueLabel}
-          </Text>
-          <Text fontSize={14} color="text3">
-            {`-฿${numberWithCommas(el.value)}`}
-          </Text>
-        </View>
-      );
-    });
-  };
-
-  const renderSpecialRequest = () => {
-    return dataObj.discountSpecialRequest.listData?.map((el, idx) => {
-      return (
-        <View
-          style={[
-            styles.row,
-            {
-              backgroundColor: colors.background1,
-              minHeight: 52,
-              marginBottom: 0,
-            },
-          ]}
-          key={idx}>
-          <Text fontSize={14} color="text3" style={{}}>
-            {el.label + ' ' + el.valueLabel}
-          </Text>
-          <Text fontSize={14} color="text3">
-            {`-฿${numberWithCommas(el.value)}`}
-          </Text>
-        </View>
-      );
-    });
-  };
   return (
     <View style={styles.container}>
       <View
@@ -286,143 +231,13 @@ export default function Summary({ setLoading }: Props): JSX.Element {
           </View>
         </View>
       </View>
-      <View style={styles.containerBottom}>
-        <View style={styles.row}>
-          <Text color="text2">
-            {t('screens.CartScreen.summary.priceBeforeDiscount')}
-          </Text>
-          <Text color="text2" semiBold>{`฿${numberWithCommas(
-            dataObj.priceBeforeDiscount.value,
-            true,
-          )}`}</Text>
-        </View>
-        <View style={styles.row}>
-          <TouchableOpacity
-            onPress={() => {
-              setIsCollapsed({
-                ...isCollapsed,
-                discountList: !isCollapsed.discountList,
-              });
-            }}
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-            }}>
-            <Text color="text2">
-              {t('screens.CartScreen.summary.discountFromList')}
-            </Text>
-            <Image
-              source={icons.iconCollapse}
-              style={stylesIcon({ isCollapsed: isCollapsed.discountList }).icon}
-            />
-          </TouchableOpacity>
+      <SummaryList dataObj={dataObj} />
 
-          <Text
-            color="current"
-            semiBold
-            fontFamily="NotoSans">{`-฿${numberWithCommas(
-            dataObj.discountList.value,
-            true,
-          )}`}</Text>
-        </View>
-        {!isCollapsed.discountList && <>{renderDiscountList()}</>}
-        <View style={styles.row}>
-          <TouchableOpacity
-            onPress={() => {
-              setIsCollapsed({
-                ...isCollapsed,
-                specialListDiscount: !isCollapsed.specialListDiscount,
-              });
-            }}
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-            }}>
-            <Text color="text2">
-              {t('screens.CartScreen.summary.discountSpecial')}
-            </Text>
-            <Image
-              source={icons.iconCollapse}
-              style={
-                stylesIcon({ isCollapsed: isCollapsed.specialListDiscount })
-                  .icon
-              }
-            />
-          </TouchableOpacity>
-          <Text
-            color="specialRequest"
-            semiBold
-            fontFamily="NotoSans">{`-฿${numberWithCommas(
-            dataObj.discountSpecialRequest.value,
-            true,
-          )}`}</Text>
-        </View>
-        {!isCollapsed.specialListDiscount && <>{renderSpecialRequest()}</>}
-
-        <View style={styles.row}>
-          <Text color="text2">
-            {t('screens.CartScreen.summary.discountCarePrice')}
-          </Text>
-          <Text
-            color="error"
-            semiBold
-            fontFamily="NotoSans">{`-฿${numberWithCommas(
-            dataObj.discountCo.value,
-            true,
-          )}`}</Text>
-        </View>
-        <View style={styles.row}>
-          <Text color="text2">
-            {t('screens.CartScreen.summary.discountCash')}
-          </Text>
-          <Text
-            color="waiting"
-            fontFamily="NotoSans"
-            semiBold>{`-฿${numberWithCommas(
-            dataObj.discountCash.value,
-            true,
-          )}`}</Text>
-        </View>
-        <View
-          style={[
-            styles.row,
-            {
-              marginBottom: 4,
-            },
-          ]}>
-          <Text color="text2">
-            {t('screens.CartScreen.summary.totalDiscount')}
-          </Text>
-          <Text color="text2" semiBold fontFamily="NotoSans">
-            {`-฿${numberWithCommas(dataObj.totalDiscount.value, true)}`}
-          </Text>
-        </View>
-      </View>
-      <View style={styles.summary}>
-        <Text color="text2" semiBold fontFamily="NotoSans">
-          {t('screens.CartScreen.summary.totalPrice')}
-        </Text>
-        <Text
-          fontFamily="NotoSans"
-          color="primary"
-          bold
-          fontSize={20}>{`฿${numberWithCommas(
-          cartDetail.totalPrice,
-          true,
-        )}`}</Text>
-      </View>
+      <SummaryTotal orderDetail={cartDetail} />
     </View>
   );
 }
-const stylesIcon = ({ isCollapsed }: { isCollapsed: boolean }) => {
-  return StyleSheet.create({
-    icon: {
-      width: 20,
-      height: 20,
-      transform: [{ rotate: isCollapsed ? '0deg' : '180deg' }],
-    },
-  });
-};
+
 const styles = StyleSheet.create({
   container: {
     marginTop: 10,

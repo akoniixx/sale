@@ -186,6 +186,7 @@ export default function HistoryDetailScreen({
             padding: 16,
           }}>
           {(orderDetail?.status === 'SHOPAPP_CANCEL_ORDER' ||
+            orderDetail?.status === 'REJECT_ORDER' ||
             orderDetail?.status === 'COMPANY_CANCEL_ORDER') && (
             <>
               <View
@@ -248,16 +249,12 @@ export default function HistoryDetailScreen({
                     เหตุผลที่ยกเลิก (
                     {orderDetail?.status === 'SHOPAPP_CANCEL_ORDER'
                       ? 'ลูกค้า'
-                      : !!orderDetail.specialRequestRemark
+                      : orderDetail?.status === 'REJECT_ORDER'
                       ? 'ผู้จัดการ'
                       : 'บริษัท'}
                     )
                   </Text>
-                  <Text color="text2">
-                    {orderDetail?.specialRequestRemark
-                      ? orderDetail.specialRequestRemark
-                      : orderDetail?.cancelRemark}
-                  </Text>
+                  <Text color="text2">{orderDetail?.cancelRemark}</Text>
                 </View>
               </View>
             </>

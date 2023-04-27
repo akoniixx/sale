@@ -30,7 +30,7 @@ export default function Body({ navigation }: Props): JSX.Element {
         image: images.History,
         name: 'History',
         onPress: () => {
-          navigation.navigate('HistoryScreen');
+          navigation.navigate('history');
         },
       },
     ];

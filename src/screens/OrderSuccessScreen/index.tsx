@@ -5,6 +5,7 @@ import {
   StyleSheet,
   ScrollView,
   SafeAreaView,
+  Dimensions,
 } from 'react-native';
 import React, { useEffect } from 'react';
 import { StackScreenProps } from '@react-navigation/stack';
@@ -254,8 +255,14 @@ export default function OrderSuccessScreen({
                           alignItems: 'center',
                           marginTop: 16,
                         }}>
-                        <Text color="text2" fontSize={14}>
-                          {el.productName} {`${el.quantity}x`} {`(${el.unit})`}
+                        <Text
+                          color="text2"
+                          fontSize={14}
+                          style={{
+                            width: Dimensions.get('window').width / 2,
+                          }}>
+                          {el.productName} {`   ${el.quantity}x`}{' '}
+                          {`(${el.unit})`}
                         </Text>
                         <Text fontFamily="NotoSans" color="text2" fontSize={14}>
                           {`฿${numberWithCommas(el.totalPrice, true)}`}
@@ -330,7 +337,13 @@ export default function OrderSuccessScreen({
                               style={{
                                 marginLeft: 8,
                               }}>
-                              <Text fontSize={14} color="text3" lineHeight={24}>
+                              <Text
+                                fontSize={14}
+                                color="text3"
+                                lineHeight={24}
+                                style={{
+                                  width: Dimensions.get('window').width / 2,
+                                }}>
                                 {el.productName}
                               </Text>
                               <Text fontSize={14}>

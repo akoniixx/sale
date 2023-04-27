@@ -466,7 +466,7 @@ export default function HistoryDetailScreen({
                         style={{
                           flexDirection: 'row',
                           justifyContent: 'space-between',
-                          alignItems: 'center',
+                          alignItems: 'flex-start',
                           marginTop: 32,
                         }}>
                         <View
@@ -494,7 +494,13 @@ export default function HistoryDetailScreen({
                             style={{
                               marginLeft: 16,
                             }}>
-                            <Text semiBold>{el.productName}</Text>
+                            <Text
+                              semiBold
+                              style={{
+                                width: Dimensions.get('window').width / 2,
+                              }}>
+                              {el.productName}
+                            </Text>
                             <View
                               style={{
                                 flexDirection: 'row',
@@ -632,7 +638,13 @@ export default function HistoryDetailScreen({
                           style={{
                             marginLeft: 8,
                           }}>
-                          <Text fontSize={14} color="text3" lineHeight={24}>
+                          <Text
+                            fontSize={14}
+                            color="text3"
+                            lineHeight={24}
+                            style={{
+                              width: Dimensions.get('window').width / 2,
+                            }}>
                             {el.productName}
                           </Text>
                           <Text fontSize={14}>

@@ -84,8 +84,43 @@ export default function HistoryScreen({ navigation }: any): JSX.Element {
         value: 'REJECT_ORDER',
       },
     ];
-    return { tabData };
-  }, []);
+    const tabDataIF = [
+      {
+        label: 'รออนุมัติคำสั่งซื้อ',
+        value: 'WAIT_APPROVE_ORDER',
+      },
+      {
+        label: 'รอยืนยันคำสั่งซื้อ',
+        value: 'WAIT_CONFIRM_ORDER',
+      },
+      {
+        label: 'ร้านยืนยันคำสั่งซื้อแล้ว',
+        value: 'CONFIRM_ORDER',
+      },
+      {
+        label: 'เปิดรายการคำสั่งซื้อแล้ว',
+        value: 'OPEN_ORDER',
+      },
+      {
+        label: 'รอขึ้นสินค้า',
+        value: 'IN_DELIVERY',
+      },
+      {
+        label: 'ขึ้นสินค้าเรียบร้อยแล้ว',
+        value: 'DELIVERY_SUCCESS',
+      },
+      {
+        label: 'ยกเลิกคำสั่งซื้อ',
+        value: 'REJECT_ORDER',
+      },
+    ];
+    return {
+      tabData:
+        user?.company === 'ICPF' || user?.company === 'ICPI'
+          ? tabDataIF
+          : tabData,
+    };
+  }, [user?.company]);
   const [historyData, setHistoryData] = React.useState<TypeHistory>({
     data: [],
     count: 0,

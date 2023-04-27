@@ -25,6 +25,7 @@ export default function Footer({
   setLoading,
 }: Props): JSX.Element {
   const { t } = useLocalization();
+  const [disabledButton, setDisabledButton] = useState<boolean>(false);
   const [currentCount, setCurrentCount] = useState(0);
   const {
     cartList,
@@ -136,7 +137,7 @@ export default function Footer({
   };
   const onOrder = async () => {
     try {
-      setLoading(true);
+      setDisabledButton(true);
       const findIndex = cartList?.findIndex(
         item => item?.productId.toString() === id,
       );
@@ -161,12 +162,11 @@ export default function Footer({
         await postCartItem(newCartList);
       }
       setIsAddCart(true);
-      setLoading(false);
+      setDisabledButton(false);
+
       navigation.navigate('CartScreen');
     } catch (e) {
       console.log(e);
-    } finally {
-      setLoading(false);
     }
   };
   return (
@@ -195,7 +195,7 @@ export default function Footer({
         }}>
         <Button
           onPress={onOrder}
-          disabled={currentCount <= 0}
+          disabled={currentCount <= 0 || disabledButton}
           title={t('screens.ProductDetailScreen.orderButton')}
           iconBack={
             <Image

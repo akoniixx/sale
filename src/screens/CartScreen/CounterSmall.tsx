@@ -77,7 +77,7 @@ const CounterSmall = ({
       <TextInput
         allowFontScaling={false}
         value={numberReturnString(quantity).toString()}
-        keyboardType="number-pad"
+        keyboardType="numeric"
         ref={inputRef}
         style={{
           fontFamily: 'NotoSansThai-Bold',
@@ -89,7 +89,7 @@ const CounterSmall = ({
           padding: 0,
         }}
         onChangeText={text => {
-          const onlyNumber = text.replace(/[^0-9]/g, '');
+          const onlyNumber = text.replace(/[^0-9.]/g, '');
           setQuantity(onlyNumber);
         }}
         returnKeyType="done"

@@ -131,6 +131,9 @@ export default function CartScreen({
       if (dataStepTwo.saleCoRemark) {
         payload.saleCoRemark = dataStepTwo.saleCoRemark;
       }
+      if (dataStepTwo.numberPlate) {
+        payload.numberPlate = dataStepTwo.numberPlate;
+      }
       const result = await orderServices.createOrder(payload);
       if (result) {
         setCartList([]);

@@ -20,24 +20,29 @@ export default function Summary({ setLoading }: Props): JSX.Element {
   const {
     state: { user },
   } = useAuth();
+
   const [termPayment, setTermPayment] = React.useState<string>('');
 
-  useEffect(() => {
-    const getTerm = async () => {
-      const termPayment = await AsyncStorage.getItem('termPayment');
-      if (termPayment) {
-        setTermPayment(termPayment);
-      }
-    };
-    getTerm();
-  }, []);
   const {
     cartDetail,
     promotionListValue,
 
     cartApi: { postEditIsUseCod, postEditPaymentMethod },
   } = useCart();
-
+  useEffect(() => {
+    const getTerm = async () => {
+      const termPayment = await AsyncStorage.getItem('termPayment');
+      if (termPayment) {
+        setTermPayment(termPayment);
+        const isCredit =
+          termPayment && termPayment.toUpperCase().startsWith('N');
+        if (isCredit) {
+          await postEditPaymentMethod('CREDIT');
+        }
+      }
+    };
+    getTerm();
+  }, []);
   const { dataObj } = useMemo(() => {
     const listDataDiscount: {
       label: string;
@@ -112,7 +117,7 @@ export default function Summary({ setLoading }: Props): JSX.Element {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cartDetail]);
-
+  // console.log('cartDetail :>> ', JSON.stringify(cartDetail, null, 2));
   return (
     <View style={styles.container}>
       <View

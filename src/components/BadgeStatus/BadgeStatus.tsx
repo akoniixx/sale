@@ -33,6 +33,7 @@ export default function BadgeStatus({ status }: Props) {
         alignItems: 'center',
         paddingHorizontal: 16,
         paddingVertical: 4,
+        overflow: 'hidden',
       }}>
       <Text color={color} fontSize={14} semiBold fontFamily="NotoSans">
         {title}

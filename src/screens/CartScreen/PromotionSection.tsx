@@ -1,4 +1,4 @@
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Dimensions } from 'react-native';
 import React from 'react';
 import Text from '../../components/Text/Text';
 import { useLocalization } from '../../contexts/LocalizationContext';
@@ -7,6 +7,7 @@ import CheckboxListView from '../../components/Checkbox/CheckboxListView';
 import { colors } from '../../assets/colors/colors';
 import { useCart } from '../../contexts/CartContext';
 import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
+import SkeletonLoading from '../../components/SkeletonLoading/SkeletonLoading';
 
 interface Props {
   promotionList: {
@@ -15,12 +16,15 @@ interface Props {
     title: string;
     promotionType: string;
   }[];
+  loadingPromo: boolean;
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
 export default function PromotionSection({
   promotionList,
+  loadingPromo,
+  setLoading,
 }: Props): JSX.Element {
   const { t } = useLocalization();
-  const [loading, setLoading] = React.useState(false);
   const {
     cartList,
     setPromotionListValue,
@@ -58,56 +62,119 @@ export default function PromotionSection({
       setLoading(false);
     }
   };
+  if (newPromotionList.length <= 0) {
+    return <View />;
+  }
+
   return (
     <View style={styles().container}>
-      <Text fontSize={18} bold lineHeight={28}>
+      <Text fontSize={18} bold lineHeight={28} fontFamily="NotoSans">
         {t('screens.CartScreen.promotionSection.promotionTitle')}
       </Text>
       <View
         style={{
           marginTop: 16,
         }}>
-        <Checkbox
-          onPress={async () => {
-            if (promotionListValue.length === 0) {
-              await postNewCart(promotionList.map(item => item.value));
-            } else {
-              await postNewCart([]);
-            }
-          }}
-          valueCheckbox={
-            promotionListValue.length === promotionList.length ? ['all'] : []
-          }
-          listCheckbox={[
-            {
-              title: 'เข้าร่วมโปรโมชันทั้งหมด',
-              value: 'all',
-              key: 'all',
-            },
-          ]}
-        />
+        {loadingPromo ? (
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+            }}>
+            <SkeletonLoading
+              style={{
+                width: 16,
+              }}
+            />
+            <SkeletonLoading
+              style={{
+                width: Dimensions.get('window').width / 2,
+                marginLeft: 16,
+              }}
+            />
+          </View>
+        ) : (
+          <>
+            <Checkbox
+              onPress={async () => {
+                if (promotionListValue.length === 0) {
+                  await postNewCart(promotionList.map(item => item.value));
+                } else {
+                  await postNewCart([]);
+                }
+              }}
+              valueCheckbox={
+                promotionListValue.length === promotionList.length
+                  ? ['all']
+                  : []
+              }
+              listCheckbox={[
+                {
+                  title: 'เข้าร่วมโปรโมชันทั้งหมด',
+                  value: 'all',
+                  key: 'all',
+                },
+              ]}
+            />
+          </>
+        )}
+
         <View
           style={{
             marginTop: 16,
             backgroundColor: colors.background1,
           }}>
-          <CheckboxListView
-            valueCheckbox={promotionListValue}
-            onPress={async value => {
-              if (promotionListValue.includes(value)) {
-                const newPromotion = promotionListValue.filter((el: string) => {
-                  return el !== value;
-                });
-                await postNewCart(newPromotion);
-              } else {
-                await postNewCart([...promotionListValue, value]);
-              }
-            }}
-            listCheckbox={newPromotionList}
-          />
+          {loadingPromo ? (
+            <View>
+              {newPromotionList.map((_, idx) => {
+                const isLast = idx === newPromotionList.length - 1;
+                return (
+                  <View
+                    key={idx}
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      width: '100%',
+                      padding: 16,
+                      borderBottomWidth: isLast ? 0 : 1,
+                      borderBottomColor: colors.border1,
+                    }}>
+                    <SkeletonLoading
+                      style={{
+                        flex: 1,
+                        height: 20,
+                      }}
+                    />
+                    <SkeletonLoading
+                      style={{
+                        width: 16,
+                        marginLeft: 16,
+                      }}
+                    />
+                  </View>
+                );
+              })}
+            </View>
+          ) : (
+            <CheckboxListView
+              valueCheckbox={promotionListValue}
+              onPress={async value => {
+                if (promotionListValue.includes(value)) {
+                  const newPromotion = promotionListValue.filter(
+                    (el: string) => {
+                      return el !== value;
+                    },
+                  );
+                  await postNewCart(newPromotion);
+                } else {
+                  await postNewCart([...promotionListValue, value]);
+                }
+              }}
+              listCheckbox={newPromotionList}
+            />
+          )}
         </View>
       </View>
-      <LoadingSpinner visible={loading} />
     </View>
   );
 }

@@ -137,6 +137,7 @@ export default function Item({
             position: 'absolute',
             right: 16,
             top: 8,
+            zIndex: 1,
           }}
         />
       )}

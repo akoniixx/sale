@@ -1,6 +1,7 @@
 import {
   Dimensions,
   Image,
+  Platform,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
@@ -183,7 +184,7 @@ export default function HistoryDetailScreen({
         <ScrollView
           showsVerticalScrollIndicator={false}
           style={{
-            padding: 16,
+            margin: 16,
           }}>
           {(orderDetail?.status === 'SHOPAPP_CANCEL_ORDER' ||
             orderDetail?.status === 'REJECT_ORDER' ||
@@ -259,21 +260,7 @@ export default function HistoryDetailScreen({
               </View>
             </>
           )}
-          <View
-            style={{
-              backgroundColor: 'white',
-              borderRadius: 10,
-              shadowColor: '#000',
-              shadowOffset: {
-                width: 0,
-                height: 2,
-              },
-              shadowOpacity: 0.25,
-              shadowRadius: 3.84,
-              elevation: 5,
-              marginBottom: -5,
-              zIndex: 0,
-            }}>
+          <View style={styles.slipShadow}>
             <View style={styles.card}>
               <View
                 style={{
@@ -698,6 +685,40 @@ export default function HistoryDetailScreen({
 }
 
 const styles = StyleSheet.create({
+  slipShadow: {
+    ...Platform.select({
+      ios: {
+        backgroundColor: 'white',
+        borderRadius: 10,
+        shadowColor: '#000',
+        shadowOffset: {
+          width: 0,
+          height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+        marginBottom: -5,
+        zIndex: 0,
+      },
+      android: {
+        backgroundColor: 'white',
+        borderRadius: 10,
+        shadowColor: '#000',
+        shadowOffset: {
+          width: 0,
+          height: 2,
+        },
+        marginTop: 5,
+        marginHorizontal: 2,
+        shadowOpacity: 0.25,
+        shadowRadius: 10.84,
+        elevation: 10,
+        marginBottom: -5,
+        zIndex: 0,
+      },
+    }),
+  },
   card: {
     width: '100%',
     minHeight: 200,

@@ -1,6 +1,7 @@
 import { ActivityIndicator, View } from 'react-native';
 import React from 'react';
 import ListItemInCart from './ListItemInCart';
+import SkeletonLoading from '../../components/SkeletonLoading/SkeletonLoading';
 
 export default function StepOne({
   loading,
@@ -9,19 +10,7 @@ export default function StepOne({
 }): JSX.Element {
   return (
     <View>
-      {loading ? (
-        <View
-          style={{
-            flex: 1,
-            minHeight: 400,
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
-          <ActivityIndicator size={'large'} />
-        </View>
-      ) : (
-        <ListItemInCart />
-      )}
+      <ListItemInCart loadingPromo={loading} />
       {/* <Summary /> */}
       <View
         style={{

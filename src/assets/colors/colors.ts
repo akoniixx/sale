@@ -12,7 +12,7 @@ export const colors = {
   error: '#FF5D5D',
   current: '#3AAE49',
   success: '#00C48C',
-  background1: '#F8FAFF',
+  background1: '#FBFBFB',
   background2: '#EFF3FD',
   background3: '#EAEAEA',
   BGDiscount1: '#DE2828',

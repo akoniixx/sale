@@ -1,5 +1,7 @@
 
 ## [Version - 2]
+## Improve [v2.5.5] - Release Date: 2023-04-27
+- Add MicroLoading Skeleton CartScreen 
 ## Features [v2.5.4] - Release Date: 2023-04-20
 - Resolved Bug & Defects from UAT
 

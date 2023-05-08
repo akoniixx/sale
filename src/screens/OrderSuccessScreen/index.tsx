@@ -25,10 +25,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import ImageCache from '../../components/ImageCache/ImageCache';
 
 const mappingStatusHeader = {
-  WAIT_APPROVE_ORDER: 'รอยืนยันคำสั่งซื้อ',
+  WAIT_CONFIRM_ORDER: 'รอยืนยันคำสั่งซื้อ',
 };
 const mappingStatus = {
-  WAIT_APPROVE_ORDER: 'รอยืนยันคำสั่งซื้อจากร้านค้า',
+  WAIT_CONFIRM_ORDER: 'รอยืนยันคำสั่งซื้อจากร้านค้า',
 };
 export default function OrderSuccessScreen({
   navigation,
@@ -53,7 +53,7 @@ export default function OrderSuccessScreen({
     product_brand_name: string;
     company: string;
   } | null>(null);
-
+  console.log('orderData', JSON.stringify(orderData, null, 2));
   useEffect(() => {
     const getOrderByOrderId = async () => {
       try {
@@ -252,7 +252,6 @@ export default function OrderSuccessScreen({
                         style={{
                           flexDirection: 'row',
                           justifyContent: 'space-between',
-                          alignItems: 'center',
                           marginTop: 16,
                         }}>
                         <Text
@@ -264,7 +263,13 @@ export default function OrderSuccessScreen({
                           {el.productName} {`   ${el.quantity}x`}{' '}
                           {`(${el.unit})`}
                         </Text>
-                        <Text fontFamily="NotoSans" color="text2" fontSize={14}>
+                        <Text
+                          fontFamily="NotoSans"
+                          color="text2"
+                          fontSize={14}
+                          style={{
+                            marginTop: 4,
+                          }}>
                           {`฿${numberWithCommas(el.totalPrice, true)}`}
                         </Text>
                       </View>

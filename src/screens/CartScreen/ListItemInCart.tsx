@@ -24,6 +24,8 @@ import ModalMessage from '../../components/Modal/ModalMessage';
 import ImageCache from '../../components/ImageCache/ImageCache';
 import GiftFromPromotion from './GiftFromPromotion';
 import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
+import SkeletonLoading from '../../components/SkeletonLoading/SkeletonLoading';
+// import SkeletonContent from 'react-native-skeleton-content';
 
 const reArrangeShipment = (dataList: newProductType[]) => {
   return dataList.map((item, index) => {
@@ -33,9 +35,15 @@ const reArrangeShipment = (dataList: newProductType[]) => {
     };
   });
 };
-export default function ListItemInCart() {
+export default function ListItemInCart({
+  loadingPromo,
+}: {
+  loadingPromo: boolean;
+}) {
   const { t } = useLocalization();
   const [loading, setLoading] = React.useState(false);
+  const [loadingAnotherPromotion, setLoadingAnotherPromotion] =
+    React.useState(false);
   const {
     cartList,
     cartDetail,
@@ -184,7 +192,7 @@ export default function ListItemInCart() {
       };
     });
   }, [cartList]);
-  const RenderList = () => {
+  const RenderList = (load: boolean) => {
     return (
       <>
         {cartList.map(item => {
@@ -263,10 +271,21 @@ export default function ListItemInCart() {
                       {`฿${numberWithCommas(+item.marketPrice)}/${
                         item.saleUOMTH
                       } x ${item.amount} ${item.saleUOMTH}`}
-                      {sumDiscount > 0 && (
+                      {sumDiscount > 0 && !load ? (
                         <Text color="current">
                           {`  ส่วนลด ฿${numberWithCommas(sumDiscount)}`}
                         </Text>
+                      ) : (
+                        <View>
+                          {sumDiscount > 0 && (
+                            <SkeletonLoading
+                              style={{
+                                marginLeft: 8,
+                                width: sumDiscount > 0 ? 100 : 50,
+                              }}
+                            />
+                          )}
+                        </View>
                       )}
                     </Text>
                     <Dropdown
@@ -327,25 +346,40 @@ export default function ListItemInCart() {
                   />
                 </View>
                 <View>
-                  {sumDiscount > 0 && (
-                    <Text
-                      fontFamily="NotoSans"
-                      color="text3"
-                      style={{
-                        textDecorationStyle: 'solid',
-                        textDecorationLine:
-                          sumDiscount > 0 ? 'line-through' : 'none',
-                      }}>
-                      {`฿${numberWithCommas(Number(item?.totalPrice || 0))}`}
-                    </Text>
-                  )}
-                  <Text bold fontFamily="NotoSans">
-                    {`฿${numberWithCommas(
-                      sumDiscount > 0
-                        ? Number(item?.totalPrice || 0) - sumDiscount
-                        : item?.totalPrice,
-                    )}`}
+                  <Text
+                    fontFamily="NotoSans"
+                    color="text3"
+                    style={{
+                      textDecorationStyle: 'solid',
+                      textDecorationLine:
+                        sumDiscount > 0 ? 'line-through' : 'none',
+                    }}>
+                    {`฿${numberWithCommas(Number(item?.totalPrice || 0))}`}
                   </Text>
+
+                  {sumDiscount > 0 && !load ? (
+                    <>
+                      <Text bold fontFamily="NotoSans">
+                        {`฿${numberWithCommas(
+                          sumDiscount > 0
+                            ? Number(item?.totalPrice || 0) - sumDiscount
+                            : item?.totalPrice,
+                        )}`}
+                      </Text>
+                    </>
+                  ) : (
+                    <>
+                      {sumDiscount > 0 && (
+                        <SkeletonLoading
+                          style={{
+                            width: item?.totalPrice
+                              ? item?.totalPrice.toString().length * 12
+                              : 0,
+                          }}
+                        />
+                      )}
+                    </>
+                  )}
                 </View>
               </View>
             </View>
@@ -368,7 +402,7 @@ export default function ListItemInCart() {
             </Text>
           </Text>
           {cartList.length > 0 ? (
-            <View>{RenderList()}</View>
+            <View>{RenderList(loadingAnotherPromotion || loading)}</View>
           ) : (
             <View
               style={{
@@ -403,15 +437,22 @@ export default function ListItemInCart() {
         />
 
         {promotionList.length > 0 && (
-          <PromotionSection promotionList={promotionList} />
+          <PromotionSection
+            promotionList={promotionList}
+            loadingPromo={loadingPromo || loading}
+            setLoading={setLoadingAnotherPromotion}
+          />
         )}
-        <GiftFromPromotion freebieListItem={freebieListItem} />
+        <GiftFromPromotion
+          freebieListItem={freebieListItem}
+          loadingPromo={loadingPromo || loading || loadingAnotherPromotion}
+        />
         <ModalMessage
           visible={isDelCart}
           message={t('modalMessage.deleteCart')}
           onRequestClose={() => setIsDelCart(false)}
         />
-        <LoadingSpinner visible={loading} />
+        {/* <LoadingSpinner visible={loading} /> */}
       </KeyboardAvoidingView>
     </>
   );

@@ -245,33 +245,6 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
 
     setCartDetail(data);
   };
-  const postEditIsUseCod = async ({ isUseCOD }: { isUseCOD: boolean }) => {
-    try {
-      const orderProducts = cartList.map(item => {
-        return {
-          isUseCOD,
-          productId: +item.productId,
-          quantity: item.amount,
-          shipmentOrder: item.order,
-          orderProductPromotions: item.orderProductPromotions,
-          specialRequest: item.specialRequest,
-        };
-      });
-      const customerCompanyId = await AsyncStorage.getItem('customerCompanyId');
-      const payload: any = {
-        isUseCOD,
-        company: user?.company || '',
-        userStaffId: user?.userStaffId || '',
-        orderProducts,
-        paymentMethod: cartDetail.paymentMethod || '',
-        customerCompanyId: customerCompanyId ? +customerCompanyId : 0,
-      };
-      const data = await cartServices.postCart(payload);
-      setCartDetail(data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   const getSelectPromotion = React.useCallback(
     async (cl: PromotionTypeCart[]) => {
@@ -344,6 +317,42 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
         ...result,
         orderProducts: newFormat,
       };
+    };
+    const postEditIsUseCod = async ({ isUseCOD }: { isUseCOD: boolean }) => {
+      try {
+        const orderProducts = cartList.map(item => {
+          return {
+            isUseCOD,
+            productId: +item.productId,
+            quantity: item.amount,
+            shipmentOrder: item.order,
+            orderProductPromotions: item.orderProductPromotions,
+            specialRequest: item.specialRequest,
+          };
+        });
+        const customerCompanyId = await AsyncStorage.getItem(
+          'customerCompanyId',
+        );
+        const payload: any = {
+          isUseCOD,
+          company: user?.company || '',
+          userStaffId: user?.userStaffId || '',
+          orderProducts,
+          paymentMethod: cartDetail.paymentMethod || '',
+          customerCompanyId: customerCompanyId ? +customerCompanyId : 0,
+        };
+        console.log(JSON.stringify(payload, null, 2), 'payload');
+        const newData = await cartServices.postCart(payload);
+        setCartDetail(prev => ({
+          ...prev,
+          isUseCOD: isUseCOD,
+          coDiscount: newData.coDiscount,
+          totalDiscount: newData.totalDiscount,
+          totalPrice: newData.totalPrice,
+        }));
+      } catch (error) {
+        console.log(error);
+      }
     };
 
     const postCartItem = async (
@@ -431,9 +440,10 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
     return {
       getCartList,
       postCartItem,
+      postEditIsUseCod,
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.userStaffId]);
+  }, [user?.userStaffId, cartList, cartDetail.paymentMethod]);
   return (
     <CartContext.Provider
       value={{
@@ -450,7 +460,7 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
           getCartList: cartApi.getCartList,
           postCartItem: cartApi.postCartItem,
           getSelectPromotion,
-          postEditIsUseCod,
+          postEditIsUseCod: cartApi.postEditIsUseCod,
           postEditPaymentMethod,
         },
       }}>

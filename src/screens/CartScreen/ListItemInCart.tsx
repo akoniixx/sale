@@ -390,70 +390,67 @@ export default function ListItemInCart({
   };
   return (
     <>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-        <View style={styles.container}>
-          <Text fontFamily="NotoSans" fontSize={18} bold>
-            {t('screens.CartScreen.listProduct', {
-              count: cartList.length,
-            })}
-            <Text fontSize={14} color="text3">
-              {`   ${t('screens.CartScreen.tooltip')}`}
-            </Text>
+      <View style={styles.container}>
+        <Text fontFamily="NotoSans" fontSize={18} bold>
+          {t('screens.CartScreen.listProduct', {
+            count: cartList.length,
+          })}
+          <Text fontSize={14} color="text3">
+            {`   ${t('screens.CartScreen.tooltip')}`}
           </Text>
-          {cartList.length > 0 ? (
-            <View>{RenderList(loadingAnotherPromotion || loading)}</View>
-          ) : (
-            <View
+        </Text>
+        {cartList.length > 0 ? (
+          <View>{RenderList(loadingAnotherPromotion || loading)}</View>
+        ) : (
+          <View
+            style={{
+              minHeight: 200,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
+            <Image
+              source={images.emptyProduct}
               style={{
-                minHeight: 200,
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}>
-              <Image
-                source={images.emptyProduct}
-                style={{
-                  width: 100,
-                  height: 100,
-                }}
-              />
-              <Text
-                style={{
-                  marginTop: 4,
-                }}
-                color="text3"
-                fontFamily="NotoSans">
-                {t('screens.CartScreen.emptyCart')}
-              </Text>
-            </View>
-          )}
-        </View>
-        <ModalWarning
-          visible={visibleDel}
-          title="ยืนยันการลบสินค้า"
-          desc="ต้องการยืนยันการลบสินค้าใช่หรือไม่ ?"
-          onConfirm={() => onDelete(delId)}
-          onRequestClose={() => setVisibleDel(false)}
-        />
-
-        {promotionList.length > 0 && (
-          <PromotionSection
-            promotionList={promotionList}
-            loadingPromo={loadingPromo || loading}
-            setLoading={setLoadingAnotherPromotion}
-          />
+                width: 100,
+                height: 100,
+              }}
+            />
+            <Text
+              style={{
+                marginTop: 4,
+              }}
+              color="text3"
+              fontFamily="NotoSans">
+              {t('screens.CartScreen.emptyCart')}
+            </Text>
+          </View>
         )}
-        <GiftFromPromotion
-          freebieListItem={freebieListItem}
-          loadingPromo={loadingPromo || loading || loadingAnotherPromotion}
+      </View>
+      <ModalWarning
+        visible={visibleDel}
+        title="ยืนยันการลบสินค้า"
+        desc="ต้องการยืนยันการลบสินค้าใช่หรือไม่ ?"
+        onConfirm={() => onDelete(delId)}
+        onRequestClose={() => setVisibleDel(false)}
+      />
+
+      {promotionList.length > 0 && (
+        <PromotionSection
+          promotionList={promotionList}
+          loadingPromo={loadingPromo || loading}
+          setLoading={setLoadingAnotherPromotion}
         />
-        <ModalMessage
-          visible={isDelCart}
-          message={t('modalMessage.deleteCart')}
-          onRequestClose={() => setIsDelCart(false)}
-        />
-        {/* <LoadingSpinner visible={loading} /> */}
-      </KeyboardAvoidingView>
+      )}
+      <GiftFromPromotion
+        freebieListItem={freebieListItem}
+        loadingPromo={loadingPromo || loading || loadingAnotherPromotion}
+      />
+      <ModalMessage
+        visible={isDelCart}
+        message={t('modalMessage.deleteCart')}
+        onRequestClose={() => setIsDelCart(false)}
+      />
+      {/* <LoadingSpinner visible={loading} /> */}
     </>
   );
 }

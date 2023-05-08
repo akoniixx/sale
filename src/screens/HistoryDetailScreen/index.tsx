@@ -409,6 +409,37 @@ export default function HistoryDetailScreen({
                   style={{
                     marginBottom: 8,
                   }}>
+                  ข้อมูลทะเบียนรถ
+                </Text>
+                <Text
+                  style={{
+                    marginBottom: 8,
+                  }}>
+                  {orderDetail?.numberPlate || '-'}
+                </Text>
+              </View>
+              <DashedLine
+                dashColor={colors.border1}
+                dashGap={6}
+                dashLength={8}
+                style={{
+                  marginVertical: 16,
+                  marginHorizontal: 16,
+                }}
+              />
+              <View
+                style={{
+                  marginTop: 8,
+                  paddingHorizontal: 16,
+                }}>
+                <Text
+                  fontSize={14}
+                  color="text3"
+                  semiBold
+                  fontFamily="NotoSans"
+                  style={{
+                    marginBottom: 8,
+                  }}>
                   หมายเหตุ (ลูกค้า)
                 </Text>
 

@@ -39,6 +39,7 @@ export interface TypeDataStepTwo {
   deliveryAddress?: string | null;
   deliveryRemark?: string | null;
   deliveryDest: string;
+  numberPlate?: string | null;
 }
 export default function CartScreen({
   navigation,
@@ -48,6 +49,7 @@ export default function CartScreen({
   const params = route.params;
   const [isKeyboardVisible, setKeyboardVisible] = React.useState(false);
   const [currentStep, setCurrentStep] = React.useState(0);
+  const [showError, setShowError] = React.useState(false);
   const [visible, setVisible] = React.useState(false);
   const {
     state: { user },
@@ -74,10 +76,16 @@ export default function CartScreen({
     deliveryAddress: null,
     deliveryRemark: null,
     deliveryDest: '',
+    numberPlate: null,
   });
 
   const onCreateOrder = async () => {
     try {
+      const currentCompany = user?.company;
+      if (currentCompany !== 'ICPL' && dataStepTwo.numberPlate === null) {
+        setShowError(true);
+        return;
+      }
       setLoading(true);
       setVisibleConfirm(false);
       const customerNo = await AsyncStorage.getItem('customerNo');
@@ -101,6 +109,7 @@ export default function CartScreen({
 
       const payload: any = {
         company: data.company,
+
         userStaffId: data.userStaffId,
         customerCompanyId: data.customerCompanyId,
         customerName: customerName || '',
@@ -146,6 +155,8 @@ export default function CartScreen({
       case 1: {
         return (
           <StepTwo
+            isShowError={showError}
+            setIsShowError={setShowError}
             setLoading={setLoading}
             loading={loading}
             setDataStepTwo={setDataStepTwo}
@@ -160,7 +171,15 @@ export default function CartScreen({
         return <StepOne loading={loading} />;
       }
     }
-  }, [currentStep, dataStepTwo, addressDelivery, navigation, loading]);
+  }, [
+    currentStep,
+    dataStepTwo,
+    addressDelivery,
+    navigation,
+    loading,
+    showError,
+    setShowError,
+  ]);
   useFocusEffect(
     React.useCallback(() => {
       const getPromotion = async () => {
@@ -276,7 +295,7 @@ export default function CartScreen({
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={{
-        flex: 1,
+        height: '100%',
       }}>
       <Container>
         <Header

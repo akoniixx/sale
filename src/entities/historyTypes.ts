@@ -32,6 +32,7 @@ export interface HistoryDataType {
   createAt: string;
   updateAt: string;
   updateBy: string;
+  numberPlate: string;
   orderProducts: {
     baseUom: string;
     commonName: string;

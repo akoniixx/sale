@@ -4,6 +4,7 @@ import {
   Platform,
   Image,
   TouchableOpacity,
+  KeyboardAvoidingView,
 } from 'react-native';
 import React from 'react';
 import Text from '../../components/Text/Text';
@@ -21,6 +22,8 @@ import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
 
 interface Props {
   loading: boolean;
+  isShowError: boolean;
+  setIsShowError: React.Dispatch<React.SetStateAction<boolean>>;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   setDataStepTwo: React.Dispatch<React.SetStateAction<TypeDataStepTwo>>;
   dataStepTwo: TypeDataStepTwo;
@@ -44,6 +47,8 @@ export default function StepTwo({
   setAddressDelivery,
   setLoading,
   loading,
+  isShowError,
+  setIsShowError,
 }: Props) {
   const {
     state: { user },
@@ -202,6 +207,34 @@ export default function StepTwo({
             </View>
           </View>
         </View>
+        <View style={styles.inputContainer}>
+          <Text fontFamily="NotoSans" semiBold fontSize={16}>
+            ข้อมูลทะเบียนรถ
+          </Text>
+          <InputText
+            value={dataStepTwo?.numberPlate || ''}
+            multiline
+            returnKeyType="done"
+            isError={isShowError}
+            scrollEnabled={false}
+            style={{
+              paddingTop: 16,
+            }}
+            onChangeText={(text: string) => {
+              setIsShowError(false);
+              setDataStepTwo(prev => ({ ...prev, numberPlate: text }));
+            }}
+            placeholder="ระบุทะเบียนรถ"
+          />
+          <Text color="text3" fontSize={14} lineHeight={26}>
+            หากมีรถมากกว่า 1 คัน กรุณาใส่ลูกน้ำคั่น (,)
+          </Text>
+          {isShowError && (
+            <Text color="error" fontFamily="NotoSans">
+              กรุณากรอกทะเบียนรถ
+            </Text>
+          )}
+        </View>
       </View>
       <Summary setLoading={setLoading} />
       <LoadingSpinner visible={loading} />
@@ -212,6 +245,9 @@ const styles = StyleSheet.create({
   container: {
     padding: 16,
     backgroundColor: 'white',
+  },
+  inputContainer: {
+    marginTop: 8,
   },
   containerItem: {
     flexDirection: 'row',

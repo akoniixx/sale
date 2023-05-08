@@ -17,6 +17,7 @@ const InputText = ({ style, ...props }: Props) => {
         }).input,
         style,
       ]}
+      placeholder="ระบุทะเบียนรถ"
     />
   );
 };

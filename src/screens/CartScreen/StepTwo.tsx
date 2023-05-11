@@ -38,6 +38,7 @@ interface Props {
     name: string;
   };
   navigation: StackNavigationProp<MainStackParamList, 'CartScreen'>;
+  refInput: React.MutableRefObject<any>;
 }
 export default function StepTwo({
   setDataStepTwo,
@@ -48,6 +49,7 @@ export default function StepTwo({
   setLoading,
   loading,
   isShowError,
+  refInput,
   setIsShowError,
 }: Props) {
   const {
@@ -62,6 +64,7 @@ export default function StepTwo({
             หมายเหตุ (สำหรับ Sale Co)
           </Text>
           <InputText
+            ref={refInput}
             multiline
             returnKeyType="done"
             value={dataStepTwo?.saleCoRemark || ''}
@@ -209,11 +212,13 @@ export default function StepTwo({
         </View>
         <View style={styles.inputContainer}>
           <Text fontFamily="NotoSans" semiBold fontSize={16}>
+            {user?.company === 'ICPF' && <Text color="error">{`*  `}</Text>}
             ข้อมูลทะเบียนรถ
           </Text>
           <InputText
             value={dataStepTwo?.numberPlate || ''}
             multiline
+            blurOnSubmit
             returnKeyType="done"
             isError={isShowError}
             scrollEnabled={false}

@@ -221,30 +221,6 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [cartList],
   );
-  const postEditPaymentMethod = async (paymentMethod: string) => {
-    const orderProducts = cartList.map(item => {
-      return {
-        productId: +item.productId,
-        quantity: item.amount,
-        shipmentOrder: item.order,
-        orderProductPromotions: item.orderProductPromotions,
-        specialRequest: item.specialRequest,
-      };
-    });
-    const customerCompanyId = await AsyncStorage.getItem('customerCompanyId');
-    const payload: any = {
-      paymentMethod,
-      isUseCOD: !!cartDetail.isUseCOD,
-      company: user?.company || '',
-      userStaffId: user?.userStaffId || '',
-      orderProducts,
-      customerCompanyId: customerCompanyId ? +customerCompanyId : 0,
-    };
-
-    const data = await cartServices.postCart(payload);
-
-    setCartDetail(data);
-  };
 
   const getSelectPromotion = React.useCallback(
     async (cl: PromotionTypeCart[]) => {
@@ -285,7 +261,77 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
   );
 
   const cartApi = React.useMemo(() => {
-    const getCartList = async () => {
+    const postEditIsUseCod = async ({ isUseCOD }: { isUseCOD: boolean }) => {
+      try {
+        const orderProducts = cartList.map(item => {
+          return {
+            isUseCOD,
+            productId: +item.productId,
+            quantity: item.amount,
+            shipmentOrder: item.order,
+            orderProductPromotions: item.orderProductPromotions,
+            specialRequest: item.specialRequest,
+          };
+        });
+        const customerCompanyId = await AsyncStorage.getItem(
+          'customerCompanyId',
+        );
+        const payload: any = {
+          isUseCOD,
+          company: user?.company || '',
+          userStaffId: user?.userStaffId || '',
+          orderProducts,
+          paymentMethod: cartDetail?.paymentMethod || '',
+          customerCompanyId: customerCompanyId ? +customerCompanyId : 0,
+        };
+
+        const newData = await cartServices.postCart(payload);
+        setCartDetail(prev => ({
+          ...prev,
+          ...newData,
+        }));
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    const postEditPaymentMethod = async (paymentMethod: string) => {
+      const orderProducts = cartList.map(item => {
+        return {
+          productId: +item.productId,
+          quantity: item.amount,
+          shipmentOrder: item.order,
+          orderProductPromotions: item.orderProductPromotions,
+          specialRequest: item.specialRequest,
+        };
+      });
+      const customerCompanyId = await AsyncStorage.getItem('customerCompanyId');
+      const payload: any = {
+        paymentMethod,
+        isUseCOD: !!cartDetail?.isUseCOD,
+        company: user?.company || '',
+        userStaffId: user?.userStaffId || '',
+        orderProducts,
+        customerCompanyId: customerCompanyId ? +customerCompanyId : 0,
+      };
+
+      const data = await cartServices.postCart(payload);
+
+      setCartDetail(data);
+    };
+    return {
+      postEditIsUseCod,
+      postEditPaymentMethod,
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    user?.userStaffId,
+    cartList,
+    cartDetail?.paymentMethod,
+    cartDetail?.isUseCOD,
+  ]);
+
+  const getCartList = React.useMemo(() => {
+    return async () => {
       const customerCompanyId = await AsyncStorage.getItem('customerCompanyId');
       const userStaffId = user?.userStaffId || '';
 
@@ -318,44 +364,9 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
         orderProducts: newFormat,
       };
     };
-    const postEditIsUseCod = async ({ isUseCOD }: { isUseCOD: boolean }) => {
-      try {
-        const orderProducts = cartList.map(item => {
-          return {
-            isUseCOD,
-            productId: +item.productId,
-            quantity: item.amount,
-            shipmentOrder: item.order,
-            orderProductPromotions: item.orderProductPromotions,
-            specialRequest: item.specialRequest,
-          };
-        });
-        const customerCompanyId = await AsyncStorage.getItem(
-          'customerCompanyId',
-        );
-        const payload: any = {
-          isUseCOD,
-          company: user?.company || '',
-          userStaffId: user?.userStaffId || '',
-          orderProducts,
-          paymentMethod: cartDetail.paymentMethod || '',
-          customerCompanyId: customerCompanyId ? +customerCompanyId : 0,
-        };
-        console.log(JSON.stringify(payload, null, 2), 'payload');
-        const newData = await cartServices.postCart(payload);
-        setCartDetail(prev => ({
-          ...prev,
-          isUseCOD: isUseCOD,
-          coDiscount: newData.coDiscount,
-          totalDiscount: newData.totalDiscount,
-          totalPrice: newData.totalPrice,
-        }));
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    const postCartItem = async (
+  }, [user?.userStaffId]);
+  const postCartItem = React.useMemo(() => {
+    return async (
       cl: newProductType[],
       allPromotions?: PromotionTypeCart[],
     ) => {
@@ -376,9 +387,9 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
           company: user?.company || '',
           userStaffId: user?.userStaffId || '',
           orderProducts,
-          isUseCOD: !!cartDetail.isUseCOD,
+          isUseCOD: !!cartDetail?.isUseCOD,
           customerCompanyId: customerCompanyId ? +customerCompanyId : 0,
-          paymentMethod: cartDetail.paymentMethod || 'CASH',
+          paymentMethod: cartDetail?.paymentMethod || 'CASH',
         };
         if (allPromotions) {
           payload.allPromotions = allPromotions;
@@ -436,14 +447,12 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
         console.log(e);
       }
     };
-
-    return {
-      getCartList,
-      postCartItem,
-      postEditIsUseCod,
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.userStaffId, cartList, cartDetail.paymentMethod]);
+  }, [
+    user?.userStaffId,
+    user?.company,
+    cartDetail?.paymentMethod,
+    cartDetail?.isUseCOD,
+  ]);
   return (
     <CartContext.Provider
       value={{
@@ -457,11 +466,11 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
         promotionList,
         freebieListItem,
         cartApi: {
-          getCartList: cartApi.getCartList,
-          postCartItem: cartApi.postCartItem,
+          getCartList,
+          postCartItem,
           getSelectPromotion,
           postEditIsUseCod: cartApi.postEditIsUseCod,
-          postEditPaymentMethod,
+          postEditPaymentMethod: cartApi.postEditPaymentMethod,
         },
       }}>
       {children}

@@ -4,11 +4,13 @@ import { colors } from '../../assets/colors/colors';
 
 interface InputStyledProps {
   isError?: boolean;
+  ref?: any;
 }
 interface Props extends TextInputProps, InputStyledProps {}
-const InputText = ({ style, ...props }: Props) => {
+const InputText = React.forwardRef(({ style, ...props }: Props, ref) => {
   return (
     <TextInput
+      ref={ref}
       placeholderTextColor={colors.text3}
       {...props}
       style={[
@@ -17,11 +19,11 @@ const InputText = ({ style, ...props }: Props) => {
         }).input,
         style,
       ]}
-      placeholder="ระบุทะเบียนรถ"
     />
   );
-};
+});
 
+InputText.displayName = 'InputText';
 export default InputText;
 const styles = ({ isError = false }: InputStyledProps) => {
   return StyleSheet.create({

@@ -51,7 +51,6 @@ export default function ProductDetailScreen({
       getProductById();
     }, [id]),
   );
-  console.log('productItem', JSON.stringify(productItem, null, 2));
   return (
     <Container>
       <Header componentRight={<CartBadge navigation={navigation} />} />

@@ -53,7 +53,6 @@ export default function OrderSuccessScreen({
     product_brand_name: string;
     company: string;
   } | null>(null);
-  console.log('orderData', JSON.stringify(orderData, null, 2));
   useEffect(() => {
     const getOrderByOrderId = async () => {
       try {

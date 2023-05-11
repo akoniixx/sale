@@ -64,6 +64,8 @@ export default function CartScreen({
     cartDetail,
     cartApi: { getCartList, getSelectPromotion },
   } = useCart();
+  const refInput = React.useRef<any>(null);
+  const scrollRef = React.useRef<ScrollView | null>(null);
 
   const [loading, setLoading] = React.useState(false);
   const [addressDelivery, setAddressDelivery] = React.useState({
@@ -82,8 +84,13 @@ export default function CartScreen({
   const onCreateOrder = async () => {
     try {
       const currentCompany = user?.company;
-      if (currentCompany !== 'ICPL' && dataStepTwo.numberPlate === null) {
+      if (currentCompany !== 'ICPL' && !dataStepTwo.numberPlate) {
         setShowError(true);
+        setVisibleConfirm(false);
+        refInput?.current?.focus();
+        if (scrollRef?.current) {
+          scrollRef?.current?.scrollTo({ x: 0, y: 300, animated: true });
+        }
         return;
       }
       setLoading(true);
@@ -165,6 +172,7 @@ export default function CartScreen({
             setDataStepTwo={setDataStepTwo}
             dataStepTwo={dataStepTwo}
             navigation={navigation}
+            refInput={refInput}
             addressDelivery={addressDelivery}
             setAddressDelivery={setAddressDelivery}
           />
@@ -293,7 +301,6 @@ export default function CartScreen({
       }));
     }
   }, [params?.specialRequestRemark]);
-
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -335,7 +342,9 @@ export default function CartScreen({
               ]}
             />
           </View>
-          <ScrollView>{renderStep}</ScrollView>
+          <ScrollView ref={ref => (scrollRef.current = ref)}>
+            {renderStep}
+          </ScrollView>
         </Content>
         <FooterShadow
           style={{

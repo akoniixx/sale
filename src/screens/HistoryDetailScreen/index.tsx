@@ -57,7 +57,6 @@ export default function HistoryDetailScreen({
     };
     getOrderDetailById();
   }, [params.orderId]);
-  console.log('orderDetail', JSON.stringify(orderDetail, null, 2));
 
   const BlockLine = () => {
     return (

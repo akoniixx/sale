@@ -51,4 +51,9 @@ export default {
   iconCalendar: require('./iconCalendar.png'),
   package: require('./package.png'),
   locationGray: require('./locationGray.png'),
+  iconNotification: require('./iconNotification.png'),
+  iconTC: require('./iconTC.png'),
+  iconNext: require('./iconNext.png'),
+  iconEditPhoto: require('./iconEditPhoto.png'),
+  logout: require('./logout.png'),
 };

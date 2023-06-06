@@ -46,6 +46,7 @@ export default function LoginScreen({ navigation }: Props): JSX.Element {
   const onSubmit = async (v: { tel: string }) => {
     try {
       const { data } = await AuthServices.requestOtp(v.tel);
+
       navigation.navigate('OtpScreen', {
         token: data.result.token,
         refCode: data.result.refCode,

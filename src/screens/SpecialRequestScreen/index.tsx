@@ -67,7 +67,7 @@ export default function SpecialRequestScreen({
           label: item.productName,
           valueLabel: `(฿${numberWithCommas(item.marketPrice)} x ${
             item.quantity
-          } ${item.saleUomTH ? item.saleUomTH : item.saleUom})`,
+          } ${item.saleUOMTH ? item.saleUOMTH : item.saleUOM})`,
         };
         if (item.specialRequestDiscount > 0) {
           listDataDiscountSpecialRequest.push({
@@ -120,7 +120,7 @@ export default function SpecialRequestScreen({
     return {
       dataObj,
     };
-  }, [cartDetail]);
+  }, [cartDetail, promotionListValue]);
 
   return (
     <Container>

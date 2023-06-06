@@ -1,5 +1,5 @@
 import { ViewStyle } from 'react-native';
-import React from 'react';
+import React, { useEffect } from 'react';
 import Spinner, {
   SpinnerPropTypes,
 } from 'react-native-loading-spinner-overlay';
@@ -9,8 +9,16 @@ interface Props extends SpinnerPropTypes {
   visible?: boolean;
   textContent?: string;
   textStyle?: ViewStyle;
+  setLoading?: (value: boolean) => void;
 }
-const LoadingSpinner = ({ visible = false, textStyle }: Props) => {
+const LoadingSpinner = ({ visible = false, textStyle, setLoading }: Props) => {
+  useEffect(() => {
+    if (setLoading) {
+      setTimeout(() => {
+        setLoading && setLoading(false);
+      }, 8000);
+    }
+  }, [visible, setLoading]);
   return (
     <Spinner
       animation="fade"

@@ -8,45 +8,41 @@ import { numberWithCommas } from '../../utils/functions';
 import Checkbox from '../../components/Checkbox/Checkbox';
 import icons from '../../assets/icons';
 import { useCart } from '../../contexts/CartContext';
-import { TypeDataStepTwo } from '.';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuth } from '../../contexts/AuthContext';
+import SummaryList from '../../components/SummaryList/SummaryList';
+import SummaryTotal from '../../components/SummaryList/SummaryTotal';
 interface Props {
-  setDataStepTwo: React.Dispatch<React.SetStateAction<TypeDataStepTwo>>;
-  dataStepTwo: TypeDataStepTwo;
+  setLoading: (value: boolean) => void;
 }
-export default function Summary({
-  setDataStepTwo,
-  dataStepTwo,
-}: Props): JSX.Element {
+export default function Summary({ setLoading }: Props): JSX.Element {
   const { t } = useLocalization();
   const {
     state: { user },
   } = useAuth();
-  const [valueCheckbox, setValueCheckbox] = React.useState<string[]>([]);
-  const [termPayment, setTermPayment] = React.useState<string>('');
-  const [isCollapsed, setIsCollapsed] = React.useState<{
-    [key: string]: boolean;
-  }>({
-    discountList: true,
-    specialListDiscount: true,
-  });
 
+  const [termPayment, setTermPayment] = React.useState<string>('');
+
+  const {
+    cartDetail,
+    promotionListValue,
+
+    cartApi: { postEditIsUseCod, postEditPaymentMethod },
+  } = useCart();
   useEffect(() => {
     const getTerm = async () => {
       const termPayment = await AsyncStorage.getItem('termPayment');
       if (termPayment) {
         setTermPayment(termPayment);
-        setDataStepTwo({
-          ...dataStepTwo,
-          paymentMethod: 'CASH',
-        });
+        const isCredit =
+          termPayment && termPayment.toUpperCase().startsWith('N');
+        if (isCredit) {
+          await postEditPaymentMethod('CREDIT');
+        }
       }
     };
     getTerm();
   }, []);
-  const { cartDetail, promotionListValue } = useCart();
-
   const { dataObj } = useMemo(() => {
     const listDataDiscount: {
       label: string;
@@ -65,7 +61,7 @@ export default function Summary({
           label: item.productName,
           valueLabel: `(฿${numberWithCommas(item.marketPrice)} x ${
             item.quantity
-          } ${item.saleUomTH ? item.saleUomTH : item.saleUom})`,
+          } ${item.saleUOMTH ? item.saleUOMTH : item.saleUOM || 'Unit'})`,
         };
         if (item.specialRequestDiscount > 0) {
           listDataDiscountSpecialRequest.push({
@@ -119,55 +115,9 @@ export default function Summary({
     return {
       dataObj,
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cartDetail]);
-
-  const renderDiscountList = () => {
-    return dataObj.discountList.listData?.map((el, idx) => {
-      return (
-        <View
-          style={[
-            styles.row,
-            {
-              backgroundColor: colors.background1,
-              minHeight: 52,
-              marginBottom: 0,
-            },
-          ]}
-          key={idx}>
-          <Text fontSize={14} color="text3">
-            {el.label + ' ' + el.valueLabel}
-          </Text>
-          <Text fontSize={14} color="text3">
-            {`-฿${numberWithCommas(el.value)}`}
-          </Text>
-        </View>
-      );
-    });
-  };
-
-  const renderSpecialRequest = () => {
-    return dataObj.discountSpecialRequest.listData?.map((el, idx) => {
-      return (
-        <View
-          style={[
-            styles.row,
-            {
-              backgroundColor: colors.background1,
-              minHeight: 52,
-              marginBottom: 0,
-            },
-          ]}
-          key={idx}>
-          <Text fontSize={14} color="text3">
-            {el.label + ' ' + el.valueLabel}
-          </Text>
-          <Text fontSize={14} color="text3">
-            {`-฿${numberWithCommas(el.value)}`}
-          </Text>
-        </View>
-      );
-    });
-  };
+  // console.log('cartDetail :>> ', JSON.stringify(cartDetail, null, 2));
   return (
     <View style={styles.container}>
       <View
@@ -200,12 +150,17 @@ export default function Summary({
               borderBottomWidth: 1,
             }}>
             <Radio
-              value={dataStepTwo.paymentMethod}
-              onChange={value => {
-                setDataStepTwo(prev => ({
-                  ...prev,
-                  paymentMethod: value,
-                }));
+              value={cartDetail.paymentMethod}
+              onChange={async value => {
+                try {
+                  setLoading(true);
+                  await postEditPaymentMethod(value);
+                  setLoading(false);
+                } catch (error) {
+                  console.log(error);
+                } finally {
+                  setLoading(false);
+                }
               }}
               radioLists={[
                 {
@@ -254,15 +209,20 @@ export default function Summary({
                   cartDetail.creditMemoBalance <= 0 ||
                   +cartDetail?.coAmount <= 0
                 }
-                onPress={v => {
-                  const haveValue = valueCheckbox.includes(v);
-                  if (haveValue) {
-                    setValueCheckbox(valueCheckbox.filter(item => item !== v));
-                  } else {
-                    setValueCheckbox([...valueCheckbox, v]);
+                onPress={async () => {
+                  try {
+                    setLoading(true);
+                    await postEditIsUseCod({
+                      isUseCOD: !cartDetail.isUseCOD,
+                    });
+                    setLoading(false);
+                  } catch (error) {
+                    console.log(error);
+                  } finally {
+                    setLoading(false);
                   }
                 }}
-                valueCheckbox={valueCheckbox}
+                valueCheckbox={cartDetail.isUseCOD ? ['discount'] : []}
                 listCheckbox={[
                   {
                     title: 'ใช้ส่วนลด',
@@ -276,143 +236,13 @@ export default function Summary({
           </View>
         </View>
       </View>
-      <View style={styles.containerBottom}>
-        <View style={styles.row}>
-          <Text color="text2">
-            {t('screens.CartScreen.summary.priceBeforeDiscount')}
-          </Text>
-          <Text color="text2" semiBold>{`฿${numberWithCommas(
-            dataObj.priceBeforeDiscount.value,
-            true,
-          )}`}</Text>
-        </View>
-        <View style={styles.row}>
-          <TouchableOpacity
-            onPress={() => {
-              setIsCollapsed({
-                ...isCollapsed,
-                discountList: !isCollapsed.discountList,
-              });
-            }}
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-            }}>
-            <Text color="text2">
-              {t('screens.CartScreen.summary.discountFromList')}
-            </Text>
-            <Image
-              source={icons.iconCollapse}
-              style={stylesIcon({ isCollapsed: isCollapsed.discountList }).icon}
-            />
-          </TouchableOpacity>
+      <SummaryList dataObj={dataObj} />
 
-          <Text
-            color="current"
-            semiBold
-            fontFamily="NotoSans">{`-฿${numberWithCommas(
-            dataObj.discountList.value,
-            true,
-          )}`}</Text>
-        </View>
-        {!isCollapsed.discountList && <>{renderDiscountList()}</>}
-        <View style={styles.row}>
-          <TouchableOpacity
-            onPress={() => {
-              setIsCollapsed({
-                ...isCollapsed,
-                specialListDiscount: !isCollapsed.specialListDiscount,
-              });
-            }}
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-            }}>
-            <Text color="text2">
-              {t('screens.CartScreen.summary.discountSpecial')}
-            </Text>
-            <Image
-              source={icons.iconCollapse}
-              style={
-                stylesIcon({ isCollapsed: isCollapsed.specialListDiscount })
-                  .icon
-              }
-            />
-          </TouchableOpacity>
-          <Text
-            color="specialRequest"
-            semiBold
-            fontFamily="NotoSans">{`-฿${numberWithCommas(
-            dataObj.discountSpecialRequest.value,
-            true,
-          )}`}</Text>
-        </View>
-        {!isCollapsed.specialListDiscount && <>{renderSpecialRequest()}</>}
-
-        <View style={styles.row}>
-          <Text color="text2">
-            {t('screens.CartScreen.summary.discountCarePrice')}
-          </Text>
-          <Text
-            color="error"
-            semiBold
-            fontFamily="NotoSans">{`-฿${numberWithCommas(
-            dataObj.discountCo.value,
-            true,
-          )}`}</Text>
-        </View>
-        <View style={styles.row}>
-          <Text color="text2">
-            {t('screens.CartScreen.summary.discountCash')}
-          </Text>
-          <Text
-            color="waiting"
-            fontFamily="NotoSans"
-            semiBold>{`-฿${numberWithCommas(
-            dataObj.discountCash.value,
-            true,
-          )}`}</Text>
-        </View>
-        <View
-          style={[
-            styles.row,
-            {
-              marginBottom: 4,
-            },
-          ]}>
-          <Text color="text2">
-            {t('screens.CartScreen.summary.totalDiscount')}
-          </Text>
-          <Text color="text2" semiBold fontFamily="NotoSans">
-            {`-฿${numberWithCommas(dataObj.totalDiscount.value, true)}`}
-          </Text>
-        </View>
-      </View>
-      <View style={styles.summary}>
-        <Text color="text2" semiBold fontFamily="NotoSans">
-          {t('screens.CartScreen.summary.totalPrice')}
-        </Text>
-        <Text
-          fontFamily="NotoSans"
-          color="primary"
-          bold
-          fontSize={20}>{`฿${numberWithCommas(
-          cartDetail.totalPrice,
-          true,
-        )}`}</Text>
-      </View>
+      <SummaryTotal orderDetail={cartDetail} />
     </View>
   );
 }
-const stylesIcon = ({ isCollapsed }: { isCollapsed: boolean }) => {
-  return StyleSheet.create({
-    icon: {
-      width: 20,
-      height: 20,
-      transform: [{ rotate: isCollapsed ? '0deg' : '180deg' }],
-    },
-  });
-};
+
 const styles = StyleSheet.create({
   container: {
     marginTop: 10,

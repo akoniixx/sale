@@ -8,7 +8,7 @@ import {
 import React, { useEffect, useRef } from 'react';
 import { colors } from '../../assets/colors/colors';
 import icons from '../../assets/icons';
-import { numberWithCommas } from '../../utils/functions';
+import { numberReturnString, numberWithCommas } from '../../utils/functions';
 import ModalWarning from '../../components/Modal/ModalWarning';
 import { useLocalization } from '../../contexts/LocalizationContext';
 interface Props {
@@ -51,7 +51,7 @@ const CounterSmall = ({
     if (currentQuantity.toString() === quantity.toString()) {
       return;
     }
-    if (+quantity < 1 && currentQuantity > 0) {
+    if ((+quantity < 1 && currentQuantity > 0) || !quantity) {
       setIsModalVisible(true);
     } else {
       onChangeText?.({ id, quantity });
@@ -75,8 +75,9 @@ const CounterSmall = ({
         />
       </TouchableOpacity>
       <TextInput
-        value={numberWithCommas(quantity).toString()}
-        keyboardType="number-pad"
+        allowFontScaling={false}
+        value={numberReturnString(quantity).toString()}
+        keyboardType="numeric"
         ref={inputRef}
         style={{
           fontFamily: 'NotoSansThai-Bold',
@@ -88,7 +89,7 @@ const CounterSmall = ({
           padding: 0,
         }}
         onChangeText={text => {
-          const onlyNumber = text.replace(/[^0-9]/g, '');
+          const onlyNumber = text.replace(/[^0-9.]/g, '');
           setQuantity(onlyNumber);
         }}
         returnKeyType="done"
@@ -127,10 +128,6 @@ const CounterSmall = ({
         onRequestClose={() => {
           setIsModalVisible(false);
           setQuantity(currentQuantity.toString());
-          onChangeText?.({
-            id,
-            quantity: currentQuantity.toString(),
-          });
         }}
       />
     </View>

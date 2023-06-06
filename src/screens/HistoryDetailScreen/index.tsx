@@ -1,6 +1,7 @@
 import {
   Dimensions,
   Image,
+  Platform,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
@@ -24,7 +25,14 @@ import dayjs from 'dayjs';
 import { getNewPath, numberWithCommas } from '../../utils/functions';
 import ImageCache from '../../components/ImageCache/ImageCache';
 import images from '../../assets/images';
+import SummaryList from '../../components/SummaryList/SummaryList';
+import SummaryTotal from '../../components/SummaryList/SummaryTotal';
 
+const locationMapping = {
+  SHOP: 'จัดส่งที่ร้าน',
+  FACTORY: 'รับที่โรงงาน',
+  OTHER: 'ส่ง/รับ ที่อื่นๆ',
+};
 export default function HistoryDetailScreen({
   route,
   navigation,
@@ -33,10 +41,7 @@ export default function HistoryDetailScreen({
   const [orderDetail, setOrderDetail] = React.useState<HistoryDataType | null>(
     null,
   );
-  const [isCollapsed, setIsCollapsed] = React.useState({
-    discountList: true,
-    specialListDiscount: true,
-  });
+
   const [loading, setLoading] = React.useState<boolean>(false);
   React.useEffect(() => {
     const getOrderDetailById = async () => {
@@ -87,7 +92,7 @@ export default function HistoryDetailScreen({
         label: item.productName,
         valueLabel: `(฿${numberWithCommas(item.marketPrice)} x ${
           item.quantity
-        } ${item.saleUomTH ? item.saleUomTH : item.saleUom})`,
+        } ${item.saleUOMTH ? item.saleUOMTH : item.saleUOMTH})`,
       };
       if (item.specialRequestDiscount > 0) {
         listDataDiscountSpecialRequest.push({
@@ -135,91 +140,37 @@ export default function HistoryDetailScreen({
       },
     };
     const fbList: any = [];
-    orderDetail?.orderProducts.map((el: any) => {
-      return el.orderProductPromotions.map((el2: any) => {
-        if (el2.promotionType === 'FREEBIES_NOT_MIX') {
-          const freebieList = el2.conditionDetail.condition;
-          freebieList.forEach((f: any) => {
-            const freebies = f.freebies;
-            freebies.forEach((fr: any) => {
-              if (fr.productFreebiesId) {
-                const newObj = {
-                  productName: fr.productName,
-                  id: fr.productFreebiesId,
-                  quantity: fr.quantity,
-                  baseUnit: fr.baseUnitOfMeaTh || fr.baseUnitOfMeaEn,
-                  status: fr.productFreebiesStatus,
-                  productImage: fr.productFreebiesImage,
-                };
-                fbList.push(newObj);
-              } else {
-                const newObj = {
-                  productName: fr.productName,
-                  id: fr.productId,
-                  quantity: fr.quantity,
-                  baseUnit: fr.saleUOMTH || fr.saleUOM || '',
-                  status: fr.productStatus,
-                  productImage: fr.productImage,
-                };
+    orderDetail?.orderProducts
+      .filter((el: any) => el.isFreebie)
+      .map((fr: any) => {
+        if (fr.productFreebiesId) {
+          const newObj = {
+            productName: fr.productName,
+            id: fr.productFreebiesId,
+            quantity: fr.quantity,
+            baseUnit: fr.baseUnitOfMeaTh || fr.baseUnitOfMeaEn,
+            status: fr.productFreebiesStatus,
+            productImage: fr.productFreebiesImage,
+          };
+          fbList.push(newObj);
+        } else {
+          const newObj = {
+            productName: fr.productName,
+            id: fr.productId,
+            quantity: fr.quantity,
+            baseUnit: fr.saleUOMTH || fr.saleUOM || '',
+            status: fr.productStatus,
+            productImage: fr.productImage,
+          };
 
-                fbList.push(newObj);
-              }
-            });
-          });
+          fbList.push(newObj);
         }
       });
-    });
     return {
       dataObj,
       freebieList: fbList,
     };
   }, [orderDetail]);
-  const renderDiscountList = () => {
-    return dataObj.discountList.listData?.map((el, idx) => {
-      return (
-        <View
-          style={[
-            styles.row,
-            {
-              backgroundColor: colors.background1,
-              minHeight: 52,
-            },
-          ]}
-          key={idx}>
-          <Text fontSize={14} color="text3">
-            {el.label + ' ' + el.valueLabel}
-          </Text>
-          <Text fontSize={14} color="text3">
-            {`-฿${numberWithCommas(el.value)}`}
-          </Text>
-        </View>
-      );
-    });
-  };
-
-  const renderSpecialRequest = () => {
-    return dataObj.discountSpecialRequest.listData?.map((el, idx) => {
-      return (
-        <View
-          style={[
-            styles.row,
-            {
-              backgroundColor: colors.background1,
-              minHeight: 52,
-              marginBottom: 0,
-            },
-          ]}
-          key={idx}>
-          <Text fontSize={14} color="text3">
-            {el.label + ' ' + el.valueLabel}
-          </Text>
-          <Text fontSize={14} color="text3">
-            {`-฿${numberWithCommas(el.value)}`}
-          </Text>
-        </View>
-      );
-    });
-  };
 
   return (
     <Container edges={['top', 'left', 'right']}>
@@ -232,23 +183,83 @@ export default function HistoryDetailScreen({
         <ScrollView
           showsVerticalScrollIndicator={false}
           style={{
-            padding: 16,
+            margin: 16,
           }}>
-          <View
-            style={{
-              backgroundColor: 'white',
-              borderRadius: 10,
-              shadowColor: '#000',
-              shadowOffset: {
-                width: 0,
-                height: 2,
-              },
-              shadowOpacity: 0.25,
-              shadowRadius: 3.84,
-              elevation: 5,
-              marginBottom: -5,
-              zIndex: 0,
-            }}>
+          {(orderDetail?.status === 'SHOPAPP_CANCEL_ORDER' ||
+            orderDetail?.status === 'REJECT_ORDER' ||
+            orderDetail?.status === 'COMPANY_CANCEL_ORDER') && (
+            <>
+              <View
+                style={{
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '100%',
+                  paddingBottom: 16,
+                }}>
+                <Image
+                  source={images.CancelImage}
+                  style={{
+                    width: 120,
+                    height: 120,
+                  }}
+                />
+              </View>
+              <View
+                style={{
+                  backgroundColor: 'white',
+                  borderRadius: 10,
+                  shadowColor: '#000',
+                  shadowOffset: {
+                    width: 0,
+                    height: 2,
+                  },
+                  shadowOpacity: 0.25,
+                  shadowRadius: 2.84,
+                  elevation: 5,
+                  marginBottom: 18,
+                  zIndex: 0,
+                  paddingVertical: 16,
+                }}>
+                <View
+                  style={{
+                    paddingHorizontal: 16,
+                    borderBottomColor: colors.border1,
+                    borderBottomWidth: 1,
+                    paddingBottom: 16,
+                  }}>
+                  <Text fontFamily="NotoSans" semiBold>
+                    รายละเอียดการยกเลิก
+                  </Text>
+                  <Text color="text2" lineHeight={34}>
+                    หมายเลขคำสั่งซื้อ : {orderDetail?.orderNo}
+                  </Text>
+                  <Text color="text2" lineHeight={34}>
+                    วันที่ยกเลิก :{' '}
+                    {dayjs(orderDetail?.updateAt)
+                      .locale('th')
+                      .format('DD MMM BBBB HH:mm น.')}
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    paddingHorizontal: 16,
+                    paddingTop: 16,
+                  }}>
+                  <Text fontFamily="NotoSans" semiBold>
+                    เหตุผลที่ยกเลิก (
+                    {orderDetail?.status === 'SHOPAPP_CANCEL_ORDER'
+                      ? 'ลูกค้า'
+                      : orderDetail?.status === 'REJECT_ORDER'
+                      ? 'ผู้จัดการ'
+                      : 'บริษัท'}
+                    )
+                  </Text>
+                  <Text color="text2">{orderDetail?.cancelRemark}</Text>
+                </View>
+              </View>
+            </>
+          )}
+          <View style={styles.slipShadow}>
             <View style={styles.card}>
               <View
                 style={{
@@ -362,13 +373,48 @@ export default function HistoryDetailScreen({
                   การจัดส่ง
                 </Text>
                 <Text fontSize={18} semiBold fontFamily="NotoSans">
-                  รับที่โรงงาน
+                  {
+                    locationMapping[
+                      orderDetail?.deliveryDest as keyof typeof locationMapping
+                    ]
+                  }
                 </Text>
                 <Text
                   style={{
                     marginBottom: 8,
                   }}>
                   {orderDetail?.deliveryAddress || '-'}
+                </Text>
+              </View>
+              <DashedLine
+                dashColor={colors.border1}
+                dashGap={6}
+                dashLength={8}
+                style={{
+                  marginVertical: 16,
+                  marginHorizontal: 16,
+                }}
+              />
+              <View
+                style={{
+                  marginTop: 8,
+                  paddingHorizontal: 16,
+                }}>
+                <Text
+                  fontSize={14}
+                  color="text3"
+                  semiBold
+                  fontFamily="NotoSans"
+                  style={{
+                    marginBottom: 8,
+                  }}>
+                  ข้อมูลทะเบียนรถ
+                </Text>
+                <Text
+                  style={{
+                    marginBottom: 8,
+                  }}>
+                  {orderDetail?.numberPlate || '-'}
                 </Text>
               </View>
               <DashedLine
@@ -428,73 +474,81 @@ export default function HistoryDetailScreen({
                   รายละเอียดสินค้า
                 </Text>
 
-                {orderDetail?.orderProducts.map((el, idx) => {
-                  return (
-                    <View
-                      key={idx}
-                      style={{
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        marginTop: 32,
-                      }}>
+                {orderDetail?.orderProducts
+                  .filter(el => !el.isFreebie)
+                  .map((el, idx) => {
+                    return (
                       <View
+                        key={idx}
                         style={{
                           flexDirection: 'row',
+                          justifyContent: 'space-between',
+                          alignItems: 'flex-start',
+                          marginTop: 32,
                         }}>
-                        {el.productImage ? (
-                          <ImageCache
-                            uri={getNewPath(el.productImage)}
-                            style={{
-                              width: 72,
-                              height: 72,
-                            }}
-                          />
-                        ) : (
-                          <Image
-                            source={images.emptyProduct}
-                            style={{
-                              width: 72,
-                              height: 72,
-                            }}
-                          />
-                        )}
                         <View
                           style={{
-                            marginLeft: 16,
+                            flexDirection: 'row',
                           }}>
-                          <Text semiBold>{el.productName}</Text>
+                          {el.productImage ? (
+                            <ImageCache
+                              uri={getNewPath(el.productImage)}
+                              style={{
+                                width: 72,
+                                height: 72,
+                              }}
+                            />
+                          ) : (
+                            <Image
+                              source={images.emptyProduct}
+                              style={{
+                                width: 72,
+                                height: 72,
+                              }}
+                            />
+                          )}
                           <View
                             style={{
-                              flexDirection: 'row',
-                              alignItems: 'center',
+                              marginLeft: 16,
                             }}>
-                            <Text color="text3" fontSize={14}>
-                              {`${el.packSize || '-'}`}
-                              {' | '}
-                              {`฿${numberWithCommas(el.marketPrice)}`}
+                            <Text
+                              semiBold
+                              style={{
+                                width: Dimensions.get('window').width / 2,
+                              }}>
+                              {el.productName}
+                            </Text>
+                            <View
+                              style={{
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                              }}>
+                              <Text color="text3" fontSize={14}>
+                                {`${el.packSize || '-'}`}
+                                {' | '}
+                                {`฿${numberWithCommas(el.marketPrice)}`}
+                              </Text>
+                            </View>
+                            <Text
+                              color="primary"
+                              fontSize={18}
+                              bold
+                              style={{
+                                marginTop: 8,
+                              }}>
+                              {`฿${numberWithCommas(el.totalPrice)}`}
                             </Text>
                           </View>
-                          <Text
-                            color="primary"
-                            fontSize={18}
-                            bold
-                            style={{
-                              marginTop: 8,
-                            }}>
-                            {`฿${numberWithCommas(el.totalPrice)}`}
+                        </View>
+                        <View>
+                          <Text>
+                            {numberWithCommas(el.quantity)}x
+                            {`  ${el.saleUOMTH || el.saleUOM}`}
                           </Text>
                         </View>
                       </View>
-                      <View>
-                        <Text>
-                          {numberWithCommas(el.quantity)}x
-                          {`  ${el.saleUomTh || el.saleUom}`}
-                        </Text>
-                      </View>
-                    </View>
-                  );
-                })}
+                    );
+                  })}
               </View>
               <DashedLine
                 dashColor={colors.border1}
@@ -536,129 +590,9 @@ export default function HistoryDetailScreen({
                 dashLength={8}
                 style={{ marginVertical: 8 }}
               />
-              <View>
-                <View style={styles.row}>
-                  <Text color="text2">ราคาก่อนลด</Text>
-                  <Text color="text2" semiBold>{`฿${numberWithCommas(
-                    +dataObj.priceBeforeDiscount.value,
-                    true,
-                  )}`}</Text>
-                </View>
-                <View style={styles.row}>
-                  <TouchableOpacity
-                    onPress={() => {
-                      setIsCollapsed({
-                        ...isCollapsed,
-                        discountList: !isCollapsed.discountList,
-                      });
-                    }}
-                    style={{
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                    }}>
-                    <Text color="text2">ส่วนลดจากรายการ</Text>
-                    <Image
-                      source={icons.iconCollapse}
-                      style={
-                        stylesIcon({ isCollapsed: isCollapsed.discountList })
-                          .icon
-                      }
-                    />
-                  </TouchableOpacity>
-
-                  <Text
-                    color="current"
-                    semiBold
-                    fontFamily="NotoSans">{`-฿${numberWithCommas(
-                    +dataObj.discountList.value,
-                    true,
-                  )}`}</Text>
-                </View>
-                {!isCollapsed.discountList && <>{renderDiscountList()}</>}
-                <View style={styles.row}>
-                  <TouchableOpacity
-                    onPress={() => {
-                      setIsCollapsed({
-                        ...isCollapsed,
-                        specialListDiscount: !isCollapsed.specialListDiscount,
-                      });
-                    }}
-                    style={{
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                    }}>
-                    <Text color="text2">ขอส่วนลดพิเศษเพิ่ม</Text>
-                    <Image
-                      source={icons.iconCollapse}
-                      style={
-                        stylesIcon({
-                          isCollapsed: isCollapsed.specialListDiscount,
-                        }).icon
-                      }
-                    />
-                  </TouchableOpacity>
-                  <Text
-                    color="specialRequest"
-                    semiBold
-                    fontFamily="NotoSans">{`-฿${numberWithCommas(
-                    +dataObj.discountSpecialRequest.value,
-                    true,
-                  )}`}</Text>
-                </View>
-                {!isCollapsed.specialListDiscount && (
-                  <>{renderSpecialRequest()}</>
-                )}
-
-                <View style={styles.row}>
-                  <Text color="text2">ส่วนลดดูแลราคา</Text>
-                  <Text
-                    color="error"
-                    semiBold
-                    fontFamily="NotoSans">{`-฿${numberWithCommas(
-                    +dataObj.discountCo.value,
-                    true,
-                  )}`}</Text>
-                </View>
-                <View style={styles.row}>
-                  <Text color="text2">ส่วนลดเงินสด</Text>
-                  <Text
-                    color="waiting"
-                    fontFamily="NotoSans"
-                    semiBold>{`-฿${numberWithCommas(
-                    +dataObj.discountCash.value,
-                    true,
-                  )}`}</Text>
-                </View>
-                <View
-                  style={[
-                    styles.row,
-                    {
-                      marginBottom: 4,
-                    },
-                  ]}>
-                  <Text color="text2">ส่วนลดรวม</Text>
-                  <Text color="text2" semiBold fontFamily="NotoSans">
-                    {`-฿${numberWithCommas(
-                      +dataObj.totalDiscount.value,
-                      true,
-                    )}`}
-                  </Text>
-                </View>
-              </View>
+              <SummaryList dataObj={dataObj} />
             </View>
-            <View style={styles.summary}>
-              <Text color="text2" semiBold fontFamily="NotoSans">
-                จำนวนรวม
-              </Text>
-              <Text
-                fontFamily="NotoSans"
-                color="primary"
-                bold
-                fontSize={20}>{`฿${numberWithCommas(
-                orderDetail?.totalPrice ? +orderDetail?.totalPrice : 0,
-                true,
-              )}`}</Text>
-            </View>
+            <SummaryTotal orderDetail={orderDetail} />
             <DashedLine
               dashColor={colors.border1}
               dashGap={6}
@@ -696,20 +630,38 @@ export default function HistoryDetailScreen({
                         key={idx}
                         style={{
                           flexDirection: 'row',
+                          marginBottom: 10,
                           alignItems: 'center',
                         }}>
-                        <Image
-                          source={images.emptyProduct}
-                          style={{
-                            width: 56,
-                            height: 56,
-                          }}
-                        />
+                        {el.productImage ? (
+                          <Image
+                            resizeMode="contain"
+                            source={{ uri: getNewPath(el.productImage) }}
+                            style={{
+                              width: 56,
+                              height: 56,
+                            }}
+                          />
+                        ) : (
+                          <Image
+                            source={images.emptyProduct}
+                            style={{
+                              width: 56,
+                              height: 56,
+                            }}
+                          />
+                        )}
                         <View
                           style={{
                             marginLeft: 8,
                           }}>
-                          <Text fontSize={14} color="text3" lineHeight={24}>
+                          <Text
+                            fontSize={14}
+                            color="text3"
+                            lineHeight={24}
+                            style={{
+                              width: Dimensions.get('window').width / 2,
+                            }}>
                             {el.productName}
                           </Text>
                           <Text fontSize={14}>
@@ -761,16 +713,42 @@ export default function HistoryDetailScreen({
     </Container>
   );
 }
-const stylesIcon = ({ isCollapsed }: { isCollapsed: boolean }) => {
-  return StyleSheet.create({
-    icon: {
-      width: 20,
-      height: 20,
-      transform: [{ rotate: isCollapsed ? '0deg' : '180deg' }],
-    },
-  });
-};
+
 const styles = StyleSheet.create({
+  slipShadow: {
+    ...Platform.select({
+      ios: {
+        backgroundColor: 'white',
+        borderRadius: 10,
+        shadowColor: '#000',
+        shadowOffset: {
+          width: 0,
+          height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+        marginBottom: -5,
+        zIndex: 0,
+      },
+      android: {
+        backgroundColor: 'white',
+        borderRadius: 10,
+        shadowColor: '#000',
+        shadowOffset: {
+          width: 0,
+          height: 2,
+        },
+        marginTop: 5,
+        marginHorizontal: 2,
+        shadowOpacity: 0.25,
+        shadowRadius: 10.84,
+        elevation: 10,
+        marginBottom: -5,
+        zIndex: 0,
+      },
+    }),
+  },
   card: {
     width: '100%',
     minHeight: 200,

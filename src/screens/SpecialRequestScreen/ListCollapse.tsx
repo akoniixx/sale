@@ -25,16 +25,9 @@ export default function ListCollapse({ data }: Props): JSX.Element {
             }}>
             <Text
               color="text3"
-              style={{
-                flex: 0.8,
-              }}
+              style={{}}
               numberOfLines={1}>{`${el.label} ${el.valueLabel}`}</Text>
-            <Text
-              right
-              color="text3"
-              style={{
-                flex: 0.2,
-              }}>
+            <Text right color="text3" style={{}}>
               {`-${numberWithCommas(el.value, true)}`}
             </Text>
           </View>

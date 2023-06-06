@@ -31,6 +31,7 @@ export default function Body({
   saleUOMTH,
   promotion,
   productId,
+  baseUOM,
 }: Props): JSX.Element {
   const { t } = useLocalization();
   const [isShowMore, setIsShowMore] = React.useState(false);
@@ -93,8 +94,12 @@ export default function Body({
               marginTop: 8,
             }}>
             {packSize
-              ? `${packSize} | ฿${numberWithCommas(+unitPrice)}/${saleUOMTH}`
-              : `฿${numberWithCommas(+unitPrice)}/${saleUOMTH}`}
+              ? `${packSize} | ฿${numberWithCommas(+unitPrice)}/${
+                  baseUOM ? baseUOM : 'Unit'
+                }`
+              : `฿${numberWithCommas(+unitPrice)}/${
+                  baseUOM ? baseUOM : 'Unit'
+                }`}
           </Text>
         </View>
       </View>

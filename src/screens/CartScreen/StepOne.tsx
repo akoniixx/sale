@@ -1,11 +1,16 @@
-import { View } from 'react-native';
+import { ActivityIndicator, View } from 'react-native';
 import React from 'react';
 import ListItemInCart from './ListItemInCart';
+import SkeletonLoading from '../../components/SkeletonLoading/SkeletonLoading';
 
-export default function StepOne(): JSX.Element {
+export default function StepOne({
+  loading,
+}: {
+  loading: boolean;
+}): JSX.Element {
   return (
     <View>
-      <ListItemInCart />
+      <ListItemInCart loadingPromo={loading} />
       {/* <Summary /> */}
       <View
         style={{

@@ -19,7 +19,9 @@ export default function HistoryItemArea({
   isHasCustomerId,
   ...props
 }: Props) {
-  const getOnlySixLength = orderProducts.slice(0, 6);
+  const getOnlySixLength = orderProducts
+    .filter(el => !el.isFreebie)
+    .slice(0, 6);
   const onPress = () => {
     const date = dayjs(props.createAt).format('DD MMM BBBB');
     props.navigation.navigate('HistoryDetailScreen', {

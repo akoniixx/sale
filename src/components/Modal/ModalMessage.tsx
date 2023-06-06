@@ -49,7 +49,7 @@ export default function ModalMessage({
           display: visible ? 'flex' : 'none',
         },
       ]}>
-      <Text semiBold fontFamily="NotoSans" color="white">
+      <Text semiBold fontFamily="NotoSans" color="white" lineHeight={28}>
         {message}
       </Text>
     </Animated.View>

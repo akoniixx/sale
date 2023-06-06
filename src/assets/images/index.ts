@@ -17,4 +17,5 @@ export default {
   bottomSlip: require('./bottomSlip.png'),
   emptyGift: require('./emptyGift.png'),
   bottomInvoice: require('./bottomInvoice.png'),
+  CancelImage: require('./CancelImage.png'),
 };

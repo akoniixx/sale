@@ -1,5 +1,5 @@
 import { View, StyleSheet, Image } from 'react-native';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Counter from '../../components/Counter/Counter';
 import { colors } from '../../assets/colors/colors';
 import Button from '../../components/Button/Button';
@@ -25,6 +25,8 @@ export default function Footer({
   setLoading,
 }: Props): JSX.Element {
   const { t } = useLocalization();
+  const [disabledButton, setDisabledButton] = useState<boolean>(false);
+  const [currentCount, setCurrentCount] = useState(0);
   const {
     cartList,
     setCartList,
@@ -33,6 +35,11 @@ export default function Footer({
   const currentProduct = cartList?.find(
     item => item?.productId.toString() === id,
   );
+  useEffect(() => {
+    if (currentProduct) {
+      setCurrentCount(currentProduct.amount);
+    }
+  }, [currentProduct]);
   const promotionIdList = (productItem?.promotion || []).map(el => {
     return {
       promotionId: el?.promotionId,
@@ -129,30 +136,38 @@ export default function Footer({
     }
   };
   const onOrder = async () => {
-    const findIndex = cartList?.findIndex(
-      item => item?.productId.toString() === id,
-    );
-    if (findIndex !== -1) {
-      const newCartList = [...cartList];
-      newCartList[findIndex].amount += 5;
-      setCartList(newCartList);
-      await postCartItem(newCartList);
-    } else {
-      const newCartList: any = [
-        ...cartList,
-        {
-          ...productItem,
-          productId: id,
-          amount: 5,
-          orderProductPromotions: promotionIdList,
-          order: cartList?.length + 1,
-        },
-      ];
-      setCartList(newCartList);
-      await postCartItem(newCartList);
+    try {
+      setDisabledButton(true);
+      const findIndex = cartList?.findIndex(
+        item => item?.productId.toString() === id,
+      );
+
+      if (findIndex !== -1) {
+        const newCartList = [...cartList];
+        newCartList[findIndex].amount = currentCount;
+        setCartList(newCartList);
+        await postCartItem(newCartList);
+      } else {
+        const newCartList: any = [
+          ...cartList,
+          {
+            ...productItem,
+            productId: id,
+            amount: currentCount,
+            orderProductPromotions: promotionIdList,
+            order: cartList?.length + 1,
+          },
+        ];
+        setCartList(newCartList);
+        await postCartItem(newCartList);
+      }
+      setIsAddCart(true);
+      setDisabledButton(false);
+
+      navigation.navigate('CartScreen');
+    } catch (e) {
+      console.log(e);
     }
-    setIsAddCart(true);
-    navigation.navigate('CartScreen');
   };
   return (
     <View style={styles().container}>
@@ -161,14 +176,11 @@ export default function Footer({
           flex: 0.8,
         }}>
         <Counter
-          currentQuantity={
-            currentProduct?.amount && currentProduct.amount > 0
-              ? currentProduct.amount
-              : 0
-          }
+          currentQuantity={currentProduct?.amount ? +currentProduct?.amount : 0}
           id={id}
           onChangeText={onChangeText}
           onDecrease={onDecrease}
+          setCounter={setCurrentCount}
           onIncrease={onIncrease}
         />
       </View>
@@ -182,8 +194,9 @@ export default function Footer({
           flex: 0.8,
         }}>
         <Button
-          title={t('screens.ProductDetailScreen.orderButton')}
           onPress={onOrder}
+          disabled={currentCount <= 0 || disabledButton}
+          title={t('screens.ProductDetailScreen.orderButton')}
           iconBack={
             <Image
               source={icons.cartFill}

@@ -4,6 +4,7 @@ import {
   Platform,
   Image,
   TouchableOpacity,
+  KeyboardAvoidingView,
 } from 'react-native';
 import React from 'react';
 import Text from '../../components/Text/Text';
@@ -17,8 +18,13 @@ import { SheetManager } from 'react-native-actions-sheet';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { MainStackParamList } from '../../navigations/MainNavigator';
 import { useAuth } from '../../contexts/AuthContext';
+import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
 
 interface Props {
+  loading: boolean;
+  isShowError: boolean;
+  setIsShowError: React.Dispatch<React.SetStateAction<boolean>>;
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   setDataStepTwo: React.Dispatch<React.SetStateAction<TypeDataStepTwo>>;
   dataStepTwo: TypeDataStepTwo;
   setAddressDelivery: React.Dispatch<
@@ -32,6 +38,7 @@ interface Props {
     name: string;
   };
   navigation: StackNavigationProp<MainStackParamList, 'CartScreen'>;
+  refInput: React.MutableRefObject<any>;
 }
 export default function StepTwo({
   setDataStepTwo,
@@ -39,6 +46,11 @@ export default function StepTwo({
   navigation,
   addressDelivery,
   setAddressDelivery,
+  setLoading,
+  loading,
+  isShowError,
+  refInput,
+  setIsShowError,
 }: Props) {
   const {
     state: { user },
@@ -52,10 +64,13 @@ export default function StepTwo({
             หมายเหตุ (สำหรับ Sale Co)
           </Text>
           <InputText
+            ref={refInput}
             multiline
+            returnKeyType="done"
             value={dataStepTwo?.saleCoRemark || ''}
             placeholder="ใส่หมายเหตุ..."
             numberOfLines={5}
+            blurOnSubmit
             onChangeText={text =>
               setDataStepTwo(prev => ({ ...prev, saleCoRemark: text }))
             }
@@ -195,8 +210,39 @@ export default function StepTwo({
             </View>
           </View>
         </View>
+        <View style={styles.inputContainer}>
+          <Text fontFamily="NotoSans" semiBold fontSize={16}>
+            {user?.company === 'ICPF' && <Text color="error">{`*  `}</Text>}
+            ข้อมูลทะเบียนรถ
+          </Text>
+          <InputText
+            value={dataStepTwo?.numberPlate || ''}
+            multiline
+            blurOnSubmit
+            returnKeyType="done"
+            isError={isShowError}
+            scrollEnabled={false}
+            style={{
+              paddingTop: 16,
+            }}
+            onChangeText={(text: string) => {
+              setIsShowError(false);
+              setDataStepTwo(prev => ({ ...prev, numberPlate: text }));
+            }}
+            placeholder="ระบุทะเบียนรถ"
+          />
+          <Text color="text3" fontSize={14} lineHeight={26}>
+            หากมีรถมากกว่า 1 คัน กรุณาใส่ลูกน้ำคั่น (,)
+          </Text>
+          {isShowError && (
+            <Text color="error" fontFamily="NotoSans">
+              กรุณากรอกทะเบียนรถ
+            </Text>
+          )}
+        </View>
       </View>
-      <Summary dataStepTwo={dataStepTwo} setDataStepTwo={setDataStepTwo} />
+      <Summary setLoading={setLoading} />
+      <LoadingSpinner visible={loading} />
     </>
   );
 }
@@ -204,6 +250,9 @@ const styles = StyleSheet.create({
   container: {
     padding: 16,
     backgroundColor: 'white',
+  },
+  inputContainer: {
+    marginTop: 8,
   },
   containerItem: {
     flexDirection: 'row',

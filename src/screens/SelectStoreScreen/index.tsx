@@ -23,6 +23,9 @@ export default function SelectStoreScreen({ navigation }: Props): JSX.Element {
   const [searchValue, setSearchValue] = React.useState<string | undefined>(
     undefined,
   );
+  const [debounceSearchValue, setDebounceSearchValue] = React.useState<
+    string | undefined
+  >(undefined);
 
   const {
     state: { user },
@@ -89,10 +92,10 @@ export default function SelectStoreScreen({ navigation }: Props): JSX.Element {
       };
     });
     return newFormat.filter(i => {
-      if (!searchValue) return true;
-      return i.name.toLowerCase().includes(searchValue.toLowerCase());
+      if (!debounceSearchValue) return true;
+      return i.name.toLowerCase().includes(debounceSearchValue.toLowerCase());
     });
-  }, [listStore, searchValue]);
+  }, [listStore, debounceSearchValue]);
 
   return (
     <Container>
@@ -109,6 +112,9 @@ export default function SelectStoreScreen({ navigation }: Props): JSX.Element {
             width: '100%',
           }}>
           <SearchInput
+            onSearch={v => {
+              setDebounceSearchValue(v);
+            }}
             value={searchValue}
             placeholder={t('screens.SelectStoreScreen.placeholder')}
             onChange={v => {

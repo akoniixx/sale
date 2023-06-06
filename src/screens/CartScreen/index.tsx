@@ -6,8 +6,9 @@ import {
   KeyboardAvoidingView,
   Platform,
   Keyboard,
+  ActivityIndicator,
 } from 'react-native';
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import Container from '../../components/Container/Container';
 import Content from '../../components/Content/Content';
 import { useLocalization } from '../../contexts/LocalizationContext';
@@ -33,12 +34,12 @@ import { useAuth } from '../../contexts/AuthContext';
 import { factoryServices } from '../../services/FactorySevices';
 
 export interface TypeDataStepTwo {
-  paymentMethod: string;
   specialRequestRemark?: string | null;
   saleCoRemark?: string | null;
   deliveryAddress?: string | null;
   deliveryRemark?: string | null;
   deliveryDest: string;
+  numberPlate?: string | null;
 }
 export default function CartScreen({
   navigation,
@@ -48,6 +49,7 @@ export default function CartScreen({
   const params = route.params;
   const [isKeyboardVisible, setKeyboardVisible] = React.useState(false);
   const [currentStep, setCurrentStep] = React.useState(0);
+  const [showError, setShowError] = React.useState(false);
   const [visible, setVisible] = React.useState(false);
   const {
     state: { user },
@@ -62,6 +64,8 @@ export default function CartScreen({
     cartDetail,
     cartApi: { getCartList, getSelectPromotion },
   } = useCart();
+  const refInput = React.useRef<any>(null);
+  const scrollRef = React.useRef<ScrollView | null>(null);
 
   const [loading, setLoading] = React.useState(false);
   const [addressDelivery, setAddressDelivery] = React.useState({
@@ -69,16 +73,26 @@ export default function CartScreen({
     name: '',
   });
   const [dataStepTwo, setDataStepTwo] = React.useState<TypeDataStepTwo>({
-    paymentMethod: '',
     specialRequestRemark: null,
     saleCoRemark: null,
     deliveryAddress: null,
     deliveryRemark: null,
     deliveryDest: '',
+    numberPlate: null,
   });
 
   const onCreateOrder = async () => {
     try {
+      const currentCompany = user?.company;
+      if (currentCompany !== 'ICPL' && !dataStepTwo.numberPlate) {
+        setShowError(true);
+        setVisibleConfirm(false);
+        refInput?.current?.focus();
+        if (scrollRef?.current) {
+          scrollRef?.current?.scrollTo({ x: 0, y: 300, animated: true });
+        }
+        return;
+      }
       setLoading(true);
       setVisibleConfirm(false);
       const customerNo = await AsyncStorage.getItem('customerNo');
@@ -102,12 +116,16 @@ export default function CartScreen({
 
       const payload: any = {
         company: data.company,
+
         userStaffId: data.userStaffId,
         customerCompanyId: data.customerCompanyId,
         customerName: customerName || '',
         customerNo: customerNo || '',
+        isUseCOD: cartDetail.isUseCOD,
+        paymentMethod: cartDetail.paymentMethod,
         sellerName: `${user?.firstname} ${user?.lastname}`,
-        paymentMethod: dataStepTwo.paymentMethod,
+        customerZone: user?.zone,
+
         deliveryDest: dataStepTwo.deliveryDest,
         deliveryAddress: dataStepTwo.deliveryAddress,
         deliveryRemark: dataStepTwo.deliveryRemark || '',
@@ -120,7 +138,9 @@ export default function CartScreen({
       if (dataStepTwo.saleCoRemark) {
         payload.saleCoRemark = dataStepTwo.saleCoRemark;
       }
-
+      if (dataStepTwo.numberPlate) {
+        payload.numberPlate = dataStepTwo.numberPlate;
+      }
       const result = await orderServices.createOrder(payload);
       if (result) {
         setCartList([]);
@@ -145,19 +165,32 @@ export default function CartScreen({
       case 1: {
         return (
           <StepTwo
+            isShowError={showError}
+            setIsShowError={setShowError}
+            setLoading={setLoading}
+            loading={loading}
             setDataStepTwo={setDataStepTwo}
             dataStepTwo={dataStepTwo}
             navigation={navigation}
+            refInput={refInput}
             addressDelivery={addressDelivery}
             setAddressDelivery={setAddressDelivery}
           />
         );
       }
       default: {
-        return <StepOne />;
+        return <StepOne loading={loading} />;
       }
     }
-  }, [currentStep, dataStepTwo, addressDelivery, navigation]);
+  }, [
+    currentStep,
+    dataStepTwo,
+    addressDelivery,
+    navigation,
+    loading,
+    showError,
+    setShowError,
+  ]);
   useFocusEffect(
     React.useCallback(() => {
       const getPromotion = async () => {
@@ -200,7 +233,9 @@ export default function CartScreen({
       getPromotion();
       const getInitData = async () => {
         const getFactory = async () => {
-          const factoryData = await factoryServices.getFactory();
+          const factoryData = await factoryServices.getFactory(
+            user?.company || '',
+          );
           setAddressDelivery(prev => ({
             ...prev,
             name: factoryData.name,
@@ -231,12 +266,7 @@ export default function CartScreen({
         if (user?.company && user?.company === 'ICPF') {
           getFactory();
         }
-        if (params?.specialRequestRemark) {
-          setDataStepTwo(prev => ({
-            ...prev,
-            specialRequestRemark: params.specialRequestRemark,
-          }));
-        }
+
         if (params?.step) {
           setCurrentStep(params.step);
         }
@@ -263,12 +293,19 @@ export default function CartScreen({
       keyboardDidShowListener.remove();
     };
   }, []);
-
+  useEffect(() => {
+    if (params?.specialRequestRemark) {
+      setDataStepTwo(prev => ({
+        ...prev,
+        specialRequestRemark: params.specialRequestRemark,
+      }));
+    }
+  }, [params?.specialRequestRemark]);
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={{
-        flex: 1,
+        height: '100%',
       }}>
       <Container>
         <Header
@@ -305,7 +342,9 @@ export default function CartScreen({
               ]}
             />
           </View>
-          <ScrollView>{renderStep}</ScrollView>
+          <ScrollView ref={ref => (scrollRef.current = ref)}>
+            {renderStep}
+          </ScrollView>
         </Content>
         <FooterShadow
           style={{
@@ -373,7 +412,6 @@ export default function CartScreen({
             </TouchableOpacity>
           )}
         </FooterShadow>
-        <LoadingSpinner visible={loading} />
         <ModalWarning
           visible={visible}
           onlyCancel

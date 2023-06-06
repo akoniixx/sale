@@ -6,10 +6,11 @@ import { colors } from '../../assets/colors/colors';
 import { useLocalization } from '../../contexts/LocalizationContext';
 import icons from '../../assets/icons';
 import HomeScreen from '../../screens/HomeScreen';
-import ProfileScreen from '../../screens/ProfileScreen';
 import { StackScreenProps } from '@react-navigation/stack';
 import { MainStackParamList } from '.';
 import HistoryScreen from '../../screens/HistoryScreen';
+import ProfileScreen from '../../screens/ProfileScreen';
+import NotificationScreen from '../../screens/NotificationScreen';
 const Tab = createBottomTabNavigator();
 export default function MainTabBottomNavigator({
   route,
@@ -31,19 +32,19 @@ export default function MainTabBottomNavigator({
       iconInactive: icons.HistoryInactive,
       component: HistoryScreen,
     },
-    {
-      name: 'order',
-      title: t('tabs.OrderTab.title'),
-      iconActive: icons.OrderActive,
-      iconInactive: icons.OrderInactive,
-      component: View,
-    },
+    // {
+    //   name: 'order',
+    //   title: t('tabs.OrderTab.title'),
+    //   iconActive: icons.OrderActive,
+    //   iconInactive: icons.OrderInactive,
+    //   component: View,
+    // },
     {
       name: 'notification',
       title: t('tabs.NotificationTab.title'),
       iconActive: icons.NotificationActive,
       iconInactive: icons.NotificationInactive,
-      component: View,
+      component: NotificationScreen,
     },
     {
       name: 'profile',

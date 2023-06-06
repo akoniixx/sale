@@ -19,7 +19,7 @@ export default function HomeScreen({ navigation }: Props): JSX.Element {
   } = useAuth();
 
   useEffect(() => {
-    if (!state?.user) {
+    if (!state?.user?.userStaffId) {
       getUser();
     }
   }, [state?.user, getUser]);
@@ -57,6 +57,7 @@ export default function HomeScreen({ navigation }: Props): JSX.Element {
                 <Image
                   source={{
                     uri: state.user?.profileImage,
+                    cache: 'reload',
                   }}
                   style={{
                     width: 62,

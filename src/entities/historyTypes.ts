@@ -32,6 +32,7 @@ export interface HistoryDataType {
   createAt: string;
   updateAt: string;
   updateBy: string;
+  numberPlate: string;
   orderProducts: {
     baseUom: string;
     commonName: string;
@@ -46,9 +47,10 @@ export interface HistoryDataType {
     productImage: string | null;
     qtySaleUnit: number;
     quantity: number;
-    saleUom: string;
-    saleUomTh: string;
+    saleUOM: string;
+    saleUOMTH: string;
     shipmentOrder: number;
     totalPrice: number;
+    isFreebie: boolean;
   }[];
 }

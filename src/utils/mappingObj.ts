@@ -1,18 +1,22 @@
-import { colors } from '../assets/colors/colors';
-
-export const statusHistory = {
+export const statusHistory = (company: string) => ({
   WAIT_APPROVE_ORDER: 'รออนุมัติคำสั่งซื้อ',
-  REJECT_ORDER: 'ยกเลิกคำสั่งซื้อ',
+  REJECT_ORDER: 'ไม่อนุมัติคำสั่งซื้อ',
   WAIT_CONFIRM_ORDER: 'รอยืนยันคำสั่งซื้อ',
   CONFIRM_ORDER: 'ร้านยืนยันคำสั่งซื้อแล้ว',
   SHOPAPP_CANCEL_ORDER: 'ร้านยกเลิกคำสั่งซื้อ',
   OPEN_ORDER: 'เปิดคำสั่งซื้อ',
-  IN_DELIVERY: 'กำลังจัดส่ง',
-  DELIVERY_SUCCESS: 'ลูกค้ารับสินค้าแล้ว',
+  IN_DELIVERY:
+    company === 'ICPI' || company === 'ICPF' ? 'รอขึ้นสินค้า' : 'กำลังจัดส่ง',
+  DELIVERY_SUCCESS:
+    company === 'ICPI' || company === 'ICPF'
+      ? 'ขึ้นสินค้าเรียบร้อยแล้ว'
+      : 'ลูกค้ารับสินค้าแล้ว',
   COMPANY_CANCEL_ORDER: 'ยกเลิกคำสั่งซื้อโดยบริษัท',
-};
+});
 export const statusHistoryColor = {
   WAIT_APPROVE_ORDER: 'waiting',
+  REJECT_ORDER: 'error',
+
   WAIT_CONFIRM_ORDER: 'warning',
   CONFIRM_ORDER: 'primary',
   SHOPAPP_CANCEL_ORDER: 'error',
@@ -22,6 +26,7 @@ export const statusHistoryColor = {
   COMPANY_CANCEL_ORDER: 'error',
 };
 export const statusHistoryBGColor = {
+  REJECT_ORDER: 'rgba(255, 93, 93, 0.16)',
   WAIT_APPROVE_ORDER: 'rgba(255, 136, 36, 0.16)',
   WAIT_CONFIRM_ORDER: 'rgba(244, 191, 0, 0.16)',
   CONFIRM_ORDER: 'rgba(76, 149, 255, 0.16)',

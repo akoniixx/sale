@@ -5,6 +5,7 @@ import {
   StyleSheet,
   ScrollView,
   SafeAreaView,
+  Dimensions,
 } from 'react-native';
 import React, { useEffect } from 'react';
 import { StackScreenProps } from '@react-navigation/stack';
@@ -16,17 +17,18 @@ import Content from '../../components/Content/Content';
 import Text from '../../components/Text/Text';
 import images from '../../assets/images';
 import DashedLine from 'react-native-dashed-line';
-import { numberWithCommas } from '../../utils/functions';
+import { getNewPath, numberWithCommas } from '../../utils/functions';
 import Button from '../../components/Button/Button';
 import { orderServices } from '../../services/OrderServices';
 import { OrderDetailType } from '../../entities/orderTypes';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import ImageCache from '../../components/ImageCache/ImageCache';
 
 const mappingStatusHeader = {
-  WAIT_APPROVE_ORDER: 'รอยืนยันคำสั่งซื้อ',
+  WAIT_CONFIRM_ORDER: 'รอยืนยันคำสั่งซื้อ',
 };
 const mappingStatus = {
-  WAIT_APPROVE_ORDER: 'รอยืนยันคำสั่งซื้อจากร้านค้า',
+  WAIT_CONFIRM_ORDER: 'รอยืนยันคำสั่งซื้อจากร้านค้า',
 };
 export default function OrderSuccessScreen({
   navigation,
@@ -51,7 +53,6 @@ export default function OrderSuccessScreen({
     product_brand_name: string;
     company: string;
   } | null>(null);
-
   useEffect(() => {
     const getOrderByOrderId = async () => {
       try {
@@ -66,40 +67,33 @@ export default function OrderSuccessScreen({
             status: string;
             productImage: string;
           }[] = [];
-          response.orderProducts.map((el: any) => {
-            return el.orderProductPromotions.map((el2: any) => {
-              if (el2.promotionType === 'FREEBIES_NOT_MIX') {
-                const freebieList = el2.conditionDetail.condition;
-                freebieList.forEach((f: any) => {
-                  const freebies = f.freebies;
-                  freebies.forEach((fr: any) => {
-                    if (fr.productFreebiesId) {
-                      const newObj = {
-                        productName: fr.productName,
-                        id: fr.productFreebiesId,
-                        quantity: fr.quantity,
-                        baseUnit: fr.baseUnitOfMeaTh || fr.baseUnitOfMeaEn,
-                        status: fr.productFreebiesStatus,
-                        productImage: fr.productFreebiesImage,
-                      };
-                      fbList.push(newObj);
-                    } else {
-                      const newObj = {
-                        productName: fr.productName,
-                        id: fr.productId,
-                        quantity: fr.quantity,
-                        baseUnit: fr.saleUOMTH || fr.saleUOM || '',
-                        status: fr.productStatus,
-                        productImage: fr.productImage,
-                      };
 
-                      fbList.push(newObj);
-                    }
-                  });
-                });
+          response.orderProducts
+            .filter((el: any) => el.isFreebie)
+            .map((fr: any) => {
+              if (fr.productFreebiesId) {
+                const newObj = {
+                  productName: fr.productName,
+                  id: fr.productFreebiesId,
+                  quantity: fr.quantity,
+                  baseUnit: fr.baseUnitOfMeaTh || fr.baseUnitOfMeaEn,
+                  status: fr.productFreebiesStatus,
+                  productImage: fr.productFreebiesImage,
+                };
+                fbList.push(newObj);
+              } else {
+                const newObj = {
+                  productName: fr.productName,
+                  id: fr.productId,
+                  quantity: fr.quantity,
+                  baseUnit: fr.saleUOMTH || fr.saleUOM || '',
+                  status: fr.productStatus,
+                  productImage: fr.productImage,
+                };
+
+                fbList.push(newObj);
               }
             });
-          });
           setFreebieList(fbList);
           setOrderData(response);
         }
@@ -116,9 +110,10 @@ export default function OrderSuccessScreen({
   const listProduct = orderData?.orderProducts.map(el => {
     return {
       productName: el.productName,
-      unit: el.saleUom,
+      unit: el.saleUOMTH || el.saleUOM || '',
       totalPrice: el.totalPrice,
       quantity: el.quantity,
+      isFreebie: el.isFreebie,
     };
   });
   return (
@@ -247,19 +242,33 @@ export default function OrderSuccessScreen({
                     </Text>
                   </View>
                   {(listProduct || []).map((el, idx) => {
+                    if (el.isFreebie) {
+                      return null;
+                    }
                     return (
                       <View
                         key={idx}
                         style={{
                           flexDirection: 'row',
                           justifyContent: 'space-between',
-                          alignItems: 'center',
                           marginTop: 16,
                         }}>
-                        <Text color="text2" fontSize={14}>
-                          {el.productName} {`${el.quantity}x`} {`(${el.unit})`}
+                        <Text
+                          color="text2"
+                          fontSize={14}
+                          style={{
+                            width: Dimensions.get('window').width / 2,
+                          }}>
+                          {el.productName} {`   ${el.quantity}x`}{' '}
+                          {`(${el.unit})`}
                         </Text>
-                        <Text fontFamily="NotoSans" color="text2" fontSize={14}>
+                        <Text
+                          fontFamily="NotoSans"
+                          color="text2"
+                          fontSize={14}
+                          style={{
+                            marginTop: 4,
+                          }}>
                           {`฿${numberWithCommas(el.totalPrice, true)}`}
                         </Text>
                       </View>
@@ -311,18 +320,34 @@ export default function OrderSuccessScreen({
                               flexDirection: 'row',
                               alignItems: 'center',
                             }}>
-                            <Image
-                              source={images.emptyProduct}
-                              style={{
-                                width: 56,
-                                height: 56,
-                              }}
-                            />
+                            {el.productImage ? (
+                              <ImageCache
+                                uri={getNewPath(el.productImage)}
+                                style={{
+                                  width: 56,
+                                  height: 56,
+                                }}
+                              />
+                            ) : (
+                              <Image
+                                source={images.emptyProduct}
+                                style={{
+                                  width: 56,
+                                  height: 56,
+                                }}
+                              />
+                            )}
                             <View
                               style={{
                                 marginLeft: 8,
                               }}>
-                              <Text fontSize={14} color="text3" lineHeight={24}>
+                              <Text
+                                fontSize={14}
+                                color="text3"
+                                lineHeight={24}
+                                style={{
+                                  width: Dimensions.get('window').width / 2,
+                                }}>
                                 {el.productName}
                               </Text>
                               <Text fontSize={14}>
@@ -358,7 +383,14 @@ export default function OrderSuccessScreen({
                     alignItems: 'center',
                     marginTop: 16,
                   }}>
-                  <TouchableOpacity style={{ height: 40 }}>
+                  <TouchableOpacity
+                    style={{ height: 40 }}
+                    onPress={() => {
+                      navigation.navigate('HistoryDetailScreen', {
+                        orderId: orderData.orderId,
+                        headerTitle: 'รายละเอียดคำสั่งซื้อ',
+                      });
+                    }}>
                     <Text color="primary" fontSize={14} lineHeight={24}>
                       ดูรายละเอียดคำสั่งซื้อนี้
                     </Text>

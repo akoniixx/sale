@@ -17,14 +17,13 @@ const getAllProducts = async ({
   const payload: ProductTypeParams = {
     page,
     take,
-    customerId,
     company,
     productBrandId,
     customerCompanyId,
+    isPromotion,
+    productStatus: 'ACTIVE',
   };
-  if (isPromotion) {
-    payload.isPromotion = isPromotion;
-  }
+
   if (productCategoryId) {
     payload.productCategoryId = productCategoryId;
   }

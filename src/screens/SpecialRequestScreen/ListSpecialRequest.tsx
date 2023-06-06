@@ -8,7 +8,11 @@ import {
 import React, { useEffect } from 'react';
 import { newProductType, useCart } from '../../contexts/CartContext';
 import { colors } from '../../assets/colors/colors';
-import { getNewPath, numberWithCommas } from '../../utils/functions';
+import {
+  getNewPath,
+  numberReturnString,
+  numberWithCommas,
+} from '../../utils/functions';
 import ImageCache from '../../components/ImageCache/ImageCache';
 import images from '../../assets/images';
 import Text from '../../components/Text/Text';
@@ -24,7 +28,8 @@ export default function ListSpecialRequest({
   item,
   setIsShow,
 }: Props): JSX.Element {
-  const alreadyHaveSpecialRequest = item.specialRequestDiscount > 0;
+  const alreadyHaveSpecialRequest = item.specialRequest > 0;
+
   const [loading, setLoading] = React.useState(false);
   const [isShowInput, setIsShowInput] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
@@ -35,7 +40,9 @@ export default function ListSpecialRequest({
     cartApi: { postCartItem, getCartList },
   } = useCart();
   const onRemoveSpecialRequest = async ({ id }: { id: string }) => {
-    const findIndex = cartList.findIndex(el => el.productId === id);
+    const findIndex = cartList.findIndex(
+      el => el.productId.toString() === id.toString(),
+    );
     const newCartList = [...cartList];
     try {
       setLoading(true);
@@ -47,9 +54,8 @@ export default function ListSpecialRequest({
         },
         ...newCartList.slice(findIndex + 1),
       ];
-      const result = await postCartItem(payload);
-      await getCartList();
-      setCartList(result);
+      await postCartItem(payload);
+      setCartList(payload);
       return null;
     } catch (error) {
       console.log(error);
@@ -136,12 +142,13 @@ export default function ListSpecialRequest({
           <View>
             <Text>{item?.productName}</Text>
             <Text color="text3">{`฿ ${numberWithCommas(
-              item?.totalPrice,
+              Number(item?.totalPrice),
+              true,
             )}`}</Text>
           </View>
         </View>
         <View>
-          <Text>{`${item?.amount}x (${item.saleUomTH || item.saleUom})`}</Text>
+          <Text>{`${item?.amount}x (${item.saleUOMTH || item.saleUOM})`}</Text>
         </View>
       </View>
       <View style={styles.card}>
@@ -242,11 +249,15 @@ export default function ListSpecialRequest({
                     setIsShow(false);
                   }}
                   onChangeText={text => {
-                    const convertText = text.replace(/[^0-9]/g, '');
+                    const convertToNumberDecimal = text.replace(/[^0-9.]/g, '');
                     setError(null);
-                    setSpecialRequestValue(convertText);
+                    setSpecialRequestValue(convertToNumberDecimal);
                   }}
-                  value={numberWithCommas(specialRequestValue).toString()}
+                  allowFontScaling={false}
+                  value={numberReturnString(
+                    specialRequestValue,
+                    true,
+                  ).toString()}
                   placeholderTextColor={colors.text3}
                   style={{
                     flex: 0.7,
@@ -264,7 +275,7 @@ export default function ListSpecialRequest({
                     flex: 0.3,
                     textAlign: 'right',
                   }}>
-                  {`฿/${item?.saleUomTH || item?.saleUom}`}
+                  {`฿/${item?.saleUOMTH || item?.saleUOM}`}
                 </Text>
               </View>
               <Button
@@ -298,7 +309,10 @@ export default function ListSpecialRequest({
                     borderRadius: 8,
                     width: '100%',
                   }}>
-                  <Text>{`฿ ${numberWithCommas(item.specialRequest)}`}</Text>
+                  <Text>{`฿ ${numberWithCommas(
+                    item.specialRequest,
+                    true,
+                  )}`}</Text>
                   <Text
                     fontFamily="NotoSans"
                     bold
@@ -306,7 +320,7 @@ export default function ListSpecialRequest({
                     style={{
                       textAlign: 'right',
                     }}>
-                    {`/${item?.saleUomTH || item?.saleUom}`}
+                    {`/${item?.saleUOMTH || item?.saleUOM}`}
                   </Text>
                 </View>
               ) : (

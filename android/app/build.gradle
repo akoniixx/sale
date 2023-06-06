@@ -257,7 +257,7 @@ dependencies {
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
 
     // Firebase dependencies
-    implementation platform('com.google.firebase:firebase-bom:31.0.2')
+    implementation platform('com.google.firebase:firebase-bom:31.5.0')
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
         exclude group:'com.facebook.fbjni'

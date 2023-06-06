@@ -22,7 +22,11 @@ import InputTextForm from '../../Form/InputTextForm';
 import * as Yup from 'yup';
 import { SubmitButton } from '../../Form/SubmitButton';
 import { factoryServices } from '../../../services/FactorySevices';
+import { useAuth } from '../../../contexts/AuthContext';
 export default function SelectLocationSheet(props: SheetProps) {
+  const {
+    state: { user },
+  } = useAuth();
   const [selected, setSelected] = React.useState('SHOP');
   const [storeAddress, setStoreAddress] = React.useState({
     name: '',
@@ -63,7 +67,7 @@ export default function SelectLocationSheet(props: SheetProps) {
   ];
   useEffect(() => {
     const getFactory = async () => {
-      const factoryData = await factoryServices.getFactory();
+      const factoryData = await factoryServices.getFactory(user?.company || '');
       setFactoryAddress({
         name: factoryData.factoryName,
         addressText: `${factoryData.address} ${factoryData.subDistrict} ${factoryData.district} ${factoryData.province} ${factoryData.postcode}`,

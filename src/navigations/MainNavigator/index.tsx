@@ -1,5 +1,8 @@
 import React, { useEffect } from 'react';
-import { createStackNavigator } from '@react-navigation/stack';
+import {
+  createStackNavigator,
+  StackScreenProps,
+} from '@react-navigation/stack';
 import MainTabBottomNavigator from './MainTabBottomNavigator';
 import SelectStoreScreen from '../../screens/SelectStoreScreen';
 import StoreDetailScreen from '../../screens/StoreDetailScreen';
@@ -13,6 +16,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { navigate } from '../RootNavigator';
 import SpecialRequestScreen from '../../screens/SpecialRequestScreen';
 import HistoryDetailScreen from '../../screens/HistoryDetailScreen';
+import SettingNotificationScreen from '../../screens/SettingNotificationScreen';
+import TCReadOnlyScreen from '../../screens/TCReadOnlyScreen';
 
 export type MainStackParamList = {
   MainScreen: {
@@ -61,6 +66,8 @@ export type MainStackParamList = {
     orderId: string;
     headerTitle: string;
   };
+  TCReadOnlyScreen: undefined;
+  SettingNotificationScreen: undefined;
 };
 const Stack = createStackNavigator<MainStackParamList>();
 export default function MainNavigator() {
@@ -75,6 +82,7 @@ export default function MainNavigator() {
     };
     getAlreadyAcceptTerm();
   }, []);
+
   return (
     <Stack.Navigator
       screenOptions={{ headerShown: false, gestureEnabled: false }}>
@@ -119,6 +127,11 @@ export default function MainNavigator() {
           component={HistoryDetailScreen}
         />
       </Stack.Group>
+      <Stack.Screen
+        name="SettingNotificationScreen"
+        component={SettingNotificationScreen}
+      />
+      <Stack.Screen name="TCReadOnlyScreen" component={TCReadOnlyScreen} />
     </Stack.Navigator>
   );
 }

@@ -18,8 +18,10 @@ const StoreDetailScreen = ({
   route,
 }: StackScreenProps<MainStackParamList, 'StoreDetailScreen'>) => {
   const { name, productBrand } = route.params;
+  const [page, setPage] = React.useState(1);
+
   const {
-    cartApi: { getCartList },
+    cartApi: { getCartList, postCartItem },
     setCartList,
   } = useCart();
   const [loadingApi, setLoadingApi] = React.useState<boolean>(false);
@@ -27,7 +29,11 @@ const StoreDetailScreen = ({
     const fetchData = async () => {
       try {
         setLoadingApi(true);
-        await getCartList();
+        const { orderProducts } = await getCartList();
+        if (orderProducts && orderProducts.length > 0) {
+          await postCartItem(orderProducts);
+        }
+        setLoadingApi(false);
       } catch (e) {
         console.log(e);
       } finally {
@@ -35,13 +41,17 @@ const StoreDetailScreen = ({
       }
     };
     fetchData();
-  }, [getCartList]);
+  }, []);
   const { t } = useLocalization();
   const [searchValue, setSearchValue] = React.useState<string | undefined>(
     undefined,
   );
-  const [debounceSearchValue] = useDebounce(searchValue, 500);
-
+  const [debounceSearchValue, setDebounceSearchValue] = React.useState<
+    string | undefined
+  >('');
+  const onSearch = (v: string | undefined) => {
+    setDebounceSearchValue(v);
+  };
   return (
     <Container
       containerStyles={{
@@ -72,14 +82,20 @@ const StoreDetailScreen = ({
               paddingHorizontal: 16,
             }}>
             <SearchInput
+              onSearch={onSearch}
               placeholder={t('screens.StoreDetailScreen.searchPlaceholder')}
               value={searchValue}
               onChange={v => {
+                setPage(1);
                 setSearchValue(v);
               }}
             />
           </View>
+
           <ListItem
+            page={page}
+            setPage={setPage}
+            loadingApi={loadingApi}
             nameDealer={name}
             navigation={navigation}
             debounceSearchValue={debounceSearchValue}

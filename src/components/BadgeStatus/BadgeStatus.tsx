@@ -6,14 +6,20 @@ import {
   statusHistoryBGColor,
   statusHistoryColor,
 } from '../../utils/mappingObj';
+import { useAuth } from '../../contexts/AuthContext';
 interface Props {
   status: string;
 }
 
 export default function BadgeStatus({ status }: Props) {
+  const {
+    state: { user },
+  } = useAuth();
   const color: any =
     statusHistoryColor[status as keyof typeof statusHistoryColor];
-  const title = statusHistory[status as keyof typeof statusHistory];
+  const title = statusHistory(user?.company || '')[
+    status as keyof typeof statusHistory
+  ];
 
   return (
     <View
@@ -27,6 +33,7 @@ export default function BadgeStatus({ status }: Props) {
         alignItems: 'center',
         paddingHorizontal: 16,
         paddingVertical: 4,
+        overflow: 'hidden',
       }}>
       <Text color={color} fontSize={14} semiBold fontFamily="NotoSans">
         {title}

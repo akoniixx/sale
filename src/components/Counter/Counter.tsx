@@ -2,10 +2,10 @@ import { StyleSheet, TextInput, Image, View, Pressable } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import Button from '../Button/Button';
 import icons from '../../assets/icons';
-import { debounce } from 'lodash';
+
 import { useLocalization } from '../../contexts/LocalizationContext';
 import ModalWarning from '../Modal/ModalWarning';
-import { numberWithCommas } from '../../utils/functions';
+import { numberReturnString } from '../../utils/functions';
 
 interface Props {
   currentQuantity: number;
@@ -14,14 +14,15 @@ interface Props {
   id: string | number;
   onIncrease?: (id: string | number) => void;
   onDecrease?: (id: string | number) => void;
+  setCounter?: React.Dispatch<React.SetStateAction<number>>;
 }
 export default function Counter({
   currentQuantity,
   onChangeText,
-  onBlur,
   onDecrease,
   onIncrease,
   id,
+  setCounter,
 }: Props): JSX.Element {
   const [quantity, setQuantity] = useState('0');
   const { t } = useLocalization();
@@ -29,19 +30,13 @@ export default function Counter({
   useEffect(() => {
     if (+currentQuantity > 0) {
       setQuantity(currentQuantity.toString());
+      setCounter?.(currentQuantity);
     } else {
       setQuantity('0');
+      setCounter?.(0);
     }
-  }, [currentQuantity]);
-  // const debouncedSearch = useRef(
-  //   debounce(quantity => {
-  //     if (+quantity < 1 && currentQuantity > 0) {
-  //       setIsModalVisible(true);
-  //     } else {
-  //       onChangeText?.({ id, quantity });
-  //     }
-  //   }, 1000),
-  // ).current;
+  }, [currentQuantity, setCounter]);
+
   const onBlurInput = () => {
     if (currentQuantity.toString() === quantity.toString()) {
       return;
@@ -50,6 +45,8 @@ export default function Counter({
       setIsModalVisible(true);
     } else {
       onChangeText?.({ id, quantity });
+      setQuantity('0');
+      setCounter?.(0);
     }
   };
   const inputRef = useRef<TextInput>(null);
@@ -60,11 +57,19 @@ export default function Counter({
           if (onDecrease) {
             onDecrease(id);
             setQuantity(prev => {
-              if (+prev > 0) {
+              if (+prev >= 5) {
                 return (+prev - 5).toFixed(2);
               }
-              return +prev < 1 ? '0.00' : prev;
+              return +prev - 5 < 1 ? '0' : prev;
             });
+            if (setCounter) {
+              setCounter(prev => {
+                if (+prev >= 5) {
+                  return +prev - 5;
+                }
+                return +prev - 5 < 1 ? 0 : prev;
+              });
+            }
           }
         }}
         iconFont={
@@ -91,7 +96,8 @@ export default function Counter({
           autoCapitalize="none"
           ref={inputRef}
           maxLength={5}
-          value={numberWithCommas(quantity).toString()}
+          allowFontScaling={false}
+          value={numberReturnString(quantity).toString()}
           keyboardType="numeric"
           style={{
             fontFamily: 'NotoSansThai-Bold',
@@ -107,6 +113,9 @@ export default function Counter({
             const value = text.replace(/[^0-9.]/g, '');
 
             setQuantity(value);
+            if (setCounter) {
+              setCounter(+value);
+            }
           }}
           onBlur={onBlurInput}
         />
@@ -117,6 +126,11 @@ export default function Counter({
           setQuantity(prev => {
             return (+prev + 5).toString();
           });
+          if (setCounter) {
+            setCounter(prev => {
+              return prev + 5;
+            });
+          }
         }}
         iconFont={
           <Image
@@ -140,10 +154,12 @@ export default function Counter({
         onConfirm={() => {
           setIsModalVisible(false);
           onChangeText?.({ id, quantity });
+          setCounter?.(0);
         }}
         onRequestClose={() => {
           setIsModalVisible(false);
           setQuantity(currentQuantity.toString());
+          setCounter?.(currentQuantity);
           onChangeText?.({
             id,
             quantity: currentQuantity.toString(),

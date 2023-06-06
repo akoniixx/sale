@@ -8,11 +8,13 @@ import CustomerItem from './CustomerItem';
 import { HistoryTypeStore } from '.';
 
 interface Props {
+  setPage: React.Dispatch<React.SetStateAction<number>>;
   data: HistoryDataType[];
   navigation?: any;
   fetchDataMore: () => Promise<void>;
   typeSearch?: string;
   dataCustomer?: HistoryTypeStore[];
+  setCustomerName: React.Dispatch<React.SetStateAction<string | undefined>>;
   setCustomerCompanyId: React.Dispatch<
     React.SetStateAction<number | undefined>
   >;
@@ -24,7 +26,9 @@ export default function ContentBody({
   fetchDataMore,
   typeSearch,
   dataCustomer,
+  setPage,
   setCustomerCompanyId,
+  setCustomerName,
   customerCompanyId,
 }: Props) {
   const EmptyItem = () => {
@@ -48,8 +52,10 @@ export default function ContentBody({
       </View>
     );
   };
-  const onPressCustomer = (id: number) => {
+  const onPressCustomer = (id: number, customerName: string) => {
+    setPage(1);
     setCustomerCompanyId(id);
+    setCustomerName(customerName);
   };
   const isHasCustomerId = useMemo(() => {
     return !!customerCompanyId;

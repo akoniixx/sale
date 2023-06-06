@@ -6,17 +6,16 @@ import images from '../../assets/images';
 import icons from '../../assets/icons';
 import { HistoryTypeStore } from '.';
 import ImageCache from '../../components/ImageCache/ImageCache';
-import { getNewPath } from '../../utils/functions';
 
 interface Props extends HistoryTypeStore {
   navigation: any;
-  onPress?: (id: number) => void;
+  onPress?: (id: number, customerName: string) => void;
 }
 export default function CustomerItem({ ...props }: Props) {
   return (
     <TouchableOpacity
       onPress={() => {
-        props.onPress?.(props.customerCompanyId);
+        props.onPress?.(props.customerCompanyId, props.customerName);
       }}
       style={styles.card}>
       <View
@@ -25,8 +24,10 @@ export default function CustomerItem({ ...props }: Props) {
         }}>
         {props.customerImage ? (
           <ImageCache
-            uri={getNewPath(props.customerImage)}
+            resizeMode="cover"
+            uri={props.customerImage}
             style={{
+              borderRadius: 12,
               width: 60,
               height: 60,
             }}
@@ -63,8 +64,8 @@ export default function CustomerItem({ ...props }: Props) {
             fontSize={14}
             style={{
               marginTop: 4,
-            }}>{`${props.zone}`}</Text>
-          <TouchableOpacity style={styles.invoiceButton}>
+            }}>{`${props.zone} | ${props.customerProvince} `}</Text>
+          <View style={styles.invoiceButton}>
             <Image
               source={icons.invoice}
               style={{
@@ -81,7 +82,7 @@ export default function CustomerItem({ ...props }: Props) {
               }}>
               {props.orderCount} คำสั่งซื้อ
             </Text>
-          </TouchableOpacity>
+          </View>
         </View>
       </View>
     </TouchableOpacity>

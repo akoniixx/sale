@@ -554,11 +554,13 @@
 				DEVELOPMENT_TEAM = 9ZXXDP8F5K;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = SellcodaSale/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = SellCodaSales;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.business";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.5.11;
+				MARKETING_VERSION = 2.5.12;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -582,11 +584,13 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 9ZXXDP8F5K;
 				INFOPLIST_FILE = SellcodaSale/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = SellCodaSales;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.business";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.5.11;
+				MARKETING_VERSION = 2.5.12;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",

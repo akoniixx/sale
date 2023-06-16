@@ -1,6 +1,6 @@
 {
   "name": "SellcodaSale",
-  "version": "2.5.5",
+  "version": "2.5.12",
   "private": true,
   "scripts": {
     "android": "react-native run-android",

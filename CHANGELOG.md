@@ -1,5 +1,7 @@
-
 ## [Version - 2]
+
+## Fix [v2.5.12] - 2023-06-12
+- fix icon and name app 
 ## Improve [v2.5.5] - Release Date: 2023-04-27
 - Add MicroLoading Skeleton CartScreen 
 ## Features [v2.5.4] - Release Date: 2023-04-20

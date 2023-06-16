@@ -1625,6 +1625,14 @@
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.191.tgz#09511e7f7cba275acd8b419ddac8da9a6a79e2fa"
   integrity sha512-BdZ5BCCvho3EIXw6wUCXHe7rS53AIDPLE+JzwgT+OsJk53oBfbSmZZ7CX4VaRoN78N+TJpFi9QPlfIVNmJYWxQ==
 
+"@types/node-fetch@*":
+  version "2.6.4"
+  resolved "https://registry.yarnpkg.com/@types/node-fetch/-/node-fetch-2.6.4.tgz#1bc3a26de814f6bf466b25aeb1473fa1afe6a660"
+  integrity sha512-1ZX9fcN4Rvkvgv4E6PAY5WXUFWFcRWxZa3EW83UjycOB9ljJCedb2CupIP4RZMEwF/M3eTcCihbBRgwtGbg5Rg==
+  dependencies:
+    "@types/node" "*"
+    form-data "^3.0.0"
+
 "@types/node@*":
   version "18.11.8"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-18.11.8.tgz#16d222a58d4363a2a359656dd20b28414de5d265"
@@ -1644,6 +1652,13 @@
   version "15.7.5"
   resolved "https://registry.yarnpkg.com/@types/prop-types/-/prop-types-15.7.5.tgz#5f19d2b85a98e9558036f6a3cacc8819420f05cf"
   integrity sha512-JCB8C6SnDoQf0cNycqd/35A7MjcnK+ZTqE7judS6o7utxUCg6imJg3QK2qzHKszlTjcj2cn+NwMB2i96ubpj7w==
+
+"@types/react-native-version-check@^3.4.5":
+  version "3.4.5"
+  resolved "https://registry.yarnpkg.com/@types/react-native-version-check/-/react-native-version-check-3.4.5.tgz#ef37c2c6d802923832178e51cf8caf1aa4ce956e"
+  integrity sha512-fWK/2LOo8kTCGkKefM6u2GETUazS13uyyU/UIpzspEb1J6oL47vqhhBJuq/wxYFFV251tXPu6ZE2co0PDNrKrQ==
+  dependencies:
+    "@types/node-fetch" "*"
 
 "@types/react-native@^0.70.6":
   version "0.70.6"
@@ -2651,6 +2666,11 @@ commondir@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/commondir/-/commondir-1.0.1.tgz#ddd800da0c66127393cca5950ea968a3aaf1253b"
   integrity sha512-W9pAhw0ja1Edb5GVdIF1mjZw/ASI0AlShXM83UUGe2DVr5TdAPEA1OA8m/g8zWp9x6On7gqufY+FatDbC3MDQg==
+
+compare-versions@^4.1.3:
+  version "4.1.4"
+  resolved "https://registry.yarnpkg.com/compare-versions/-/compare-versions-4.1.4.tgz#3571f4d610924d4414846a4183d386c8f3d51112"
+  integrity sha512-FemMreK9xNyL8gQevsdRMrvO4lFCkQP7qbuktn1q8ndcNk1+0mz7lgE7b/sNvbhVgY4w6tMN1FDp6aADjqw2rw==
 
 component-emitter@^1.2.1:
   version "1.3.0"
@@ -5126,10 +5146,25 @@ lodash.debounce@^4.0.8:
   resolved "https://registry.yarnpkg.com/lodash.debounce/-/lodash.debounce-4.0.8.tgz#82d79bff30a67c4005ffd5e2515300ad9ca4d7af"
   integrity sha512-FT1yDzDYEoYWhnSGnpE/4Kj1fLZkDFyqRb7fNt6FdYOSxlUWAtp42Eh6Wb0rGIv/m9Bgo7x4GhQbm5Ys4SG5ow==
 
+lodash.isfunction@^3.0.9:
+  version "3.0.9"
+  resolved "https://registry.yarnpkg.com/lodash.isfunction/-/lodash.isfunction-3.0.9.tgz#06de25df4db327ac931981d1bdb067e5af68d051"
+  integrity sha512-AirXNj15uRIMMPihnkInB4i3NHeb4iBtNg9WRWuK2o31S+ePwwNmDPaTL3o7dTJ+VXNZim7rFs4rxN4YU1oUJw==
+
+lodash.isnil@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/lodash.isnil/-/lodash.isnil-4.0.0.tgz#49e28cd559013458c814c5479d3c663a21bfaa6c"
+  integrity sha512-up2Mzq3545mwVnMhTDMdfoG1OurpA/s5t88JmQX809eH3C8491iu2sfKhTfhQtKY78oPNhiaHJUpT/dUDAAtng==
+
 lodash.merge@^4.6.2:
   version "4.6.2"
   resolved "https://registry.yarnpkg.com/lodash.merge/-/lodash.merge-4.6.2.tgz#558aa53b43b661e1925a0afdfa36a9a1085fe57a"
   integrity sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==
+
+lodash.pick@^4.4.0:
+  version "4.4.0"
+  resolved "https://registry.yarnpkg.com/lodash.pick/-/lodash.pick-4.4.0.tgz#52f05610fff9ded422611441ed1fc123a03001b3"
+  integrity sha512-hXt6Ul/5yWjfklSGvLQl8vM//l3FtyHZeuelpzK6mm99pNvN9yTDruNZPEJZD1oWrqo+izBmB7oUfWgcCX7s4Q==
 
 lodash.throttle@^4.1.1:
   version "4.1.1"
@@ -6339,6 +6374,11 @@ react-native-image-picker@^5.3.1:
   resolved "https://registry.yarnpkg.com/react-native-image-picker/-/react-native-image-picker-5.3.1.tgz#836ab13c228174728a0bd68293b27dc5e1affa0f"
   integrity sha512-zRCjtlE3KOeaWDM8gXzTwXfvo3ZeF2XMkHceU7CVCtKRleKxna/E4XWIPu/lXO2qlMdnSx1WvfPSbqzAX0qxpA==
 
+react-native-kill-app@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/react-native-kill-app/-/react-native-kill-app-1.0.4.tgz#34c4408a0d09571dc646e5c78a69f3ce8394e371"
+  integrity sha512-+jLoKGsDxHBgUFgo9zb9quBHd81Y/npVxyHbPEzCBgJv+6fNKNnwehoEH8cZv1Z7wXiTYqRCDawZCV4zSVudSw==
+
 react-native-linear-gradient@^2.6.2:
   version "2.6.2"
   resolved "https://registry.yarnpkg.com/react-native-linear-gradient/-/react-native-linear-gradient-2.6.2.tgz#56598a76832724b2afa7889747635b5c80948f38"
@@ -6382,10 +6422,27 @@ react-native-step-indicator@^1.0.3:
   resolved "https://registry.yarnpkg.com/react-native-step-indicator/-/react-native-step-indicator-1.0.3.tgz#d136ec88639485a338c8ce281035aefd9d169f8f"
   integrity sha512-WwTb6lpJl0T7MV59sus1utoEQuqbuWHq6V0R0iDWmlPRFjM0qirhTNTS5on1+V9Qmc9dsUCT380/mRgDF+U6zw==
 
+react-native-store-version@^1.4.1:
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/react-native-store-version/-/react-native-store-version-1.4.1.tgz#7b73b274295bb0c35cab8c0ec68f7c66b5acb0e5"
+  integrity sha512-CsRT8XYb9eaueujb4xiiMJhiJ2NWlv2jl/easwHuZuDX7GVYArooF70Amv1QV6Hw5Mt0zqiAbGqlQGBAbW57Ww==
+  dependencies:
+    compare-versions "^4.1.3"
+
 react-native-toast-message@^2.1.5:
   version "2.1.5"
   resolved "https://registry.yarnpkg.com/react-native-toast-message/-/react-native-toast-message-2.1.5.tgz#550acb9c6c0f1ee49c6b57b65a56d34e297eb723"
   integrity sha512-mk3rELtBEhrhWBCN6CTaw0gypgL9ZNauX3xx1LUs4uee9vc0pVsghrKxO57vroUCcNL2hDeZSLJWdQNMCkGeaQ==
+
+react-native-version-check@^3.4.7:
+  version "3.4.7"
+  resolved "https://registry.yarnpkg.com/react-native-version-check/-/react-native-version-check-3.4.7.tgz#199d819b95050e874c24f044df79ee2b6bfd83ae"
+  integrity sha512-fkUFaKTiT9DcQSigyTTFcRpClehQlo7MBF1odmX617oFr7zOceUGx6A3bm2GjnfECBsQZoX3WyEBbtdRQlqi2Q==
+  dependencies:
+    lodash.isfunction "^3.0.9"
+    lodash.isnil "^4.0.0"
+    lodash.pick "^4.4.0"
+    semver "^6.1.1"
 
 react-native@0.70.4:
   version "0.70.4"

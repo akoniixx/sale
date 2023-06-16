@@ -5,9 +5,12 @@ import images from '../../assets/images';
 import { useLocalization } from '../../contexts/LocalizationContext';
 import { StackNavigationHelpers } from '@react-navigation/stack/lib/typescript/src/types';
 import { useAsyncStorage } from '@react-native-async-storage/async-storage';
+import { useAuth } from '../../contexts/AuthContext';
+import { colors } from '../../assets/colors/colors';
 
 interface Props {
   data: {
+    isActive: boolean;
     id: string;
     name: string;
     customerNo: string;
@@ -32,6 +35,9 @@ export default function ListSearchResult({
   navigation,
 }: Props): JSX.Element {
   const { t } = useLocalization();
+  const {
+    state: { user },
+  } = useAuth();
   const { setItem } = useAsyncStorage('customerCompanyId');
   const { setItem: setTermPayment } = useAsyncStorage('termPayment');
   const { setItem: setCustomerNo } = useAsyncStorage('customerNo');
@@ -64,8 +70,10 @@ export default function ListSearchResult({
         </View>
       }
       renderItem={({ item }) => {
+        const isBlock = !item.isActive && user?.company === 'ICPL';
         return (
           <TouchableOpacity
+            disabled={isBlock}
             onPress={() => {
               setItem(item.customerCompanyId);
               setTermPayment(item.termPayment);
@@ -93,8 +101,31 @@ export default function ListSearchResult({
               padding: 16,
               borderBottomWidth: 1,
               borderBottomColor: '#E5E5E5',
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
             }}>
-            <Text lineHeight={36}>{item.name}</Text>
+            <Text
+              style={{
+                flex: isBlock ? 0.8 : 1,
+              }}
+              lineHeight={36}
+              color={isBlock ? 'text3' : 'text1'}>
+              {item.name}
+            </Text>
+            {isBlock && (
+              <View
+                style={{
+                  flex: 0.2,
+                  padding: 2,
+                  borderRadius: 8,
+                  backgroundColor: colors.background2,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
+                <Text fontFamily="NotoSans">ปิดใช้งาน</Text>
+              </View>
+            )}
           </TouchableOpacity>
         );
       }}

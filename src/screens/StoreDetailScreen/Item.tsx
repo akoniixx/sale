@@ -18,6 +18,7 @@ import { ProductType } from '../../entities/productType';
 import images from '../../assets/images';
 import FastImage from 'react-native-fast-image';
 import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface Props extends ProductType {
   name?: string;
@@ -57,6 +58,9 @@ export default function Item({
     cartList,
     cartApi: { postCartItem },
   } = useCart();
+  const {
+    state: { user },
+  } = useAuth();
   const [loading, setLoading] = React.useState(false);
 
   const isAlreadyInCart = useMemo(() => {
@@ -214,6 +218,19 @@ export default function Item({
                 height: 28,
               }}
             />
+          )}
+          {user?.company === 'ICPL' && (
+            <Text
+              color="text1"
+              bold
+              style={{
+                height: 28,
+              }}>
+              {`฿${unitPrice}`}
+              <Text color="text3">
+                /{props?.baseUOM ? props?.baseUOM : 'Unit'}
+              </Text>
+            </Text>
           )}
           <Text fontSize={18} bold>
             {t('screens.StoreDetailScreen.price', {

@@ -45,6 +45,7 @@ export default function SelectStoreScreen({ navigation }: Props): JSX.Element {
         customerNo: string;
         customerCompanyId: string;
         termPayment: string;
+        isActive: boolean;
         productBrand: [];
       }[];
     }[]
@@ -89,6 +90,7 @@ export default function SelectStoreScreen({ navigation }: Props): JSX.Element {
           addressText: `${el.address} ${el.subdistrict} ${el.district} ${el.province} ${el.postcode}`,
           name: c.customerName,
         },
+        isActive: c.isActive,
       };
     });
     return newFormat.filter(i => {

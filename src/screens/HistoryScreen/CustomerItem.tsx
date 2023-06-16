@@ -55,8 +55,10 @@ export default function CustomerItem({ ...props }: Props) {
         <View
           style={{
             marginLeft: 16,
+            alignSelf: 'flex-start',
+            flex: 1,
           }}>
-          <Text semiBold lineHeight={28}>
+          <Text semiBold lineHeight={26}>
             {props.customerName}
           </Text>
           <Text
@@ -105,6 +107,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 12,
     marginBottom: 8,
+    flex: 1,
   },
   invoiceButton: {
     backgroundColor: 'rgba(76, 149, 255, 0.16)',

@@ -15,15 +15,57 @@ import messaging, {
 import buddhaEra from 'dayjs/plugin/buddhistEra';
 import dayjs from 'dayjs';
 import SplashScreen from 'react-native-splash-screen';
-import { Platform } from 'react-native';
+import { Alert, Linking, Platform } from 'react-native';
 import {
   firebaseInitialize,
   requestUserPermission,
 } from './src/firebase/notification';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import './src/components/Sheet/sheets.tsx';
+import VersionCheck from 'react-native-version-check';
+import storeVersion from 'react-native-store-version';
+import RNExitApp from 'react-native-kill-app';
 dayjs.extend(buddhaEra);
 const App = () => {
+  const checkVersion = async () => {
+    const isIOS = Platform.OS === 'ios';
+    const currentVersion = VersionCheck.getCurrentVersion();
+    const storeUrl = await VersionCheck.getAppStoreUrl({
+      appID: '1568818575',
+    });
+    const getPackage = await VersionCheck.getPackageName();
+
+    const playStoreUrl = await VersionCheck.getPlayStoreUrl({
+      packageName: getPackage,
+    });
+
+    const { remote } = await storeVersion({
+      version: currentVersion,
+      androidStoreURL: playStoreUrl,
+      iosStoreURL: storeUrl,
+      country: 'TH',
+    });
+    const needUpdate = await VersionCheck.needUpdate({
+      currentVersion,
+      latestVersion: remote,
+    });
+
+    if (needUpdate.isNeeded) {
+      Alert.alert('มีการอัพเดทใหม่', undefined, [
+        {
+          text: 'อัพเดท',
+          onPress: () => {
+            if (isIOS) {
+              Linking.openURL(storeUrl);
+            } else {
+              Linking.openURL(playStoreUrl);
+            }
+            RNExitApp.exitApp();
+          },
+        },
+      ]);
+    }
+  };
   React.useEffect(() => {
     SplashScreen.hide();
     if (Platform.OS === 'ios') {
@@ -66,7 +108,9 @@ const App = () => {
     messaging().onMessage(async remoteMessage => {
       console.log('A new FCM message arrived!', JSON.stringify(remoteMessage));
     });
+    checkVersion();
   }, []);
+
   return (
     <NavigationContainer ref={navigationRef}>
       <LocalizationProvider>

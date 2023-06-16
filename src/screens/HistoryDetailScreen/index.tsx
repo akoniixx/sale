@@ -485,10 +485,13 @@ export default function HistoryDetailScreen({
                           justifyContent: 'space-between',
                           alignItems: 'flex-start',
                           marginTop: 32,
+                          flex: 1,
                         }}>
                         <View
                           style={{
                             flexDirection: 'row',
+                            flex: 0.8,
+                            alignSelf: 'flex-start',
                           }}>
                           {el.productImage ? (
                             <ImageCache
@@ -510,14 +513,9 @@ export default function HistoryDetailScreen({
                           <View
                             style={{
                               marginLeft: 16,
+                              flex: 1,
                             }}>
-                            <Text
-                              semiBold
-                              style={{
-                                width: Dimensions.get('window').width / 2,
-                              }}>
-                              {el.productName}
-                            </Text>
+                            <Text semiBold>{el.productName}</Text>
                             <View
                               style={{
                                 flexDirection: 'row',
@@ -540,7 +538,11 @@ export default function HistoryDetailScreen({
                             </Text>
                           </View>
                         </View>
-                        <View>
+                        <View
+                          style={{
+                            flex: 0.2,
+                            alignItems: 'flex-end',
+                          }}>
                           <Text>
                             {numberWithCommas(el.quantity)}x
                             {`  ${el.saleUOMTH || el.saleUOM}`}
@@ -728,6 +730,8 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
         elevation: 5,
+        marginHorizontal: 2,
+        marginTop: 2,
         marginBottom: -5,
         zIndex: 0,
       },

@@ -1,8 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
-export const API_URL = 'https://api-dev-sellcoda.iconkaset.com';
-// export const API_URL = 'https://api-sellcoda.iconkaset.com';
+// export const API_URL = 'https://api-dev-sellcoda.iconkaset.com';
+export const API_URL = 'https://api-sellcoda.iconkaset.com';
 
 const request = axios.create({
   baseURL: API_URL,

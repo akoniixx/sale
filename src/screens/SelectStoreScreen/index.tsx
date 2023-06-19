@@ -74,8 +74,6 @@ export default function SelectStoreScreen({ navigation }: Props): JSX.Element {
     setFreebieListItem([]);
   }, [user, setCartList, setPromotionList, setFreebieListItem]);
   const data = useMemo(() => {
-    // console.log('listStore', JSON.stringify(listStore, null, 2));
-
     const newFormat = listStore.map(el => {
       const c = el.customerCompany?.[0];
       return {

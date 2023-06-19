@@ -4,8 +4,6 @@ import {
   Image,
   TouchableOpacity,
   Dimensions,
-  KeyboardAvoidingView,
-  Platform,
 } from 'react-native';
 import React, { useMemo } from 'react';
 import Text from '../../components/Text/Text';
@@ -23,7 +21,6 @@ import ModalWarning from '../../components/Modal/ModalWarning';
 import ModalMessage from '../../components/Modal/ModalMessage';
 import ImageCache from '../../components/ImageCache/ImageCache';
 import GiftFromPromotion from './GiftFromPromotion';
-import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
 import SkeletonLoading from '../../components/SkeletonLoading/SkeletonLoading';
 // import SkeletonContent from 'react-native-skeleton-content';
 
@@ -214,6 +211,7 @@ export default function ListItemInCart({
             isUsePromotion && currentDiscount
               ? currentDiscount?.conditionDetail.conditionDiscount
               : 0;
+
           return (
             <View
               key={item.productId}
@@ -354,7 +352,7 @@ export default function ListItemInCart({
                       textDecorationLine:
                         sumDiscount > 0 ? 'line-through' : 'none',
                     }}>
-                    {`฿${numberWithCommas(Number(item?.totalPrice || 0))}`}
+                    {`฿${numberWithCommas(Number(item?.price || 0))}`}
                   </Text>
 
                   {sumDiscount > 0 && !load ? (
@@ -362,7 +360,7 @@ export default function ListItemInCart({
                       <Text bold fontFamily="NotoSans">
                         {`฿${numberWithCommas(
                           sumDiscount > 0
-                            ? Number(item?.totalPrice || 0) - sumDiscount
+                            ? Number(item?.totalPrice || 0)
                             : item?.totalPrice,
                         )}`}
                       </Text>
@@ -438,6 +436,7 @@ export default function ListItemInCart({
         <PromotionSection
           promotionList={promotionList}
           loadingPromo={loadingPromo || loading}
+          loading={loadingAnotherPromotion}
           setLoading={setLoadingAnotherPromotion}
         />
       )}

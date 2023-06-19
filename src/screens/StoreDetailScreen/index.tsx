@@ -9,7 +9,7 @@ import SearchInput from '../../components/SearchInput/SearchInput';
 import ListItem from './ListItem';
 import CartBadge from '../../components/CartBadge/CartBadge';
 import { MainStackParamList } from '../../navigations/MainNavigator';
-import { useDebounce } from '../../hook';
+
 import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
 import { useCart } from '../../contexts/CartContext';
 

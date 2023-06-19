@@ -35,6 +35,7 @@ const styles = ({ isError = false }: InputStyledProps) => {
       paddingVertical: 16,
       fontSize: 16,
       fontFamily: 'Sarabun-Regular',
+      color: colors.text1,
     },
   });
 };

@@ -251,6 +251,7 @@ export default function OrderSuccessScreen({
                         style={{
                           flexDirection: 'row',
                           justifyContent: 'space-between',
+                          alignItems: 'center',
                           marginTop: 16,
                         }}>
                         <Text
@@ -319,6 +320,7 @@ export default function OrderSuccessScreen({
                             style={{
                               flexDirection: 'row',
                               alignItems: 'center',
+                              marginBottom: 16,
                             }}>
                             {el.productImage ? (
                               <ImageCache

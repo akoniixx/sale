@@ -61,6 +61,7 @@ const InputTel = ({ name, errorManual }: Props): JSX.Element => {
                   <TextInput
                     style={{
                       paddingLeft: 16,
+                      color: colors.text1,
                     }}
                     onChangeText={value => onChange(value)}
                     value={value}

@@ -7,6 +7,7 @@ import { useLocalization } from '../../contexts/LocalizationContext';
 import { useCart } from '../../contexts/CartContext';
 import icons from '../../assets/icons';
 import { ProductSummary } from '../../entities/productType';
+import { useDebounce } from '../../hook';
 
 interface Props {
   id: string;
@@ -25,7 +26,7 @@ export default function Footer({
   setLoading,
 }: Props): JSX.Element {
   const { t } = useLocalization();
-  const [disabledButton, setDisabledButton] = useState<boolean>(false);
+
   const [currentCount, setCurrentCount] = useState(0);
   const {
     cartList,
@@ -35,11 +36,38 @@ export default function Footer({
   const currentProduct = cartList?.find(
     item => item?.productId.toString() === id,
   );
+  const [notFirstFetch, setIsNotFirstFetch] = React.useState(false);
+
+  const [debounceCount, loading] = useDebounce(currentProduct?.amount, 500);
+
   useEffect(() => {
     if (currentProduct) {
       setCurrentCount(currentProduct.amount);
     }
   }, [currentProduct]);
+
+  useEffect(() => {
+    const updateAmount = async () => {
+      try {
+        console.log('updateAmount');
+        setLoading(true);
+
+        await postCartItem(cartList);
+
+        setIsAddCart(true);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (debounceCount && notFirstFetch) {
+      updateAmount();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debounceCount]);
+
   const promotionIdList = (productItem?.promotion || []).map(el => {
     return {
       promotionId: el?.promotionId,
@@ -53,24 +81,25 @@ export default function Footer({
     quantity: string;
     id?: any;
   }) => {
-    setLoading(true);
     const findIndex = cartList?.findIndex(
       item => item?.productId.toString() === id.toString(),
     );
     if (findIndex !== -1) {
       const newCartList = [...cartList];
       if (+quantity < 1) {
+        setLoading(true);
+
         newCartList.splice(findIndex, 1);
         setCartList(newCartList);
         await postCartItem(newCartList);
         setIsDelCart(true);
         setLoading(false);
+
         return;
       } else {
         newCartList[findIndex].amount = Number(quantity);
         setCartList(newCartList);
-        await postCartItem(newCartList);
-        setLoading(false);
+        setIsNotFirstFetch(true);
       }
     } else {
       const newCartList: any = [
@@ -83,9 +112,9 @@ export default function Footer({
           order: cartList.length + 1,
         },
       ];
-      await postCartItem(newCartList);
       setCartList(newCartList);
       setLoading(false);
+      setIsNotFirstFetch(true);
     }
   };
   const onIncrease = async () => {
@@ -98,7 +127,6 @@ export default function Footer({
       newCartList[findIndex].amount += 5;
 
       setCartList(newCartList);
-      await postCartItem(newCartList);
     } else {
       const newCartList: any = [
         ...cartList,
@@ -111,9 +139,8 @@ export default function Footer({
         },
       ];
       setCartList(newCartList);
-      await postCartItem(newCartList);
     }
-    setIsAddCart(true);
+    setIsNotFirstFetch(true);
   };
   const onDecrease = async () => {
     const findIndex = cartList?.findIndex(
@@ -126,7 +153,7 @@ export default function Footer({
       if (amount > 5) {
         newCartList[findIndex].amount -= 5;
         setCartList(newCartList);
-        await postCartItem(newCartList);
+        setIsNotFirstFetch(true);
       } else {
         newCartList.splice(findIndex, 1);
         setCartList(newCartList);
@@ -137,32 +164,32 @@ export default function Footer({
   };
   const onOrder = async () => {
     try {
-      setDisabledButton(true);
-      const findIndex = cartList?.findIndex(
-        item => item?.productId.toString() === id,
-      );
+      // setDisabledButton(true);
+      // const findIndex = cartList?.findIndex(
+      //   item => item?.productId.toString() === id,
+      // );
 
-      if (findIndex !== -1) {
-        const newCartList = [...cartList];
-        newCartList[findIndex].amount = currentCount;
-        setCartList(newCartList);
-        await postCartItem(newCartList);
-      } else {
-        const newCartList: any = [
-          ...cartList,
-          {
-            ...productItem,
-            productId: id,
-            amount: currentCount,
-            orderProductPromotions: promotionIdList,
-            order: cartList?.length + 1,
-          },
-        ];
-        setCartList(newCartList);
-        await postCartItem(newCartList);
-      }
-      setIsAddCart(true);
-      setDisabledButton(false);
+      // if (findIndex !== -1) {
+      //   const newCartList = [...cartList];
+      //   newCartList[findIndex].amount = currentCount;
+      //   setCartList(newCartList);
+      //   await postCartItem(newCartList);
+      // } else {
+      //   const newCartList: any = [
+      //     ...cartList,
+      //     {
+      //       ...productItem,
+      //       productId: id,
+      //       amount: currentCount,
+      //       orderProductPromotions: promotionIdList,
+      //       order: cartList?.length + 1,
+      //     },
+      //   ];
+      //   setCartList(newCartList);
+      //   await postCartItem(newCartList);
+      // }
+      // setIsAddCart(true);
+      // setDisabledButton(false);
 
       navigation.navigate('CartScreen');
     } catch (e) {
@@ -195,7 +222,7 @@ export default function Footer({
         }}>
         <Button
           onPress={onOrder}
-          disabled={currentCount <= 0 || disabledButton}
+          disabled={currentCount <= 0 || loading}
           title={t('screens.ProductDetailScreen.orderButton')}
           iconBack={
             <Image

@@ -5,7 +5,7 @@ import {
   TouchableOpacity,
   Platform,
 } from 'react-native';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import Text from '../../components/Text/Text';
 import { colors } from '../../assets/colors/colors';
 import { useLocalization } from '../../contexts/LocalizationContext';
@@ -19,6 +19,7 @@ import images from '../../assets/images';
 import FastImage from 'react-native-fast-image';
 import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
 import { useAuth } from '../../contexts/AuthContext';
+import { useDebounce } from '../../hook';
 
 interface Props extends ProductType {
   name?: string;
@@ -44,6 +45,7 @@ export default function Item({
   promotion,
   ...props
 }: Props): JSX.Element {
+  const [notFirstFetch, setIsNotFirstFetch] = React.useState(false);
   const isPromo = promotion && promotion?.length > 0;
   const orderProductPromotions = promotion?.map((el: any) => {
     return {
@@ -68,6 +70,31 @@ export default function Item({
       item => item?.productId.toString() === idItem.toString(),
     );
   }, [cartList, idItem]);
+  const [currentCount] = useDebounce(isAlreadyInCart?.amount, 500);
+
+  useEffect(() => {
+    const updateAmountCart = async () => {
+      try {
+        if (currentCount > 5) {
+          setLoading(true);
+        }
+
+        await postCartItem(cartList);
+      } catch (e) {
+        console.log(e);
+      } finally {
+        if (currentCount > 5) {
+          setLoading(false);
+        }
+        setIsNotFirstFetch(false);
+      }
+    };
+    if (currentCount && notFirstFetch) {
+      updateAmountCart();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentCount]);
+
   const onChangeText = async ({
     quantity,
     id,
@@ -75,8 +102,8 @@ export default function Item({
     quantity: string;
     id?: any;
   }) => {
-    setLoading(true);
     const findIndex = cartList?.findIndex(item => item?.productId === id);
+
     if (+quantity < 1 && findIndex !== -1) {
       const newCartList = [...cartList];
       newCartList.splice(findIndex, 1);
@@ -85,13 +112,14 @@ export default function Item({
       setIsDelCart(true);
       return null;
     }
+
     if (findIndex !== -1) {
       const newCartList = [...cartList];
       newCartList[findIndex].amount = Number(quantity);
+
       setCartList(newCartList);
-      await postCartItem(newCartList);
-      setLoading(false);
     }
+    setIsNotFirstFetch(true);
   };
   const onAddCartByIndex = async (id: string | number) => {
     const findIndex = cartList?.findIndex(item => item?.productId === id);
@@ -101,8 +129,7 @@ export default function Item({
 
       newCartList[findIndex].amount += 5;
       setCartList(newCartList);
-
-      await postCartItem(newCartList);
+      setIsNotFirstFetch(true);
     }
   };
   const onSubtractCartByIndex = async (id: string | number) => {
@@ -114,7 +141,7 @@ export default function Item({
       if (amount > 5) {
         newCartList[findIndex].amount -= 5;
         setCartList(newCartList);
-        await postCartItem(newCartList);
+        setIsNotFirstFetch(true);
       } else {
         newCartList.splice(findIndex, 1);
         setCartList(newCartList);

@@ -2,6 +2,7 @@ import { View, TextInputProps } from 'react-native';
 import React, { useEffect } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import InputText from '../InputText/InputText';
+import { colors } from '../../assets/colors/colors';
 
 interface Props extends TextInputProps {
   label?: string;
@@ -32,6 +33,10 @@ export default function InputTextForm({ name, ...props }: Props): JSX.Element {
             <>
               <InputText
                 {...props}
+                style={{
+                  color: colors.text1,
+                  ...props,
+                }}
                 isError={!!errors?.[name]}
                 onChangeText={value => onChange(value)}
                 value={value}

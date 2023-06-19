@@ -18,11 +18,13 @@ interface Props {
   }[];
   valueCheckbox?: string[];
   onPress?: (value: string) => void;
+  disabled?: boolean;
 }
 export default function CheckboxListView({
   listCheckbox = [],
   valueCheckbox,
   onPress,
+  disabled,
 }: Props) {
   return (
     <>
@@ -38,6 +40,7 @@ export default function CheckboxListView({
               {item.title}
             </Text>
             <TouchableOpacity
+              disabled={disabled}
               onPress={() => onPress && onPress(item.value)}
               style={
                 styles({

@@ -31,7 +31,7 @@ const App = () => {
     const isIOS = Platform.OS === 'ios';
     const currentVersion = VersionCheck.getCurrentVersion();
     const storeUrl = await VersionCheck.getAppStoreUrl({
-      appID: '1568818575',
+      appID: '6450045082',
     });
     const getPackage = await VersionCheck.getPackageName();
 

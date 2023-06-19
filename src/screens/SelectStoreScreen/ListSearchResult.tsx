@@ -44,7 +44,6 @@ export default function ListSearchResult({
   const { setItem: setCustomerName } = useAsyncStorage('customerName');
   const { setItem: setProductBrand } = useAsyncStorage('productBrand');
   const { setItem: setAddress } = useAsyncStorage('address');
-  // console.log('data', JSON.stringify(data, null, 2));
   return (
     <FlatList
       data={data}

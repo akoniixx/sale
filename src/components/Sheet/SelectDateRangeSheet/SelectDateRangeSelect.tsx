@@ -36,7 +36,7 @@ export default function SelectDateRangeSelect(props: SheetProps) {
         });
       }}
       containerStyle={{
-        height: '30%',
+        height: '32%',
         justifyContent: 'space-between',
       }}
       id={props.sheetId}>
@@ -152,7 +152,7 @@ export default function SelectDateRangeSelect(props: SheetProps) {
           flexDirection: 'row',
           justifyContent: 'space-between',
           alignItems: 'center',
-          marginBottom: 16,
+          marginBottom: 32,
         }}>
         <TouchableOpacity
           onPress={() => {
@@ -182,6 +182,7 @@ export default function SelectDateRangeSelect(props: SheetProps) {
           title="ตกลง"
         />
       </View>
+
       <DatePicker
         open={isOpenDateStart}
         modal

@@ -97,28 +97,21 @@ export default function CartScreen({
       setVisibleConfirm(false);
       const customerNo = await AsyncStorage.getItem('customerNo');
       const customerName = await AsyncStorage.getItem('customerName');
+
       const orderProducts = (cartList || []).map(item => {
         return {
           specialRequest: item.specialRequest,
           productId: +item.productId,
           quantity: item.amount,
           shipmentOrder: item.order,
-          orderProductPromotions: item.orderProductPromotions.map(el => {
-            return {
-              promotionId: el.promotionId,
-              isUse: el.isUse,
-            };
-          }),
         };
       });
 
-      const data = await getCartList();
-
       const payload: any = {
-        company: data.company,
+        company: cartDetail.company,
 
-        userStaffId: data.userStaffId,
-        customerCompanyId: data.customerCompanyId,
+        userStaffId: cartDetail.userStaffId,
+        customerCompanyId: cartDetail.customerCompanyId,
         customerName: customerName || '',
         customerNo: customerNo || '',
         isUseCOD: cartDetail.isUseCOD,
@@ -131,6 +124,7 @@ export default function CartScreen({
         deliveryRemark: dataStepTwo.deliveryRemark || '',
         updateBy: `${user?.firstname} ${user?.lastname}`,
         orderProducts,
+        allPromotions: cartDetail.allPromotions,
       };
       if (dataStepTwo.specialRequestRemark) {
         payload.specialRequestRemark = dataStepTwo.specialRequestRemark;
@@ -141,8 +135,11 @@ export default function CartScreen({
       if (dataStepTwo.numberPlate) {
         payload.numberPlate = dataStepTwo.numberPlate;
       }
+      console.log('payload', JSON.stringify(payload, null, 2));
       const result = await orderServices.createOrder(payload);
       if (result) {
+        // console.log('result', JSON.stringify(result, null, 2));
+
         setCartList([]);
         setFreebieListItem([]);
         setPromotionList([]);
@@ -201,7 +198,7 @@ export default function CartScreen({
         ]).finally(() => {
           if (cartDetail?.orderProducts?.length > 0) {
             const freebieListItem = cartDetail?.orderProducts
-              .filter(el => el.isFreebie)
+              .filter(el => el?.isFreebie)
               .map(el => {
                 if (el.productFreebiesId) {
                   const newObj = {
@@ -301,6 +298,7 @@ export default function CartScreen({
       }));
     }
   }, [params?.specialRequestRemark]);
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}

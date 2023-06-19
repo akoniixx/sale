@@ -63,6 +63,8 @@ export default function SearchInput({
             paddingTop: 10,
             paddingBottom: 8,
             overflow: 'hidden',
+            color: colors.text1,
+
             width: Dimensions.get('screen').width - 120,
           }}
           onFocus={() => {

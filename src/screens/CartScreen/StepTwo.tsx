@@ -4,7 +4,6 @@ import {
   Platform,
   Image,
   TouchableOpacity,
-  KeyboardAvoidingView,
 } from 'react-native';
 import React from 'react';
 import Text from '../../components/Text/Text';

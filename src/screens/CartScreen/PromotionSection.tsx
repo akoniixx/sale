@@ -6,7 +6,7 @@ import Checkbox from '../../components/Checkbox/Checkbox';
 import CheckboxListView from '../../components/Checkbox/CheckboxListView';
 import { colors } from '../../assets/colors/colors';
 import { useCart } from '../../contexts/CartContext';
-import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
+
 import SkeletonLoading from '../../components/SkeletonLoading/SkeletonLoading';
 
 interface Props {
@@ -17,12 +17,14 @@ interface Props {
     promotionType: string;
   }[];
   loadingPromo: boolean;
+  loading: boolean;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
 export default function PromotionSection({
   promotionList,
   loadingPromo,
   setLoading,
+  loading,
 }: Props): JSX.Element {
   const { t } = useLocalization();
   const {
@@ -96,6 +98,7 @@ export default function PromotionSection({
         ) : (
           <>
             <Checkbox
+              disabled={loading}
               onPress={async () => {
                 if (promotionListValue.length === 0) {
                   await postNewCart(promotionList.map(item => item.value));
@@ -157,6 +160,7 @@ export default function PromotionSection({
             </View>
           ) : (
             <CheckboxListView
+              disabled={loading}
               valueCheckbox={promotionListValue}
               onPress={async value => {
                 if (promotionListValue.includes(value)) {

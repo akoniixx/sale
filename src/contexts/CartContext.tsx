@@ -16,6 +16,7 @@ export interface newProductType extends ProductType {
   saleUom?: string | null;
   specialRequestDiscount: number;
   specialRequest: number;
+  price: number;
 
   orderProductPromotions: {
     promotionId?: string;
@@ -289,6 +290,7 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
         setCartDetail(prev => ({
           ...prev,
           ...newData,
+          allPromotions: prev.allPromotions,
         }));
       } catch (error) {
         console.log(error);
@@ -316,7 +318,10 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
 
       const data = await cartServices.postCart(payload);
 
-      setCartDetail(data);
+      setCartDetail(prev => ({
+        ...data,
+        allPromotions: prev.allPromotions,
+      }));
     };
     return {
       postEditIsUseCod,
@@ -390,10 +395,13 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
           isUseCOD: !!cartDetail?.isUseCOD,
           customerCompanyId: customerCompanyId ? +customerCompanyId : 0,
           paymentMethod: cartDetail?.paymentMethod || 'CASH',
+          allPromotions: cartDetail?.allPromotions || [],
         };
+
         if (allPromotions) {
           payload.allPromotions = allPromotions;
         }
+
         const result = await cartServices.postCart(payload);
         setCartDetail(result);
         const newFormat = (result?.orderProducts || [])

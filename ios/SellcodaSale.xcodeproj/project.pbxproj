@@ -560,13 +560,13 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.5.12;
+				MARKETING_VERSION = 2.5.13;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.iconkaset.dev.morroc;
+				PRODUCT_BUNDLE_IDENTIFIER = com.iconkaset.sellcoda.sale;
 				PRODUCT_NAME = SellcodaSale;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -590,13 +590,13 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.5.12;
+				MARKETING_VERSION = 2.5.13;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.iconkaset.dev.morroc;
+				PRODUCT_BUNDLE_IDENTIFIER = com.iconkaset.sellcoda.sale;
 				PRODUCT_NAME = SellcodaSale;
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";

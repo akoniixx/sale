@@ -49,7 +49,6 @@ export default function Footer({
   useEffect(() => {
     const updateAmount = async () => {
       try {
-        console.log('updateAmount');
         setLoading(true);
 
         await postCartItem(cartList);
@@ -165,29 +164,29 @@ export default function Footer({
   const onOrder = async () => {
     try {
       // setDisabledButton(true);
-      // const findIndex = cartList?.findIndex(
-      //   item => item?.productId.toString() === id,
-      // );
+      const findIndex = cartList?.findIndex(
+        item => item?.productId.toString() === id,
+      );
 
-      // if (findIndex !== -1) {
-      //   const newCartList = [...cartList];
-      //   newCartList[findIndex].amount = currentCount;
-      //   setCartList(newCartList);
-      //   await postCartItem(newCartList);
-      // } else {
-      //   const newCartList: any = [
-      //     ...cartList,
-      //     {
-      //       ...productItem,
-      //       productId: id,
-      //       amount: currentCount,
-      //       orderProductPromotions: promotionIdList,
-      //       order: cartList?.length + 1,
-      //     },
-      //   ];
-      //   setCartList(newCartList);
-      //   await postCartItem(newCartList);
-      // }
+      if (findIndex !== -1) {
+        const newCartList = [...cartList];
+        newCartList[findIndex].amount = currentCount;
+        setCartList(newCartList);
+        await postCartItem(newCartList);
+      } else {
+        const newCartList: any = [
+          ...cartList,
+          {
+            ...productItem,
+            productId: id,
+            amount: currentCount,
+            orderProductPromotions: promotionIdList,
+            order: cartList?.length + 1,
+          },
+        ];
+        setCartList(newCartList);
+        await postCartItem(newCartList);
+      }
       // setIsAddCart(true);
       // setDisabledButton(false);
 

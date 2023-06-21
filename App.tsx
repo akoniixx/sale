@@ -21,8 +21,8 @@ import {
   requestUserPermission,
 } from './src/firebase/notification';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import './src/components/Sheet/sheets.tsx';
 import VersionCheck from 'react-native-version-check';
+import './src/components/Sheet/sheets.tsx';
 import storeVersion from 'react-native-store-version';
 import RNExitApp from 'react-native-kill-app';
 dayjs.extend(buddhaEra);
@@ -54,11 +54,11 @@ const App = () => {
       Alert.alert('มีการอัพเดทใหม่', undefined, [
         {
           text: 'อัพเดท',
-          onPress: () => {
+          onPress: async () => {
             if (isIOS) {
-              Linking.openURL(storeUrl);
+              await Linking.openURL(storeUrl);
             } else {
-              Linking.openURL(playStoreUrl);
+              await Linking.openURL(playStoreUrl);
             }
             RNExitApp.exitApp();
           },
@@ -77,6 +77,7 @@ const App = () => {
     };
     requestUserPermission();
     getTestFirebaseToken();
+    checkVersion();
   }, []);
 
   React.useEffect(() => {
@@ -108,7 +109,6 @@ const App = () => {
     messaging().onMessage(async remoteMessage => {
       console.log('A new FCM message arrived!', JSON.stringify(remoteMessage));
     });
-    checkVersion();
   }, []);
 
   return (

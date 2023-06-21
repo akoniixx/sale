@@ -35,6 +35,11 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+    <string>http</string>
+    <string>https</string>
+    </array>
 	<key>NSCameraUsageDescription</key>
 	<string>Your app requires access to the camera to take profile images.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>

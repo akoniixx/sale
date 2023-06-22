@@ -48,6 +48,9 @@ export default function SelectStoreScreen({ navigation }: Props): JSX.Element {
         isActive: boolean;
         productBrand: [];
       }[];
+      customerToUserShops: {
+        userShopId: string;
+      }[];
     }[]
   >([]);
   useEffect(() => {
@@ -56,7 +59,7 @@ export default function SelectStoreScreen({ navigation }: Props): JSX.Element {
         const data = await customerServices.getDealerZoneById(
           user?.userStaffId || '',
         );
-
+        // console.log('data', JSON.stringify(data, null, 2));
         setListStore(data);
       } catch (e) {
         console.log(e);
@@ -76,6 +79,7 @@ export default function SelectStoreScreen({ navigation }: Props): JSX.Element {
   const data = useMemo(() => {
     const newFormat = listStore.map(el => {
       const c = el.customerCompany?.[0];
+      const customerToUserShops = el.customerToUserShops?.[0];
       return {
         name: c.customerName,
         id: c.customerId,
@@ -89,6 +93,7 @@ export default function SelectStoreScreen({ navigation }: Props): JSX.Element {
           name: c.customerName,
         },
         isActive: c.isActive,
+        userShopId: customerToUserShops?.userShopId,
       };
     });
     return newFormat.filter(i => {

@@ -6,6 +6,7 @@ import {
   ScrollView,
   SafeAreaView,
   Dimensions,
+  BackHandler,
 } from 'react-native';
 import React, { useEffect } from 'react';
 import { StackScreenProps } from '@react-navigation/stack';
@@ -116,6 +117,13 @@ export default function OrderSuccessScreen({
       isFreebie: el.isFreebie,
     };
   });
+
+  useEffect(() => {
+    BackHandler.addEventListener('hardwareBackPress', () => {
+      return true;
+    });
+  }, []);
+
   return (
     <SafeAreaView
       style={{

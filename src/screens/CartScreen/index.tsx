@@ -6,7 +6,6 @@ import {
   KeyboardAvoidingView,
   Platform,
   Keyboard,
-  ActivityIndicator,
 } from 'react-native';
 import React, { useEffect, useMemo } from 'react';
 import Container from '../../components/Container/Container';
@@ -27,7 +26,6 @@ import Text from '../../components/Text/Text';
 import { StackScreenProps } from '@react-navigation/stack';
 import { MainStackParamList } from '../../navigations/MainNavigator';
 import { useFocusEffect } from '@react-navigation/native';
-import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
 import { orderServices } from '../../services/OrderServices';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuth } from '../../contexts/AuthContext';
@@ -97,6 +95,7 @@ export default function CartScreen({
       setVisibleConfirm(false);
       const customerNo = await AsyncStorage.getItem('customerNo');
       const customerName = await AsyncStorage.getItem('customerName');
+      const userShopId = await AsyncStorage.getItem('userShopId');
 
       const orderProducts = (cartList || []).map(item => {
         return {
@@ -109,6 +108,7 @@ export default function CartScreen({
 
       const payload: any = {
         company: cartDetail.company,
+        userShopId: userShopId ? userShopId : null,
 
         userStaffId: cartDetail.userStaffId,
         customerCompanyId: cartDetail.customerCompanyId,
@@ -135,7 +135,7 @@ export default function CartScreen({
       if (dataStepTwo.numberPlate) {
         payload.numberPlate = dataStepTwo.numberPlate;
       }
-      console.log('payload', JSON.stringify(payload, null, 2));
+      // console.log('payload', JSON.stringify(payload, null, 2));
       const result = await orderServices.createOrder(payload);
       if (result) {
         // console.log('result', JSON.stringify(result, null, 2));

@@ -13,6 +13,7 @@ request.interceptors.request.use(
     const token = await AsyncStorage.getItem(TOKEN_KEY);
     return {
       ...config,
+
       headers: {
         accept: 'application/json',
         Authorization: token ? `Bearer ${token}` : '',

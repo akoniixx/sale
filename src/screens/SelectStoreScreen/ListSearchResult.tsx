@@ -26,6 +26,7 @@ interface Props {
       product_brand_name: string;
       company: string;
     }[];
+    userShopId: string;
   }[];
   searchValue?: string | undefined;
   navigation: StackNavigationHelpers;
@@ -44,6 +45,8 @@ export default function ListSearchResult({
   const { setItem: setCustomerName } = useAsyncStorage('customerName');
   const { setItem: setProductBrand } = useAsyncStorage('productBrand');
   const { setItem: setAddress } = useAsyncStorage('address');
+
+  const { setItem: setUserShopId } = useAsyncStorage('userShopId');
   return (
     <FlatList
       data={data}
@@ -79,6 +82,9 @@ export default function ListSearchResult({
               setCustomerNo(item.customerNo);
               setCustomerName(item.name);
               setAddress(JSON.stringify(item.address));
+              if (item.userShopId) {
+                setUserShopId(item.userShopId);
+              }
               if (item.moreThanOneBrand) {
                 navigation.navigate('SelectBrandBeforeDetailScreen', {
                   id: item.id,

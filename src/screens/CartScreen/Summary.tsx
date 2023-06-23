@@ -6,7 +6,7 @@ import { colors } from '../../assets/colors/colors';
 import Radio from '../../components/Radio/Radio';
 import { numberWithCommas } from '../../utils/functions';
 import Checkbox from '../../components/Checkbox/Checkbox';
-import icons from '../../assets/icons';
+
 import { useCart } from '../../contexts/CartContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuth } from '../../contexts/AuthContext';
@@ -75,6 +75,7 @@ export default function Summary({ setLoading }: Props): JSX.Element {
             const isFind = promotionListValue.find(
               el2 => el2 === el.promotionId,
             );
+
             if (el.promotionType === 'DISCOUNT_NOT_MIX' && isFind) {
               listDataDiscount.push({
                 ...dataPush,
@@ -115,9 +116,33 @@ export default function Summary({ setLoading }: Props): JSX.Element {
     return {
       dataObj,
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cartDetail]);
-  // console.log('cartDetail :>> ', JSON.stringify(cartDetail, null, 2));
+  }, [cartDetail, promotionListValue]);
+
+  const radioList = useMemo(() => {
+    const isCredit = termPayment && termPayment.toUpperCase().startsWith('N');
+    const list = [
+      {
+        title:
+          user?.company === 'ICPF' ? 'เงินสด' : 'เงินสด (รับส่วนลดเพิ่ม 1.5%)',
+        value: 'CASH',
+        key: 'cash',
+      },
+      {
+        title: 'เครดิต',
+        value: 'CREDIT',
+        key: 'credit',
+      },
+    ];
+    if (isCredit) {
+      const split = termPayment.toUpperCase().split('N');
+      const numberDayCredit = Number(split[1]);
+      list[1].title = `เครดิต (${numberDayCredit} วัน)`;
+      return numberDayCredit > 0 ? list : list.slice(1);
+    } else {
+      return list.slice(0, 1);
+    }
+  }, [termPayment, user?.company]);
+
   return (
     <View style={styles.container}>
       <View
@@ -162,21 +187,7 @@ export default function Summary({ setLoading }: Props): JSX.Element {
                   setLoading(false);
                 }
               }}
-              radioLists={[
-                {
-                  title:
-                    user?.company === 'ICPF'
-                      ? 'เงินสด'
-                      : 'เงินสด (รับส่วนลดเพิ่ม 1.5%)',
-                  value: 'CASH',
-                  key: 'cash',
-                },
-                {
-                  title: 'เครดิต',
-                  value: 'CREDIT',
-                  key: 'credit',
-                },
-              ].slice(0, termPayment.toUpperCase().startsWith('N') ? 2 : 1)}
+              radioLists={radioList}
             />
           </View>
           <View

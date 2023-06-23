@@ -284,6 +284,7 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
           orderProducts,
           paymentMethod: cartDetail?.paymentMethod || '',
           customerCompanyId: customerCompanyId ? +customerCompanyId : 0,
+          allPromotions: cartDetail?.allPromotions || [],
         };
 
         const newData = await cartServices.postCart(payload);
@@ -314,6 +315,7 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
         userStaffId: user?.userStaffId || '',
         orderProducts,
         customerCompanyId: customerCompanyId ? +customerCompanyId : 0,
+        allPromotions: cartDetail?.allPromotions || [],
       };
 
       const data = await cartServices.postCart(payload);
@@ -401,6 +403,7 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
         if (allPromotions) {
           payload.allPromotions = allPromotions;
         }
+        console.log('payload', JSON.stringify(payload, null, 2));
 
         const result = await cartServices.postCart(payload);
         setCartDetail(result);

@@ -6,7 +6,7 @@ import { colors } from '../../assets/colors/colors';
 import Radio from '../../components/Radio/Radio';
 import { numberWithCommas } from '../../utils/functions';
 import Checkbox from '../../components/Checkbox/Checkbox';
-import icons from '../../assets/icons';
+
 import { useCart } from '../../contexts/CartContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuth } from '../../contexts/AuthContext';
@@ -75,6 +75,7 @@ export default function Summary({ setLoading }: Props): JSX.Element {
             const isFind = promotionListValue.find(
               el2 => el2 === el.promotionId,
             );
+
             if (el.promotionType === 'DISCOUNT_NOT_MIX' && isFind) {
               listDataDiscount.push({
                 ...dataPush,
@@ -115,8 +116,7 @@ export default function Summary({ setLoading }: Props): JSX.Element {
     return {
       dataObj,
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cartDetail]);
+  }, [cartDetail, promotionListValue]);
 
   const radioList = useMemo(() => {
     const isCredit = termPayment && termPayment.toUpperCase().startsWith('N');

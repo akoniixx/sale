@@ -253,7 +253,7 @@ export default function Item({
               style={{
                 height: 28,
               }}>
-              {`฿${unitPrice}`}
+              {`฿${numberWithCommas(unitPrice)}`}
               <Text color="text3">
                 /{props?.baseUOM ? props?.baseUOM : 'Unit'}
               </Text>

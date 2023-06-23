@@ -88,9 +88,13 @@ const App = () => {
 
         switch (typeNotification) {
           case 'ORDER': {
-            navigationRef.current?.navigate('HistoryDetailScreen', {
-              orderId: remoteMessage?.data?.orderId,
-            });
+            const NavigationToHistoryDetail = async () => {
+              await AsyncStorage.setItem('isFromNotification', 'true');
+              navigationRef.current?.navigate('HistoryDetailScreen', {
+                orderId: remoteMessage?.data?.orderId,
+              });
+            };
+            NavigationToHistoryDetail();
           }
         }
       });
@@ -99,9 +103,13 @@ const App = () => {
         const typeNotification = remoteMessage?.data?.type;
         switch (typeNotification) {
           case 'ORDER': {
-            navigationRef.current?.navigate('HistoryDetailScreen', {
-              orderId: remoteMessage?.data?.orderId,
-            });
+            const NavigationToHistoryDetail = async () => {
+              await AsyncStorage.setItem('isFromNotification', 'true');
+              navigationRef.current?.navigate('HistoryDetailScreen', {
+                orderId: remoteMessage?.data?.orderId,
+              });
+            };
+            NavigationToHistoryDetail();
           }
         }
       },

@@ -403,6 +403,7 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
         if (allPromotions) {
           payload.allPromotions = allPromotions;
         }
+        console.log('payload', JSON.stringify(payload, null, 2));
 
         const result = await cartServices.postCart(payload);
         setCartDetail(result);

@@ -365,6 +365,10 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
         .filter((item: any) => !item.isFreebie);
 
       setCartList(newFormat);
+      console.log(
+        'result _getCart',
+        JSON.stringify(result.allPromotions, null, 2),
+      );
 
       return {
         ...result,
@@ -403,9 +407,10 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
         if (allPromotions) {
           payload.allPromotions = allPromotions;
         }
-        console.log('payload', JSON.stringify(payload, null, 2));
+        console.log('payload', JSON.stringify(payload.allPromotions, null, 2));
 
         const result = await cartServices.postCart(payload);
+        console.log('result', JSON.stringify(result.allPromotions, null, 2));
         setCartDetail(result);
         const newFormat = (result?.orderProducts || [])
           .map((item: any): newProductType => {
@@ -463,6 +468,7 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
     user?.company,
     cartDetail?.paymentMethod,
     cartDetail?.isUseCOD,
+    cartDetail?.allPromotions,
   ]);
   return (
     <CartContext.Provider

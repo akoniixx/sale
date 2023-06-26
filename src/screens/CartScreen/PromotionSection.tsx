@@ -52,8 +52,11 @@ export default function PromotionSection({
             : false,
         };
       });
-      const { cartList: cl } = await postCartItem(cartList, newAllPromotion);
-      await getSelectPromotion(newAllPromotion);
+      const { cartList: cl, cartDetail: cD } = await postCartItem(
+        cartList,
+        newAllPromotion,
+      );
+      await getSelectPromotion(cD.allPromotions);
 
       setCartList(cl);
       setPromotionListValue(currentPromotionList);
@@ -100,7 +103,10 @@ export default function PromotionSection({
             <Checkbox
               disabled={loading}
               onPress={async () => {
-                if (promotionListValue.length === 0) {
+                if (
+                  promotionListValue.length === 0 ||
+                  promotionListValue.length !== promotionList.length
+                ) {
                   await postNewCart(promotionList.map(item => item.value));
                 } else {
                   await postNewCart([]);

@@ -233,6 +233,7 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
         isUse: boolean;
       }[] = [];
       const initialValue: string[] = [];
+
       for (let i = 0; i < cl.length; i++) {
         const promotion = cl[i];
 
@@ -346,6 +347,17 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
         customerCompanyId: customerCompanyId ? +customerCompanyId : 0,
         userStaffId,
       });
+      console.log(
+        'result _getList',
+        JSON.stringify(
+          {
+            allPromotions: result?.allPromotions,
+          },
+          null,
+          2,
+        ),
+      );
+
       setCartDetail(result);
       const newFormat = (result?.orderProducts || [])
         .map((item: any): newProductType => {
@@ -365,11 +377,6 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
         .filter((item: any) => !item.isFreebie);
 
       setCartList(newFormat);
-      console.log(
-        'result _getCart',
-        JSON.stringify(result.allPromotions, null, 2),
-      );
-
       return {
         ...result,
         orderProducts: newFormat,
@@ -407,10 +414,10 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
         if (allPromotions) {
           payload.allPromotions = allPromotions;
         }
-        console.log('payload', JSON.stringify(payload.allPromotions, null, 2));
+        // console.log('payload', JSON.stringify(payload.allPromotions, null, 2));
 
         const result = await cartServices.postCart(payload);
-        console.log('result', JSON.stringify(result.allPromotions, null, 2));
+        // console.log('result', JSON.stringify(result.allPromotions, null, 2));
         setCartDetail(result);
         const newFormat = (result?.orderProducts || [])
           .map((item: any): newProductType => {
@@ -428,7 +435,7 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
           })
           .filter((item: any) => !item.isFreebie);
 
-        const freebieList = (result.orderProducts || [])
+        const freebieList = result?.orderProducts
           .filter((item: any) => item.isFreebie)
           .map((el: any) => {
             if (el.productFreebiesId) {
@@ -453,6 +460,7 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
               return newObj;
             }
           });
+
         setFreebieListItem(freebieList);
 
         return {

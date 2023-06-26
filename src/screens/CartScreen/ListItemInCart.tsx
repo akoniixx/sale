@@ -84,8 +84,10 @@ export default function ListItemInCart({
 
         newCartList[findIndex].amount += 5;
 
-        const { cartList: cl, cartDetail } = await postCartItem(newCartList);
-        await getSelectPromotion(cartDetail.allPromotions);
+        const { cartList: cl, cartDetail: cD } = await postCartItem(
+          newCartList,
+        );
+        await getSelectPromotion(cD.allPromotions);
         setCartList(cl);
       }
     } catch (e) {
@@ -105,8 +107,10 @@ export default function ListItemInCart({
         const amount = newCartList[findIndex].amount;
         if (amount > 5) {
           newCartList[findIndex].amount -= 5;
-          const { cartList: cl, cartDetail } = await postCartItem(newCartList);
-          await getSelectPromotion(cartDetail.allPromotions);
+          const { cartList: cl, cartDetail: cD } = await postCartItem(
+            newCartList,
+          );
+          await getSelectPromotion(cD.allPromotions);
 
           setCartList(cl);
         } else {
@@ -116,9 +120,11 @@ export default function ListItemInCart({
             newCartList.filter(el => el.productId !== id),
           );
 
-          const { cartList: cl, cartDetail } = await postCartItem(currentCL);
+          const { cartList: cl, cartDetail: cD } = await postCartItem(
+            currentCL,
+          );
 
-          await getSelectPromotion(cartDetail.allPromotions);
+          await getSelectPromotion(cD.allPromotions);
           setCartList(cl);
         }
       }
@@ -148,8 +154,10 @@ export default function ListItemInCart({
       try {
         const newCartList = [...cartList];
         newCartList[findIndex].amount = Number(quantity);
-        const { cartList: cl, cartDetail } = await postCartItem(newCartList);
-        await getSelectPromotion(cartDetail.allPromotions);
+        const { cartList: cl, cartDetail: cD } = await postCartItem(
+          newCartList,
+        );
+        await getSelectPromotion(cD.allPromotions);
         setCartList(cl);
       } catch (e) {
         console.log('error', e);
@@ -169,8 +177,8 @@ export default function ListItemInCart({
 
       setVisibleDel(false);
 
-      const { cartList: cl, cartDetail } = await postCartItem(currentCL);
-      await getSelectPromotion(cartDetail.allPromotions);
+      const { cartList: cl, cartDetail: cD } = await postCartItem(currentCL);
+      await getSelectPromotion(cD.allPromotions);
       setCartList(cl);
 
       setIsDelCart(true);

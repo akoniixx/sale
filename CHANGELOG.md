@@ -1,5 +1,9 @@
 ## [Version - 2]
 
+
+## Fix [v2.5.15] - 2023-06-23
+- fix noti
+
 ## Fix [v2.5.13] - 2023-06-12
 - fix noti
 

@@ -17,9 +17,8 @@ const StoreDetailScreen = ({
   navigation,
   route,
 }: StackScreenProps<MainStackParamList, 'StoreDetailScreen'>) => {
-  const { name, productBrand } = route.params;
+  const { name } = route.params;
   const [page, setPage] = React.useState(1);
-
   const {
     cartApi: { getCartList, postCartItem },
     setCartList,
@@ -99,7 +98,6 @@ const StoreDetailScreen = ({
             nameDealer={name}
             navigation={navigation}
             debounceSearchValue={debounceSearchValue}
-            productBrand={productBrand}
             setLoadingApi={setLoadingApi}
           />
         </Content>

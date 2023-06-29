@@ -347,16 +347,6 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
         customerCompanyId: customerCompanyId ? +customerCompanyId : 0,
         userStaffId,
       });
-      console.log(
-        'result _getList',
-        JSON.stringify(
-          {
-            allPromotions: result?.allPromotions,
-          },
-          null,
-          2,
-        ),
-      );
 
       setCartDetail(result);
       const newFormat = (result?.orderProducts || [])

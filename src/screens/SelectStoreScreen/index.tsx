@@ -59,7 +59,7 @@ export default function SelectStoreScreen({ navigation }: Props): JSX.Element {
         const data = await customerServices.getDealerZoneById(
           user?.userStaffId || '',
         );
-        // console.log('data', JSON.stringify(data, null, 2));
+
         setListStore(data);
       } catch (e) {
         console.log(e);

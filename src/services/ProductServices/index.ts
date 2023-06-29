@@ -36,7 +36,7 @@ const getAllProducts = async ({
   if (searchText) {
     payload.searchText = searchText;
   }
-
+  console.log('payload', JSON.stringify(payload, null, 2));
   const genQuery = Object.keys(payload)
     .map(key => `${key}=${payload[key as keyof ProductTypeParams]}`)
     .join('&');

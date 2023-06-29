@@ -12,9 +12,19 @@ const credentials = {
   messagingSenderId: '124740181518',
   projectId: 'sellcoda-sale-v2',
 };
+const credentialsProd = {
+  databaseURL: '',
+  clientId:
+    '124740181518-8cju3oqb2olhn37nah87t7ddq0lh4um2.apps.googleusercontent.com',
+  appId: '1:124740181518:ios:81d2155652d1f456d1a65f',
+  apiKey: 'AIzaSyCLENnnqxy8UIqcplgLktpAHvN7oMDHRkE',
+  storageBucket: 'sellcoda-sale-v2.appspot.com',
+  messagingSenderId: '124740181518',
+  projectId: 'sellcoda-sale-v2',
+};
 
 export const firebaseInitialize = async () => {
-  await firebase.initializeApp(credentials);
+  await firebase.initializeApp(credentialsProd);
 };
 
 export const getFCMToken = async () => {

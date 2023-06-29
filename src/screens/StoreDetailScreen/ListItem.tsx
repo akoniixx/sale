@@ -62,7 +62,7 @@ export default function ListItem({
     data: [],
     count_location: [],
   });
-  console.log('data', JSON.stringify(data, null, 2));
+  // console.log('data', JSON.stringify(data, null, 2));
 
   const headerList = [
     {

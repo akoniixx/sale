@@ -1,6 +1,7 @@
 ## [Version - 2]
 
-
+## Fix [v2.5.16] - 2023-06-29
+- change config firebase messaging to production
 ## Fix [v2.5.15] - 2023-06-23
 - fix noti
 

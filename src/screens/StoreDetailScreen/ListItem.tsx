@@ -38,7 +38,7 @@ export default function ListItem({
   nameDealer,
   navigation,
   debounceSearchValue,
-  productBrand,
+
   page,
   setPage,
   setLoadingApi,
@@ -62,6 +62,7 @@ export default function ListItem({
     data: [],
     count_location: [],
   });
+  // console.log('data', JSON.stringify(data, null, 2));
 
   const headerList = [
     {
@@ -78,13 +79,16 @@ export default function ListItem({
     try {
       setLoadingApi(true);
       const customerCompanyId = await AsyncStorage.getItem('customerCompanyId');
+      const productB = await AsyncStorage.getItem('productBrand');
+
+      const pB = JSON.parse(productB || '{}');
       const result = await productServices.getAllProducts({
         company: user?.company,
         page: 1,
         take: 10,
         searchText: debounceSearchValue,
         customerCompanyId: customerCompanyId || '',
-        productBrandId: productBrand?.product_brand_id,
+        productBrandId: pB?.product_brand_id,
         isPromotion: type !== 'all',
         productCategoryId: currentBrand !== 'all' ? currentBrand : undefined,
       });
@@ -95,27 +99,22 @@ export default function ListItem({
     } finally {
       setLoadingApi(false);
     }
-  }, [
-    debounceSearchValue,
-    user?.company,
-    productBrand,
-    type,
-    currentBrand,
-    setLoadingApi,
-  ]);
+  }, [debounceSearchValue, user?.company, type, currentBrand, setLoadingApi]);
   const getMoreProduct = useCallback(async () => {
     try {
       if (data.count > data.data.length) {
         const customerCompanyId = await AsyncStorage.getItem(
           'customerCompanyId',
         );
+        const productB = await AsyncStorage.getItem('productBrand');
+        const pB = JSON.parse(productB || '{}');
         const result = await productServices.getAllProducts({
           company: user?.company,
           customerId: user?.userStaffId,
           page: page + 1,
           take: 10,
           searchText: debounceSearchValue,
-          productBrandId: productBrand?.product_brand_id,
+          productBrandId: pB?.product_brand_id,
           isPromotion: type !== 'all',
           customerCompanyId: customerCompanyId || '',
 
@@ -136,7 +135,7 @@ export default function ListItem({
     debounceSearchValue,
     user?.userStaffId,
     user?.company,
-    productBrand,
+
     type,
     page,
     data.data,

@@ -81,6 +81,7 @@ export default function ListSearchResult({
               setTermPayment(item.termPayment);
               setCustomerNo(item.customerNo);
               setCustomerName(item.name);
+              setProductBrand(JSON.stringify(item.productBrand));
               setAddress(JSON.stringify(item.address));
               if (item.userShopId) {
                 setUserShopId(item.userShopId);

@@ -84,8 +84,10 @@ export default function ListItemInCart({
 
         newCartList[findIndex].amount += 5;
 
-        const { cartList: cl, cartDetail } = await postCartItem(newCartList);
-        await getSelectPromotion(cartDetail.allPromotions);
+        const { cartList: cl, cartDetail: cD } = await postCartItem(
+          newCartList,
+        );
+        await getSelectPromotion(cD.allPromotions);
         setCartList(cl);
       }
     } catch (e) {
@@ -105,8 +107,10 @@ export default function ListItemInCart({
         const amount = newCartList[findIndex].amount;
         if (amount > 5) {
           newCartList[findIndex].amount -= 5;
-          const { cartList: cl, cartDetail } = await postCartItem(newCartList);
-          await getSelectPromotion(cartDetail.allPromotions);
+          const { cartList: cl, cartDetail: cD } = await postCartItem(
+            newCartList,
+          );
+          await getSelectPromotion(cD.allPromotions);
 
           setCartList(cl);
         } else {
@@ -116,9 +120,11 @@ export default function ListItemInCart({
             newCartList.filter(el => el.productId !== id),
           );
 
-          const { cartList: cl, cartDetail } = await postCartItem(currentCL);
+          const { cartList: cl, cartDetail: cD } = await postCartItem(
+            currentCL,
+          );
 
-          await getSelectPromotion(cartDetail.allPromotions);
+          await getSelectPromotion(cD.allPromotions);
           setCartList(cl);
         }
       }
@@ -148,8 +154,10 @@ export default function ListItemInCart({
       try {
         const newCartList = [...cartList];
         newCartList[findIndex].amount = Number(quantity);
-        const { cartList: cl, cartDetail } = await postCartItem(newCartList);
-        await getSelectPromotion(cartDetail.allPromotions);
+        const { cartList: cl, cartDetail: cD } = await postCartItem(
+          newCartList,
+        );
+        await getSelectPromotion(cD.allPromotions);
         setCartList(cl);
       } catch (e) {
         console.log('error', e);
@@ -169,8 +177,8 @@ export default function ListItemInCart({
 
       setVisibleDel(false);
 
-      const { cartList: cl, cartDetail } = await postCartItem(currentCL);
-      await getSelectPromotion(cartDetail.allPromotions);
+      const { cartList: cl, cartDetail: cD } = await postCartItem(currentCL);
+      await getSelectPromotion(cD.allPromotions);
       setCartList(cl);
 
       setIsDelCart(true);
@@ -245,7 +253,7 @@ export default function ListItemInCart({
                       />
                     </View>
                   )}
-                  <View style={styles.item}>
+                  <View style={styles.itemContent}>
                     <Text
                       fontFamily="NotoSans"
                       fontSize={16}
@@ -265,14 +273,21 @@ export default function ListItemInCart({
                             item.saleUOMTH
                           }`}
                     </Text>
-                    <Text fontSize={14} color="text2">
+                    <Text
+                      fontSize={14}
+                      color="text2"
+                      style={{
+                        alignSelf: 'flex-start',
+                      }}>
                       {`฿${numberWithCommas(+item.marketPrice)}/${
                         item.saleUOMTH
                       } x ${item.amount} ${item.saleUOMTH}`}
                       {sumDiscount > 0 && !load ? (
-                        <Text color="current">
-                          {`  ส่วนลด ฿${numberWithCommas(sumDiscount)}`}
-                        </Text>
+                        <>
+                          <Text color="current">
+                            {`  ส่วนลด ฿${numberWithCommas(sumDiscount)}`}
+                          </Text>
+                        </>
                       ) : (
                         <View>
                           {sumDiscount > 0 && (
@@ -304,22 +319,27 @@ export default function ListItemInCart({
                     />
                   </View>
                 </View>
-
-                <TouchableOpacity
-                  style={styles.buttonDel}
-                  onPress={() => {
-                    setDelId(item.productId);
-                    setVisibleDel(true);
+                <View
+                  style={{
+                    flex: 0.3,
+                    alignItems: 'flex-end',
                   }}>
-                  <Image
-                    source={icons.bin}
-                    style={{
-                      width: 15,
-                      height: 17,
-                      marginBottom: 2,
-                    }}
-                  />
-                </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.buttonDel}
+                    onPress={() => {
+                      setDelId(item.productId);
+                      setVisibleDel(true);
+                    }}>
+                    <Image
+                      source={icons.bin}
+                      style={{
+                        width: 15,
+                        height: 17,
+                        marginBottom: 2,
+                      }}
+                    />
+                  </TouchableOpacity>
+                </View>
               </View>
               <View
                 style={{
@@ -466,6 +486,9 @@ const styles = StyleSheet.create({
   containerLeft: {
     flexDirection: 'row',
     alignItems: 'flex-start',
+    flex: 0.8,
+    alignSelf: 'flex-start',
+    justifyContent: 'space-between',
   },
   buttonDel: {
     width: 26,
@@ -476,5 +499,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  item: {},
+  itemContent: {
+    alignSelf: 'flex-start',
+  },
 });

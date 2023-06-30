@@ -7,6 +7,42 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:124740181518:android:b26b6c18d86150ded1a65f",
+        "android_client_info": {
+          "package_name": "com.iconkaset.sellcoda.sale"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "124740181518-rfccugnhvdth80b15brdtpn7vo0igd6t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC1i-KfdqcdaVFVior_pvu26q9RV86-FqY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "124740181518-rfccugnhvdth80b15brdtpn7vo0igd6t.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "124740181518-44bsqer9kq6bhr2lcfifkvtpckcab53a.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.iconkaset.dev.morroc"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:124740181518:android:2c1bc546e895ad89d1a65f",
         "android_client_info": {
           "package_name": "com.sellcodasale"

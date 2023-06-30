@@ -44,5 +44,6 @@ export const getNewPath = (path: string) => {
   const paths = path.trim().split('/');
   const sliceStart = paths.slice(0, paths.length - 1).join('/');
   const sliceEnd = paths[paths.length - 1];
+
   return sliceStart + '/' + encodeURIComponent(sliceEnd);
 };

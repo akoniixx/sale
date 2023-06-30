@@ -56,6 +56,8 @@ export default function ListSpecialRequest({
       ];
       await postCartItem(payload);
       setCartList(payload);
+      setSpecialRequestValue('');
+
       return null;
     } catch (error) {
       console.log(error);

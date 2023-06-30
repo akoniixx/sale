@@ -157,7 +157,7 @@ export default function CartScreen({
     }
   };
 
-  const renderStep = useMemo(() => {
+  const renderStep = () => {
     switch (currentStep) {
       case 1: {
         return (
@@ -179,55 +179,9 @@ export default function CartScreen({
         return <StepOne loading={loading} />;
       }
     }
-  }, [
-    currentStep,
-    dataStepTwo,
-    addressDelivery,
-    navigation,
-    loading,
-    showError,
-    setShowError,
-  ]);
+  };
   useFocusEffect(
     React.useCallback(() => {
-      const getPromotion = async () => {
-        setLoading(true);
-        await Promise.all([
-          getSelectPromotion(cartDetail?.allPromotions || []),
-          getCartList(),
-        ]).finally(() => {
-          if (cartDetail?.orderProducts?.length > 0) {
-            const freebieListItem = cartDetail?.orderProducts
-              .filter(el => el?.isFreebie)
-              .map(el => {
-                if (el.productFreebiesId) {
-                  const newObj = {
-                    productName: el.productName,
-                    id: el.productFreebiesId,
-                    quantity: el.quantity,
-                    baseUnit: el.baseUnitOfMeaTh || el.baseUnitOfMeaEn,
-                    status: el.productFreebiesStatus,
-                    productImage: el.productFreebiesImage,
-                  };
-                  return newObj;
-                } else {
-                  const newObj = {
-                    productName: el.productName,
-                    id: el.productId,
-                    quantity: el.quantity,
-                    baseUnit: el.saleUOMTH || el.saleUOM || '',
-                    status: el.productStatus,
-                    productImage: el.productImage,
-                  };
-                  return newObj;
-                }
-              });
-            setFreebieListItem(freebieListItem);
-          }
-          setLoading(false);
-        });
-      };
-      getPromotion();
       const getInitData = async () => {
         const getFactory = async () => {
           const factoryData = await factoryServices.getFactory(
@@ -268,28 +222,24 @@ export default function CartScreen({
           setCurrentStep(params.step);
         }
       };
-      getInitData();
-    }, []),
+      const getPromotion = async () => {
+        await getCartList().then(async result => {
+          if (result) {
+            await getSelectPromotion(result.allPromotions);
+          }
+          return;
+        });
+      };
+      const initData = async () => {
+        setLoading(true);
+        await Promise.all([getInitData(), getPromotion()]).finally(() => {
+          setLoading(false);
+        });
+      };
+      initData();
+    }, [params?.step, user?.company]),
   );
-  useEffect(() => {
-    const keyboardDidShowListener = Keyboard.addListener(
-      'keyboardDidShow',
-      () => {
-        setKeyboardVisible(true);
-      },
-    );
-    const keyboardDidHideListener = Keyboard.addListener(
-      'keyboardDidHide',
-      () => {
-        setKeyboardVisible(false);
-      },
-    );
-
-    return () => {
-      keyboardDidHideListener.remove();
-      keyboardDidShowListener.remove();
-    };
-  }, []);
+  // useEffect(() => {}, []);
   useEffect(() => {
     if (params?.specialRequestRemark) {
       setDataStepTwo(prev => ({
@@ -341,7 +291,7 @@ export default function CartScreen({
             />
           </View>
           <ScrollView ref={ref => (scrollRef.current = ref)}>
-            {renderStep}
+            {renderStep()}
           </ScrollView>
         </Content>
         <FooterShadow

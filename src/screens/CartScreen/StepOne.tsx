@@ -1,7 +1,6 @@
-import { ActivityIndicator, View } from 'react-native';
+import { View } from 'react-native';
 import React from 'react';
 import ListItemInCart from './ListItemInCart';
-import SkeletonLoading from '../../components/SkeletonLoading/SkeletonLoading';
 
 export default function StepOne({
   loading,

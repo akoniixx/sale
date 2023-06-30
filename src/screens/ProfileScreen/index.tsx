@@ -14,19 +14,27 @@ import Body from './Body';
 import { userServices } from '../../services/UserServices';
 import { navigate } from '../../navigations/RootNavigator';
 import FastImage from 'react-native-fast-image';
+import Text from '../../components/Text/Text';
+import VersionCheck from 'react-native-version-check';
 
 interface Props {
   navigation?: any;
 }
 export default function ProfileScreen({ navigation }: Props) {
   const [modalVisible, setModalVisible] = React.useState<boolean>(false);
+  const [version, setVersion] = React.useState<string>('');
   const {
     state: { user },
     authContext: { logout, getUser },
     dispatch,
   } = useAuth();
   useEffect(() => {
+    const getCurrentVersion = async () => {
+      const currentVersion = await VersionCheck.getCurrentVersion();
+      setVersion(currentVersion);
+    };
     getUser();
+    getCurrentVersion();
   }, [getUser]);
   const onLogout = async () => {
     await logout();
@@ -98,7 +106,10 @@ export default function ProfileScreen({ navigation }: Props) {
             <Body navigation={navigation} />
           </View>
 
-          <View>
+          <View
+            style={{
+              alignItems: 'center',
+            }}>
             <Button
               onPress={() => setModalVisible(true)}
               iconFont={
@@ -114,6 +125,14 @@ export default function ProfileScreen({ navigation }: Props) {
               title="ออกจากระบบ"
               secondary
             />
+            <Text
+              fontSize={14}
+              color="text3"
+              style={{
+                marginTop: 8,
+              }}>
+              เวอร์ชั่น {version}
+            </Text>
           </View>
         </View>
       </Content>

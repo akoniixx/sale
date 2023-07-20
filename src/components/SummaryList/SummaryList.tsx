@@ -210,17 +210,6 @@ export default function SummaryList({ dataObj }: Props) {
             )}`}</Text>
           </View>
           {!isCollapsed.specialListDiscount && <>{renderSpecialRequest()}</>}
-
-          <View style={styles.row}>
-            <Text color="text2">ส่วนลดดูแลราคา</Text>
-            <Text
-              color="error"
-              semiBold
-              fontFamily="NotoSans">{`-฿${numberWithCommas(
-              +dataObj.discountCo.value,
-              true,
-            )}`}</Text>
-          </View>
           <View style={styles.row}>
             <Text color="text2">ส่วนลดเงินสด</Text>
             <Text
@@ -228,6 +217,16 @@ export default function SummaryList({ dataObj }: Props) {
               fontFamily="NotoSans"
               semiBold>{`-฿${numberWithCommas(
               +dataObj.discountCash.value,
+              true,
+            )}`}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text color="text2">ส่วนลดดูแลราคา</Text>
+            <Text
+              color="error"
+              semiBold
+              fontFamily="NotoSans">{`-฿${numberWithCommas(
+              +dataObj.discountCo.value,
               true,
             )}`}</Text>
           </View>

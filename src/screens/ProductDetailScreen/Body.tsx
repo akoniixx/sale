@@ -160,7 +160,7 @@ export default function Body({
               width: '100%',
             }}
             numberOfLines={isShowMore ? undefined : 2}>
-            {description}
+            {description ? description : '-'}
           </Text>
           {isShowMore && (
             <View

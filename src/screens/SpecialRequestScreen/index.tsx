@@ -326,16 +326,16 @@ export default function SpecialRequestScreen({
                     style={{
                       flex: 0.7,
                     }}>
-                    {dataObj.discountCo.label}
+                    {dataObj.discountCash.label}
                   </Text>
                   <Text
                     style={{
                       flex: 0.3,
                     }}
-                    semiBold
                     right
-                    color="error">{`-฿${numberWithCommas(
-                    dataObj.discountCo.value,
+                    semiBold
+                    color="waiting">{`-฿${numberWithCommas(
+                    dataObj.discountCash.value,
                     true,
                   )}`}</Text>
                 </View>
@@ -353,19 +353,20 @@ export default function SpecialRequestScreen({
                     style={{
                       flex: 0.7,
                     }}>
-                    {dataObj.discountCash.label}
+                    {dataObj.discountCo.label}
                   </Text>
                   <Text
                     style={{
                       flex: 0.3,
                     }}
-                    right
                     semiBold
-                    color="waiting">{`-฿${numberWithCommas(
-                    dataObj.discountCash.value,
+                    right
+                    color="error">{`-฿${numberWithCommas(
+                    dataObj.discountCo.value,
                     true,
                   )}`}</Text>
                 </View>
+
                 <View
                   style={{
                     flexDirection: 'row',

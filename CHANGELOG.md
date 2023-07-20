@@ -1,5 +1,7 @@
 ## [Version - 2]
 
+## Changes [v2.5.17] - 2023-07-20
+- change level display list
 ## Fix [v2.5.16] - 2023-06-29
 - change config firebase messaging to production
 - display version number in app

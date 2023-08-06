@@ -187,8 +187,13 @@ export default function Body({
                   productName={productName}
                   currentProductId={productId}
                   unitBuy={saleUOMTH}
-                  promotionType={item.promotionType}
+                  promotionType={item.promotion.promotionType}
+                  conditionDetail={item.promotion.conditionDetail}
+                  startDate={item.promotion.startDate}
+                  endDate={item.promotion.startDate}
+                  promotionName={item.promotion.promotionName}
                 />
+                
               );
             })}
           </View>

@@ -31,7 +31,7 @@ export default function PromotionItem({
   const { t } = useLocalization();
   const isLast = index === promotionLength - 1;
   return (
-    
+
     <LinearGradient
       style={[
         styles.container,
@@ -42,7 +42,7 @@ export default function PromotionItem({
       colors={[colors.BGDiscount1, colors.BGDiscount2]}
       start={{ x: 0.5, y: 0.5 }}>
       <View style={styles.header}>
-      
+
         <Image
           source={icons.promotionDetail}
           style={{
@@ -63,124 +63,130 @@ export default function PromotionItem({
 
 
 
-         {promotionType === 'DISCOUNT_MIX'&&conditionDetail[0].typeMix==='Quantity'?(
+        {promotionType === 'DISCOUNT_MIX' && conditionDetail[0].typeMix === 'Quantity' ? (
 
-conditionDetail[0]?.conditionDiscount?.map((el, idx) => {
-  return <View>
-    <Text
-      key={idx}
-      color="white"
-      style={{
-        lineHeight: 30,
-      }}
-    >
-      {`•  ${t('screens.ProductDetailScreen.promotionDiscount_mix_quantity', {
-        buy: el.quantity,
-        discountPrice: el.discountPrice,
-        unitBuy: el.saleUnit ,
-      })} `}
-    </Text>
-  </View>
-})
+          conditionDetail[0]?.conditionDiscount?.map((el, idx) => {
+            return <View>
+              <Text
+                key={idx}
+                color="white"
+                style={{
+                  lineHeight: 30,
+                }}
+              >
+                {`•  ${t('screens.ProductDetailScreen.promotionDiscount_mix_quantity', {
+                  buy: el.quantity,
+                  discountPrice: el.discountPrice,
+                  unitBuy: el.saleUnit,
+                })} `}
+              </Text>
+            </View>
+          })
 
-        ):<></>} 
+        ) : <></>}
 
-{promotionType === 'DISCOUNT_MIX'&&conditionDetail[0].conditionDiscount.typeMix==='Size'?(
- 
-conditionDetail[0]?.conditionDiscount?.products.map((el, idx) => {
- if(el.productId===currentProductId){
-  return <View>
-    <Text
-      key={idx}
-      color="white"
-      style={{
-        lineHeight: 30,
-      }}
-    >
-      
-      {`•  ${t('screens.ProductDetailScreen.promotionDiscount_mix_size', {
-        buy: conditionDetail[0].conditionDiscount.size,
-        discountPrice: el.discountPrice,
-        unitBuy: el.saleUnit ,
-      })} `}
-    </Text>
-  </View>
-}})
+        {promotionType === 'DISCOUNT_MIX' && conditionDetail[0].conditionDiscount.typeMix === 'Size' ? (
 
-        ):<></>} 
+          conditionDetail[0]?.conditionDiscount?.products.map((el, idx) => {
+            if (el.productId === currentProductId) {
+              return <View>
+                <Text
+                  key={idx}
+                  color="white"
+                  style={{
+                    lineHeight: 30,
+                  }}
+                >
 
-{promotionType === 'OTHER'?(
+                  {`•  ${t('screens.ProductDetailScreen.promotionDiscount_mix_size', {
+                    buy: conditionDetail[0].conditionDiscount.size,
+                    discountPrice: el.discountPrice,
+                    unitBuy: el.saleUnit,
+                  })} `}
+                </Text>
+              </View>
+            }
+          })
 
-conditionDetail?.map((el, idx) => {
-  return <View>
-    <Text
-      key={idx}
-      color="white"
-      style={{
-        lineHeight: 30,
-      }}
-    >
-      {el.detail}
-    </Text>
-  </View>
-})
+        ) : <></>}
 
-        ):<></>} 
+        {promotionType === 'OTHER' ? (
 
+          conditionDetail.map((condition, index) => {
 
+            if (condition.products.some(product => product.key === currentProductId)) {
+              return (
+                <Text
+                  key={index}
+                  color="white"
+                  style={{
+                    lineHeight: 30,
+                  }}>
+                  {condition.detail}
+                </Text>
+              );
+            } else {
+              return null;
+            }
+          })
 
-{promotionType === 'FREEBIES_MIX'&&conditionDetail[0].typeMix==='Quantity'?(
-
-conditionDetail[0]?.conditionFreebies?.map((el, idx) => {
-  return <View>
-    <Text
-      key={idx}
-      color="white"
-      style={{
-        lineHeight: 30,
-      }}
-    >
-      {`•  ${t('screens.ProductDetailScreen.freebies_mix_quantity', {
-        buy: el.quantity,
-        unitBuy: el.saleUnit ,
-        productNameFree: el.freebies[0].productName,
-        commonNameFree: el.freebies[0].commonName,
-        sizeFree: el.freebies[0].packSize,
-        free: el.freebies[0].quantity,
-        unitFree: el.freebies[0].saleUOMTH
-      })} `}
-    </Text>
-  </View>
-})
+        ) : <></>}
 
 
-        ):<></>} 
-
-{promotionType === 'FREEBIES_MIX'&&conditionDetail[0].typeMix==='Size'?(
-
-conditionDetail[0]?.conditionFreebies?.map((el, idx) => {
-  return <View>
-    <Text
-      key={idx}
-      color="white"
-      style={{
-        lineHeight: 30,
-      }}
-    >sssss
-      {`•  ${t('screens.ProductDetailScreen.freebies_mix_quantity', {
-        buy: el.quantity,
-        unitBuy: el.saleUnit ,
-        productNameFree: el.freebies[0].productName,
-      })} `}
-    </Text>
-  </View>
-})
 
 
-        ):<></>} 
+        {promotionType === 'FREEBIES_MIX' && conditionDetail[0].typeMix === 'Quantity' ? (
+
+          conditionDetail[0]?.conditionFreebies?.map((el, idx) => {
+            return <View>
+              <Text
+                key={idx}
+                color="white"
+                style={{
+                  lineHeight: 30,
+                }}
+              >
+                {`•  ${t('screens.ProductDetailScreen.freebies_mix_quantity', {
+                  buy: el.quantity,
+                  unitBuy: el.saleUnit,
+                  productNameFree: el.freebies[0].productName,
+                  commonNameFree: el.freebies[0].commonName,
+                  sizeFree: el.freebies[0].packSize,
+                  free: el.freebies[0].quantity,
+                  unitFree: el.freebies[0].saleUOMTH
+                })} `}
+              </Text>
+            </View>
+          })
+        ) : <></>}
+
+        {promotionType === 'FREEBIES_MIX' && conditionDetail[0].typeMix === 'Size' ? (
+
+          conditionDetail[0]?.conditionFreebies?.map((el, idx) => {
+            return <View>
+              <Text
+                key={idx}
+                color="white"
+                style={{
+                  lineHeight: 30,
+                }}
+              >
+                {`•  ${t('screens.ProductDetailScreen.freebies_mix_quantity', {
+                  buy: conditionDetail[0].size,
+                  unitBuy: el.saleUnit,
+                  productNameFree: el.freebies[0].productName,
+                  commonNameFree: el.freebies[0].commonName,
+                  sizeFree: el.freebies[0].packSize,
+                  free: el.freebies[0].quantity,
+                  unitFree: el.freebies[0].saleUOMTH
+                })} `}
+              </Text>
+            </View>
+          })
 
 
-        
+        ) : <></>}
+
         {conditionDetail?.map(item => {
           if (currentProductId !== item.productId) {
             return null;
@@ -253,6 +259,8 @@ conditionDetail[0]?.conditionFreebies?.map((el, idx) => {
             });
           });
         })}
+
+
 
 
 

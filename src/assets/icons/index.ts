@@ -56,4 +56,5 @@ export default {
   iconNext: require('./iconNext.png'),
   iconEditPhoto: require('./iconEditPhoto.png'),
   logout: require('./logout.png'),
+  check: require('./check.png'),
 };

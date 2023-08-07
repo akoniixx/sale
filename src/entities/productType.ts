@@ -57,6 +57,12 @@ export interface PromotionType {
   isDraft: boolean;
   isDelete: boolean;
   conditionDetail: {
+    conditionDiscount: {
+      quantity: string
+      saleUnit: string
+      discountPrice: string
+      saleUnitDiscount: string
+    }[]
     productId: string;
     condition: {
       freebies: {

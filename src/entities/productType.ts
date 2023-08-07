@@ -159,3 +159,20 @@ export interface ProductSummary extends ProductType {
   productBrand?: ProductBrand;
   productCategory?: ProductCategory;
 }
+
+
+export interface ProductFreebies {
+  productFreebiesId: string;
+  company: string;
+  productName: string;
+  productFreebiesCodeNAV: string;
+  productGroup: string;
+  baseUnitOfMeaEn: string;
+  baseUnitOfMeaTh: string;
+  productFreebiesStatus: string;
+  description: string;
+  productFreebiesImage: null | string;
+  createDate: string;
+  updateDate: string;
+  updateBy: null | string;
+}

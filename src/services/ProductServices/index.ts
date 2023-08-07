@@ -69,9 +69,17 @@ const getProductBrand = async (company?: string) => {
     .catch(err => console.log(err));
 };
 
+const getProductFree = async (company?: string) => {
+  return await request
+  .get(`/master/product-freebies?company=${company}`)
+  .then(res => res.data)
+  .catch(err => console.log(err));
+}
+
 export const productServices = {
   getAllProducts,
   getProductById,
   getProductBrand,
   getProductCategory,
+  getProductFree
 };

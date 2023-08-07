@@ -159,6 +159,34 @@ export default function SpecialRequestScreen({
                 />
               );
             })}
+
+
+<View style={styles.commentCard}>
+  <View>
+    <Text semiBold color="text2" fontFamily="NotoSans">ของแถม (Special Request)</Text>
+  </View>
+  <Button
+                  onPress={() => navigation.navigate('FreeSpeciaRequestScreen')}
+                  secondary
+                  iconFont={
+                    <Image
+                      source={icons.iconAdd}
+                      style={{
+                        width: 26,
+                        height: 26,
+                      }}
+                    />
+                  }
+                  title="กดเพื่อเพิ่มของแถม"
+                  style={{
+                    marginTop: 16,
+                    height: 40,
+                    paddingVertical: 0,
+                  }}
+                />
+</View>
+
+
             <View style={styles.commentCard}>
               <View>
                 <Text semiBold color="text2" fontFamily="NotoSans">

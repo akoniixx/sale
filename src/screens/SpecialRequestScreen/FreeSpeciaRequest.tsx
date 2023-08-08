@@ -88,7 +88,11 @@ export default function FreeSpeciaRequestScreen({ navigation,route }: Props) {
             setPage(1);
           }}
         />
-<ScrollView showsVerticalScrollIndicator={false}>
+<ScrollView showsVerticalScrollIndicator={false}  contentContainerStyle={{
+          flexGrow: 1,
+        
+          paddingBottom:70
+        }}>
         {freebies?.map((el,idx)=>(
            <TouchableOpacity key={idx} onPress={() => handleSelect(el)}>
              <View

@@ -252,7 +252,7 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
         });
       }
 
-      setPromotionListValue(initialValue);
+      setPromotionListValue([]);
       setPromotionList(formatPromotion);
 
       return {

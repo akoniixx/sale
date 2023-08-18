@@ -80,7 +80,7 @@ export default function SpecialRequestScreen({
             const isFind = promotionListValue.find(
               el2 => el2 === el.promotionId,
             );
-            if (el.promotionType === 'DISCOUNT_NOT_MIX' && isFind) {
+            if (el.promotionType === 'DISCOUNT_NOT_MIX'||el.promotionType === 'DISCOUNT_MIX' && isFind) {
               listDataDiscount.push({
                 ...dataPush,
                 value: el.conditionDetail.conditionDiscount,

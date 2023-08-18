@@ -285,7 +285,7 @@ export default function ListItemInCart({
                       {sumDiscount > 0 && !load ? (
                         <>
                           <Text color="current">
-                            {`  ส่วนลด ฿${numberWithCommas(sumDiscount)}`}
+                            {`  ส่วนลด ฿${numberWithCommas(item.discount)}`}
                           </Text>
                         </>
                       ) : (

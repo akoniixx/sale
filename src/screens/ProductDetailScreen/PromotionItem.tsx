@@ -54,7 +54,6 @@ export default function PromotionItem({
         />
         <Text color="white" fontFamily="NotoSans" bold fontSize={18}>
           {t('screens.ProductDetailScreen.promotion')}
-
         </Text>
       </View>
       <View style={styles.content}>
@@ -65,27 +64,31 @@ export default function PromotionItem({
 
 
 
-        {promotionType === 'DISCOUNT_MIX' && conditionDetail[0].typeMix === 'Quantity' ? (
 
-          conditionDetail[0]?.conditionDiscount?.map((el, idx) => {
-            return <View>
-              <Text
-                key={idx}
-                color="white"
-                style={{
-                  lineHeight: 30,
-                }}
-              >
-                {`•  ${t('screens.ProductDetailScreen.promotionDiscount_mix_quantity', {
-                  buy: el.quantity,
-                  discountPrice: el.discountPrice,
-                  unitBuy: el.saleUnit,
-                })} `}
-              </Text>
-            </View>
+
+        {
+          promotionType === 'DISCOUNT_MIX' && conditionDetail.map((condition, index) => {
+            if (condition.typeMix === 'Quantity') {
+              const targetProduct = condition.products.find(product => product.productId === currentProductId);
+              if (targetProduct) {
+                return (
+                  <View key={index}>
+                    {condition.conditionDiscount.map((discount, dIndex) => (
+                      <View key={dIndex}>
+                        <Text color="white"
+                          style={{
+                            lineHeight: 30,
+                          }}>{`• ซื้อ${discount.quantity} ${discount.saleUnit} ลด ${discount.discountPrice} บาท`}</Text>
+
+                      </View>
+                    ))}
+                  </View>
+                );
+              }
+            }
           })
 
-        ) : <></>}
+        }
 
 
         {promotionType === 'DISCOUNT_MIX' &&
@@ -101,7 +104,7 @@ export default function PromotionItem({
                         lineHeight: 30,
                       }}
                     >
-                      {`• เมื่อซื้อครบ ${condition.conditionDiscount.size} ${product.saleUnit} ลด${product.saleUnitDiscount}ละ${product.discountPrice}`}
+                      {`• เมื่อซื้อครบ ${condition.conditionDiscount.size} ${product.saleUnit} ลด${product.saleUnitDiscount}ละ${product.discountPrice} บาท`}
                     </Text>
 
                   );
@@ -137,24 +140,41 @@ export default function PromotionItem({
 
         ) : <></>}
 
-        {promotionType === 'FREEBIES_MIX' && conditionDetail[0].typeMix === 'Quantity' ? (
 
-          conditionDetail[0]?.conditionFreebies?.map((el, idx) => {
-            return <View>
-              <Text
-                key={idx}
-                color="white"
-                style={{
-                  lineHeight: 30,
-                }}
-              >
-                 {`• เมื่อซื้อครบ ${el.quantity} ${el.saleUnit} แถม ${el.freebies[0].productName} ${el.freebies[0].commonName?`(${el.freebies[0].commonName})`:''} ${el.freebies[0].packSize?`ขนาด ${el.freebies[0].packSize}`:''} จำนวน ${el.freebies[0].quantity} ${el.freebies[0].baseUnitOfMeaTh ? el.freebies[0].baseUnitOfMeaTh : el.freebies[0].saleUOMTH}`}
-               
-                
-              </Text>
-            </View>
-          })
-        ) : <></>}
+        {promotionType === 'FREEBIES_MIX' && conditionDetail.map((detail) => {
+          if (detail.typeMix === 'Quantity') {
+            const product = detail.products.find((prod) => prod.productId === currentProductId);
+            if (product) {
+              return (
+                <>
+                  {detail.conditionFreebies.map((freebieDetail) => (
+                    <View key={freebieDetail.quantity}>
+                      <Text color="white"
+                        style={{
+                          lineHeight: 30,
+                        }}>{`• เมื่อซื้อครบ ${freebieDetail.quantity} ${freebieDetail.saleUnit} `}</Text>
+
+                      <Text color="white"
+                        style={{
+                          lineHeight: 30,
+                        }}>
+                        {`แถม`}
+                        {freebieDetail.freebies.map((freebie, idx) => (
+                          ` ${freebie.productName} ${freebie.quantity} ${freebie.baseUnitOfMeaTh ? freebie.baseUnitOfMeaTh : freebie.saleUOMTH}${idx + 1 === freebieDetail.freebies.length ? '' : ','} `
+
+
+                        ))}
+                      </Text>
+
+                    </View>
+                  ))}
+                </>
+              );
+            }
+          }
+          return null;
+        })}
+
 
         {promotionType === 'FREEBIES_MIX' &&
           conditionDetail.map((detail) => {
@@ -172,17 +192,15 @@ export default function PromotionItem({
                             }}>{
                               `• เมื่อซื้อครบ ${detail.size} kg / L`
                             }</Text>
+                          <Text color="white"
+                            style={{
+                              lineHeight: 30,
+                            }}>
+                            {detail.conditionFreebies[0].freebies.map((freebie, idx) => (
 
-                          {detail.conditionFreebies[0].freebies.map((freebie) => {
-                            return (
-
-                              <Text color="white"
-                                style={{
-                                  lineHeight: 30,
-                                }}>{`แถม${freebie.productName} ${freebie.commonName ? `(${freebie.commonName})` : ``} ${freebie.packSize ? `ขนาด ${freebie.packSize}` : ``} จำนวน ${freebie.quantity} ${freebie.baseUnitOfMeaTh ? freebie.baseUnitOfMeaTh : freebie.saleUOMTH}`}</Text>
-
-                            );
-                          })}
+                              `แถม${freebie.productName} ${freebie.commonName ? `(${freebie.commonName})` : ``} ${freebie.packSize ? `ขนาด ${freebie.packSize}` : ``} จำนวน ${freebie.quantity} ${freebie.baseUnitOfMeaTh ? freebie.baseUnitOfMeaTh : freebie.saleUOMTH}${idx + 1 === detail.conditionFreebies[0].freebies.length ? '' : ','} `
+                            ))}
+                          </Text>
                         </View>
                       );
                     }

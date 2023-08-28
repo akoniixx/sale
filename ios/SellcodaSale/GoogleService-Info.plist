@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>124740181518-44bsqer9kq6bhr2lcfifkvtpckcab53a.apps.googleusercontent.com</string>
+	<string>124740181518-8cju3oqb2olhn37nah87t7ddq0lh4um2.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.124740181518-44bsqer9kq6bhr2lcfifkvtpckcab53a</string>
+	<string>com.googleusercontent.apps.124740181518-8cju3oqb2olhn37nah87t7ddq0lh4um2</string>
 	<key>API_KEY</key>
 	<string>AIzaSyCLENnnqxy8UIqcplgLktpAHvN7oMDHRkE</string>
 	<key>GCM_SENDER_ID</key>
@@ -13,7 +13,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.iconkaset.dev.morroc</string>
+	<string>com.iconkaset.sellcoda.sale</string>
 	<key>PROJECT_ID</key>
 	<string>sellcoda-sale-v2</string>
 	<key>STORAGE_BUCKET</key>
@@ -29,6 +29,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:124740181518:ios:cdb8970e802ff00dd1a65f</string>
+	<string>1:124740181518:ios:81d2155652d1f456d1a65f</string>
 </dict>
 </plist>

@@ -25,6 +25,13 @@ import VersionCheck from 'react-native-version-check';
 import './src/components/Sheet/sheets.tsx';
 import storeVersion from 'react-native-store-version';
 import RNExitApp from 'react-native-kill-app';
+import analytics from '@react-native-firebase/analytics';
+import { request } from 'react-native-permissions';
+
+
+
+
+
 dayjs.extend(buddhaEra);
 const App = () => {
   const checkVersion = async () => {
@@ -66,7 +73,9 @@ const App = () => {
       ]);
     }
   };
+  
   React.useEffect(() => {
+    request('ios.permission.APP_TRACKING_TRANSPARENCY');
     SplashScreen.hide();
     if (Platform.OS === 'ios') {
       firebaseInitialize();
@@ -116,9 +125,13 @@ const App = () => {
     );
     messaging().onMessage(async remoteMessage => {
       console.log('A new FCM message arrived!', JSON.stringify(remoteMessage));
+      await analytics().logEvent('notification_receive', {
+        notification_type: remoteMessage.data?.type || "default"
+    });
     });
   }, []);
 
+  
   return (
     <NavigationContainer ref={navigationRef}>
       <LocalizationProvider>

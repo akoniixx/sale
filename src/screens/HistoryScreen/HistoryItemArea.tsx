@@ -9,6 +9,8 @@ import images from '../../assets/images';
 import { getNewPath } from '../../utils/functions';
 import ImageCache from '../../components/ImageCache/ImageCache';
 import BadgeStatus from '../../components/BadgeStatus/BadgeStatus';
+import { firebaseInitialize } from '../../firebase/notification';
+import analytics from '@react-native-firebase/analytics';
 
 interface Props extends HistoryDataType {
   navigation?: any;

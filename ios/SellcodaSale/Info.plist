@@ -41,11 +41,13 @@
 		</dict>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>Your app requires access to the camera to take profile images.</string>
+	<string>$(PRODUCT_NAME) requires your permission to track in order to show you more relevant ads. requires access to the camera to take profile images.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Your app requires access to the photo library to select profile images.</string>
+	<string>$(PRODUCT_NAME) requires your permission to track in order to show you more relevant ads. requires access to the photo library to select profile images.</string>
+	<key>NSUserTrackingUsageDescription</key>
+  <string>$(PRODUCT_NAME) requires your permission to track in order to show you more relevant ads.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Sarabun-Bold.ttf</string>

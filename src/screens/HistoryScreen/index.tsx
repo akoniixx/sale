@@ -15,6 +15,8 @@ import { historyServices } from '../../services/HistoryServices';
 import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
 import { HistoryDataType } from '../../entities/historyTypes';
 import { useFocusEffect } from '@react-navigation/native';
+import analytics from '@react-native-firebase/analytics';
+import { firebaseInitialize } from '../../firebase/notification';
 
 interface TypeHistory {
   data: HistoryDataType[];
@@ -148,6 +150,15 @@ export default function HistoryScreen({ navigation }: any): JSX.Element {
     setDebounceSearchValue(v);
   };
 
+
+  useEffect(()=>{
+    firebaseInitialize();
+    analytics().logScreenView({
+      screen_name: 'HistoryScreen'
+    })
+  },[])
+
+
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -196,6 +207,10 @@ export default function HistoryScreen({ navigation }: any): JSX.Element {
   ]);
   useFocusEffect(
     useCallback(() => {
+      firebaseInitialize();
+      analytics().logScreenView({
+        screen_name: 'HistoryScreen'
+      })
       const fetchData = async () => {
         setLoading(true);
         const payload: any = {

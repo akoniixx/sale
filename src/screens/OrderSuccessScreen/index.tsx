@@ -60,6 +60,7 @@ export default function OrderSuccessScreen({
         const response = await orderServices.getOrderById(orderId);
         const productBrand = await AsyncStorage.getItem('productBrand');
         if (response) {
+        
           const fbList: {
             productName: string;
             id: string;
@@ -115,6 +116,7 @@ export default function OrderSuccessScreen({
       totalPrice: el.totalPrice,
       quantity: el.quantity,
       isFreebie: el.isFreebie,
+      price: el.price,
     };
   });
 
@@ -259,7 +261,6 @@ export default function OrderSuccessScreen({
                         style={{
                           flexDirection: 'row',
                           justifyContent: 'space-between',
-                          alignItems: 'center',
                           marginTop: 16,
                         }}>
                         <Text
@@ -271,6 +272,20 @@ export default function OrderSuccessScreen({
                           {el.productName} {`   ${el.quantity}x`}{' '}
                           {`(${el.unit})`}
                         </Text>
+                        <View style={{alignItems:'flex-end'}}>
+                          {el.price !== el.totalPrice? 
+                           <Text
+                           fontSize={12}
+                           fontFamily="NotoSans"
+                           color="text3"
+                           style={{
+                             textDecorationStyle: 'solid',
+                             textDecorationLine: 'line-through' ,
+                           }}>
+                           {`฿${numberWithCommas(el.price, true)}`}
+                         </Text>
+                        : null}
+                       
                         <Text
                           fontFamily="NotoSans"
                           color="text2"
@@ -280,6 +295,8 @@ export default function OrderSuccessScreen({
                           }}>
                           {`฿${numberWithCommas(el.totalPrice, true)}`}
                         </Text>
+                        </View>
+                       
                       </View>
                     );
                   })}

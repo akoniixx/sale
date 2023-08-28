@@ -31,6 +31,7 @@ export interface OrderDetailType {
       shipmentOrder: number;
       totalPrice: number;
       isFreebie: boolean;
+      price: number;
     },
   ];
   paymentMethod: string;

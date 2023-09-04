@@ -26,7 +26,7 @@ const updateFcmToken = async (payload: {
   token: string;
 }) => {
   return await request
-    .post('/noti/user-device', payload, {
+    .post('/fcm/user-device', payload, {
       headers: {
         accept: 'application/json',
         Authorization: `Bearer ${payload.token}`,
@@ -41,7 +41,14 @@ const updateFcmToken = async (payload: {
     });
 };
 const removeDeviceToken = async (token: string) => {
-  return await request.delete(`/noti/user-device/${token}`);
+  return await request.delete(`/fcm/user-device/${token}`)
+  .then(res=>{
+    return res.data
+  })
+  .catch(err => {
+    console.log('err',err)
+    throw err;
+  })
 };
 
 export const userServices = {

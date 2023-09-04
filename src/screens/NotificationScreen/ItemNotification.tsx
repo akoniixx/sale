@@ -9,7 +9,7 @@ interface Props {
   onPress?: () => void;
   isWarning?: boolean;
 }
-export default function ItemNotification({ onPress, isWarning = true }: Props) {
+export default function ItemNotification({ onPress, isWarning = true ,...props}: Props) {
   return (
     <View style={styles.card}>
       <View

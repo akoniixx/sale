@@ -151,13 +151,6 @@ export default function HistoryScreen({ navigation }: any): JSX.Element {
   };
 
 
-  useEffect(()=>{
-    firebaseInitialize();
-    analytics().logScreenView({
-      screen_name: 'HistoryScreen'
-    })
-  },[])
-
 
   useEffect(() => {
     const fetchData = async () => {

@@ -1,4 +1,4 @@
-type Notification = {
+export type Notification = {
     notificationId: string;
     userStaffId: string;
     userShopId: string | null;
@@ -15,7 +15,7 @@ type Notification = {
     qtyItem: number;
     createdAt: string;
     updatedAt: string;
-    product: Product[][];
+    product: Product[];
   };
   
   type Product = {
@@ -23,7 +23,7 @@ type Notification = {
     productImage: string;
   };
   
-  type NotificationList = {
+ export type NotificationList = {
     count: number;
     data: Notification[];
   };

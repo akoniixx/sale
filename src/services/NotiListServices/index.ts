@@ -9,15 +9,24 @@ import { request } from "../../config/request";
   ) => {
 
     return await request
-    .get(`/fcm/notification?page=${page}&take=${take}&sortDirection=${sortDirection}&userStaffid=${userStaffId}`)
+    .get(`/fcm/notification?page=${page}&take=${take}&sortDirection=${sortDirection}&userStaffId=${userStaffId}`)
     .then(res => res.data)
     .catch(err => {
       throw err;
     });
   }
   
-  
+  const readNoti = async(
+    notiId:string
+  ) => {
+    return await request
+    .post(`/fcm/notification/read/${notiId}`)
+    .then( res => res.data)
+    .catch(err => {
+      throw err;
+    });
+  }
   export const notiListServices = {
     getNotilist,
-   
+    readNoti
   };

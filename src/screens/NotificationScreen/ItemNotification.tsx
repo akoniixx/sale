@@ -106,10 +106,10 @@ export default function ItemNotification({ data, fetchDataMore, navigation, ...p
             <View style={{ flexDirection: 'row', marginVertical: 10,alignItems:'center' }}>
               {data.product && data.product.map((p, idx) => {
                 return (
-                  <View >
+                  <View key={idx}>
                     {idx < 6 ?
                       idx != 5 ?
-                        <View style={{ marginHorizontal: 10 }}>
+                        <View style={{ marginHorizontal: 5 }}>
                           {p.productImage?
                           <ImageCache
                           uri={getNewPath(p.productImage)}
@@ -128,7 +128,7 @@ export default function ItemNotification({ data, fetchDataMore, navigation, ...p
                          
                         </View>
                         :
-                        <View style={{ marginHorizontal: 10,padding:5 ,backgroundColor:'rgba(14, 14, 14, 0.4)',borderRadius:4}} >
+                        <View style={{ marginHorizontal: 5,padding:5 ,backgroundColor:'rgba(14, 14, 14, 0.4)',borderRadius:4}} >
                          <View style={{opacity:0.5}}>
                          {p.productImage?
                           <ImageCache

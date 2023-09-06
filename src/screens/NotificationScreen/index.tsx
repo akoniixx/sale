@@ -43,29 +43,24 @@ export default function NotificationScreen({ navigation }: Props) {
    notiListServices.getNotilist(page,limit,'ASC',user?.userStaffId||'')
    .then((res)=>{
     setNotiList(res)
-    setLoading(false)
+    setTimeout(() => {
+      setLoading(false)
+    }, 1000);
+    
    })
 
    } catch (error) {
     console.log(error)
    } finally{
-    setLoading(false)
+    setTimeout(() => {
+      setLoading(false)
+    }, 1000)
    }
   }
 
   const fetchDataMore = async () => {
     if (notiList.data.length < notiList.count) {
       try {
-        const payload: any = {
-         
-          take: limit,
-          company: user?.company || '',
-          page: page + 1,
-          
-         
-          userStaffId: user?.userStaffId,
-        };
-       
         const data = await  notiListServices.getNotilist(page+1,limit,'ASC',user?.userStaffId||'');
         setNotiList({
           ...notiList,

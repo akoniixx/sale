@@ -3,9 +3,17 @@ import React from 'react';
 import images from '../../assets/images';
 import Text from '../../components/Text/Text';
 import ItemNotification from './ItemNotification';
+import { NotificationList } from '../../entities/notiListTypes';
 
-export default function Body() {
-  const [data, setData] = React.useState([]);
+
+interface Props{
+  data:NotificationList
+  fetchDataMore:()=>Promise<void>
+  navigation:any
+  
+}
+
+export default function Body({data,fetchDataMore,navigation}:Props) {
   const EmptyItem = () => {
     return (
       <View
@@ -30,9 +38,11 @@ export default function Body() {
   return (
     <FlatList
       ListEmptyComponent={<EmptyItem />}
-      data={[]}
+      data={data.data}
+      onEndReached={fetchDataMore}
+      onEndReachedThreshold={0.2}
       renderItem={({ item }) => {
-        return <ItemNotification />;
+        return <ItemNotification data={item} fetchDataMore={fetchDataMore} navigation={navigation}/>;
       }}
     />
   );

@@ -190,7 +190,7 @@ export default function Body({
                   promotionType={item.promotion.promotionType}
                   conditionDetail={item.promotion.conditionDetail}
                   startDate={item.promotion.startDate}
-                  endDate={item.promotion.startDate}
+                  endDate={item.promotion.endDate}
                   promotionName={item.promotion.promotionName}
                 />
                 

@@ -250,11 +250,7 @@ export default function CartScreen({
   }, [params?.specialRequestRemark]);
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={{
-        height: '100%',
-      }}>
+   
       <Container>
         <Header
           onBackCustom={() => {
@@ -378,6 +374,6 @@ export default function CartScreen({
           onRequestClose={() => setVisibleConfirm(false)}
         />
       </Container>
-    </KeyboardAvoidingView>
+   
   );
 }

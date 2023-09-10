@@ -70,6 +70,7 @@ export default function SummaryList({ dataObj }: Props) {
               marginHorizontal: 8,
               borderRadius: 8,
               paddingVertical: 8,
+              marginBottom:5,
               alignItems: 'flex-start',
             },
           ]}

@@ -15,7 +15,7 @@ import messaging, {
 import buddhaEra from 'dayjs/plugin/buddhistEra';
 import dayjs from 'dayjs';
 import SplashScreen from 'react-native-splash-screen';
-import { Alert, Linking, Platform } from 'react-native';
+import { Alert, Linking, PermissionsAndroid, Platform } from 'react-native';
 import {
   firebaseInitialize,
   requestUserPermission,
@@ -25,6 +25,13 @@ import VersionCheck from 'react-native-version-check';
 import './src/components/Sheet/sheets.tsx';
 import storeVersion from 'react-native-store-version';
 import RNExitApp from 'react-native-kill-app';
+import analytics from '@react-native-firebase/analytics';
+import { PERMISSIONS, checkNotifications, request } from 'react-native-permissions';
+
+
+
+
+
 dayjs.extend(buddhaEra);
 const App = () => {
   const checkVersion = async () => {
@@ -66,11 +73,28 @@ const App = () => {
       ]);
     }
   };
+  
   React.useEffect(() => {
+    const checkPermission = () => {
+      checkNotifications().then(async ({status}) => {
+       
+        if (status === 'denied' || status === 'blocked') {
+          if (Platform.OS === 'android' && Platform.Version >= 33) {
+            request(PERMISSIONS.ANDROID.POST_NOTIFICATIONS);
+           }
+          requestUserPermission();
+        }
+      });
+    };
+
+
+    request('ios.permission.APP_TRACKING_TRANSPARENCY');
     SplashScreen.hide();
     if (Platform.OS === 'ios') {
       firebaseInitialize();
     }
+   
+    
     const getTestFirebaseToken = async () => {
       const firebaseToken = await AsyncStorage.getItem('fcmtoken');
       console.log('firebaseToken', firebaseToken);
@@ -78,6 +102,8 @@ const App = () => {
     requestUserPermission();
     getTestFirebaseToken();
     checkVersion();
+    checkPermission();
+    
   }, []);
 
   React.useEffect(() => {
@@ -116,9 +142,13 @@ const App = () => {
     );
     messaging().onMessage(async remoteMessage => {
       console.log('A new FCM message arrived!', JSON.stringify(remoteMessage));
+      await analytics().logEvent('notification_receive', {
+        notification_type: remoteMessage.data?.type || "default"
+    });
     });
   }, []);
 
+  
   return (
     <NavigationContainer ref={navigationRef}>
       <LocalizationProvider>

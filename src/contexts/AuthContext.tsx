@@ -4,6 +4,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthServices } from '../services/AuthServices';
 import { navigate } from '../navigations/RootNavigator';
 import { userServices } from '../services/UserServices';
+import { firebaseInitialize, getFCMToken } from '../firebase/notification';
+import messaging from '@react-native-firebase/messaging';
 
 interface Props {
   children: JSX.Element;
@@ -124,12 +126,14 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
       },
       login: async (payload: any) => {
         try {
+        
           const { data } = await AuthServices.verifyOtp(payload);
           if (data) {
+            const token = await messaging().getToken();
+            await AsyncStorage.setItem('fcmtoken', token);
             await AsyncStorage.setItem('token', data.accessToken);
             await AsyncStorage.setItem('userStaffId', data.data.userStaffId);
             const fcmtoken = await AsyncStorage.getItem('fcmtoken');
-
             if (fcmtoken) {
               try {
                 await userServices.updateFcmToken({
@@ -149,19 +153,18 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
         }
       },
       logout: async () => {
-        try {
+        const fmctoken = await AsyncStorage.getItem('fcmtoken');
+        await userServices.removeDeviceToken(fmctoken)
+        .then(async res=>{
           await AsyncStorage.removeItem('token');
           await AsyncStorage.removeItem('user');
-          const fmctoken = await AsyncStorage.getItem('fcmtoken');
-          if (fmctoken) {
-            await userServices.removeDeviceToken(fmctoken);
-          }
           await AsyncStorage.removeItem('fcmtoken');
           dispatch({ type: 'LOGOUT' });
-          navigate('LoginScreen');
-        } catch (e) {
-          console.log(e);
-        }
+        })
+        
+        
+         /*  navigate('LoginScreen'); */
+        
       },
     }),
     [],

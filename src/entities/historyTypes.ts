@@ -52,5 +52,6 @@ export interface HistoryDataType {
     shipmentOrder: number;
     totalPrice: number;
     isFreebie: boolean;
+    price: number
   }[];
 }

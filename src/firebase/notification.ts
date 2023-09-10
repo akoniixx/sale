@@ -24,13 +24,32 @@ const credentialsProd = {
 };
 
 export const firebaseInitialize = async () => {
-  await firebase.initializeApp(credentialsProd);
+  if (!firebase.apps.length) {
+    await firebase.initializeApp(credentials);
+  } else {
+    firebase.app();
+  }
 };
 
-export const getFCMToken = async () => {
+/* export const getFCMToken = async () => {
   const token = await messaging().getToken();
   await AsyncStorage.setItem('fcmtoken', token);
+}; */
+
+export const getFCMToken = async () => {
+  try {
+    const localFcmToken = await AsyncStorage.getItem('fcmtoken');
+    if (localFcmToken) {
+      return;
+    }
+    const token = await messaging().getToken();
+    await AsyncStorage.setItem('fcmtoken', token);
+    messaging().setBackgroundMessageHandler(async remote => {});
+  } catch (err) {
+    console.log(err);
+  }
 };
+
 export async function requestUserPermission() {
   const authStatus = await messaging().requestPermission();
   const enabled =

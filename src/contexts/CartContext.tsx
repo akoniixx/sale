@@ -3,6 +3,7 @@ import * as React from 'react';
 import { ProductType, PromotionTypeCart } from '../entities/productType';
 import { cartServices } from '../services/CartServices';
 import { useAuth } from './AuthContext';
+import { promotionTypeMap } from '../utils/mappingObj';
 
 interface Props {
   children: JSX.Element;
@@ -242,7 +243,7 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
           initialValue.push(promotion?.promotionId || '');
         }
         const promotionType = isFreebie ? 'ของแถมขั้นบันได' : 'ส่วนลดขั้นบันได';
-        const title = `${promotionType} - ${promotion.promotionName}`;
+        const title = `${promotionTypeMap(promotion.promotionType)} - ${promotion.promotionName}`;
         formatPromotion.push({
           value: promotion.promotionId || '',
           key: promotion.promotionId || '',

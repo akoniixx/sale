@@ -204,20 +204,20 @@ export default function ListItemInCart({
           const isUsePromotion = cartDetail?.allPromotions?.find(el => {
             const isFindPromotionId = item.orderProductPromotions.find(
               el2 =>
-                el2.promotionId === el.promotionId &&
-                el2.promotionType === 'DISCOUNT_NOT_MIX',
+                el2.promotionId === el.promotionId /* &&
+                el2.promotionType === 'DISCOUNT_NOT_MIX'|| el.promotionType === 'DISCOUNT_MIX', */
             );
             return el.isUse && !!isFindPromotionId;
           });
           const currentDiscount: any = item.orderProductPromotions.find(
             el =>
-              el.promotionId === isUsePromotion?.promotionId &&
-              el.promotionType === 'DISCOUNT_NOT_MIX',
+              el.promotionId === isUsePromotion?.promotionId /* &&
+              el.promotionType === 'DISCOUNT_NOT_MIX'|| el.promotionType === 'DISCOUNT_MIX', */
           );
 
           const sumDiscount =
             isUsePromotion && currentDiscount
-              ? currentDiscount?.conditionDetail.conditionDiscount
+              ? currentDiscount?.conditionDetail?.conditionDiscount
               : 0;
 
           return (
@@ -285,7 +285,7 @@ export default function ListItemInCart({
                       {sumDiscount > 0 && !load ? (
                         <>
                           <Text color="current">
-                            {`  ส่วนลด ฿${numberWithCommas(sumDiscount)}`}
+                            {`  ส่วนลด ฿${numberWithCommas(item.discount)}`}
                           </Text>
                         </>
                       ) : (
@@ -378,6 +378,7 @@ export default function ListItemInCart({
                   {sumDiscount > 0 && !load ? (
                     <>
                       <Text bold fontFamily="NotoSans">
+                        
                         {`฿${numberWithCommas(
                           sumDiscount > 0
                             ? Number(item?.totalPrice || 0)

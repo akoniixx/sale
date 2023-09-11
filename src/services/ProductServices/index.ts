@@ -69,9 +69,18 @@ const getProductBrand = async (company?: string) => {
     .catch(err => console.log(err));
 };
 
-const getProductFree = async (company?: string) => {
+const getProductFree = async (payload:any) => {
+  const {  ...rest } = payload;
+
+  const query = Object.entries(rest).reduce((acc, [key, value]) => {
+    if (value !== undefined) {
+      return `${acc}&${key}=${value}`;
+    }
+    return acc;
+  }, '');
+
   return await request
-  .get(`/master/product-freebies?company=${company}`)
+  .get(`/master/product-freebies?${query}`)
   .then(res => res.data)
   .catch(err => console.log(err));
 }

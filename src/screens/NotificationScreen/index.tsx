@@ -22,7 +22,7 @@ export default function NotificationScreen({ navigation }: Props) {
     },
     // {
     //   value: 'promotion',
-    //   label: 'โปรโมชั่น',
+    //   label: 'โปรโมชัน',
     // },
   ];
   const {

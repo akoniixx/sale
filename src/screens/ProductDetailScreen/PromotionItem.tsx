@@ -73,7 +73,7 @@ export default function PromotionItem({
                         <Text color="white"
                           style={{
                             lineHeight: 30,
-                          }}>{`• ซื้อ${discount.quantity} ${discount.saleUnit} ลด ${discount.discountPrice} บาท ${discount.saleUnit}`}</Text>
+                          }}>{`• ซื้อ${discount.quantity} ${discount.saleUnit} ลด ${discount.discountPrice} บาทต่อ${discount.saleUnit}`}</Text>
 
                       </View>
                     ))}

@@ -19,6 +19,8 @@ import { SubmitButton } from '../../components/Form/SubmitButton';
 import Button from '../../components/Button/Button';
 import ModalWarning from '../../components/Modal/ModalWarning';
 import { useAuth } from '../../contexts/AuthContext';
+import { useCart } from '../../contexts/CartContext';
+import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
 
 
 interface Props {
@@ -39,16 +41,22 @@ export default function FreeSpeciaRequestScreen({ navigation, route }: Props) {
     state: { user },
   } = useAuth();
 
-  const handleSelect = (idx:ProductFreebies) => {
-    if (selectedItems.includes(idx)) {
-      setSelectedItems(prev => prev.filter(i => i !== idx));
+  const {
+    cartDetail,
+    cartList,
+    cartApi: { postCartItem },
+  } = useCart();
+
+  const handleSelect = (idx: ProductFreebies) => {
+    if (selectedItems.some(item => item.productFreebiesId === idx.productFreebiesId)) {
+      setSelectedItems(prev => prev.filter(i => i.productFreebiesId !== idx.productFreebiesId));
     } else if (selectedItems.length < 3) {
-      setSelectedItems(prev => [...prev, idx]);
+      const itemWithQuantity = { ...idx, quantity: 1 };
+      setSelectedItems(prev => [...prev, itemWithQuantity]);
     } else {
       Alert.alert("You can only select 3 items.");
     }
   };
-
 
   const getFreebies = async () => {
     setLoading(true)
@@ -59,8 +67,13 @@ export default function FreeSpeciaRequestScreen({ navigation, route }: Props) {
     try {
       const res = await productServices.getProductFree(payload)
       setFreebies(res.data)
-    } catch (error) {
+      setLoading(false)
+    } 
+    catch (error) {
       console.log(error)
+    }
+    finally {
+      setLoading(false)
     }
   }
 
@@ -68,8 +81,28 @@ export default function FreeSpeciaRequestScreen({ navigation, route }: Props) {
     setDebounceSearchValue(v);
   };
 
-  const onConfirm = () => {
-
+  const onConfirm = async() => {
+    setVisibleConfirm(false)
+    try {
+      setLoading(true);
+      await postCartItem(cartList,selectedItems)
+      navigation.navigate('SpecialRequestScreen')
+      /* .then((res)=>{
+        navigation.navigate('SpecialRequestScreen')
+      })
+      .catch((err)=>{
+        console.log(err)
+      })
+      .finally(()=>{
+        setLoading(false)
+      })
+ */
+     
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => {
@@ -119,7 +152,7 @@ export default function FreeSpeciaRequestScreen({ navigation, route }: Props) {
                     flexDirection: 'row',
                     paddingVertical: 20,
                     flex: 1,
-                    backgroundColor: selectedItems.includes(el) ? '#F8FAFF' : 'transparent',
+                    backgroundColor: selectedItems.some(item=>item.productFreebiesId === el.productFreebiesId) ? '#F8FAFF' : 'transparent',
                     borderBottomColor: colors.border1,
                     borderBottomWidth: 0.5,
                     borderStyle: 'solid'
@@ -167,7 +200,7 @@ export default function FreeSpeciaRequestScreen({ navigation, route }: Props) {
                     </View>
                   </View>
                   <View style={{ alignItems: 'center', alignSelf: 'center', width: 40 }}>
-                    {selectedItems.includes(el) && <Image source={icons.check} style={{ width: 20, height: 20 }} />}
+                    {selectedItems.some(item=>item.productFreebiesId === el.productFreebiesId) && <Image source={icons.check} style={{ width: 20, height: 20 }} />}
                   </View>
                 </View>
               </TouchableOpacity>
@@ -204,10 +237,11 @@ export default function FreeSpeciaRequestScreen({ navigation, route }: Props) {
           title="ยืนยันการเพิ่มของแถม"
           desc={`ต้องการยืนยันการเพิ่มของแถม Special Request ${selectedItems.length} รายการ ใช่หรือไม่ ?`}
           onConfirm={async () => {
-            await console.log(selectedItems);
+            await onConfirm();
           }}
           onRequestClose={() => setVisibleConfirm(false)}
         />
+         <LoadingSpinner visible={loading} />
     </Container>
   )
 

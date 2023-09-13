@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as React from 'react';
-import { ProductType, PromotionTypeCart } from '../entities/productType';
+import { ProductFreebies, ProductType, PromotionTypeCart } from '../entities/productType';
 import { cartServices } from '../services/CartServices';
 import { useAuth } from './AuthContext';
 import { promotionTypeMap } from '../utils/mappingObj';
@@ -127,6 +127,7 @@ interface CartDetailType {
   orderProducts: any[];
   discount: number;
   specialRequestDiscount: number;
+  specialRequestFreebies: ProductFreebies[];
   coDiscount: number;
   coAmount: string;
   cashDiscount: number;
@@ -140,6 +141,7 @@ interface ContextCart {
     getSelectPromotion: (cl: PromotionTypeCart[]) => Promise<any>;
     postCartItem: (
       cl: newProductType[],
+      specialRequestFreebies?:ProductFreebies[],
       newAllPromotion?: PromotionTypeCart[],
     ) => Promise<any>;
     postEditIsUseCod: ({ isUseCOD }: { isUseCOD: boolean }) => Promise<any>;
@@ -176,6 +178,7 @@ const CartContext = React.createContext<ContextCart>({
     cashDiscount: 0,
     paymentMethod: 'CASH',
     allPromotions: [],
+    specialRequestFreebies:[]
   },
 
   cartApi: {
@@ -183,6 +186,7 @@ const CartContext = React.createContext<ContextCart>({
     postCartItem: async () =>
       Promise.resolve({
         cartList: [] as newProductType[],
+        specialRequestFreebies: [] as ProductFreebies[],
         cartDetail: {} as CartDetailType,
       }),
     getSelectPromotion: async () => Promise.resolve(),
@@ -211,6 +215,7 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
     cashDiscount: 0,
     coAmount: '0',
     isUseCOD: false,
+    specialRequestFreebies: []
   });
 
   const [promotionList, setPromotionList] = React.useState<any>([]);
@@ -350,6 +355,7 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
       });
 
       setCartDetail(result);
+    
       const newFormat = (result?.orderProducts || [])
         .map((item: any): newProductType => {
           return {
@@ -363,6 +369,7 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
             totalPrice: item.totalPrice,
             unitPrice: item.qtySaleUnit,
             baseUOM: item.baseUom,
+            specialRequestFreebies: item.specialRequestFreebies
           };
         })
         .filter((item: any) => !item.isFreebie);
@@ -377,6 +384,7 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
   const postCartItem = React.useMemo(() => {
     return async (
       cl: newProductType[],
+      specialRequestFreebies?: ProductFreebies[],
       allPromotions?: PromotionTypeCart[],
     ) => {
       try {
@@ -400,11 +408,17 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
           customerCompanyId: customerCompanyId ? +customerCompanyId : 0,
           paymentMethod: cartDetail?.paymentMethod || 'CASH',
           allPromotions: cartDetail?.allPromotions || [],
+          specialRequestFreebies: cartDetail?.specialRequestFreebies || []
         };
+
+        if (specialRequestFreebies){
+          payload.specialRequestFreebies = specialRequestFreebies;
+        }
 
         if (allPromotions) {
           payload.allPromotions = allPromotions;
         }
+        
         // console.log('payload', JSON.stringify(payload.allPromotions, null, 2));
 
         const result = await cartServices.postCart(payload);

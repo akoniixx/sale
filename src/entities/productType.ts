@@ -181,4 +181,5 @@ export interface ProductFreebies {
   createDate: string;
   updateDate: string;
   updateBy: null | string;
+  quantity: number
 }

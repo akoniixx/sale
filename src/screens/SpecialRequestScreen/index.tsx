@@ -65,9 +65,8 @@ export default function SpecialRequestScreen({
       .map((item: any) => {
         const dataPush = {
           label: item.productName,
-          valueLabel: `(฿${numberWithCommas(item.marketPrice)} x ${
-            item.quantity
-          } ${item.saleUOMTH ? item.saleUOMTH : item.saleUOM})`,
+          valueLabel: `(฿${numberWithCommas(item.marketPrice)} x ${item.quantity
+            } ${item.saleUOMTH ? item.saleUOMTH : item.saleUOM})`,
         };
         if (item.specialRequestDiscount > 0) {
           listDataDiscountSpecialRequest.push({
@@ -80,7 +79,7 @@ export default function SpecialRequestScreen({
             const isFind = promotionListValue.find(
               el2 => el2 === el.promotionId,
             );
-            if (el.promotionType === 'DISCOUNT_NOT_MIX'||el.promotionType === 'DISCOUNT_MIX' && isFind) {
+            if (el.promotionType === 'DISCOUNT_NOT_MIX' || el.promotionType === 'DISCOUNT_MIX' && isFind) {
               listDataDiscount.push({
                 ...dataPush,
                 value: el.conditionDetail.conditionDiscount,
@@ -161,30 +160,50 @@ export default function SpecialRequestScreen({
             })}
 
 
-<View style={styles.commentCard}>
-  <View>
-    <Text semiBold color="text2" fontFamily="NotoSans">ของแถม (Special Request)</Text>
-  </View>
-  <Button
-                  onPress={() => navigation.navigate('FreeSpeciaRequestScreen')}
-                  secondary
-                  iconFont={
-                    <Image
-                      source={icons.iconAdd}
-                      style={{
-                        width: 26,
-                        height: 26,
-                      }}
-                    />
-                  }
-                  title="กดเพื่อเพิ่มของแถม"
-                  style={{
-                    marginTop: 16,
-                    height: 40,
-                    paddingVertical: 0,
-                  }}
-                />
-</View>
+            <View style={styles.commentCard}>
+              <View>
+                <Text semiBold color="text2" 
+                fontFamily="NotoSans">ของแถม (Special Request)</Text>
+              </View>
+
+
+
+
+{cartDetail.specialRequestFreebies?.map((item)=>(
+  <Text>{item.productName}</Text>
+))}
+              {/* {cartDetail.map((item, index) => 
+             
+             item?.specialRequestFreebies?.map((el,idx)=>{
+              return(
+<Text>
+  {el.productName}
+</Text>
+              )
+             })
+              
+          )}
+ */}
+              <Button
+                onPress={() => navigation.navigate('FreeSpeciaRequestScreen')}
+                secondary
+                iconFont={
+                  <Image
+                    source={icons.iconAdd}
+                    style={{
+                      width: 26,
+                      height: 26,
+                    }}
+                  />
+                }
+                title="กดเพื่อเพิ่มของแถม"
+                style={{
+                  marginTop: 16,
+                  height: 40,
+                  paddingVertical: 0,
+                }}
+              />
+            </View>
 
 
             <View style={styles.commentCard}>
@@ -363,9 +382,9 @@ export default function SpecialRequestScreen({
                     right
                     semiBold
                     color="waiting">{`-฿${numberWithCommas(
-                    dataObj.discountCash.value,
-                    true,
-                  )}`}</Text>
+                      dataObj.discountCash.value,
+                      true,
+                    )}`}</Text>
                 </View>
                 <View
                   style={{
@@ -390,9 +409,9 @@ export default function SpecialRequestScreen({
                     semiBold
                     right
                     color="error">{`-฿${numberWithCommas(
-                    dataObj.discountCo.value,
-                    true,
-                  )}`}</Text>
+                      dataObj.discountCo.value,
+                      true,
+                    )}`}</Text>
                 </View>
 
                 <View
@@ -417,9 +436,9 @@ export default function SpecialRequestScreen({
                     }}
                     right
                     semiBold>{`-฿${numberWithCommas(
-                    dataObj.totalDiscount.value,
-                    true,
-                  )}`}</Text>
+                      dataObj.totalDiscount.value,
+                      true,
+                    )}`}</Text>
                 </View>
                 <View
                   style={{
@@ -450,9 +469,9 @@ export default function SpecialRequestScreen({
                   fontFamily="NotoSans"
                   color="primary"
                   bold>{`฿${numberWithCommas(
-                  cartDetail.totalPrice,
-                  true,
-                )}`}</Text>
+                    cartDetail.totalPrice,
+                    true,
+                  )}`}</Text>
               </View>
               <Button
                 style={{

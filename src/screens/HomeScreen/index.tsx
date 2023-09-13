@@ -1,5 +1,5 @@
 import { Image, ImageBackground, StyleSheet, View } from 'react-native';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Container from '../../components/Container/Container';
 import Content from '../../components/Content/Content';
 import images from '../../assets/images';
@@ -17,10 +17,18 @@ export default function HomeScreen({ navigation }: Props): JSX.Element {
     state,
     authContext: { getUser },
   } = useAuth();
-
+  const [loading, setLoading] = useState<boolean>(false);
   useEffect(() => {
     if (!state?.user?.userStaffId) {
-      getUser();
+      try {
+        setLoading(true)
+        getUser();
+      } catch (error) {
+        console.log(error)
+      } finally{
+        setLoading(false)
+      }
+    
     }
   }, [state?.user, getUser]);
 
@@ -75,7 +83,7 @@ export default function HomeScreen({ navigation }: Props): JSX.Element {
         </ImageBackground>
         <Body navigation={navigation} />
       </Content>
-      <LoadingSpinner visible={state?.user === null} />
+      <LoadingSpinner visible={loading} />
     </Container>
   );
 }

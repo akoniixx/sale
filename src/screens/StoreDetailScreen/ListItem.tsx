@@ -102,7 +102,7 @@ export default function ListItem({
   }, [debounceSearchValue, user?.company, type, currentBrand, setLoadingApi]);
   const getMoreProduct = useCallback(async () => {
     try {
-      if (data.count > data.data.length) {
+      if (data?.count > data?.data?.length) {
         const customerCompanyId = await AsyncStorage.getItem(
           'customerCompanyId',
         );
@@ -225,7 +225,7 @@ export default function ListItem({
                 borderWidth: 1.5,
                 borderColor: colors.background3,
               }}>
-              {headerList.map(item => {
+              {headerList?.map(item => {
                 return (
                   <TouchableOpacity
                     style={{
@@ -267,7 +267,7 @@ export default function ListItem({
           style={{
             padding: 16,
           }}>
-          {dataBrand.length < 1 ? (
+          {dataBrand?.length < 1 ? (
             <></>
           ) : (
             (newDataBrand || []).map((item, idx) => {

@@ -46,7 +46,9 @@ const getAllProducts = async ({
     .then(res => {
       return res.data;
     })
-    .catch(err => console.log(err));
+    .catch(err =>{ console.log(err)
+    throw err
+    });
 };
 const getProductById = async (id: string, customerCompanyId: string) => {
   return await request

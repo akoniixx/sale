@@ -362,7 +362,7 @@ export default function CartScreen({
           onRequestClose={() => setVisible(false)}
           textCancel={'ตกลง'}
           title="ไม่สามารถสั่งสินค้าได้"
-          desc="คุณต้องเพิ่มสินค้าที่ต้องการสั่งซื้อในตระกร้านี้"
+          desc="คุณต้องเพิ่มสินค้าที่ต้องการสั่งซื้อในตะกร้านี้"
         />
         <ModalWarning
           visible={visibleConfirm}

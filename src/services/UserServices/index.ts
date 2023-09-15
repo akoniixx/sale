@@ -41,14 +41,10 @@ const updateFcmToken = async (payload: {
     });
 };
 const removeDeviceToken = async (token: string) => {
-  return await request.delete(`/fcm/user-device/${token}`)
-  .then(res=>{
-    return res.data
-  })
-  .catch(err => {
-    console.log('err',err)
-    throw err;
-  })
+  return await request
+    .delete(`/fcm/user-device/${token}`)
+    .then(res => res.data)
+    .catch(err => err);
 };
 
 export const userServices = {

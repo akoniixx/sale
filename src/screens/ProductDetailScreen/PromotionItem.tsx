@@ -58,13 +58,8 @@ export default function PromotionItem({
       </View>
       <View style={styles.content}>
         <Text color="white" semiBold>
-
           {`${index + 1}. ${promotionTypeMap(promotionType)} - ${props.promotionName}`}
         </Text>
-
-
-
-
 
         {
           promotionType === 'DISCOUNT_MIX' && conditionDetail.map((condition, index) => {
@@ -78,7 +73,7 @@ export default function PromotionItem({
                         <Text color="white"
                           style={{
                             lineHeight: 30,
-                          }}>{`• ซื้อ${discount.quantity} ${discount.saleUnit} ลด ${discount.discountPrice} บาท`}</Text>
+                          }}>{`• ซื้อ${discount.quantity} ${discount.saleUnit} ลด ${discount.discountPrice} บาทต่อ${discount.saleUnit}`}</Text>
 
                       </View>
                     ))}
@@ -104,9 +99,8 @@ export default function PromotionItem({
                         lineHeight: 30,
                       }}
                     >
-                      {`• เมื่อซื้อครบ ${condition.conditionDiscount.size} ${product.saleUnit} ลด${product.saleUnitDiscount}ละ${product.discountPrice} บาท`}
+                      {`• เมื่อซื้อครบ ${condition.conditionDiscount.size} ${product.saleUnit} ลด ${product.discountPrice} บาทต่อ${product.saleUnitDiscount}`}
                     </Text>
-
                   );
                 }
                 return null; // If product ID doesn't match
@@ -118,9 +112,7 @@ export default function PromotionItem({
 
 
         {promotionType === 'OTHER' ? (
-
           conditionDetail.map((condition, index) => {
-
             if (condition.products.some(product => product.key === currentProductId)) {
               return (
                 <Text
@@ -153,16 +145,13 @@ export default function PromotionItem({
                         style={{
                           lineHeight: 30,
                         }}>{`• เมื่อซื้อครบ ${freebieDetail.quantity} ${freebieDetail.saleUnit} `}</Text>
-
                       <Text color="white"
                         style={{
                           lineHeight: 30,
                         }}>
                         {`แถม`}
                         {freebieDetail.freebies.map((freebie, idx) => (
-                          ` ${freebie.productName} ${freebie.quantity} ${freebie.baseUnitOfMeaTh ? freebie.baseUnitOfMeaTh : freebie.saleUOMTH}${idx + 1 === freebieDetail.freebies.length ? '' : ','} `
-
-
+                          ` ${freebie.productName} จำนวน ${freebie.quantity} ${freebie.baseUnitOfMeaTh ? freebie.baseUnitOfMeaTh : freebie.saleUOMTH}${idx + 1 === freebieDetail.freebies.length ? '' : ','} `
                         ))}
                       </Text>
 
@@ -197,8 +186,7 @@ export default function PromotionItem({
                               lineHeight: 30,
                             }}>
                             {detail.conditionFreebies[0].freebies.map((freebie, idx) => (
-
-                              `แถม${freebie.productName} ${freebie.commonName ? `(${freebie.commonName})` : ``} ${freebie.packSize ? `ขนาด ${freebie.packSize}` : ``} จำนวน ${freebie.quantity} ${freebie.baseUnitOfMeaTh ? freebie.baseUnitOfMeaTh : freebie.saleUOMTH}${idx + 1 === detail.conditionFreebies[0].freebies.length ? '' : ','} `
+                              `แถม${freebie.productName} ${freebie.packSize ? `ขนาด ${freebie.packSize}` : ``} จำนวน ${freebie.quantity} ${freebie.baseUnitOfMeaTh ? freebie.baseUnitOfMeaTh : freebie.saleUOMTH}${idx + 1 === detail.conditionFreebies[0].freebies.length ? '' : ','} `
                             ))}
                           </Text>
                         </View>
@@ -216,7 +204,6 @@ export default function PromotionItem({
           if (currentProductId !== item.productId) {
             return null;
           }
-
           return item.condition.map((el, idx) => {
             if (promotionType === 'DISCOUNT_NOT_MIX') {
               return (

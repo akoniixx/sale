@@ -17,6 +17,7 @@ import { SubmitButton } from '../../components/Form/SubmitButton';
 import { useLocalization } from '../../contexts/LocalizationContext';
 import { StackNavigationHelpers } from '@react-navigation/stack/lib/typescript/src/types';
 import { AuthServices } from '../../services/AuthServices';
+import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
 
 interface Props {
   navigation: StackNavigationHelpers;
@@ -24,6 +25,7 @@ interface Props {
 export default function LoginScreen({ navigation }: Props): JSX.Element {
   const { t } = useLocalization();
   const [errorCode, setErrorCode] = useState<number | undefined>();
+  const [loading, setLoading] = useState<boolean>(false);
   const errorConvert = (code: number | undefined) => {
     switch (code) {
       case 400:
@@ -45,6 +47,7 @@ export default function LoginScreen({ navigation }: Props): JSX.Element {
 
   const onSubmit = async (v: { tel: string }) => {
     try {
+      setLoading(true)
       const { data } = await AuthServices.requestOtp(v.tel);
 
       navigation.navigate('OtpScreen', {
@@ -56,6 +59,9 @@ export default function LoginScreen({ navigation }: Props): JSX.Element {
       if (e?.response?.data?.statusCode) {
         setErrorCode(e.response.data.statusCode);
       }
+    }
+    finally{
+      setLoading(false)
     }
   };
 
@@ -112,6 +118,7 @@ export default function LoginScreen({ navigation }: Props): JSX.Element {
           />
         </KeyboardAvoidingView>
       </Form>
+      <LoadingSpinner visible={loading} />
     </Container>
   );
 }

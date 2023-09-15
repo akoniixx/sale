@@ -33,7 +33,7 @@
         "subLabel": "สั่งซื้อสินค้าได้ง่ายๆจาก %{companyName}"
       },
       "stepThree": {
-        "label": "โปรโมชั่น & สิทธิพิเศษ",
+        "label": "โปรโมชัน & สิทธิพิเศษ",
         "subLabel": "สั่งซื้อสินค้าได้ง่ายๆจาก %{companyName}"
       },
       "button": {
@@ -56,11 +56,11 @@
     "StoreDetailScreen": {
       "title": "สั่งซื้อสินค้า",
       "allItems": "สินค้าทั้งหมด",
-      "promotion": "โปรโมชั่น",
-      "promotionAll": "สินค้าโปรโมชั่น",
+      "promotion": "โปรโมชัน",
+      "promotionAll": "สินค้าโปรโมชัน",
       "empty": "ไม่พบสินค้าที่คุณต้องการ",
       "price": "฿%{price}",
-      "buttonAddCart": "เพิ่มเข้าตระกร้า",
+      "buttonAddCart": "เพิ่มเข้าตะกร้า",
       "allCategory": "กลุ่มทั้งหมด",
       "searchPlaceholder": "ค้นหาสินค้า..."
     },
@@ -73,13 +73,13 @@
       "featuresAndBenefits": "คุณสมบัติและ ประโยชน์",
       "seeMore": "ดูเพิ่มเติม",
       "seeLess": "ดูน้อยลง",
-      "promotion": "โปรโมชั่น",
+      "promotion": "โปรโมชัน",
       "orderButton": "สั่งซื้อสินค้า",
       "durationPromotion": "ระยะเวลา %{dateStart} - %{dateEnd}",
       "promotionTextConvert": "ซื้อ %{buy} %{unitBuy} แถม %{productNameFree} %{free}  %{unitFree}"
     },
     "CartScreen": {
-      "title": "ตระกร้าสินค้า",
+      "title": "ตะกร้าสินค้า",
       "listProduct": "สินค้า (%{count} รายการ)",
       "tooltip": "*โปรดเรียงลำดับการขนสินค้า",
       "emptyCart": "กรุณาเพิ่มสินค้า",
@@ -88,11 +88,11 @@
 
       "promotionSection": {
         "promotionTitle": "โปรโมชันที่เข้าร่วม",
-        "joinAllPromotion": "เข้าร่วมโปรโมชั่นทั้งหมด"
+        "joinAllPromotion": "เข้าร่วมโปรโมชันทั้งหมด"
       },
       "giftFromPromotion": {
         "title": "ของแถมที่ได้รับ",
-        "empty": "ไม่มีของขวัญจากโปรโมชั่น",
+        "empty": "ไม่มีของขวัญจากโปรโมชัน",
         "allListCount": "ทั้งหมด %{count} รายการ"
       },
       "discount": "ส่วนลด ฿%{discount}",
@@ -134,8 +134,8 @@
     "history": "ประวัติ"
   },
   "modalMessage": {
-    "addCart": "เพิ่มสินค้าไปยังตระกร้าแล้ว",
-    "deleteCart": "ลบสินค้าออกจากตระกร้าแล้ว"
+    "addCart": "เพิ่มสินค้าไปยังตะกร้าแล้ว",
+    "deleteCart": "ลบสินค้าออกจากตะกร้าแล้ว"
   },
   "modalWarning": {
     "cartDeleteTitle": "ยืนยันการลบสินค้า",

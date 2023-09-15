@@ -1,5 +1,9 @@
 ## [Version - 2]
 
+
+## Feature [2.6.0] - 2023-09-12
+- adv promotion
+
 ## Changes [v2.5.17] - 2023-07-20
 - change level display list
 ## Fix [v2.5.16] - 2023-06-29

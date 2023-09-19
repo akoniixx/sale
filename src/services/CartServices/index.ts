@@ -34,7 +34,6 @@ const getCartList = async ({ userStaffId, customerCompanyId }: GetCartType) => {
       `/order-cart/cart/sale?userStaffId=${userStaffId}&customerCompanyId=${customerCompanyId}`,
     )
     .then(res => {
-      console.log(res)
       return (res.data)})
     .catch(err => console.log(JSON.stringify(err.response.data, null, 2)));
 };

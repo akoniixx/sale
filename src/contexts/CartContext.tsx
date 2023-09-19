@@ -292,6 +292,7 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
           paymentMethod: cartDetail?.paymentMethod || '',
           customerCompanyId: customerCompanyId ? +customerCompanyId : 0,
           allPromotions: cartDetail?.allPromotions || [],
+          specialRequestFreebies: cartDetail?.specialRequestFreebies || []
         };
 
         const newData = await cartServices.postCart(payload);
@@ -323,6 +324,7 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
         orderProducts,
         customerCompanyId: customerCompanyId ? +customerCompanyId : 0,
         allPromotions: cartDetail?.allPromotions || [],
+        specialRequestFreebies: cartDetail?.specialRequestFreebies || []
       };
 
       const data = await cartServices.postCart(payload);

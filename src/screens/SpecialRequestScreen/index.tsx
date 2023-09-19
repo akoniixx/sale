@@ -24,6 +24,7 @@ import { MainStackParamList } from '../../navigations/MainNavigator';
 import { numberWithCommas } from '../../utils/functions';
 import ListCollapse from './ListCollapse';
 import ListSpecialRequest from './ListSpecialRequest';
+import ListItemFreebies from './ListItemFreebies';
 
 export default function SpecialRequestScreen({
   navigation,
@@ -169,21 +170,8 @@ export default function SpecialRequestScreen({
 
 
 
-{cartDetail.specialRequestFreebies?.map((item)=>(
-  <Text>{item.productName}</Text>
-))}
-              {/* {cartDetail.map((item, index) => 
-             
-             item?.specialRequestFreebies?.map((el,idx)=>{
-              return(
-<Text>
-  {el.productName}
-</Text>
-              )
-             })
-              
-          )}
- */}
+            <ListItemFreebies/>
+            
               <Button
                 onPress={() => navigation.navigate('FreeSpeciaRequestScreen')}
                 secondary

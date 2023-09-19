@@ -36,6 +36,7 @@ export default function FreeSpeciaRequestScreen({ navigation, route }: Props) {
   const [visibleConfirm, setVisibleConfirm] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [debounceSearchValue, setDebounceSearchValue] = useState<string | undefined>('');
+
   
   const {
     state: { user },
@@ -50,12 +51,10 @@ export default function FreeSpeciaRequestScreen({ navigation, route }: Props) {
   const handleSelect = (idx: ProductFreebies) => {
     if (selectedItems.some(item => item.productFreebiesId === idx.productFreebiesId)) {
       setSelectedItems(prev => prev.filter(i => i.productFreebiesId !== idx.productFreebiesId));
-    } else if (selectedItems.length < 3) {
+    } else  {
       const itemWithQuantity = { ...idx, quantity: 1 };
       setSelectedItems(prev => [...prev, itemWithQuantity]);
-    } else {
-      Alert.alert("You can only select 3 items.");
-    }
+    } 
   };
 
   const getFreebies = async () => {
@@ -65,7 +64,12 @@ export default function FreeSpeciaRequestScreen({ navigation, route }: Props) {
       searchText: searchValue
     }
     try {
+     
       const res = await productServices.getProductFree(payload)
+
+      if(cartDetail.specialRequestFreebies){
+        setSelectedItems(cartDetail.specialRequestFreebies)
+      }
       setFreebies(res.data)
       setLoading(false)
     } 

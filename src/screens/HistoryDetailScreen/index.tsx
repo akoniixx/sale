@@ -76,7 +76,7 @@ export default function HistoryDetailScreen({
       </>
     );
   };
-  const { dataObj, freebieList } = useMemo(() => {
+  const { dataObj, freebieList, spFreebieList } = useMemo(() => {
     const listDataDiscount: {
       label: string;
       valueLabel: string;
@@ -90,9 +90,8 @@ export default function HistoryDetailScreen({
     orderDetail?.orderProducts.map((item: any) => {
       const dataPush = {
         label: item.productName,
-        valueLabel: `(฿${numberWithCommas(item.marketPrice)} x ${
-          item.quantity
-        } ${item.saleUOMTH ? item.saleUOMTH : item.saleUOMTH})`,
+        valueLabel: `(฿${numberWithCommas(item.marketPrice)} x ${item.quantity
+          } ${item.saleUOMTH ? item.saleUOMTH : item.saleUOMTH})`,
       };
       if (item.specialRequestDiscount > 0) {
         listDataDiscountSpecialRequest.push({
@@ -102,7 +101,7 @@ export default function HistoryDetailScreen({
       }
       if (item.orderProductPromotions.length > 0) {
         item.orderProductPromotions.map((el: any) => {
-          if (el.promotionType === 'DISCOUNT_NOT_MIX'||el.promotionType === 'DISCOUNT_MIX') {
+          if (el.promotionType === 'DISCOUNT_NOT_MIX' || el.promotionType === 'DISCOUNT_MIX') {
             listDataDiscount.push({
               ...dataPush,
               value: el.conditionDetail.conditionDiscount,
@@ -140,10 +139,35 @@ export default function HistoryDetailScreen({
       },
     };
     const fbList: any = [];
+    const spfbList: any = [];
     orderDetail?.orderProducts
       .filter((el: any) => el.isFreebie)
       .map((fr: any) => {
-        if (fr.productFreebiesId) {
+        if (fr.isSpecialRequestFreebie === false) {
+          if (fr.productFreebiesId) {
+            const newObj = {
+              productName: fr.productName,
+              id: fr.productFreebiesId,
+              quantity: fr.quantity,
+              baseUnit: fr.baseUnitOfMeaTh || fr.baseUnitOfMeaEn,
+              status: fr.productFreebiesStatus,
+              productImage: fr.productFreebiesImage,
+            };
+            fbList.push(newObj);
+          } else {
+            const newObj = {
+              productName: fr.productName,
+              id: fr.productId,
+              quantity: fr.quantity,
+              baseUnit: fr.saleUOMTH || fr.saleUOM || '',
+              status: fr.productStatus,
+              productImage: fr.productImage,
+            };
+
+            fbList.push(newObj);
+          }
+        }
+        else {
           const newObj = {
             productName: fr.productName,
             id: fr.productFreebiesId,
@@ -152,23 +176,14 @@ export default function HistoryDetailScreen({
             status: fr.productFreebiesStatus,
             productImage: fr.productFreebiesImage,
           };
-          fbList.push(newObj);
-        } else {
-          const newObj = {
-            productName: fr.productName,
-            id: fr.productId,
-            quantity: fr.quantity,
-            baseUnit: fr.saleUOMTH || fr.saleUOM || '',
-            status: fr.productStatus,
-            productImage: fr.productImage,
-          };
-
-          fbList.push(newObj);
+          spfbList.push(newObj)
         }
+
       });
     return {
       dataObj,
       freebieList: fbList,
+      spFreebieList: spfbList
     };
   }, [orderDetail]);
 
@@ -188,77 +203,77 @@ export default function HistoryDetailScreen({
           {(orderDetail?.status === 'SHOPAPP_CANCEL_ORDER' ||
             orderDetail?.status === 'REJECT_ORDER' ||
             orderDetail?.status === 'COMPANY_CANCEL_ORDER') && (
-            <>
-              <View
-                style={{
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: '100%',
-                  paddingBottom: 16,
-                }}>
-                <Image
-                  source={images.CancelImage}
-                  style={{
-                    width: 120,
-                    height: 120,
-                  }}
-                />
-              </View>
-              <View
-                style={{
-                  backgroundColor: 'white',
-                  borderRadius: 10,
-                  shadowColor: '#000',
-                  shadowOffset: {
-                    width: 0,
-                    height: 2,
-                  },
-                  shadowOpacity: 0.25,
-                  shadowRadius: 2.84,
-                  elevation: 5,
-                  marginBottom: 18,
-                  zIndex: 0,
-                  paddingVertical: 16,
-                }}>
+              <>
                 <View
                   style={{
-                    paddingHorizontal: 16,
-                    borderBottomColor: colors.border1,
-                    borderBottomWidth: 1,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '100%',
                     paddingBottom: 16,
                   }}>
-                  <Text fontFamily="NotoSans" semiBold>
-                    รายละเอียดการยกเลิก
-                  </Text>
-                  <Text color="text2" lineHeight={34}>
-                    หมายเลขคำสั่งซื้อ : {orderDetail?.orderNo}
-                  </Text>
-                  <Text color="text2" lineHeight={34}>
-                    วันที่ยกเลิก :{' '}
-                    {dayjs(orderDetail?.updateAt)
-                      .locale('th')
-                      .format('DD MMM BBBB HH:mm น.')}
-                  </Text>
+                  <Image
+                    source={images.CancelImage}
+                    style={{
+                      width: 120,
+                      height: 120,
+                    }}
+                  />
                 </View>
                 <View
                   style={{
-                    paddingHorizontal: 16,
-                    paddingTop: 16,
+                    backgroundColor: 'white',
+                    borderRadius: 10,
+                    shadowColor: '#000',
+                    shadowOffset: {
+                      width: 0,
+                      height: 2,
+                    },
+                    shadowOpacity: 0.25,
+                    shadowRadius: 2.84,
+                    elevation: 5,
+                    marginBottom: 18,
+                    zIndex: 0,
+                    paddingVertical: 16,
                   }}>
-                  <Text fontFamily="NotoSans" semiBold>
-                    เหตุผลที่ยกเลิก (
-                    {orderDetail?.status === 'SHOPAPP_CANCEL_ORDER'
-                      ? 'ลูกค้า'
-                      : orderDetail?.status === 'REJECT_ORDER'
-                      ? 'ผู้จัดการ'
-                      : 'บริษัท'}
-                    )
-                  </Text>
-                  <Text color="text2">{orderDetail?.cancelRemark}</Text>
+                  <View
+                    style={{
+                      paddingHorizontal: 16,
+                      borderBottomColor: colors.border1,
+                      borderBottomWidth: 1,
+                      paddingBottom: 16,
+                    }}>
+                    <Text fontFamily="NotoSans" semiBold>
+                      รายละเอียดการยกเลิก
+                    </Text>
+                    <Text color="text2" lineHeight={34}>
+                      หมายเลขคำสั่งซื้อ : {orderDetail?.orderNo}
+                    </Text>
+                    <Text color="text2" lineHeight={34}>
+                      วันที่ยกเลิก :{' '}
+                      {dayjs(orderDetail?.updateAt)
+                        .locale('th')
+                        .format('DD MMM BBBB HH:mm น.')}
+                    </Text>
+                  </View>
+                  <View
+                    style={{
+                      paddingHorizontal: 16,
+                      paddingTop: 16,
+                    }}>
+                    <Text fontFamily="NotoSans" semiBold>
+                      เหตุผลที่ยกเลิก (
+                      {orderDetail?.status === 'SHOPAPP_CANCEL_ORDER'
+                        ? 'ลูกค้า'
+                        : orderDetail?.status === 'REJECT_ORDER'
+                          ? 'ผู้จัดการ'
+                          : 'บริษัท'}
+                      )
+                    </Text>
+                    <Text color="text2">{orderDetail?.cancelRemark}</Text>
+                  </View>
                 </View>
-              </View>
-            </>
-          )}
+              </>
+            )}
           <View style={styles.slipShadow}>
             <View style={styles.card}>
               <View
@@ -375,7 +390,7 @@ export default function HistoryDetailScreen({
                 <Text fontSize={18} semiBold fontFamily="NotoSans">
                   {
                     locationMapping[
-                      orderDetail?.deliveryDest as keyof typeof locationMapping
+                    orderDetail?.deliveryDest as keyof typeof locationMapping
                     ]
                   }
                 </Text>
@@ -474,6 +489,13 @@ export default function HistoryDetailScreen({
                   รายละเอียดสินค้า
                 </Text>
 
+
+                {/*  {orderDetail?.specialRequestFreebies.map((item)=>(
+                  <Text>
+                    {item.productName}
+                  </Text>
+                ))} */}
+
                 {orderDetail?.orderProducts
                   .filter(el => !el.isFreebie)
                   .map((el, idx) => {
@@ -527,31 +549,31 @@ export default function HistoryDetailScreen({
                                 {`฿${numberWithCommas(el.marketPrice)}`}
                               </Text>
                             </View>
-<View style={{
-    marginTop: 8,
-}}>
-  {el.price !== el.totalPrice? 
-                           <Text
-                           fontSize={12}
-                           fontFamily="NotoSans"
-                           color="text3"
-                           style={{
-                             textDecorationStyle: 'solid',
-                             textDecorationLine: 'line-through' ,
-                           }}>
-                           {`฿${numberWithCommas(el.price, true)}`}
-                         </Text>
-                        : null}
+                            <View style={{
+                              marginTop: 8,
+                            }}>
+                              {el.price !== el.totalPrice ?
+                                <Text
+                                  fontSize={12}
+                                  fontFamily="NotoSans"
+                                  color="text3"
+                                  style={{
+                                    textDecorationStyle: 'solid',
+                                    textDecorationLine: 'line-through',
+                                  }}>
+                                  {`฿${numberWithCommas(el.price, true)}`}
+                                </Text>
+                                : null}
 
-                            <Text
-                              color="primary"
-                              fontSize={18}
-                              bold
-                             >
-                              {`฿${numberWithCommas(el.totalPrice)}`}
-                            </Text>
-</View>
-                          
+                              <Text
+                                color="primary"
+                                fontSize={18}
+                                bold
+                              >
+                                {`฿${numberWithCommas(el.totalPrice)}`}
+                              </Text>
+                            </View>
+
                           </View>
                         </View>
                         <View
@@ -709,6 +731,83 @@ export default function HistoryDetailScreen({
                 </View>
               )}
             </View>
+
+            {spFreebieList.length > 0 ? (
+              <View
+                style={{
+                  paddingHorizontal: 16,
+                  paddingTop: 10,
+                  paddingBottom: 32,
+                }}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    height: 60,
+                  }}>
+                  <View>
+                    <Text fontFamily="NotoSans" bold fontSize={18}>
+                      ของแถมที่ได้รับ
+                    </Text>
+                    <Text fontFamily="NotoSans" bold fontSize={18}>
+                      (Special Request)
+                    </Text>
+                  </View>
+
+                  <Text fontSize={14} bold color="text3" lineHeight={24}>
+                    {`ทั้งหมด ${spFreebieList.length} รายการ`}
+                  </Text>
+                </View>
+                {spFreebieList.map((el: any, idx: number) => {
+                  return (
+                    <View
+                      key={idx}
+                      style={{
+                        flexDirection: 'row',
+                        marginBottom: 10,
+                        alignItems: 'center',
+                      }}>
+                      {el.productImage ? (
+                        <Image
+                          resizeMode="contain"
+                          source={{ uri: getNewPath(el.productImage) }}
+                          style={{
+                            width: 56,
+                            height: 56,
+                          }}
+                        />
+                      ) : (
+                        <Image
+                          source={images.emptyProduct}
+                          style={{
+                            width: 56,
+                            height: 56,
+                          }}
+                        />
+                      )}
+                      <View
+                        style={{
+                          marginLeft: 8,
+                        }}>
+                        <Text
+                          fontSize={14}
+                          color="text3"
+                          lineHeight={24}
+                          style={{
+                            width: Dimensions.get('window').width / 2,
+                          }}>
+                          {el.productName}
+                        </Text>
+                        <Text fontSize={14}>
+                          {el.quantity} {el.baseUnit}
+                        </Text>
+                      </View>
+                    </View>
+                  );
+                })}
+              </View>
+            ) : null}
+
           </View>
           <Image
             style={{

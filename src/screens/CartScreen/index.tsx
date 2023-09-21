@@ -125,6 +125,7 @@ export default function CartScreen({
         updateBy: `${user?.firstname} ${user?.lastname}`,
         orderProducts,
         allPromotions: cartDetail.allPromotions,
+        specialRequestFreebies: cartDetail.specialRequestFreebies || [],
       };
       if (dataStepTwo.specialRequestRemark) {
         payload.specialRequestRemark = dataStepTwo.specialRequestRemark;

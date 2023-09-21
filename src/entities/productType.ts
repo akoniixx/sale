@@ -168,6 +168,11 @@ export interface ProductSummary extends ProductType {
 
 
 export interface ProductFreebies {
+  saleUOMTH: string;
+  base: {
+    unit_code:string,
+    unit_desc:string,
+  }[]
   productFreebiesId: string;
   company: string;
   productName: string;

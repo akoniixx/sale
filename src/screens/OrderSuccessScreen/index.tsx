@@ -46,6 +46,16 @@ export default function OrderSuccessScreen({
       productImage: string;
     }[]
   >([]);
+  const [spfreebieList, setSpFreebieList] = React.useState<
+    {
+      productName: string;
+      id: string;
+      quantity: number;
+      baseUnit: string;
+      status: string;
+      productImage: string;
+    }[]
+  >([]);
   const [orderData, setOrderData] = React.useState<
     OrderDetailType | undefined
   >();
@@ -70,10 +80,42 @@ export default function OrderSuccessScreen({
             productImage: string;
           }[] = [];
 
+          const spfbList: {
+            productName: string;
+            id: string;
+            quantity: number;
+            baseUnit: string;
+            status: string;
+            productImage: string;
+          }[] = [];
+
           response.orderProducts
             .filter((el: any) => el.isFreebie)
             .map((fr: any) => {
-              if (fr.productFreebiesId) {
+              if(fr.isSpecialRequestFreebie === false){
+                if (fr.productFreebiesId) {
+                  const newObj = {
+                    productName: fr.productName,
+                    id: fr.productFreebiesId,
+                    quantity: fr.quantity,
+                    baseUnit: fr.baseUnitOfMeaTh || fr.baseUnitOfMeaEn,
+                    status: fr.productFreebiesStatus,
+                    productImage: fr.productFreebiesImage,
+                  };
+                  fbList.push(newObj);
+                } else {
+                  const newObj = {
+                    productName: fr.productName,
+                    id: fr.productId,
+                    quantity: fr.quantity,
+                    baseUnit: fr.saleUOMTH || fr.saleUOM || '',
+                    status: fr.productStatus,
+                    productImage: fr.productImage,
+                  };
+  
+                  fbList.push(newObj);
+                }
+              } else{
                 const newObj = {
                   productName: fr.productName,
                   id: fr.productFreebiesId,
@@ -82,20 +124,12 @@ export default function OrderSuccessScreen({
                   status: fr.productFreebiesStatus,
                   productImage: fr.productFreebiesImage,
                 };
-                fbList.push(newObj);
-              } else {
-                const newObj = {
-                  productName: fr.productName,
-                  id: fr.productId,
-                  quantity: fr.quantity,
-                  baseUnit: fr.saleUOMTH || fr.saleUOM || '',
-                  status: fr.productStatus,
-                  productImage: fr.productImage,
-                };
 
-                fbList.push(newObj);
+                spfbList.push(newObj);
               }
+             
             });
+            setSpFreebieList(spfbList)
           setFreebieList(fbList);
           setOrderData(response);
         }
@@ -403,6 +437,83 @@ export default function OrderSuccessScreen({
                       </Text>
                     </View>
                   )}
+
+                </View>
+
+                <View>
+                 
+                  {spfreebieList.length > 0 ? (
+                    
+                    <>
+                     <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      height: 60,
+                     marginVertical:20
+                    }}>
+                      <View>
+                      <Text fontFamily="NotoSans" bold fontSize={18}>
+                      ของแถมที่ได้รับ
+                    </Text>
+                    <Text fontFamily="NotoSans" bold fontSize={18}>
+                    (Special Request)
+                    </Text>
+                      </View>
+                   
+                    <Text fontSize={14} bold color="text3" lineHeight={24}>
+                      {`ทั้งหมด ${spfreebieList.length} รายการ`}
+                    </Text>
+                  </View>
+                      {spfreebieList.map((el, idx) => {
+                        return (
+                          <View
+                            key={idx}
+                            style={{
+                              flexDirection: 'row',
+                              alignItems: 'center',
+                              marginBottom: 16,
+                            }}>
+                            {el.productImage ? (
+                              <ImageCache
+                                uri={getNewPath(el.productImage)}
+                                style={{
+                                  width: 56,
+                                  height: 56,
+                                }}
+                              />
+                            ) : (
+                              <Image
+                                source={images.emptyProduct}
+                                style={{
+                                  width: 56,
+                                  height: 56,
+                                }}
+                              />
+                            )}
+                            <View
+                              style={{
+                                marginLeft: 8,
+                              }}>
+                              <Text
+                                fontSize={14}
+                                color="text3"
+                                lineHeight={24}
+                                style={{
+                                  width: Dimensions.get('window').width / 2,
+                                }}>
+                                {el.productName}
+                              </Text>
+                              <Text fontSize={14}>
+                                {el.quantity} {el.baseUnit}
+                              </Text>
+                            </View>
+                          </View>
+                        );
+                      })}
+                    </>
+                  ) : null }
+                  
                 </View>
                 <View
                   style={{

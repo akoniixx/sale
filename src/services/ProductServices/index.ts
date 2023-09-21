@@ -87,10 +87,22 @@ const getProductFree = async (payload:any) => {
   .catch(err => console.log(err));
 }
 
+const getBaseFreebies =async (company:string,itemNo:string) => {
+  return await request
+    .get(`/nav/uom-nav?company=${company}&itemNo=${itemNo}`)
+    .then(res => res.data)
+    .catch(err => {
+      console.log(err)
+      throw(err)
+    })
+  
+}
+
 export const productServices = {
   getAllProducts,
   getProductById,
   getProductBrand,
   getProductCategory,
-  getProductFree
+  getProductFree,
+  getBaseFreebies
 };

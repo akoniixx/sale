@@ -356,6 +356,7 @@ export default function ListItemInCart({
                     }}
                   />
                   <CounterSmall
+                    isSpecialRequest={false}
                     currentQuantity={+item.amount}
                     onChangeText={onChangeText}
                     onIncrease={onIncrease}

@@ -12,6 +12,7 @@ import { numberReturnString, numberWithCommas } from '../../utils/functions';
 import ModalWarning from '../../components/Modal/ModalWarning';
 import { useLocalization } from '../../contexts/LocalizationContext';
 interface Props {
+  isSpecialRequest: boolean;
   currentQuantity: number;
   onBlur?: () => void;
   onChangeText?: ({ id, quantity }: { quantity: string; id?: any }) => void;
@@ -20,11 +21,13 @@ interface Props {
   onDecrease?: (id: string | number) => void;
 }
 const CounterSmall = ({
+  isSpecialRequest,
   currentQuantity = 0,
   onChangeText,
   onDecrease,
   onIncrease,
   id,
+ 
 }: Props): JSX.Element => {
   const [quantity, setQuantity] = React.useState('0');
   const [isModalVisible, setIsModalVisible] = React.useState<boolean>(false);
@@ -52,7 +55,12 @@ const CounterSmall = ({
       return;
     }
     if ((+quantity < 1 && currentQuantity > 0) || !quantity) {
-      setIsModalVisible(true);
+      if(!isSpecialRequest){
+        setIsModalVisible(true);
+      }else{
+        onChangeText?.({ id, quantity });
+      }
+     
     } else {
       onChangeText?.({ id, quantity });
     }
@@ -95,7 +103,10 @@ const CounterSmall = ({
         returnKeyType="done"
         onSubmitEditing={() => {
           if (+quantity < 1 && currentQuantity > 0) {
-            setIsModalVisible(true);
+           if(!isSpecialRequest) {setIsModalVisible(true)}
+           else{
+            onChangeText?.({ id, quantity });
+           }
           } else {
             onChangeText?.({ id, quantity });
           }

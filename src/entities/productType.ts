@@ -188,3 +188,44 @@ export interface ProductFreebies {
   updateBy: null | string;
   quantity: number
 }
+
+
+export interface SpFreebies {
+  base: {
+    unit_code:string,
+    unit_desc:string,
+  }[]
+  productFreebiesId: string;
+  productFreebiesCodeNAV: string;
+  baseUnitOfMeaEn: string;
+  baseUnitOfMeaTh: string;
+  productFreebiesStatus: string;
+  productFreebiesImage: null | string;
+  createDate: string;
+  updateDate: string;
+  updateBy: null | string;
+  quantity: number
+  productId: string;
+  company: string;
+  productLocation: string;
+  productBrandId: string;
+  productCategoryId: string;
+  productCodeNAV: string;
+  productName: string;
+  commonName: string;
+  packSize: string;
+  qtySaleUnit: number;
+  baseUOM: string;
+  packingUOM?: string | null;
+  saleUOM: string;
+  saleUOMTH: string | null;
+  productGroup: string;
+  inventoryGroup: string | null;
+  productStrategy: string;
+  marketPrice: string;
+  unitPrice: string;
+  productStatus: string;
+  description: string | null;
+  productImage: string;
+  promotion?: PromotionType[];
+}

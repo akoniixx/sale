@@ -8,7 +8,7 @@ import Header from '../../components/Header/Header';
 import Content from '../../components/Content/Content';
 import SearchInput from '../../components/SearchInput/SearchInput';
 import { productServices } from '../../services/ProductServices';
-import { ProductFreebies } from '../../entities/productType';
+import { ProductFreebies, ProductType, SpFreebies } from '../../entities/productType';
 import ImageCache from '../../components/ImageCache/ImageCache';
 import images from '../../assets/images';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -21,6 +21,7 @@ import ModalWarning from '../../components/Modal/ModalWarning';
 import { useAuth } from '../../contexts/AuthContext';
 import { useCart } from '../../contexts/CartContext';
 import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 interface Props {
@@ -28,15 +29,29 @@ interface Props {
   route?: any
 }
 
+
 export default function FreeSpeciaRequestScreen({ navigation, route }: Props) {
   const [page, setPage] = React.useState<number>(1);
   const [searchValue, setSearchValue] = useState<string | undefined>();
-  const [freebies, setFreebies] = useState<ProductFreebies[]>([])
-  const [selectedItems, setSelectedItems] = useState<ProductFreebies[]>([]);
+  const [freebies, setFreebies] = useState<SpFreebies[]>([])
+  const [product,setProduct] = useState<SpFreebies[]>([])
+  const [selectedItems, setSelectedItems] = useState<SpFreebies[]>([]);
   const [visibleConfirm, setVisibleConfirm] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [debounceSearchValue, setDebounceSearchValue] = useState<string | undefined>('');
+  const [type, setType] = React.useState<string>('product');
+  const headerList = [
+    {
+      id: 'product',
+      title: 'สินค้าแบรนด์ตัวเอง',
+    },
+    {
+      id: 'freebies',
+      title: 'สินค้าอื่นๆ'
+    },
+  ];
 
+  
   
   const {
     state: { user },
@@ -48,9 +63,9 @@ export default function FreeSpeciaRequestScreen({ navigation, route }: Props) {
     cartApi: { postCartItem },
   } = useCart();
 
-  const handleSelect = (idx: ProductFreebies) => {
-    if (selectedItems.some(item => item.productFreebiesId === idx.productFreebiesId)) {
-      setSelectedItems(prev => prev.filter(i => i.productFreebiesId !== idx.productFreebiesId));
+  const handleSelect = (idx: SpFreebies) => {
+    if (selectedItems.some(item =>item.productFreebiesId? item.productFreebiesId === idx.productFreebiesId:item.productId===idx.productId)) {
+      setSelectedItems(prev => prev.filter(i =>i.productFreebiesId? i.productFreebiesId !== idx.productFreebiesId: i.productId!==idx.productId));
     } else  {
       const itemWithQuantity = { ...idx, quantity: 1 };
       setSelectedItems(prev => [...prev, itemWithQuantity]);
@@ -64,12 +79,7 @@ export default function FreeSpeciaRequestScreen({ navigation, route }: Props) {
       searchText: searchValue
     }
     try {
-     
       const res = await productServices.getProductFree(payload)
-
-      if(cartDetail.specialRequestFreebies){
-        setSelectedItems(cartDetail.specialRequestFreebies)
-      }
       setFreebies(res.data)
       setLoading(false)
     } 
@@ -79,6 +89,35 @@ export default function FreeSpeciaRequestScreen({ navigation, route }: Props) {
     finally {
       setLoading(false)
     }
+  }
+
+  const getProduct = async () => {
+    setLoading(true)
+    try {
+      const customerCompanyId = await AsyncStorage.getItem('customerCompanyId');
+      const productB = await AsyncStorage.getItem('productBrand');
+
+      const pB = JSON.parse(productB || '{}');
+      const result = await productServices.getAllProducts({
+        company: user?.company,
+        page: 1,
+        take: 99,
+        searchText: searchValue,
+        customerCompanyId: customerCompanyId || '',
+        productBrandId: pB?.product_brand_id,
+       
+      });
+    setProduct(result.data)
+      setLoading(false)
+    } 
+    catch (error) {
+      console.log(error)
+    }
+    finally {
+      setLoading(false)
+    }
+
+    
   }
 
   const onSearch = (v: string | undefined) => {
@@ -91,16 +130,7 @@ export default function FreeSpeciaRequestScreen({ navigation, route }: Props) {
       setLoading(true);
       await postCartItem(cartList,selectedItems)
       navigation.navigate('SpecialRequestScreen')
-      /* .then((res)=>{
-        navigation.navigate('SpecialRequestScreen')
-      })
-      .catch((err)=>{
-        console.log(err)
-      })
-      .finally(()=>{
-        setLoading(false)
-      })
- */
+      
      
     } catch (error) {
       console.log(error);
@@ -110,8 +140,154 @@ export default function FreeSpeciaRequestScreen({ navigation, route }: Props) {
   }
 
   useEffect(() => {
+    if(cartDetail.specialRequestFreebies){
+      setSelectedItems(cartDetail.specialRequestFreebies)
+    }
+    getProduct()
     getFreebies()
   }, [debounceSearchValue])
+
+  const renderFreebies = () => (
+    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{
+      flexGrow: 1,
+
+      paddingBottom: 70
+    }}>
+      {freebies?.map((el, idx) => (
+        <TouchableOpacity key={idx} onPress={() => handleSelect(el)}>
+         
+          <View
+            key={idx}
+            style={{
+              flexDirection: 'row',
+              paddingVertical: 20,
+              flex: 1,
+              backgroundColor: selectedItems.some(item=>item.productFreebiesId === el.productFreebiesId) ? '#F8FAFF' : 'transparent',
+              borderBottomColor: colors.border1,
+              borderBottomWidth: 0.5,
+              borderStyle: 'solid'
+            }}>
+            <View
+              style={{
+                flexDirection: 'row',
+                flex: 1,
+
+                width: '80%'
+              }}>
+               
+              {el.productFreebiesImage ? (
+                <ImageCache
+                  uri={getNewPath(el.productFreebiesImage)}
+                  style={{
+                    width: 72,
+                    height: 72,
+                  }}
+                />
+              ) : (
+                <Image
+                  source={images.emptyProduct}
+                  style={{
+                    width: 72,
+                    height: 72,
+                  }}
+                />
+              )}
+              <View
+                style={{
+                  marginLeft: 16,
+                  flex: 1,
+                  alignSelf: 'center'
+                }}>
+                <Text semiBold>{el.productName}</Text>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                  }}>
+                  <Text color="text3" fontSize={14}>
+                    {el.description}
+                  </Text>
+                </View>
+              </View>
+            </View>
+            <View style={{ alignItems: 'center', alignSelf: 'center', width: 40 }}>
+              {selectedItems.some(item=>item.productFreebiesId === el.productFreebiesId) && <Image source={icons.check} style={{ width: 20, height: 20 }} />}
+            </View>
+          </View>
+        </TouchableOpacity>
+      ))}
+    </ScrollView>
+  )
+
+  const renderProduct = () => (
+    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{
+      flexGrow: 1,
+
+      paddingBottom: 70
+    }}>
+      {product?.map((el, idx) => (
+        <TouchableOpacity key={idx} onPress={() => handleSelect(el)}>
+          <View
+            key={idx}
+            style={{
+              flexDirection: 'row',
+              paddingVertical: 20,
+              flex: 1,
+              backgroundColor: selectedItems.some(item=>item.productId === el.productId) ? '#F8FAFF' : 'transparent',
+              borderBottomColor: colors.border1,
+              borderBottomWidth: 0.5,
+              borderStyle: 'solid'
+            }}>
+            <View
+              style={{
+                flexDirection: 'row',
+                flex: 1,
+
+                width: '80%'
+              }}>
+              {el.productImage ? (
+                <ImageCache
+                  uri={getNewPath(el.productImage)}
+                  style={{
+                    width: 72,
+                    height: 72,
+                  }}
+                />
+              ) : (
+                <Image
+                  source={images.emptyProduct}
+                  style={{
+                    width: 72,
+                    height: 72,
+                  }}
+                />
+              )}
+              <View
+                style={{
+                  marginLeft: 16,
+                  flex: 1,
+                  alignSelf: 'center'
+                }}>
+                <Text semiBold>{el.productName}</Text>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                  }}>
+                  <Text color="text3" fontSize={14}>
+                    {el.packSize}
+                  </Text>
+                </View>
+              </View>
+            </View>
+            <View style={{ alignItems: 'center', alignSelf: 'center', width: 40 }}>
+              {selectedItems.some(item=>item.productId === el.productId) && <Image source={icons.check} style={{ width: 20, height: 20 }} />}
+            </View>
+          </View>
+        </TouchableOpacity>
+      ))}
+    </ScrollView>
+  )
 
   return (
     <Container>
@@ -131,6 +307,44 @@ export default function FreeSpeciaRequestScreen({ navigation, route }: Props) {
          }} */
         />
         <Content>
+        <View
+            style={{
+              marginBottom:20
+            }}>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                width: '100%',
+                backgroundColor: colors.background3,
+                height: 46,
+                borderRadius: 6,
+                borderWidth: 1.5,
+                borderColor: colors.background3,
+              }}>
+              {headerList?.map(item => {
+                return (
+                  <TouchableOpacity
+                    style={{
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      flex: 1,
+                      borderRadius: 6,
+                      backgroundColor:
+                        type === item.id ? 'white' : 'transparent',
+                    }}
+                    key={item.id}
+                    onPress={() => {
+                      setType(item.id);
+                    }}>
+                    <Text fontFamily="NotoSans" semiBold>
+                      {item.title}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          </View>
           <SearchInput
             onSearch={onSearch}
             value={searchValue}
@@ -143,73 +357,15 @@ export default function FreeSpeciaRequestScreen({ navigation, route }: Props) {
               setPage(1);
             }}
           />
-          <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{
-            flexGrow: 1,
+         
 
-            paddingBottom: 70
-          }}>
-            {freebies?.map((el, idx) => (
-              <TouchableOpacity key={idx} onPress={() => handleSelect(el)}>
-                <View
-                  key={idx}
-                  style={{
-                    flexDirection: 'row',
-                    paddingVertical: 20,
-                    flex: 1,
-                    backgroundColor: selectedItems.some(item=>item.productFreebiesId === el.productFreebiesId) ? '#F8FAFF' : 'transparent',
-                    borderBottomColor: colors.border1,
-                    borderBottomWidth: 0.5,
-                    borderStyle: 'solid'
-                  }}>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      flex: 1,
-
-                      width: '80%'
-                    }}>
-                    {el.productFreebiesImage ? (
-                      <ImageCache
-                        uri={getNewPath(el.productFreebiesImage)}
-                        style={{
-                          width: 72,
-                          height: 72,
-                        }}
-                      />
-                    ) : (
-                      <Image
-                        source={images.emptyProduct}
-                        style={{
-                          width: 72,
-                          height: 72,
-                        }}
-                      />
-                    )}
-                    <View
-                      style={{
-                        marginLeft: 16,
-                        flex: 1,
-                        alignSelf: 'center'
-                      }}>
-                      <Text semiBold>{el.productName}</Text>
-                      <View
-                        style={{
-                          flexDirection: 'row',
-                          alignItems: 'center',
-                        }}>
-                        <Text color="text3" fontSize={14}>
-                          {el.description}
-                        </Text>
-                      </View>
-                    </View>
-                  </View>
-                  <View style={{ alignItems: 'center', alignSelf: 'center', width: 40 }}>
-                    {selectedItems.some(item=>item.productFreebiesId === el.productFreebiesId) && <Image source={icons.check} style={{ width: 20, height: 20 }} />}
-                  </View>
-                </View>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
+                {type==='product'?
+                 renderProduct()
+                
+            :
+            renderFreebies()
+              }
+         
         </Content>
         <FooterShadow
           style={{

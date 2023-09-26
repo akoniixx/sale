@@ -19,7 +19,7 @@ import Button from '../../components/Button/Button';
 import StepOne from './StepOne';
 import FooterShadow from '../../components/FooterShadow/FooterShadow';
 import ModalWarning from '../../components/Modal/ModalWarning';
-import { useCart } from '../../contexts/CartContext';
+import { CartDetailType, useCart } from '../../contexts/CartContext';
 import StepTwo from './StepTwo';
 import icons from '../../assets/icons';
 import Text from '../../components/Text/Text';
@@ -60,6 +60,7 @@ export default function CartScreen({
     setPromotionListValue,
     setCartList,
     cartDetail,
+    setCartDetail,
     cartApi: { getCartList, getSelectPromotion },
   } = useCart();
   const refInput = React.useRef<any>(null);
@@ -136,11 +137,11 @@ export default function CartScreen({
       if (dataStepTwo.numberPlate) {
         payload.numberPlate = dataStepTwo.numberPlate;
       }
-      // console.log('payload', JSON.stringify(payload, null, 2));
+       /* console.log('payload', JSON.stringify(payload, null, 2)); */
       const result = await orderServices.createOrder(payload);
       if (result) {
         // console.log('result', JSON.stringify(result, null, 2));
-
+        setCartDetail({}as CartDetailType)
         setCartList([]);
         setFreebieListItem([]);
         setPromotionList([]);

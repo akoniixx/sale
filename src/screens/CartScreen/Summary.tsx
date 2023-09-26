@@ -54,8 +54,8 @@ export default function Summary({ setLoading }: Props): JSX.Element {
       valueLabel: string;
       value: string;
     }[] = [];
-    cartDetail.orderProducts
-      .filter(el => !el.isFreebie)
+    cartDetail?.orderProducts
+      ?.filter(el => !el.isFreebie)
       .map((item: any) => {
         const dataPush = {
           label: item.productName,

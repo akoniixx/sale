@@ -120,7 +120,7 @@ export default function OrderSuccessScreen({
                   productName: fr.productName,
                   id: fr.productFreebiesId,
                   quantity: fr.quantity,
-                  baseUnit: fr.baseUnitOfMeaTh || fr.baseUnitOfMeaEn,
+                  baseUnit: fr.baseUnitOfMeaTh || fr.baseUnitOfMeaEn || fr.saleUOMTH,
                   status: fr.productFreebiesStatus,
                   productImage: fr.productFreebiesImage,
                 };

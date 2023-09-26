@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as React from 'react';
-import { ProductFreebies, ProductType, PromotionTypeCart } from '../entities/productType';
+import { ProductFreebies, ProductType, PromotionTypeCart, SpFreebies } from '../entities/productType';
 import { cartServices } from '../services/CartServices';
 import { useAuth } from './AuthContext';
 import { promotionTypeMap } from '../utils/mappingObj';
@@ -120,14 +120,14 @@ export interface newProductType extends ProductType {
     [key: string]: any;
   }[];
 }
-interface CartDetailType {
+export interface CartDetailType {
   totalPrice: number;
   totalDiscount: number;
   price: number;
   orderProducts: any[];
   discount: number;
   specialRequestDiscount: number;
-  specialRequestFreebies: ProductFreebies[];
+  specialRequestFreebies: SpFreebies[];
   coDiscount: number;
   coAmount: string;
   cashDiscount: number;
@@ -141,13 +141,14 @@ interface ContextCart {
     getSelectPromotion: (cl: PromotionTypeCart[]) => Promise<any>;
     postCartItem: (
       cl: newProductType[],
-      specialRequestFreebies?:ProductFreebies[],
+      specialRequestFreebies?:SpFreebies[],
       newAllPromotion?: PromotionTypeCart[],
     ) => Promise<any>;
     postEditIsUseCod: ({ isUseCOD }: { isUseCOD: boolean }) => Promise<any>;
     postEditPaymentMethod: (paymentMethod: string) => Promise<any>;
   };
   setCartList: React.Dispatch<React.SetStateAction<newProductType[]>>;
+  setCartDetail: React.Dispatch<React.SetStateAction<CartDetailType>>;
   cartDetail: CartDetailType;
   promotionListValue: string[];
   promotionList: any[];
@@ -163,6 +164,7 @@ const CartContext = React.createContext<ContextCart>({
   promotionListValue: [],
   promotionList: [],
   freebieListItem: [],
+  setCartDetail: () =>{},
   setPromotionListValue: () => [],
   setPromotionList: () => [],
   setFreebieListItem: () => [],
@@ -224,6 +226,7 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
     () => ({
       cartList,
       setCartList,
+      setCartDetail,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [cartList],
@@ -386,7 +389,7 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
   const postCartItem = React.useMemo(() => {
     return async (
       cl: newProductType[],
-      specialRequestFreebies?: ProductFreebies[],
+      specialRequestFreebies?: SpFreebies[],
       allPromotions?: PromotionTypeCart[],
     ) => {
       try {
@@ -491,6 +494,7 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
         cartList: value.cartList,
         cartDetail,
         setCartList: value.setCartList,
+        setCartDetail: value.setCartDetail,
         setPromotionListValue,
         setFreebieListItem,
         setPromotionList,

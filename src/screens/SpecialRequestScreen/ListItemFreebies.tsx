@@ -16,6 +16,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { ProductFreebies, SpFreebies } from '../../entities/productType';
 import { Dropdown } from 'react-native-element-dropdown';
 import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
+import DashedLine from 'react-native-dashed-line';
 
 const ListItemFreebies = () => {
   const { cartList, cartDetail, cartApi: { postCartItem }, } = useCart();
@@ -32,18 +33,18 @@ const ListItemFreebies = () => {
       const updatedList = await Promise.all(
         cartDetail.specialRequestFreebies.map(async (product) => {
           try {
-            const res = await productServices.getBaseFreebies(user?.company || '', product.productFreebiesCodeNAV?product.productFreebiesCodeNAV:product.productCodeNAV);
-           
-           
-             /*  if (res && res.length > 0) {
-                const { unit_desc: unitDesc } = res[0];
-                return {
-                  ...product,
-                  base: res,
-                  baseUnitOfMeaTh: unitDesc || product.baseUnitOfMeaTh,
-                };
-              } */
-            
+            const res = await productServices.getBaseFreebies(user?.company || '', product.productFreebiesCodeNAV ? product.productFreebiesCodeNAV : product.productCodeNAV);
+
+
+            /*  if (res && res.length > 0) {
+               const { unit_desc: unitDesc } = res[0];
+               return {
+                 ...product,
+                 base: res,
+                 baseUnitOfMeaTh: unitDesc || product.baseUnitOfMeaTh,
+               };
+             } */
+
 
             return { ...product, base: res || [] };
           } catch (error) {
@@ -68,7 +69,7 @@ const ListItemFreebies = () => {
     try {
       setLoading(true);
       const findIndex = spFreebiesList.findIndex(
-        item =>   item?.productFreebiesId? item?.productFreebiesId === id : item?.productId ===id
+        item => item?.productFreebiesId ? item?.productFreebiesId === id : item?.productId === id
       );
       if (findIndex !== -1) {
         const newSpFb = spFreebiesList
@@ -85,7 +86,7 @@ const ListItemFreebies = () => {
     try {
       setLoading(true);
       const findIndex = spFreebiesList.findIndex(
-        item => item?.productFreebiesId? item?.productFreebiesId === id : item?.productId ===id
+        item => item?.productFreebiesId ? item?.productFreebiesId === id : item?.productId === id
       );
       if (findIndex !== -1) {
 
@@ -95,7 +96,7 @@ const ListItemFreebies = () => {
           await postCartItem(cartList, newSpFb)
         } else {
           setIsDeleting(true)
-          const spfb = await newSpFb.filter(item => item?.productFreebiesId !== id);
+          const spfb = await newSpFb.filter(item => item?.productFreebiesId ? item?.productFreebiesId !== id : item?.productId !== id);
           await postCartItem(cartList, spfb)
         }
 
@@ -115,7 +116,7 @@ const ListItemFreebies = () => {
     id?: any;
   }) => {
     const findIndex = spFreebiesList.findIndex(
-      item => item?.productFreebiesId? item?.productFreebiesId === id : item?.productId ===id
+      item => item?.productFreebiesId ? item?.productFreebiesId === id : item?.productId === id
     );
     if (+quantity <= 0 && findIndex !== -1) {
       setVisibleDel(true);
@@ -141,8 +142,8 @@ const ListItemFreebies = () => {
   const onDelete = async (id: string | number) => {
     try {
       setLoading(true);
-      
-      const spfb = await spFreebiesList.filter(item => item?.productFreebiesId !== id && item?.productId !==id);
+
+      const spfb = await spFreebiesList.filter(item => item?.productFreebiesId !== id && item?.productId !== id);
       await postCartItem(cartList, spfb)
       setDelId('')
       setVisibleDel(false)
@@ -159,20 +160,20 @@ const ListItemFreebies = () => {
     try {
       setLoading(true);
       const findIndex = spFreebiesList.findIndex(
-        item => item?.productFreebiesId? item?.productFreebiesId === id : item?.productId===id,
+        item => item?.productFreebiesId ? item?.productFreebiesId === id : item?.productId === id,
       );
       if (findIndex !== -1) {
         const newSpFb = spFreebiesList
-      if(spFreebiesList[findIndex].productFreebiesId){
-        newSpFb[findIndex].baseUnitOfMeaTh = e.label
-        newSpFb[findIndex].baseUnitOfMeaEn = e.value
-      }
-      else{
-        newSpFb[findIndex].saleUOMTH = e.label
-        newSpFb[findIndex].saleUOM = e.value
-      }
-    
-       
+        if (spFreebiesList[findIndex].productFreebiesId) {
+          newSpFb[findIndex].baseUnitOfMeaTh = e.label
+          newSpFb[findIndex].baseUnitOfMeaEn = e.value
+        }
+        else {
+          newSpFb[findIndex].saleUOMTH = e.label
+          newSpFb[findIndex].saleUOM = e.value
+        }
+
+
         await postCartItem(cartList, newSpFb)
       }
     } catch (e) {
@@ -195,9 +196,9 @@ const ListItemFreebies = () => {
           }}>
           <View style={styles.containerItem}>
             <View style={styles.containerLeft}>
-              {item?.productFreebiesImage ? (
+              {item?.productFreebiesImage || item.productImage ? (
                 <ImageCache
-                  uri={getNewPath(item?.productFreebiesImage)}
+                  uri={getNewPath(item?.productFreebiesImage || item?.productImage)}
                   style={{
                     width: 62,
                     height: 62,
@@ -232,7 +233,7 @@ const ListItemFreebies = () => {
                   {item.productName}
                 </Text>
                 <Text fontFamily="NotoSans" fontSize={14} color="text3">
-                  {item?.description ? item?.description : null||item.packSize}
+                  {item?.productId ? item.packSize : null}
                 </Text>
 
 
@@ -246,8 +247,8 @@ const ListItemFreebies = () => {
               <TouchableOpacity
                 style={styles.buttonDel}
                 onPress={() => {
-                  setDelId(item.productFreebiesId||item.productId);
-                 
+                  setDelId(item.productFreebiesId || item.productId);
+
                   setVisibleDel(true);
                 }}>
                 <Image
@@ -280,25 +281,25 @@ const ListItemFreebies = () => {
                 onChangeText={onChangeText}
                 onIncrease={onIncrease}
                 onDecrease={onDecrease}
-                id={item.productFreebiesId||item.productId}
+                id={item.productFreebiesId || item.productId}
               />
               {item.base.length > 1 ?
-             
 
-             
-              <Dropdown data={item.base.map(obj => ({
+
+
+                <Dropdown data={item.base.map(obj => ({
                   label: obj.unit_desc,
                   value: obj.unit_code
-                }))} labelField={'label'} valueField={'value'} value={item?.productFreebiesId?item.baseUnitOfMeaEn:item.saleUOM} onChange={e => {
-                  onSelectDropDown(e, item?.productFreebiesId?item.productFreebiesId:item.productId)
+                }))} labelField={'label'} valueField={'value'} value={item?.productFreebiesId ? item.baseUnitOfMeaEn : item.saleUOM} onChange={e => {
+                  onSelectDropDown(e, item?.productFreebiesId ? item.productFreebiesId : item.productId)
                 }}
-                  style={styles.dropdown} selectedTextStyle={{ marginHorizontal: 10, fontFamily: 'NotoSansThai-Regular',fontSize:16 }} activeColor={'#F8FAFF'} containerStyle={{borderRadius:8}}
-                /> 
-               
-            
+                  style={styles.dropdown} selectedTextStyle={{ marginHorizontal: 10, fontFamily: 'NotoSansThai-Regular', fontSize: 16 }} activeColor={'#F8FAFF'} containerStyle={{ borderRadius: 8 }}
+                />
+
+
                 :
                 <View style={{ marginLeft: 20 }}>
-                  <Text style={{color:'#8F9EBC'}}> 
+                  <Text style={{ color: '#8F9EBC' }}>
                     {item.baseUnitOfMeaTh}
                   </Text>
                 </View>
@@ -306,11 +307,20 @@ const ListItemFreebies = () => {
               }
 
             </View>
+            
 
           </View>
 
         </View>
       ))}
+      <DashedLine
+                dashColor={colors.border1}
+                dashGap={1}
+                dashLength={8}
+                style={{
+                  marginTop: 16,
+                }}
+              />
       <ModalMessage
         visible={isDeleting}
         message={'ลบของแถมออกจากตะกร้าแล้ว'}
@@ -323,7 +333,7 @@ const ListItemFreebies = () => {
         onConfirm={() => onDelete(delId)}
         onRequestClose={() => setVisibleDel(false)}
       />
-        <LoadingSpinner visible={loading} />
+      <LoadingSpinner visible={loading} />
     </>
   )
 }

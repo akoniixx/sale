@@ -122,7 +122,7 @@ export default function OrderSuccessScreen({
                   quantity: fr.quantity,
                   baseUnit: fr.baseUnitOfMeaTh || fr.baseUnitOfMeaEn || fr.saleUOMTH,
                   status: fr.productFreebiesStatus,
-                  productImage: fr.productFreebiesImage,
+                  productImage: fr.productFreebiesImage||fr.productImage,
                 };
 
                 spfbList.push(newObj);

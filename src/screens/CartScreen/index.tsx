@@ -148,6 +148,7 @@ export default function CartScreen({
         setPromotionListValue([]);
         setVisibleConfirm(false);
         setLoading(false);
+        await AsyncStorage.removeItem('specialRequestRemark')
         navigation.navigate('OrderSuccessScreen', {
           orderId: result.orderId,
         });

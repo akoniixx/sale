@@ -54,6 +54,7 @@ export default function PromotionSection({
       });
       const { cartList: cl, cartDetail: cD } = await postCartItem(
         cartList,
+        cartDetail.specialRequestFreebies,
         newAllPromotion,
       );
       await getSelectPromotion(cD.allPromotions);

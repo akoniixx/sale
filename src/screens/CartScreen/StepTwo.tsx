@@ -5,7 +5,7 @@ import {
   Image,
   TouchableOpacity,
 } from 'react-native';
-import React from 'react';
+import React, { useState } from 'react';
 import Text from '../../components/Text/Text';
 import InputText from '../../components/InputText/InputText';
 import Button from '../../components/Button/Button';
@@ -18,6 +18,10 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { MainStackParamList } from '../../navigations/MainNavigator';
 import { useAuth } from '../../contexts/AuthContext';
 import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
+import { useCart } from '../../contexts/CartContext';
+import ImageCache from '../../components/ImageCache/ImageCache';
+import images from '../../assets/images';
+import { getNewPath } from '../../utils/functions';
 
 interface Props {
   loading: boolean;
@@ -52,8 +56,13 @@ export default function StepTwo({
   setIsShowError,
 }: Props) {
   const {
+    cartDetail,
+  } = useCart();
+  const {
     state: { user },
   } = useAuth();
+
+  const [isCollapsed, setIsCollapsed] = useState<boolean>(true)
 
   return (
     <>
@@ -86,6 +95,7 @@ export default function StepTwo({
           styles.container,
           {
             marginTop: 8,
+            paddingBottom:30
           },
         ]}>
         <Button
@@ -111,6 +121,58 @@ export default function StepTwo({
           title="Special Request"
         />
       </View>
+      {cartDetail?.specialRequestFreebies?.length > 0 ?
+          <View style={{paddingHorizontal:16}} >
+            <View style={{ flexDirection: 'row',backgroundColor:'white',paddingBottom:20 }}>
+              <TouchableOpacity onPress={() => (setIsCollapsed(!isCollapsed))} style={{ flexDirection: 'row' }} >
+
+                <Text fontFamily='Sarabun' fontSize={16}>ของแถม (Special Req.)</Text>
+                <Image
+                  source={icons.iconCollapse}
+                  style={
+                    stylesIcon({ isCollapsed: isCollapsed }).icon
+                  }
+                />
+              </TouchableOpacity>
+            </View>
+
+            <View style={{marginTop:20}}>
+            {isCollapsed && cartDetail.specialRequestFreebies.map((item) => (
+            <View style={{flexDirection:'row',justifyContent:'space-between',marginVertical:10}}>
+              <View style={{flexDirection:'row'}}>
+              {item?.productFreebiesImage|| item?.productImage ? (
+                <ImageCache
+                  uri={getNewPath(item?.productFreebiesImage|| item?.productImage)}
+                  style={{
+                    width: 44,
+                    height: 44,
+                  }}
+                />
+              ) : (
+                <Image
+                  source={images.emptyProduct}
+                  style={{
+                    width: 44,
+                    height: 44,
+                  }}
+                />
+              )}
+                 <Text fontSize={14} color='text3' style={{marginLeft:10}}>{item?.productName}</Text>
+              </View>
+             
+             
+                <View style={{flexDirection:'row'}}>
+                  <Text fontSize={14} color='text3' style={{marginRight:10}}>{item?.quantity}</Text>
+                <Text fontSize={14} color='text3' >{item?.saleUOMTH||item?.baseUnitOfMeaTh}</Text>
+                </View>
+               
+                </View>
+            ))}
+            </View>
+          </View>
+          : null}
+
+
       <View
         style={[
           styles.container,
@@ -191,8 +253,8 @@ export default function StepTwo({
                 {dataStepTwo.deliveryDest === 'SHOP'
                   ? 'จัดส่งที่ร้าน'
                   : dataStepTwo.deliveryDest === 'OTHER'
-                  ? 'จัดส่งที่อื่นๆ'
-                  : 'จัดส่งที่โรงงาน'}
+                    ? 'จัดส่งที่อื่นๆ'
+                    : 'จัดส่งที่โรงงาน'}
               </Text>
               <Text color="text3" fontSize={14} lineHeight={26}>
                 {addressDelivery.name}
@@ -245,6 +307,17 @@ export default function StepTwo({
     </>
   );
 }
+
+const stylesIcon = ({ isCollapsed }: { isCollapsed: boolean }) => {
+  return StyleSheet.create({
+    icon: {
+      width: 20,
+      height: 20,
+      marginLeft: 10,
+      transform: [{ rotate: isCollapsed ? '180deg' : '0deg' }],
+    },
+  });
+};
 const styles = StyleSheet.create({
   container: {
     padding: 16,

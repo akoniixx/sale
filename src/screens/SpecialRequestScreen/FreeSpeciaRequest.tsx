@@ -141,7 +141,11 @@ export default function FreeSpeciaRequestScreen({ navigation, route }: Props) {
 
   useEffect(() => {
     if(cartDetail.specialRequestFreebies){
-      setSelectedItems(cartDetail.specialRequestFreebies)
+      
+      let selected = Array.from(new Set([...cartDetail.specialRequestFreebies,...selectedItems]))
+      
+      setSelectedItems(selected)
+
     }
     getProduct()
     getFreebies()
@@ -204,9 +208,7 @@ export default function FreeSpeciaRequestScreen({ navigation, route }: Props) {
                     flexDirection: 'row',
                     alignItems: 'center',
                   }}>
-                  <Text color="text3" fontSize={14}>
-                    {el.description}
-                  </Text>
+                  
                 </View>
               </View>
             </View>

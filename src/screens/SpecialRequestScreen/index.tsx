@@ -25,6 +25,7 @@ import { numberWithCommas } from '../../utils/functions';
 import ListCollapse from './ListCollapse';
 import ListSpecialRequest from './ListSpecialRequest';
 import ListItemFreebies from './ListItemFreebies';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function SpecialRequestScreen({
   navigation,
@@ -43,12 +44,16 @@ export default function SpecialRequestScreen({
   const [specialRequestRemark, setSpecialRequestRemark] = React.useState('');
   const { cartList, cartDetail, promotionListValue } = useCart();
   useEffect(() => {
-    if (params.specialRequestRemark) {
-      setSpecialRequestRemark(params.specialRequestRemark);
-    }
+    getSpecialRequestRemark()
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const getSpecialRequestRemark = async() => {
+    const remark = await AsyncStorage.getItem('specialRequestRemark')
+    setSpecialRequestRemark(remark||'')
+    
+  }
 
   const { dataObj } = useMemo(() => {
     const listDataDiscount: {
@@ -466,7 +471,8 @@ export default function SpecialRequestScreen({
                   height: 50,
                   marginBottom: 16,
                 }}
-                onPress={() => {
+                onPress={async() => {
+                 await AsyncStorage.setItem('specialRequestRemark',specialRequestRemark)
                   navigation.navigate('CartScreen', {
                     step: 1,
                     specialRequestRemark,

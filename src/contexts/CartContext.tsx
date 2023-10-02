@@ -425,7 +425,7 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
         }
         
         // console.log('payload', JSON.stringify(payload.allPromotions, null, 2));
-
+          
         const result = await cartServices.postCart(payload);
         
         // console.log('result', JSON.stringify(result.allPromotions, null, 2));
@@ -447,9 +447,11 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
           .filter((item: any) => !item.isFreebie);
 
         const freebieList = result?.orderProducts
-          .filter((item: any) => item.isFreebie&&item.isSpecialRequestFreebie===false)
+          .filter((item: any) => item?.isFreebie===true&&item?.isSpecialRequestFreebie===false)
           .map((el: any) => {
+          
             if (el.productFreebiesId) {
+              
               const newObj = {
                 productName: el.productName,
                 id: el.productFreebiesId,
@@ -470,8 +472,8 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
               };
               return newObj;
             }
-          });
-
+          }
+          )
         setFreebieListItem(freebieList);
 
         return {

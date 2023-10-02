@@ -92,7 +92,7 @@ export default function GiftFromPromotion({
                       alignItems: 'center',
                       marginRight: 8,
                     }}>
-                    {item.productImage ? (
+                    {item?.productImage ? (
                       <ImageCache
                         uri={getNewPath(item.productImage)}
                         style={{
@@ -112,10 +112,10 @@ export default function GiftFromPromotion({
                   </View>
                   <View>
                     <Text fontSize={14} color="text3" lineHeight={24}>
-                      {item.productName}
+                      {item?.productName}
                     </Text>
                     <Text semiBold fontSize={12} lineHeight={22}>
-                      {item.quantity} {item.baseUnit}
+                      {item?.quantity} {item?.baseUnit}
                     </Text>
                   </View>
                 </View>

@@ -18,4 +18,5 @@ export const colors = {
   BGDiscount1: '#DE2828',
   BGDiscount2: '#FF4747',
   specialRequest: '#BB6BD9',
+  skeleton: '#E3E3E3',
 };

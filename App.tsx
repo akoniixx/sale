@@ -27,6 +27,7 @@ import storeVersion from 'react-native-store-version';
 import RNExitApp from 'react-native-kill-app';
 import analytics from '@react-native-firebase/analytics';
 import { PERMISSIONS, checkNotifications, request } from 'react-native-permissions';
+import { NetworkProvider } from './src/contexts/NetworkContext';
 
 
 
@@ -151,6 +152,7 @@ const App = () => {
   
   return (
     <NavigationContainer ref={navigationRef}>
+       <NetworkProvider>
       <LocalizationProvider>
         <AuthProvider>
           <CartProvider>
@@ -161,6 +163,7 @@ const App = () => {
         </AuthProvider>
       </LocalizationProvider>
       <Toast config={toastConfig} />
+      </NetworkProvider>
     </NavigationContainer>
   );
 };

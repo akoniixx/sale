@@ -19,6 +19,7 @@ import HistoryDetailScreen from '../../screens/HistoryDetailScreen';
 import SettingNotificationScreen from '../../screens/SettingNotificationScreen';
 import TCReadOnlyScreen from '../../screens/TCReadOnlyScreen';
 import FreeSpeciaRequestScreen from '../../screens/SpecialRequestScreen/FreeSpeciaRequest';
+import NewsPromotionDetailScreen from '../../screens/NewsPromotionScreen/NewsPromotionDetailScreen';
 
 export type MainStackParamList = {
   MainScreen: {
@@ -70,6 +71,9 @@ export type MainStackParamList = {
   TCReadOnlyScreen: undefined;
   SettingNotificationScreen: undefined;
   FreeSpeciaRequestScreen: undefined
+  NewsPromotionDetailScreen: {
+    data:NewsPromotion[]
+  }
 };
 const Stack = createStackNavigator<MainStackParamList>();
 export default function MainNavigator() {
@@ -144,6 +148,7 @@ export default function MainNavigator() {
         component={SettingNotificationScreen}
       />
       <Stack.Screen name="TCReadOnlyScreen" component={TCReadOnlyScreen} />
+      <Stack.Screen name="NewsPromotionDetailScreen" component={NewsPromotionDetailScreen} />
     </Stack.Navigator>
   );
 }

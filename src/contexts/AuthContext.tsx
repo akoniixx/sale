@@ -133,6 +133,8 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
             await AsyncStorage.setItem('fcmtoken', token);
             await AsyncStorage.setItem('token', data.accessToken);
             await AsyncStorage.setItem('userStaffId', data.data.userStaffId);
+            await AsyncStorage.setItem('company',data.data.company)
+            await AsyncStorage.setItem('zone',data.data.zone)
             const fcmtoken = await AsyncStorage.getItem('fcmtoken');
             if (fcmtoken) {
               try {
@@ -159,6 +161,8 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
           await AsyncStorage.removeItem('token');
           await AsyncStorage.removeItem('user');
           await AsyncStorage.removeItem('fcmtoken');
+          await AsyncStorage.removeItem('company');
+          await AsyncStorage.removeItem('zone');
           dispatch({ type: 'LOGOUT' });
         })
         

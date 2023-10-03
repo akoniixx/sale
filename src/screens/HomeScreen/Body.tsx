@@ -1,10 +1,13 @@
 import { View, StyleSheet, TouchableOpacity, Image } from 'react-native';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import images from '../../assets/images';
 import Text from '../../components/Text/Text';
 import { useLocalization } from '../../contexts/LocalizationContext';
 import { StackNavigationHelpers } from '@react-navigation/stack/lib/typescript/src/types';
 import { useAuth } from '../../contexts/AuthContext';
+import { NewsPromotionService } from '../../services/NewsPromotionServices';
+import NewsPromotionCarousel from '../../components/Carousel/NewsPromotionCarousel';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface Props {
   navigation: StackNavigationHelpers;
@@ -14,6 +17,25 @@ export default function Body({ navigation }: Props): JSX.Element {
   const {
     state: { user },
   } = useAuth();
+  const [loading,setLoading] = useState<boolean>(false)
+  const [NewsPromotion,setNewsPromotion] = useState<NewsPromotion[]>([])
+  const fecthNewsPromotion = async() => {
+      try {
+        setLoading(true)
+        const company = await AsyncStorage.getItem('company')
+        const zone = await AsyncStorage.getItem('zone')
+        const res = await NewsPromotionService.getNewsPromotion(company||'',zone||'')
+        setNewsPromotion(res.data)
+      } catch (error) {
+        console.log(error)
+      } finally{
+        setLoading(false)
+      }
+  }
+
+  useEffect(()=>{
+fecthNewsPromotion()
+  },[])
 
   const memoListMenus = useMemo(() => {
     const ListMenus = [
@@ -79,21 +101,13 @@ export default function Body({ navigation }: Props): JSX.Element {
           );
         })}
       </View>
-      <View style={styles.body}>
-        <View
-          style={{
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
-          <Image
-            source={images.News}
-            style={{
-              height: 100,
-              width: 110,
-            }}
-          />
-          <Text color="text3">{t('screens.HomeScreen.news')}</Text>
-        </View>
+      <View style={{paddingHorizontal:20,marginTop:20}} >
+       <Text bold fontSize={18} fontFamily='NotoSans' >โปรโมชั่น</Text>
+
+       
+      </View>
+      <View style={{alignItems:'center'}}>
+      <NewsPromotionCarousel data={NewsPromotion} loading={loading} navigation={navigation}  />
       </View>
     </View>
   );
@@ -114,8 +128,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
   },
   body: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    
+    padding: 20,
   },
 });

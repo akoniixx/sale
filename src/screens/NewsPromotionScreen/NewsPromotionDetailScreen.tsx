@@ -148,13 +148,18 @@ export default function NewsPromotionDetailScreen({
                             ) : <></>}
 
 
-                            {data.promotionType === 'FREEBIES_MIX' && data.conditionDetail.map((detail) => {
+                            {data.promotionType === 'FREEBIES_MIX' && data.conditionDetail.map((detail,idx) => {
                                 if (detail.typeMix === 'Quantity') {
 
                                     return (
                                         <>
-                                            {detail.conditionFreebies.map((freebieDetail) => (
-                                                <View >
+                                        <View style={{marginTop:20}}>{detail.products.map((product)=>(
+                                            <Text color="white">
+                                             {`สินค้ากลุ่มที่ ${idx+1}: ${product.productName} ขนาด ${product.packSize}`}
+                                            </Text>
+                                        ))}</View>
+                                            {detail.conditionFreebies.map((freebieDetail,idx) => (
+                                                <View style={{paddingLeft:10}}>
                                                     <Text color="white"
                                                         style={{
                                                             lineHeight: 30,

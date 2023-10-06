@@ -48,6 +48,7 @@ export default function HistoryDetailScreen({
       try {
         setLoading(true);
         const res = await orderServices.getOrderById(params.orderId);
+        
         setOrderDetail(res);
       } catch (e) {
         console.log(e);
@@ -461,7 +462,7 @@ export default function HistoryDetailScreen({
                   style={{
                     marginBottom: 8,
                   }}>
-                  {orderDetail?.saleCoRemark || '-'}
+                  {orderDetail?.saleCoRemark ||orderDetail?.deliveryRemark ||'-'}
                 </Text>
               </View>
               <DashedLine

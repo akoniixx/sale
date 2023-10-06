@@ -101,11 +101,28 @@ fecthNewsPromotion()
           );
         })}
       </View>
-      <View style={{paddingHorizontal:20,marginTop:20}} >
+      {NewsPromotion.length>0?<View style={{paddingHorizontal:20,marginTop:20}} >
        <Text bold fontSize={18} fontFamily='NotoSans' >โปรโมชั่น</Text>
 
        
-      </View>
+      </View>:     
+        <View
+          style={{
+            flex:1,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+          <Image
+            source={images.News}
+            style={{
+              height: 100,
+              width: 110,
+            }}
+          />
+          <Text color="text3">{t('screens.HomeScreen.news')}</Text>
+        </View>
+}
+     
       <View style={{alignItems:'center'}}>
       <NewsPromotionCarousel data={NewsPromotion} loading={loading} navigation={navigation}  />
       </View>

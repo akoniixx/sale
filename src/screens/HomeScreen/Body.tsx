@@ -33,9 +33,9 @@ export default function Body({ navigation }: Props): JSX.Element {
       }
   }
 
-  useEffect(()=>{
+  /* useEffect(()=>{
 fecthNewsPromotion()
-  },[])
+  },[]) */
 
   const memoListMenus = useMemo(() => {
     const ListMenus = [

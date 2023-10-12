@@ -37,7 +37,20 @@ const getCartList = async ({ userStaffId, customerCompanyId }: GetCartType) => {
       return (res.data)})
     .catch(err => console.log(JSON.stringify(err.response.data, null, 2)));
 };
+const postReorder =async (payload:
+  {
+    company:string,
+    userStaffId:string,
+    orderId:string
+    isForceReorder:boolean
+  }) => {
+    return await request
+    .post('/order-cart/cart/shop-reorder', payload)
+    .then(res => res.data)
+    .catch(err => err.response.data);
+}
 export const cartServices = {
   postCart,
   getCartList,
+  postReorder
 };

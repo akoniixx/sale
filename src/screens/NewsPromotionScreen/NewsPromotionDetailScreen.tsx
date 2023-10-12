@@ -1,5 +1,5 @@
 import { StackScreenProps } from "@react-navigation/stack";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Dimensions, Image, SafeAreaView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { MainStackParamList } from "../../navigations/MainNavigator";
 import Text from "../../components/Text/Text";
@@ -15,6 +15,8 @@ import dayjs from "dayjs";
 import { useLocalization } from "../../contexts/LocalizationContext";
 import icons from "../../assets/icons";
 import { promotionTypeMap } from "../../utils/mappingObj";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { productServices } from "../../services/ProductServices";
 
 export default function NewsPromotionDetailScreen({
     navigation,
@@ -22,6 +24,12 @@ export default function NewsPromotionDetailScreen({
 }: StackScreenProps<MainStackParamList, 'NewsPromotionDetailScreen'>): JSX.Element {
     const data: NewsPromotion = route.params
     const { t } = useLocalization();
+
+    /* useEffect(() => {
+        console.log(JSON.stringify(data))
+    }, []) */
+
+
     return (
         <Container>
             <Header />
@@ -38,6 +46,7 @@ export default function NewsPromotionDetailScreen({
                 </View>
                 <View style={{ marginVertical: 20 }}>
                     <Text fontSize={20} fontFamily='NotoSans' >
+                       {/*  {data.promotionType} */}
                         {data.promotionSubject}
                     </Text>
                 </View>
@@ -58,7 +67,7 @@ export default function NewsPromotionDetailScreen({
                                 marginBottom: 0,
                             },
                         ]}
-                        colors={[colors.BGDiscount1, colors.BGDiscount2]}
+                        colors={['#4C95FF', '#4C95FF']}
                         start={{ x: 0.5, y: 0.5 }}>
                         <View style={styles.header}>
                             <Image
@@ -84,17 +93,27 @@ export default function NewsPromotionDetailScreen({
                                     if (condition.typeMix === 'Quantity') {
 
                                         return (
-                                            <View key={index}>
-                                                {condition.conditionDiscount.map((discount, dIndex) => (
-                                                    <View key={dIndex}>
-                                                        <Text color="white"
-                                                            style={{
-                                                                lineHeight: 30,
-                                                            }}>{`• ซื้อ${discount.quantity} ${discount.saleUnit} ลด ${discount.discountPrice} บาทต่อ${discount.saleUnit}`}</Text>
+                                            <>
+                                                <Text color="white"
+                                                    style={{
+                                                        lineHeight: 30,
+                                                    }}>
+                                                    {`สินค้ากลุ่มที่ ${index + 1}: `}
+                                                    {condition.products.map((p) => (
+                                                        `${p.productName} ${p.packSize}, `
+                                                    ))}</Text>
+                                                <View key={index}>
+                                                    {condition.conditionDiscount.map((discount, dIndex) => (
+                                                        <View key={dIndex}>
+                                                            <Text color="white"
+                                                                style={{
+                                                                    lineHeight: 30,
+                                                                }}>{`• ซื้อ${discount.quantity} ${discount.saleUnit} ลด ${discount.discountPrice} บาทต่อ${discount.saleUnit}`}</Text>
 
-                                                    </View>
-                                                ))}
-                                            </View>
+                                                        </View>
+                                                    ))}
+                                                </View>
+                                            </>
                                         );
                                     }
                                 }
@@ -103,35 +122,59 @@ export default function NewsPromotionDetailScreen({
                             }
 
 
-                            {data.promotionType === 'DISCOUNT_MIX' &&
-                                data.conditionDetail.map((condition) => {
-                                    if (condition.conditionDiscount.typeMix === 'Size') {
-                                        return condition.conditionDiscount.products.map((product) => {
+                            {
+                                data.promotionType === 'DISCOUNT_MIX' &&
+                                data.conditionDetail.map((condition, index) => {
+                                    const { typeMix, size, products } = condition.conditionDiscount;
 
-                                            return (
-                                                <Text
-                                                    key={product.productId}
-                                                    color="white"
-                                                    style={{
-                                                        lineHeight: 30,
-                                                    }}
-                                                >
-                                                    {`• เมื่อซื้อครบ ${condition.conditionDiscount.size} ${product.saleUnit} ลด ${product.discountPrice} บาทต่อ${product.saleUnitDiscount}`}
+                                    if (typeMix === 'Size') {
+                                        return (
+                                            <>
+                                                <Text color="white" style={{ lineHeight: 30 }}>
+                                                    {`สินค้ากลุ่มที่ ${index + 1}: ซื้อครบ ${size} kg/L`}
                                                 </Text>
-                                            );
+                                                {products.map(product => {
+                                                    const matchedProduct = condition.products.find(
+                                                        item => item.productId === product.productId
+                                                    );
 
-                                            return null; // If product ID doesn't match
-                                        });
+                                                    const productDetails = matchedProduct
+                                                        ? `• ${matchedProduct.productName} ${matchedProduct.packSize}`
+                                                        : '';
+
+                                                    return (
+                                                        <View>
+                                                            <Text
+                                                                key={product.productId}
+                                                                color="white"
+                                                                style={{ lineHeight: 30 }}
+                                                            >
+                                                                {`${productDetails} ${product.saleUnit} ลด ${product.discountPrice} บาทต่อ${product.saleUnitDiscount}`}
+                                                            </Text>
+                                                        </View>
+                                                    );
+                                                })}
+                                            </>
+                                        );
                                     }
+
                                     return null; // If typeMix is not 'Size'
                                 })
                             }
 
 
                             {data.promotionType === 'OTHER' ? (
-                                data.conditionDetail.map((condition, index) => {
-
-                                    return (
+                                data.conditionDetail.map((condition, index) => (
+                                    <>
+                                        <Text color="white"
+                                            style={{
+                                                lineHeight: 30,
+                                            }}>
+                                            {`สินค้ากลุ่มที่ ${index + 1}: `}
+                                            {condition.products.map((p, idx) => (
+                                                `${p.productName} ${p.packSize}, `
+                                            ))}
+                                        </Text>
                                         <Text
                                             key={index}
                                             color="white"
@@ -141,25 +184,31 @@ export default function NewsPromotionDetailScreen({
 
                                             {condition.detail}
                                         </Text>
-                                    );
+                                    </>
 
-                                })
+                                ))
 
                             ) : <></>}
 
 
-                            {data.promotionType === 'FREEBIES_MIX' && data.conditionDetail.map((detail,idx) => {
+                            {data.promotionType === 'FREEBIES_MIX' && data.conditionDetail.map((detail, idx) => {
                                 if (detail.typeMix === 'Quantity') {
 
                                     return (
                                         <>
-                                        <View style={{marginTop:20}}>{detail.products.map((product)=>(
-                                            <Text color="white">
-                                             {`สินค้ากลุ่มที่ ${idx+1}: ${product.productName} ขนาด ${product.packSize}`}
-                                            </Text>
-                                        ))}</View>
-                                            {detail.conditionFreebies.map((freebieDetail,idx) => (
-                                                <View style={{paddingLeft:10}}>
+                                            <View style={{ marginTop: 20, flexDirection: 'row', flexWrap: 'wrap' }}>
+                                                <Text color="white" style={{
+                                                    lineHeight: 30,
+                                                }}>
+                                                    {`สินค้ากลุ่มที่ ${idx + 1}: `}
+                                                </Text>
+                                                {detail.products.map((product) => (
+                                                    <Text color="white">
+                                                        {`${product.productName} ขนาด ${product.packSize},`}
+                                                    </Text>
+                                                ))}</View>
+                                            {detail.conditionFreebies.map((freebieDetail, idx) => (
+                                                <View style={{ paddingLeft: 10 }}>
                                                     <Text color="white"
                                                         style={{
                                                             lineHeight: 30,
@@ -185,42 +234,37 @@ export default function NewsPromotionDetailScreen({
 
 
                             {data.promotionType === 'FREEBIES_MIX' &&
-                                data.conditionDetail.map((detail) => {
+                                data.conditionDetail.map((detail, index) => {
                                     if (detail.typeMix === 'Size') {
                                         return (
                                             <>
-                                                {detail.products.map((product) => {
 
-                                                    return (
-                                                        <View>
-                                                            <Text key={product.key}
-                                                                color="white"
-                                                                style={{
-                                                                    lineHeight: 30,
-                                                                }}>{
-                                                                    `• เมื่อซื้อครบ ${detail.size} kg / L`
-                                                                }</Text>
-                                                            <Text color="white"
-                                                                style={{
-                                                                    lineHeight: 30,
-                                                                }}>
-                                                                {detail.conditionFreebies[0].freebies.map((freebie, idx) => (
-                                                                    `แถม${freebie.productName} ${freebie.packSize ? `ขนาด ${freebie.packSize}` : ``} จำนวน ${freebie.quantity} ${freebie.baseUnitOfMeaTh ? freebie.baseUnitOfMeaTh : freebie.saleUOMTH}${idx + 1 === detail.conditionFreebies[0].freebies.length ? '' : ','} `
-                                                                ))}
-                                                            </Text>
-                                                        </View>
-                                                    );
-                                                })}
+                                                <Text color="white" style={{ marginTop: 10 }}>
+                                                    {`สินค้ากลุ่มที่ ${index + 1}: ${detail.products.map((product) => (product.productName))}`}
+                                                </Text>
+
+
+                                                <Text key={index}
+                                                    color="white"
+                                                    style={{
+                                                        lineHeight: 30,
+                                                    }}>{
+                                                        `• เมื่อซื้อครบ ${detail.size} kg / L ${detail.conditionFreebies[0].freebies.map((freebie, idx) => (
+                                                            `แถม${freebie.productName} ${freebie.packSize ? `ขนาด ${freebie.packSize}` : ``} จำนวน ${freebie.quantity} ${freebie.baseUnitOfMeaTh ? freebie.baseUnitOfMeaTh : freebie.saleUOMTH}${idx + 1 === detail.conditionFreebies[0].freebies.length ? '' : ','} `
+                                                        ))}`
+                                                    }</Text>
+
                                             </>
                                         );
                                     }
                                 })}
 
 
-                            {data.promotionType === 'DISCOUNT_NOT_MIX' && data.conditionDetail.map((el, idx) => {
+                            {data.promotionType === 'DISCOUNT_NOT_MIX' && data.conditionDetail.map((itm, idx) => {
                                 return (
                                     <>
-                                        {el.condition.map((el, idx) => {
+                                        <Text color="white">ซื้อ{itm.productName} ขนาด {itm.packsize}</Text>
+                                        {itm.condition.map((el, idx) => {
                                             return (
                                                 <View key={idx}>
                                                     <Text
@@ -248,75 +292,35 @@ export default function NewsPromotionDetailScreen({
 
                             }
 
-                            {/* {data?.conditionDetail?.map(item => {
-          
-          return item.condition.map((el, idx) => {
-            if (data.promotionType === 'DISCOUNT_NOT_MIX') {
-              return (
-                <View key={idx}>
-                  <Text
-                    key={idx}
-                    color="white"
-                    style={{
-                      lineHeight: 30,
-                    }}>
-                    {`•  ${t('screens.ProductDetailScreen.promotionDiscount', {
-                      buy: el.quantity,
-                      discountPrice: el.discountPrice,
-                      productNameFree: '' || '',
-                      unitDiscount:
-                        el.saleUnitDiscountTH || el.saleUnitDiscount || '',
-                      unitBuy: el.saleUnitTH || el.saleUnit || '',
-                    })} `}
-                  </Text>
-                </View>
-              );
-            }
+                            {data.promotionType === 'FREEBIES_NOT_MIX' && data.conditionDetail.map((itm, idx) => {
+                                return (
+                                    <>
+                                        <View style={{ marginTop: 10 }} key={idx}>
+                                            <Text color="white">ซื้อ{itm.productName} ขนาด {itm.packsize}</Text>
+                                        </View>
 
+                                        {itm.condition.map((el, idx) => (
+                                            <>
+                                                <View key={idx} style={{ paddingHorizontal: 10 }}>
+                                                    <Text
+                                                        key={idx}
+                                                        color="white"
+                                                        style={{
+                                                            lineHeight: 30,
+                                                        }}>
+                                                        {`• ซื้อครบ ${el.quantity} ${el.saleUnit} แถม${el.freebies.map((el2) => (
+                                                            ` ${el2.productName} ${el2.packSize} จำนวน ${el2.quantity} ${el2.saleUOMTH}`
+                                                        ))}`}
+                                                    </Text>
 
-            return (el.freebies || []).map((el2, idx) => {
-              if (!el2.productFreebiesId) {
-                return (
-                  <Text
-                    key={idx}
-                    color="white"
-                    style={{
-                      lineHeight: 30,
-                    }}>
-                    {`•  ${t(
-                      'screens.ProductDetailScreen.promotionTextConvert',
-                      {
-                        buy: el.quantity,
-                        free: el2.quantity,
-                        productNameFree: el2.productName,
-                        unitFree: el2.saleUOMTH || el2.saleUOM || '',
-                        unitBuy: unitBuy || '',
-                      },
-                    )} `}
-                  </Text>
-                );
-              }
+                                                </View>
+                                            </>
+                                        ))}
+                                    </>
+                                )
+                            })
+                            }
 
-              return (
-                <Text
-                  key={idx}
-                  color="white"
-                  style={{
-                    lineHeight: 30,
-                  }}>{`•  ${t(
-                    'screens.ProductDetailScreen.promotionTextConvert',
-                    {
-                      buy: el.quantity,
-                      free: el2.quantity,
-                      productNameFree: el2.productName,
-                      unitBuy: unitBuy || '',
-                      unitFree: el2.baseUnitOfMeaTh || el2.baseUnitOfMeaEn || '',
-                    },
-                  )}`}</Text>
-              );
-            });
-          });
-        })}  */}
 
                             <View
                                 style={{
@@ -343,6 +347,8 @@ export default function NewsPromotionDetailScreen({
 const styles = StyleSheet.create({
     container: {
         borderRadius: 12,
+        borderColor: '#0064FB',
+        borderWidth: 1,
     },
     header: {
         flexDirection: 'row',

@@ -18,6 +18,7 @@ import { useLocalization } from '../../contexts/LocalizationContext';
 import { StackNavigationHelpers } from '@react-navigation/stack/lib/typescript/src/types';
 import { AuthServices } from '../../services/AuthServices';
 import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
+import crashlytics from '@react-native-firebase/crashlytics';
 
 interface Props {
   navigation: StackNavigationHelpers;
@@ -50,14 +51,23 @@ export default function LoginScreen({ navigation }: Props): JSX.Element {
       setLoading(true)
       const { data } = await AuthServices.requestOtp(v.tel);
 
+      
+
       navigation.navigate('OtpScreen', {
         token: data.result.token,
         refCode: data.result.refCode,
         tel: v.tel,
       });
     } catch (e: any) {
+      crashlytics().setUserId(v.tel),
+      crashlytics().recordError(e)
       if (e?.response?.data?.statusCode) {
         setErrorCode(e.response.data.statusCode);
+      }
+      if (e?.response?.data?.statusCode === 500) {
+        
+        crashlytics().setAttribute('tel',v.tel)
+      crashlytics().recordError(e)
       }
     }
     finally{

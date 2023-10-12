@@ -27,6 +27,7 @@ import ImageCache from '../../components/ImageCache/ImageCache';
 import images from '../../assets/images';
 import SummaryList from '../../components/SummaryList/SummaryList';
 import SummaryTotal from '../../components/SummaryList/SummaryTotal';
+import FooterReorder from './FooterReorder';
 
 const locationMapping = {
   SHOP: 'จัดส่งที่ร้าน',
@@ -50,6 +51,7 @@ export default function HistoryDetailScreen({
         const res = await orderServices.getOrderById(params.orderId);
         
         setOrderDetail(res);
+       
       } catch (e) {
         console.log(e);
       } finally {
@@ -808,7 +810,11 @@ export default function HistoryDetailScreen({
                 })}
               </View>
             ) : null}
-
+ 
+{orderDetail?.status === 'DELIVERY_SUCCESS'||orderDetail?.status === 'SHOPAPP_CANCEL_ORDER'||orderDetail?.status === 'COMPANY_CANCEL_ORDER' ? (
+        <FooterReorder orderId={orderDetail.orderId} navigation={navigation} orderLength={orderDetail.orderProducts.length} />
+       
+      ): null}
           </View>
           <Image
             style={{
@@ -820,11 +826,14 @@ export default function HistoryDetailScreen({
             resizeMode="contain"
             source={images.bottomInvoice}
           />
+          
+
           <View
             style={{
               height: 100,
             }}
           />
+          
         </ScrollView>
       </Content>
       <LoadingSpinner visible={loading} />

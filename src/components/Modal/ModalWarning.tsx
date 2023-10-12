@@ -14,6 +14,7 @@ type Props = {
   visible: boolean;
   width?: string | number;
   title: string;
+  titleCenter?:boolean
   desc?: string;
   minHeight?: number;
   textCancel?: string;
@@ -28,6 +29,7 @@ export default function ModalWarning({
   width,
   title,
   desc,
+  titleCenter,
   textCancel = 'ยกเลิก',
   textConfirm = 'ยืนยัน',
   onlyCancel = false,
@@ -53,7 +55,7 @@ export default function ModalWarning({
               paddingHorizontal: 16,
               minHeight,
             }}>
-            <Text semiBold lineHeight={28}>
+            <Text semiBold lineHeight={28} center={!titleCenter}>
               {title}
             </Text>
             {desc && (

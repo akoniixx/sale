@@ -197,9 +197,7 @@ export default function NewsPromotionDetailScreen({
                                     return (
                                         <>
                                             <View style={{ marginTop: 20, flexDirection: 'row', flexWrap: 'wrap' }}>
-                                                <Text color="white" style={{
-                                                    lineHeight: 30,
-                                                }}>
+                                                <Text color="white" >
                                                     {`สินค้ากลุ่มที่ ${idx + 1}: `}
                                                 </Text>
                                                 {detail.products.map((product) => (
@@ -208,7 +206,7 @@ export default function NewsPromotionDetailScreen({
                                                     </Text>
                                                 ))}</View>
                                             {detail.conditionFreebies.map((freebieDetail, idx) => (
-                                                <View style={{ paddingLeft: 10 }}>
+                                                <View style={{ paddingLeft: 10,marginTop:5 }}>
                                                     <Text color="white"
                                                         style={{
                                                             lineHeight: 30,

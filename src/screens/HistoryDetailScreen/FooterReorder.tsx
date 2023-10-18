@@ -203,7 +203,7 @@ export default function FooterReorder({ orderId, orderLength, navigation }: Prop
                                 directionalLockEnabled
 
                                 style={{
-                                    backgroundColor: '#E1E7F6',
+                                    backgroundColor: '#F8FAFF',
                                     padding: 10,
 
 

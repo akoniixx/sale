@@ -101,7 +101,7 @@ fecthNewsPromotion()
           );
         })}
       </View>
-      {NewsPromotion.length>0?<View style={{paddingHorizontal:20,marginTop:20}} >
+      {NewsPromotion?.length>0?<View style={{paddingHorizontal:20,marginTop:20}} >
        <Text bold fontSize={18} fontFamily='NotoSans' >โปรโมชั่น</Text>
 
        

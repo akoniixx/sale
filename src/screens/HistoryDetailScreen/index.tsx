@@ -812,7 +812,7 @@ export default function HistoryDetailScreen({
             ) : null}
  
 {orderDetail?.status === 'DELIVERY_SUCCESS'||orderDetail?.status === 'SHOPAPP_CANCEL_ORDER'||orderDetail?.status === 'COMPANY_CANCEL_ORDER' ? (
-        <FooterReorder orderId={orderDetail.orderId} navigation={navigation} orderLength={orderDetail.orderProducts.length} />
+        <FooterReorder orderId={orderDetail.orderId} navigation={navigation} orderLength={orderDetail.orderProducts.length} {...orderDetail} />
        
       ): null}
           </View>

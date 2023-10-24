@@ -16,6 +16,7 @@ import { useCart } from '../../contexts/CartContext';
 import { useAuth } from '../../contexts/AuthContext';
 import ModalWarning from '../../components/Modal/ModalWarning';
 import { useAsyncStorage } from '@react-native-async-storage/async-storage';
+import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
 
 interface Props extends HistoryDataType {
   navigation?: any;
@@ -59,8 +60,13 @@ const { setItem } = useAsyncStorage('customerCompanyId');
       setTermPayment(props.paymentMethod)
       setCustomerNo(props.customerNo)
       setCustomerName(props.customerName)
-     /*  setProductBrand()
-      setAddress(props.deliveryAddress.) */
+     /*  setProductBrand( JSON.stringify({
+        product_brand_id: 1,
+        product_brand_name: 'ICPLadda',
+        company: props.company,
+      }),) */
+      setUserShopId(props.userShopId)
+      setAddress(JSON.stringify({addressText:props.deliveryAddress,name:props.customerName}))
         setLoading(true)
         const payload = {
             company: user?.company || '',
@@ -158,6 +164,7 @@ const onReoderInactive = async () => {
             source={icons.invoice}
           />
           <Text bold fontSize={14}>
+            
             {props.orderNo}
           </Text>
         </View>
@@ -495,6 +502,7 @@ const onReoderInactive = async () => {
                     </View>
                 </View>
             </ModalRN>
+            <LoadingSpinner visible={loading}  />
     </View>
   );
 }

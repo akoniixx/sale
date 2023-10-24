@@ -16,6 +16,7 @@ import ImageCache from "../../components/ImageCache/ImageCache";
 
 import images from "../../assets/images";
 import React from "react";
+import { useAsyncStorage } from "@react-native-async-storage/async-storage";
 
 
 interface Props {
@@ -26,7 +27,7 @@ interface Props {
     >;
 }
 
-export default function FooterReorder({ orderId, orderLength, navigation }: Props) {
+export default function FooterReorder({ orderId, orderLength, navigation, ...props }: Props) {
     const [loading, setLoading] = useState<boolean>(false)
     const [modalConfirm, setModalConfirm] = useState<boolean>(false);
     const [modalNotReady, setModalNotReady] = useState<boolean>(false)
@@ -42,10 +43,31 @@ export default function FooterReorder({ orderId, orderLength, navigation }: Prop
     const {
         state: { user }
     } = useAuth();
-
+    
+    const { setItem } = useAsyncStorage('customerCompanyId');
+    const { setItem: setTermPayment } = useAsyncStorage('termPayment');
+    const { setItem: setCustomerNo } = useAsyncStorage('customerNo');
+    const { setItem: setCustomerName } = useAsyncStorage('customerName');
+    const { setItem: setProductBrand } = useAsyncStorage('productBrand');
+    const { setItem: setAddress } = useAsyncStorage('address');
+  
+    const { setItem: setUserShopId } = useAsyncStorage('userShopId');
 
     const onReoder = async () => {
         try {
+
+            setItem(props.customerCompanyId.toString())
+            setTermPayment(props.paymentMethod)
+            setCustomerNo(props.customerNo)
+            setCustomerName(props.customerName)
+           /*  setProductBrand( JSON.stringify({
+              product_brand_id: 1,
+              product_brand_name: 'ICPLadda',
+              company: props.company,
+            }),) */
+            setUserShopId(props.userShopId)
+            setAddress(JSON.stringify({addressText:props.deliveryAddress,name:props.customerName}))
+
             setLoading(true)
             const payload = {
                 company: user?.company || '',

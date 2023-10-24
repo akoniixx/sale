@@ -23,7 +23,7 @@ export default function SelectBrandBeforeDetailScreen({
   const { id, name: nameCompany, productBrand } = route.params;
   const { t } = useLocalization();
   const { setItem: setProductBrand } = useAsyncStorage('productBrand');
-  console.log(productBrand)
+  
 
   return (
     <Container>

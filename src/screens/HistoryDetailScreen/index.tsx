@@ -28,6 +28,8 @@ import images from '../../assets/images';
 import SummaryList from '../../components/SummaryList/SummaryList';
 import SummaryTotal from '../../components/SummaryList/SummaryTotal';
 import FooterReorder from './FooterReorder';
+import { promotionTypeMap } from '../../utils/mappingObj';
+import { useAuth } from '../../contexts/AuthContext';
 
 const locationMapping = {
   SHOP: 'จัดส่งที่ร้าน',
@@ -42,16 +44,18 @@ export default function HistoryDetailScreen({
   const [orderDetail, setOrderDetail] = React.useState<HistoryDataType | null>(
     null,
   );
-
+  const {
+    state: { user },
+  } = useAuth();
   const [loading, setLoading] = React.useState<boolean>(false);
   React.useEffect(() => {
     const getOrderDetailById = async () => {
       try {
         setLoading(true);
         const res = await orderServices.getOrderById(params.orderId);
-        
+
         setOrderDetail(res);
-       
+
       } catch (e) {
         console.log(e);
       } finally {
@@ -177,7 +181,7 @@ export default function HistoryDetailScreen({
             quantity: fr.quantity,
             baseUnit: fr.baseUnitOfMeaTh || fr.baseUnitOfMeaEn || fr.saleUOMTH,
             status: fr.productFreebiesStatus,
-            productImage: fr.productFreebiesImage||fr.productImage,
+            productImage: fr.productFreebiesImage || fr.productImage,
           };
           spfbList.push(newObj)
         }
@@ -464,7 +468,7 @@ export default function HistoryDetailScreen({
                   style={{
                     marginBottom: 8,
                   }}>
-                  {orderDetail?.saleCoRemark ||orderDetail?.deliveryRemark ||'-'}
+                  {orderDetail?.saleCoRemark || orderDetail?.deliveryRemark || '-'}
                 </Text>
               </View>
               <DashedLine
@@ -602,6 +606,30 @@ export default function HistoryDetailScreen({
                   marginHorizontal: 16,
                 }}
               />
+              {orderDetail?.orderProducts?.map((el) => el.orderProductPromotions.length > 0 ?
+
+                (
+                  <View style={{
+                    marginTop: 8,
+                    paddingHorizontal: 16,
+                  }}>
+                    <View style={{ flexDirection: 'row' }}>
+                      <Image source={icons.promoDetail} style={{ width: 24, height: 24, marginRight: 8 }} />
+                      <Text fontSize={16} lineHeight={24} bold fontFamily='NotoSans' color='text3'>รายละเอียดโปรโมชัน</Text>
+                    </View>
+
+                    <View style={{ borderWidth: 0.5, padding: 20, backgroundColor: '#F8FAFF', borderColor: '#EAEAEA', marginVertical: 10 }}>
+                      {orderDetail?.orderProducts?.map((el) => el.orderProductPromotions.map((itm) => {
+                        return (
+                          <Text fontFamily='Sarabun'>
+                            {`• ${promotionTypeMap(itm.promotionType)} - ${itm.promotionName}`}
+                          </Text>
+                        )
+                      }))}
+                    </View>
+                  </View>
+                ) : null
+              )}
               <View
                 style={{
                   marginTop: 8,
@@ -810,11 +838,13 @@ export default function HistoryDetailScreen({
                 })}
               </View>
             ) : null}
- 
-{orderDetail?.status === 'DELIVERY_SUCCESS'||orderDetail?.status === 'SHOPAPP_CANCEL_ORDER'||orderDetail?.status === 'COMPANY_CANCEL_ORDER' ? (
-        <FooterReorder orderId={orderDetail.orderId} navigation={navigation} orderLength={orderDetail.orderProducts.length} {...orderDetail} />
-       
-      ): null}
+            {user?.company !== 'ICPI' ? <>
+              {orderDetail?.status === 'DELIVERY_SUCCESS' || orderDetail?.status === 'SHOPAPP_CANCEL_ORDER' || orderDetail?.status === 'COMPANY_CANCEL_ORDER' ? (
+                <FooterReorder orderId={orderDetail.orderId} navigation={navigation} orderLength={orderDetail.orderProducts.length} {...orderDetail} />
+
+              ) : null}
+            </> : null}
+
           </View>
           <Image
             style={{
@@ -826,14 +856,14 @@ export default function HistoryDetailScreen({
             resizeMode="contain"
             source={images.bottomInvoice}
           />
-          
+
 
           <View
             style={{
               height: 100,
             }}
           />
-          
+
         </ScrollView>
       </Content>
       <LoadingSpinner visible={loading} />

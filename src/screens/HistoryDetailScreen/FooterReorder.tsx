@@ -17,6 +17,7 @@ import ImageCache from "../../components/ImageCache/ImageCache";
 import images from "../../assets/images";
 import React from "react";
 import { useAsyncStorage } from "@react-native-async-storage/async-storage";
+import { customerServices } from "../../services/CustomerServices";
 
 
 interface Props {
@@ -52,12 +53,14 @@ export default function FooterReorder({ orderId, orderLength, navigation, ...pro
     const { setItem: setAddress } = useAsyncStorage('address');
   
     const { setItem: setUserShopId } = useAsyncStorage('userShopId');
+    
 
     const onReoder = async () => {
         try {
-
+            const customer = await customerServices.getCustomer(props.customerCompanyId.toString(),props.company)
+            
             setItem(props.customerCompanyId.toString())
-            setTermPayment(props.paymentMethod)
+            setTermPayment(customer.customerCompany[0].termPayment)
             setCustomerNo(props.customerNo)
             setCustomerName(props.customerName)
            /*  setProductBrand( JSON.stringify({
@@ -77,6 +80,7 @@ export default function FooterReorder({ orderId, orderLength, navigation, ...pro
             }
 
             const res = await cartServices.postReorder(payload)
+            console.log(JSON.stringify(res))
             if (res.inactiveProducts) {
                 if (res.inactiveProducts.length !== orderLength) {
                     setInactiveProducts(res.inactiveProducts)
@@ -93,6 +97,7 @@ export default function FooterReorder({ orderId, orderLength, navigation, ...pro
                 }
 
             } else {
+               
                 const response = await cartServices.postCart(res)
                 if (response) {
 
@@ -119,6 +124,8 @@ export default function FooterReorder({ orderId, orderLength, navigation, ...pro
             }
 
             const res = await cartServices.postReorder(payload)
+            console.log(JSON.stringify(res))
+            
             const response = await cartServices.postCart(res)
             if (response) {
                 setModalNotReady(false)

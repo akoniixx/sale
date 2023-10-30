@@ -203,7 +203,6 @@ export default function CartScreen({
         };
         const getShopLocation = async () => {
           const address = await AsyncStorage.getItem('address');
-          console.log(address)
           const parsedAddress = JSON.parse(address || '');
           setAddressDelivery({
             address: parsedAddress.addressText,

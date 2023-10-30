@@ -25,10 +25,7 @@ export default function NewsPromotionDetailScreen({
     const data: NewsPromotion = route.params
     const { t } = useLocalization();
 
-    /* useEffect(() => {
-        console.log(JSON.stringify(data))
-    }, []) */
-
+   
 
     return (
         <Container>

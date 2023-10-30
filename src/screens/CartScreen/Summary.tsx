@@ -174,6 +174,7 @@ export default function Summary({ setLoading }: Props): JSX.Element {
               borderBottomColor: colors.border1,
               borderBottomWidth: 1,
             }}>
+             
             <Radio
               value={cartDetail.paymentMethod}
               onChange={async value => {

@@ -57,4 +57,5 @@ export default {
   iconEditPhoto: require('./iconEditPhoto.png'),
   logout: require('./logout.png'),
   check: require('./check.png'),
+  promoDetail: require('./promoDetail.png')
 };

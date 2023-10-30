@@ -21,7 +21,6 @@ export const NetworkProvider: React.FC<{
     const appStateListener = AppState.addEventListener(
       'change',
       nextAppState => {
-        console.log('Next AppState is: ', nextAppState);
         setAppState(nextAppState);
       },
     );

@@ -281,7 +281,7 @@ export default function StepTwo({
             multiline
             blurOnSubmit
             returnKeyType="done"
-            isError={isShowError}
+            /* isError={isShowError} */
             scrollEnabled={false}
             style={{
               paddingTop: 16,
@@ -293,13 +293,13 @@ export default function StepTwo({
             placeholder="ระบุทะเบียนรถ"
           />
           <Text color="text3" fontSize={14} lineHeight={26}>
-            หากมีรถมากกว่า 1 คัน กรุณาใส่ลูกน้ำคั่น (,)
+          กรุณาระบุทะเบียนรถ 1 คำสั่งซื้อต่อ 1 คัน
           </Text>
-          {isShowError && (
+          {/* {isShowError && (
             <Text color="error" fontFamily="NotoSans">
               กรุณากรอกทะเบียนรถ
             </Text>
-          )}
+          )} */}
         </View>
       </View>
       <Summary setLoading={setLoading} />

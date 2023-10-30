@@ -24,6 +24,7 @@ import { orderServices } from '../../services/OrderServices';
 import { OrderDetailType } from '../../entities/orderTypes';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ImageCache from '../../components/ImageCache/ImageCache';
+import { promotionTypeMap } from '../../utils/mappingObj';
 
 const mappingStatusHeader = {
   WAIT_CONFIRM_ORDER: 'รอยืนยันคำสั่งซื้อ',
@@ -68,6 +69,7 @@ export default function OrderSuccessScreen({
     const getOrderByOrderId = async () => {
       try {
         const response = await orderServices.getOrderById(orderId);
+        
         const productBrand = await AsyncStorage.getItem('productBrand');
         if (response) {
         
@@ -142,6 +144,8 @@ export default function OrderSuccessScreen({
       getOrderByOrderId();
     }
   }, [orderId]);
+
+  
 
   const listProduct = orderData?.orderProducts.map(el => {
     return {
@@ -335,6 +339,29 @@ export default function OrderSuccessScreen({
                     );
                   })}
                 </View>
+               { orderData?.orderProducts?.map((el)=>el.orderProductPromotions.length > 0?
+               
+(
+  <View style={{marginVertical:10}}>
+  <View style={{flexDirection:'row'}}>
+  <Image source={icons.promoDetail} style={{width:24,height:24,marginRight:8}} />
+  <Text fontSize={16} lineHeight={24} bold fontFamily='NotoSans' color='text3'>รายละเอียดโปรโมชัน</Text>
+  </View>
+
+  <View style={{borderWidth:0.5,padding:20,backgroundColor:'#F8FAFF',borderColor:'#EAEAEA',marginVertical:10}}>
+  {orderData?.orderProducts?.map((el)=>el.orderProductPromotions.map((itm)=>{
+return(
+<Text fontFamily='Sarabun'>
+{`• ${promotionTypeMap(itm.promotionType)} - ${itm.promotionName}`}
+</Text>
+)
+}))}
+  </View>
+</View>
+):null
+               )}
+               
+               
                 <DashedLine dashColor={colors.border1} dashGap={6} />
                 <View
                   style={{

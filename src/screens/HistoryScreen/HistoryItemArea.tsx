@@ -17,6 +17,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import ModalWarning from '../../components/Modal/ModalWarning';
 import { useAsyncStorage } from '@react-native-async-storage/async-storage';
 import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
+import { customerServices } from '../../services/CustomerServices';
 
 interface Props extends HistoryDataType {
   navigation?: any;
@@ -55,9 +56,9 @@ const { setItem } = useAsyncStorage('customerCompanyId');
 
   const onReoder = async () => {
     try {
-      
+      const customer = await customerServices.getCustomer(props.customerCompanyId.toString(),props.company)
       setItem(props.customerCompanyId.toString())
-      setTermPayment(props.paymentMethod)
+      setTermPayment(customer.customerCompany[0].termPayment)
       setCustomerNo(props.customerNo)
       setCustomerName(props.customerName)
      /*  setProductBrand( JSON.stringify({

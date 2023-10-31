@@ -49,6 +49,7 @@ export default function ListItemInCart({
     freebieListItem,
     cartApi: { postCartItem, getSelectPromotion },
   } = useCart();
+  
 
   const [visibleDel, setVisibleDel] = React.useState(false);
   const [delId, setDelId] = React.useState<string | number>('');

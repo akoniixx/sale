@@ -12,7 +12,8 @@ import { MainStackParamList } from '../../navigations/MainNavigator';
 
 import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
 import { useCart } from '../../contexts/CartContext';
-import StarWarsMoveFinder from './Auto';
+import StarWarsMoveFinder from './AutoSearch';
+import AutoSearch from './AutoSearch';
 
 const StoreDetailScreen = ({
   navigation,
@@ -72,7 +73,10 @@ const StoreDetailScreen = ({
       />
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-         {/*   <StarWarsMoveFinder /> */}
+           <AutoSearch onSearch={onSearch} onChange={v => {
+                setPage(1);
+                setSearchValue(v);
+              }} />
         <Content
           style={{
             padding: 0,
@@ -84,7 +88,7 @@ const StoreDetailScreen = ({
               paddingHorizontal: 16,
             }}>
              
-            <SearchInput
+          {/*   <SearchInput
               onSearch={onSearch}
               placeholder={t('screens.StoreDetailScreen.searchPlaceholder')}
               value={searchValue}
@@ -92,9 +96,9 @@ const StoreDetailScreen = ({
                 setPage(1);
                 setSearchValue(v);
               }}
-            />
+            /> */}
           </View>
-<View /* style={{marginTop:50}} */>
+<View style={{marginTop:50}}>
 <ListItem
             page={page}
             setPage={setPage}

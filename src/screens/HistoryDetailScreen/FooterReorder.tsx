@@ -80,7 +80,6 @@ export default function FooterReorder({ orderId, orderLength, navigation, ...pro
             }
 
             const res = await cartServices.postReorder(payload)
-            console.log(JSON.stringify(res))
             if (res.inactiveProducts) {
                 if (res.inactiveProducts.length !== orderLength) {
                     setInactiveProducts(res.inactiveProducts)
@@ -124,7 +123,7 @@ export default function FooterReorder({ orderId, orderLength, navigation, ...pro
             }
 
             const res = await cartServices.postReorder(payload)
-            console.log(JSON.stringify(res))
+           
             
             const response = await cartServices.postCart(res)
             if (response) {

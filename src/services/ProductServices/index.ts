@@ -98,11 +98,22 @@ const getBaseFreebies =async (company:string,itemNo:string) => {
   
 }
 
+const getAllNameProduct = async (company:string) => {
+  return await request
+  .get(`/master/product/product-name/${company}`)
+  .then(res => res.data)
+  .catch(err => {
+    console.log(err)
+    throw(err)
+  })
+}
+
 export const productServices = {
   getAllProducts,
   getProductById,
   getProductBrand,
   getProductCategory,
   getProductFree,
-  getBaseFreebies
+  getBaseFreebies,
+  getAllNameProduct
 };

@@ -88,29 +88,29 @@ export default function Summary({ setLoading }: Props): JSX.Element {
     const dataObj = {
       priceBeforeDiscount: {
         label: 'ราคาก่อนลด',
-        value: cartDetail.price,
+        value: cartDetail?.price,
       },
       discountList: {
         label: 'ส่วนลดจากรายการ',
-        value: cartDetail.discount,
+        value: cartDetail?.discount,
         listData: listDataDiscount,
       },
       discountSpecialRequest: {
         label: 'ส่วนลดพิเศษ (Special Req.)',
-        value: cartDetail.specialRequestDiscount,
+        value: cartDetail?.specialRequestDiscount,
         listData: listDataDiscountSpecialRequest,
       },
       discountCo: {
         label: 'ส่วนลดดูราคา (CO. ดูแลราคา / วงเงินเคลม)',
-        value: cartDetail.coDiscount,
+        value: cartDetail?.coDiscount,
       },
       discountCash: {
         label: 'ส่วนลดเงินสด',
-        value: cartDetail.cashDiscount,
+        value: cartDetail?.cashDiscount,
       },
       totalDiscount: {
         label: 'ส่วนลดรวม',
-        value: cartDetail.totalDiscount,
+        value: cartDetail?.totalDiscount,
       },
     };
     return {
@@ -176,7 +176,7 @@ export default function Summary({ setLoading }: Props): JSX.Element {
             }}>
              
             <Radio
-              value={cartDetail.paymentMethod}
+              value={cartDetail?.paymentMethod}
               onChange={async value => {
                 try {
                   setLoading(true);
@@ -207,7 +207,7 @@ export default function Summary({ setLoading }: Props): JSX.Element {
               <Text color="text3" fontSize={14}>
                 {t('screens.CartScreen.summary.remainingMoney', {
                   remainingMoney: numberWithCommas(
-                    cartDetail.creditMemoBalance,
+                    cartDetail?.creditMemoBalance,
                   ),
                 })}
               </Text>
@@ -218,14 +218,14 @@ export default function Summary({ setLoading }: Props): JSX.Element {
               }}>
               <Checkbox
                 disabled={
-                  cartDetail.creditMemoBalance <= 0 ||
+                  cartDetail?.creditMemoBalance <= 0 ||
                   +cartDetail?.coAmount <= 0
                 }
                 onPress={async () => {
                   try {
                     setLoading(true);
                     await postEditIsUseCod({
-                      isUseCOD: !cartDetail.isUseCOD,
+                      isUseCOD: !cartDetail?.isUseCOD,
                     });
                     setLoading(false);
                   } catch (error) {
@@ -234,13 +234,13 @@ export default function Summary({ setLoading }: Props): JSX.Element {
                     setLoading(false);
                   }
                 }}
-                valueCheckbox={cartDetail.isUseCOD ? ['discount'] : []}
+                valueCheckbox={cartDetail?.isUseCOD ? ['discount'] : []}
                 listCheckbox={[
                   {
                     title: 'ใช้ส่วนลด',
                     value: 'discount',
                     key: 'discount',
-                    amount: cartDetail ? +cartDetail.coAmount : 0,
+                    amount: cartDetail ? +cartDetail?.coAmount : 0,
                   },
                 ]}
               />

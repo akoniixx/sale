@@ -69,10 +69,10 @@ export default function OrderSuccessScreen({
     const getOrderByOrderId = async () => {
       try {
         const response = await orderServices.getOrderById(orderId);
-        
+
         const productBrand = await AsyncStorage.getItem('productBrand');
         if (response) {
-        
+
           const fbList: {
             productName: string;
             id: string;
@@ -94,7 +94,7 @@ export default function OrderSuccessScreen({
           response.orderProducts
             .filter((el: any) => el.isFreebie)
             .map((fr: any) => {
-              if(fr.isSpecialRequestFreebie === false){
+              if (fr.isSpecialRequestFreebie === false) {
                 if (fr.productFreebiesId) {
                   const newObj = {
                     productName: fr.productName,
@@ -114,24 +114,24 @@ export default function OrderSuccessScreen({
                     status: fr.productStatus,
                     productImage: fr.productImage,
                   };
-  
+
                   fbList.push(newObj);
                 }
-              } else{
+              } else {
                 const newObj = {
                   productName: fr.productName,
                   id: fr.productFreebiesId,
                   quantity: fr.quantity,
                   baseUnit: fr.baseUnitOfMeaTh || fr.baseUnitOfMeaEn || fr.saleUOMTH,
                   status: fr.productFreebiesStatus,
-                  productImage: fr.productFreebiesImage||fr.productImage,
+                  productImage: fr.productFreebiesImage || fr.productImage,
                 };
 
                 spfbList.push(newObj);
               }
-             
+
             });
-            setSpFreebieList(spfbList)
+          setSpFreebieList(spfbList)
           setFreebieList(fbList);
           setOrderData(response);
         }
@@ -145,7 +145,21 @@ export default function OrderSuccessScreen({
     }
   }, [orderId]);
 
-  
+  const getUniquePromotions = (orderProducts) => {
+    const seenPromotions = new Set();
+    
+    // Use flatMap to flatten the promotions, and then filter based on unique values.
+    return orderProducts.flatMap(el => 
+      el.orderProductPromotions.filter(itm => {
+        const key = `${itm.promotionType}-${itm.promotionName}`;
+        if (!seenPromotions.has(key)) {
+          seenPromotions.add(key);
+          return true;
+        }
+        return false;
+      })
+    );
+  };
 
   const listProduct = orderData?.orderProducts.map(el => {
     return {
@@ -198,8 +212,8 @@ export default function OrderSuccessScreen({
         title={
           orderData
             ? mappingStatusHeader[
-                orderData.status as keyof typeof mappingStatusHeader
-              ]
+            orderData.status as keyof typeof mappingStatusHeader
+            ]
             : 'รอยืนยันคำสั่งซื้อ'
         }
       />
@@ -250,7 +264,7 @@ export default function OrderSuccessScreen({
                   <Text center fontFamily="NotoSans" color="text3" semiBold>
                     {
                       mappingStatus[
-                        orderData.status as keyof typeof mappingStatus
+                      orderData.status as keyof typeof mappingStatus
                       ]
                     }
                   </Text>
@@ -310,58 +324,58 @@ export default function OrderSuccessScreen({
                           {el.productName} {`   ${el.quantity}x`}{' '}
                           {`(${el.unit})`}
                         </Text>
-                        <View style={{alignItems:'flex-end'}}>
-                          {el.price !== el.totalPrice? 
-                           <Text
-                           fontSize={12}
-                           fontFamily="NotoSans"
-                           color="text3"
-                           style={{
-                             textDecorationStyle: 'solid',
-                             textDecorationLine: 'line-through' ,
-                           }}>
-                           {`฿${numberWithCommas(el.price, true)}`}
-                         </Text>
-                        : null}
-                       
-                        <Text
-                          fontFamily="NotoSans"
-                          color="text2"
-                          fontSize={14}
-                          style={{
-                            marginTop: 4,
-                          }}>
-                          {`฿${numberWithCommas(el.totalPrice, true)}`}
-                        </Text>
+                        <View style={{ alignItems: 'flex-end' }}>
+                          {el.price !== el.totalPrice ?
+                            <Text
+                              fontSize={12}
+                              fontFamily="NotoSans"
+                              color="text3"
+                              style={{
+                                textDecorationStyle: 'solid',
+                                textDecorationLine: 'line-through',
+                              }}>
+                              {`฿${numberWithCommas(el.price, true)}`}
+                            </Text>
+                            : null}
+
+                          <Text
+                            fontFamily="NotoSans"
+                            color="text2"
+                            fontSize={14}
+                            style={{
+                              marginTop: 4,
+                            }}>
+                            {`฿${numberWithCommas(el.totalPrice, true)}`}
+                          </Text>
                         </View>
-                       
+
                       </View>
                     );
                   })}
                 </View>
-               { orderData?.orderProducts?.map((el)=>el.orderProductPromotions.length > 0?
-               
-(
-  <View style={{marginVertical:10}}>
-  <View style={{flexDirection:'row'}}>
-  <Image source={icons.promoDetail} style={{width:24,height:24,marginRight:8}} />
-  <Text fontSize={16} lineHeight={24} bold fontFamily='NotoSans' color='text3'>รายละเอียดโปรโมชัน</Text>
-  </View>
+                {orderData?.orderProducts[0].orderProductPromotions.length > 0 ?
 
-  <View style={{borderWidth:0.5,padding:20,backgroundColor:'#F8FAFF',borderColor:'#EAEAEA',marginVertical:10}}>
-  {orderData?.orderProducts?.map((el)=>el.orderProductPromotions.map((itm)=>{
-return(
-<Text fontFamily='Sarabun'>
-{`• ${promotionTypeMap(itm.promotionType)} - ${itm.promotionName}`}
-</Text>
-)
-}))}
-  </View>
-</View>
-):null
-               )}
-               
-               
+                  (
+                    <View style={{ marginVertical: 10 }}>
+                      <View style={{ flexDirection: 'row' }}>
+                        <Image source={icons.promoDetail} style={{ width: 24, height: 24, marginRight: 8 }} />
+                        <Text fontSize={16} lineHeight={24} bold fontFamily='NotoSans' color='text3'>รายละเอียดโปรโมชัน</Text>
+                      </View>
+
+                      <View style={{ borderWidth: 0.5, padding: 20, backgroundColor: '#F8FAFF', borderColor: '#EAEAEA', marginVertical: 10 }}>
+                      {
+  getUniquePromotions(orderData?.orderProducts || []).map(promo => (
+    <Text fontFamily="Sarabun">
+      {`• ${promotionTypeMap(promo.promotionType)} - ${promo.promotionName}`}
+    </Text>
+  ))
+}
+                      </View>
+                    </View>
+                  ) : null
+                }
+
+
                 <DashedLine dashColor={colors.border1} dashGap={6} />
                 <View
                   style={{
@@ -468,30 +482,30 @@ return(
                 </View>
 
                 <View>
-                 
+
                   {spfreebieList.length > 0 ? (
-                    
+
                     <>
-                     <View
-                    style={{
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
-                      height: 60,
-                     marginVertical:20
-                    }}>
-                      <View>
-                      <Text fontFamily="NotoSans" bold fontSize={18}>
-                      ของแถมที่ได้รับ
-                    </Text>
-                    <Text fontFamily="NotoSans" bold fontSize={18}>
-                    (Special Request)
-                    </Text>
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          justifyContent: 'space-between',
+                          height: 60,
+                          marginVertical: 20
+                        }}>
+                        <View>
+                          <Text fontFamily="NotoSans" bold fontSize={18}>
+                            ของแถมที่ได้รับ
+                          </Text>
+                          <Text fontFamily="NotoSans" bold fontSize={18}>
+                            (Special Request)
+                          </Text>
+                        </View>
+
+                        <Text fontSize={14} bold color="text3" lineHeight={24}>
+                          {`ทั้งหมด ${spfreebieList.length} รายการ`}
+                        </Text>
                       </View>
-                   
-                    <Text fontSize={14} bold color="text3" lineHeight={24}>
-                      {`ทั้งหมด ${spfreebieList.length} รายการ`}
-                    </Text>
-                  </View>
                       {spfreebieList.map((el, idx) => {
                         return (
                           <View
@@ -539,8 +553,8 @@ return(
                         );
                       })}
                     </>
-                  ) : null }
-                  
+                  ) : null}
+
                 </View>
                 <View
                   style={{

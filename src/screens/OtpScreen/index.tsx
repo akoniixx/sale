@@ -18,7 +18,7 @@ import { AuthServices } from '../../services/AuthServices';
 import { useAuth } from '../../contexts/AuthContext';
 import { AuthStackParamList } from '../../navigations/AuthNavigator';
 import { navigate } from '../../navigations/RootNavigator';
-import crashlytics from '@react-native-firebase/crashlytics';
+
 
 export default function OtpScreen({
   route,
@@ -76,8 +76,7 @@ export default function OtpScreen({
           navigate('Main');
         }
       } catch (e:any) {
-       crashlytics().setAttribute('tel',paramsData.tel)
-      crashlytics().recordError(e)
+      
         setIsError(true);
       } finally {
         setIsLoading(false);

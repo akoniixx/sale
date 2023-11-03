@@ -194,6 +194,22 @@ export default function HistoryDetailScreen({
     };
   }, [orderDetail]);
 
+
+  const getUniquePromotions = (orderProducts) => {
+    const seenPromotions = new Set();
+    
+    // Use flatMap to flatten the promotions, and then filter based on unique values.
+    return orderProducts.flatMap(el => 
+      el.orderProductPromotions.filter(itm => {
+        const key = `${itm.promotionType}-${itm.promotionName}`;
+        if (!seenPromotions.has(key)) {
+          seenPromotions.add(key);
+          return true;
+        }
+        return false;
+      })
+    );
+  };
   return (
     <Container edges={['top', 'left', 'right']}>
       <Header title={params.headerTitle} />
@@ -606,10 +622,9 @@ export default function HistoryDetailScreen({
                   marginHorizontal: 16,
                 }}
               />
-              {orderDetail?.orderProducts?.map((el) => el.orderProductPromotions.length > 0 ?
-
-                (
-                  <View style={{
+              
+              {orderDetail?.orderProducts[0].orderProductPromotions.length > 0 ?(
+                <View style={{
                     marginTop: 8,
                     paddingHorizontal: 16,
                   }}>
@@ -619,17 +634,17 @@ export default function HistoryDetailScreen({
                     </View>
 
                     <View style={{ borderWidth: 0.5, padding: 20, backgroundColor: '#F8FAFF', borderColor: '#EAEAEA', marginVertical: 10 }}>
-                      {orderDetail?.orderProducts?.map((el) => el.orderProductPromotions.map((itm) => {
-                        return (
-                          <Text fontFamily='Sarabun'>
-                            {`• ${promotionTypeMap(itm.promotionType)} - ${itm.promotionName}`}
-                          </Text>
-                        )
-                      }))}
+                    {
+  getUniquePromotions(orderDetail?.orderProducts || []).map(promo => (
+    <Text fontFamily="Sarabun">
+      {`• ${promotionTypeMap(promo.promotionType)} - ${promo.promotionName}`}
+    </Text>
+  ))
+}
                     </View>
                   </View>
-                ) : null
-              )}
+              ):null }
+
               <View
                 style={{
                   marginTop: 8,

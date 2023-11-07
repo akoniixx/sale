@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {StyleSheet, View, ImageProps, Animated, ImageStyle} from 'react-native';
 import FastImage from 'react-native-fast-image';
 
-import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
+
 import { colors } from '../../assets/colors/colors';
 import images from '../../assets/images';
 import { useNetwork } from '../../contexts/NetworkContext';
@@ -53,16 +53,7 @@ const ProgressiveImage: React.FC<ProgressiveImageProps> = ({
 
   return (
     <View style={style}>
-      {!highResImageLoaded && (
-        <SkeletonPlaceholder
-          borderRadius={style.borderRadius}
-          speed={2000}
-          backgroundColor={colors.skeleton}>
-          <SkeletonPlaceholder.Item style={style}>
-            <View style={{width: '100%', height: '100%'}} />
-          </SkeletonPlaceholder.Item>
-        </SkeletonPlaceholder>
-      )}
+      
       <Animated.Image
         source={isConnected ? source : images.News}
         style={[

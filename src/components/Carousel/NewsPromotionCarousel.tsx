@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 import { Dimensions, TouchableOpacity, View } from "react-native";
-import SkeletonPlaceholder from "react-native-skeleton-placeholder";
+
 import { colors } from "../../assets/colors/colors";
 import    Carousel, { Pagination} from 'react-native-snap-carousel';
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -33,19 +33,7 @@ export default function NewsPromotionCarousel({
                     padding: 10,
                     width: '100%',
                   }}>
-                  <SkeletonPlaceholder
-                    backgroundColor={colors.skeleton}
-                    speed={2000}
-                    borderRadius={10}>
-                    <SkeletonPlaceholder.Item>
-                      <View
-                        style={{
-                          height: 120,
-                          borderRadius: 10,
-                        }}
-                      />
-                    </SkeletonPlaceholder.Item>
-                  </SkeletonPlaceholder>
+                  
                 </View>
               ) : (
                 <Carousel

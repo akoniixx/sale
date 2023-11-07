@@ -95,7 +95,35 @@ const { setItem } = useAsyncStorage('customerCompanyId');
         } else {
             const response = await cartServices.postCart(res)
             if (response) {
-
+              const freebieList = response?.orderProducts
+              .filter((item: any) => item?.isFreebie===true&&item?.isSpecialRequestFreebie===false)
+              .map((el: any) => {
+              
+                if (el.productFreebiesId) {
+                  
+                  const newObj = {
+                    productName: el.productName,
+                    id: el.productFreebiesId,
+                    quantity: el.quantity,
+                    baseUnit: el.baseUnitOfMeaTh || el.baseUnitOfMeaEn,
+                    status: el.productFreebiesStatus,
+                    productImage: el.productFreebiesImage,
+                  };
+                  return newObj;
+                } else {
+                  const newObj = {
+                    productName: el.productName,
+                    id: el.productId,
+                    quantity: el.quantity,
+                    baseUnit: el.saleUOMTH || el.saleUOM || '',
+                    status: el.productStatus,
+                    productImage: el.productImage,
+                  };
+                  return newObj;
+                }
+              }
+              )
+              setFreebieListItem(freebieList);
                 setModalConfirm(false)
                 props.navigation.navigate('CartScreen')
             }

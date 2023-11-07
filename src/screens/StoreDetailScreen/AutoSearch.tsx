@@ -1,100 +1,80 @@
-import Autocomplete from 'react-native-autocomplete-input';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef } from "react";
+import { useState } from "react";
+import { Dimensions, Image, View } from "react-native";
+import { AutocompleteDropdown } from 'react-native-autocomplete-dropdown'
+import { productServices } from "../../services/ProductServices";
+import { useAuth } from "../../contexts/AuthContext";
+import { string } from "yup";
+import Text from "../../components/Text/Text";
+import icons from "../../assets/icons";
 
 
-import {
-
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-
-} from 'react-native';
-import { productServices } from '../../services/ProductServices';
-import { useAuth } from '../../contexts/AuthContext';
-
-function AutoSearch({onChange,onSearch}): React.ReactElement {
-  const [allProduct, setAllProduct] = useState<productName[]>([]);
-  const [query, setQuery] = useState('');
-  const isLoading = !allProduct.length;
-  const queriedProduct = React.useMemo(
-    () => filterMovies(allProduct, query),
-    [allProduct, query]
-  );
-
-  type productName = {
-
-    productName: string
+type productName = {
+    id:string
+    title: string
   }
 
+function AutoSearch({onSearch}):React.ReactElement{
+    const [allProduct, setAllProduct] = useState<productName[]>([]);
+  const [query, setQuery] = useState('');
+  const [loading, setLoading] = useState(false)
   const {
     state: { user },
   } = useAuth();
-  function filterMovies(product: productName[], query?: string): productName[] {
-    if (!query || !product.length) {
-      return [];
-    }
-    const regex = new RegExp(`${query}`, 'i');
-    return product.filter((p) => p.productName.search(regex) >= 0 );
-  }
-  let suggestions: productName[] = React.useMemo(
-    () =>
-    queriedProduct.length === 1 && queriedProduct[0].productName === query
-        ? [] 
-        : queriedProduct,
-    [queriedProduct, query]
-  );
+ 
+  
   const fetchProduct = async () => {
-    const res = await productServices.getAllNameProduct(user?.company||'')
-    const uniqueProducts = [...new Map(res.map(item => [item["productName"].trim(), item])).values()];
+    const res: { productName: string }[] = await productServices.getAllNameProduct(user?.company||'')
+
+    const productsWithTitles = res.map((item,idx) => ({
+        id:idx,
+        title: item.productName.trim(), 
+      }));
+    
+      const uniqueProducts = [...new Map(productsWithTitles.map(item => [item["title"], item])).values()];
+   
     setAllProduct(uniqueProducts)
+ 
   }
 
-  const placeholder = isLoading
-    ? 'Loading data...'
-    : 'ค้นหาสินค้า...';
-
+  
   useEffect(() => {
     fetchProduct()
   }, []);
-
-  return (
-
-    <View style={styles.autocompleteContainer}>
-      <Autocomplete
-        editable={!isLoading}
-        autoCorrect={false}
-        data={suggestions}
-        value={query}
-        onChangeText={setQuery}
-        placeholder={placeholder}
-        flatListProps={{
-          keyboardShouldPersistTaps: 'always',
-          keyExtractor: (movie: productName, idx) => idx,
-          renderItem: ({ item }) => (
-            <TouchableOpacity onPress={() => {
-              suggestions= []
-              onSearch(item.productName)
-              setQuery(item.productName)}}>
-              <Text >{item.productName}</Text>
-            </TouchableOpacity>
-          ),
-        }}
-      />
+ return(
+    <View>
+        <AutocompleteDropdown 
+       inputContainerStyle={{backgroundColor:'white'}}
+        direction='down'
+       showChevron={false}
+        clearOnFocus={false}
+        closeOnBlur={true}
+        closeOnSubmit={false}
+       onSelectItem={v=>onSearch(v?.title)}
+       suggestionsListMaxHeight={Dimensions.get('window').height * 0.4}
+        dataSet={allProduct}
+        suggestionsListTextStyle={{borderBottomWidth:0}}
+        emptyResultText="ไม่พบสินค้าที่ค้นหา"
+        LeftComponent={
+        <View style={{paddingTop:10,paddingLeft:10,backgroundColor:'white'}}>
+ <Image
+            source={icons.search}
+            style={{
+              width: 24,
+              height: 24,
+            }}
+          />
+        </View>
+       }
+       ItemSeparatorComponent={<View style={{ height: 0 }} />}
+       textInputProps={{
+        placeholder: 'ค้นหาสินค้า...',
+        
+       }}
+       containerStyle={{borderWidth:0.2}}
+       rightButtonsContainerStyle={{backgroundColor:'white'}}
+        />
     </View>
-  );
+ )
 }
-
-const styles = StyleSheet.create({
-  autocompleteContainer: {
-    flex: 1,
-    left: 0,
-    position: 'absolute',
-    right: 0,
-    top: 0,
-    zIndex: 99,
-    padding: 5,
-  },
-});
-
-export default AutoSearch;
+export default  AutoSearch

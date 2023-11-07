@@ -29,7 +29,7 @@ import analytics from '@react-native-firebase/analytics';
 import { PERMISSIONS, checkNotifications, request } from 'react-native-permissions';
 import { NetworkProvider } from './src/contexts/NetworkContext';
 
-
+import { AutocompleteDropdownContextProvider } from 'react-native-autocomplete-dropdown'
 
 
 
@@ -153,6 +153,7 @@ const App = () => {
   return (
     <NavigationContainer ref={navigationRef}>
        <NetworkProvider>
+       <AutocompleteDropdownContextProvider>
       <LocalizationProvider>
         <AuthProvider>
           <CartProvider>
@@ -163,6 +164,7 @@ const App = () => {
         </AuthProvider>
       </LocalizationProvider>
       <Toast config={toastConfig} />
+      </AutocompleteDropdownContextProvider>
       </NetworkProvider>
     </NavigationContainer>
   );

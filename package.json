@@ -16,7 +16,8 @@
   "dependencies": {
     "@hookform/resolvers": "^2.9.10",
     "@react-native-async-storage/async-storage": "^1.17.10",
-    "@react-native-community/cli": "^11.3.9",
+    "@react-native-community/cli": "^12.0.0",
+    "@react-native-community/cli-platform-android": "^12.0.0",
     "@react-native-community/netinfo": "^9.4.1",
     "@react-native-firebase/analytics": "^18.3.0",
     "@react-native-firebase/app": "^18.5.0",
@@ -38,6 +39,7 @@
     "react-hook-form": "^7.39.1",
     "react-native": "0.70.4",
     "react-native-actions-sheet": "^0.8.10",
+    "react-native-autocomplete-dropdown": "^3.1.0",
     "react-native-autocomplete-input": "^5.4.0",
     "react-native-confirmation-code-field": "^7.3.1",
     "react-native-dashed-line": "^1.1.0",

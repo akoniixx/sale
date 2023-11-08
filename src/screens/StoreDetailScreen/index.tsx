@@ -27,6 +27,9 @@ const StoreDetailScreen = ({
     setCartList,
   } = useCart();
   const [loadingApi, setLoadingApi] = React.useState<boolean>(false);
+
+
+  
   useEffect(() => {
     const fetchData = async () => {
       try {

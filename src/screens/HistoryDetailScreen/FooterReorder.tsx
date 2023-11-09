@@ -157,7 +157,7 @@ export default function FooterReorder({ orderId, orderLength, navigation, ...pro
             const response = await cartServices.postCart(res)
             if (response) {
                 setModalNotReady(false)
-                navigation.navigate('CartScreen')
+                navigation.navigate('CartScreen',{isReorder:true})
             }
         } catch (error) {
             console.log(error)

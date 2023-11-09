@@ -25,7 +25,11 @@ export default function Body({ navigation }: Props): JSX.Element {
         const company = await AsyncStorage.getItem('company')
         const zone = await AsyncStorage.getItem('zone')
         const res = await NewsPromotionService.getNewsPromotion(company||'',zone||'')
-        setNewsPromotion(res.data)
+        const sortedData: NewsPromotion[] = await res.data.sort((a: NewsPromotion, b: NewsPromotion) => {
+          return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
+        });
+        
+        setNewsPromotion(sortedData.slice(0, 5))
       } catch (error) {
         console.log(error)
       } finally{

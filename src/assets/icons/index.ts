@@ -42,6 +42,7 @@ export default {
   promotionSpecial: require('./promotionSpecial.png'),
   iconDoubleDown: require('./iconDoubleDown.png'),
   binBlack: require('./binBlack.png'),
+  poster: require('./poster.png'),
 
   //# HistoryScreen
   iconLocationActive: require('./iconLocationActive.png'),

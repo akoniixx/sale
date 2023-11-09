@@ -1,6 +1,6 @@
 import { StackScreenProps } from "@react-navigation/stack";
 import React, { useEffect, useState } from "react";
-import { Dimensions, Image, SafeAreaView, StyleSheet, TouchableOpacity, View } from "react-native";
+import { Dimensions, Image, SafeAreaView, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { MainStackParamList } from "../../navigations/MainNavigator";
 import Text from "../../components/Text/Text";
 import ImageCache from "../../components/ImageCache/ImageCache";
@@ -30,12 +30,19 @@ export default function NewsPromotionDetailScreen({
     return (
         <Container>
             <Header />
+           
             <Content
                 style={{
                     backgroundColor: colors.white,
                     flex: 1,
                 }}>
-                <View style={{ alignItems: 'center' }}>
+
+<ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{
+      flexGrow: 1,
+
+      paddingBottom: 70
+    }}>
+<View style={{ alignItems: 'center' }}>
                     <ImageCache uri={data.promotionImageSecond}
                         resizeMode='cover'
                         style={{ width: '100%', height: 200 }}
@@ -51,7 +58,11 @@ export default function NewsPromotionDetailScreen({
                     dashColor={colors.border1}
                     dashGap={0}
                     dashLength={8} />
-                <View style={{ marginVertical: 20 }}>
+
+
+  {new Date(data.startDate).getTime()<=new Date().getTime()?(<>
+  
+    <View style={{ marginVertical: 20 }}>
                     <Text>
                         {data.promotionDetail}
                     </Text>
@@ -79,6 +90,8 @@ export default function NewsPromotionDetailScreen({
                                 {t('screens.ProductDetailScreen.promotion')}
                             </Text>
                         </View>
+                       
+                      
                         <View style={styles.content}>
                             <Text color="white" semiBold>
                                 {`1. ${promotionTypeMap(data.promotionType)} - ${data.promotionName}`}
@@ -96,8 +109,8 @@ export default function NewsPromotionDetailScreen({
                                                         lineHeight: 30,
                                                     }}>
                                                     {`สินค้ากลุ่มที่ ${index + 1}: `}
-                                                    {condition.products.map((p) => (
-                                                        `${p.productName} ${p.packSize}, `
+                                                    {condition.products.map((p,idx) => (
+                                                        `${p.productName} ${p.packSize}${idx + 1 === condition.products.length ? '' : ','} `
                                                     ))}</Text>
                                                 <View key={index}>
                                                     {condition.conditionDiscount.map((discount, dIndex) => (
@@ -169,7 +182,7 @@ export default function NewsPromotionDetailScreen({
                                             }}>
                                             {`สินค้ากลุ่มที่ ${index + 1}: `}
                                             {condition.products.map((p, idx) => (
-                                                `${p.productName} ${p.packSize}, `
+                                                `${p.productName} ${p.packSize}${idx + 1 === condition.products.length ? '' : ','} `
                                             ))}
                                         </Text>
                                         <Text
@@ -179,7 +192,7 @@ export default function NewsPromotionDetailScreen({
                                                 lineHeight: 30,
                                             }}>
 
-                                            {condition.detail}
+                                            {`• ${condition.detail}`}
                                         </Text>
                                     </>
 
@@ -197,9 +210,9 @@ export default function NewsPromotionDetailScreen({
                                                 <Text color="white" >
                                                     {`สินค้ากลุ่มที่ ${idx + 1}: `}
                                                 </Text>
-                                                {detail.products.map((product) => (
+                                                {detail.products.map((product,index) => (
                                                     <Text color="white">
-                                                        {`${product.productName} ขนาด ${product.packSize},`}
+                                                        {`${product.productName} ขนาด ${product.packSize}${index + 1 === detail.products.length ? '' : ','} `}
                                                     </Text>
                                                 ))}</View>
                                             {detail.conditionFreebies.map((freebieDetail, idx) => (
@@ -235,7 +248,7 @@ export default function NewsPromotionDetailScreen({
                                             <>
 
                                                 <Text color="white" style={{ marginTop: 10 }}>
-                                                    {`สินค้ากลุ่มที่ ${index + 1}: ${detail.products.map((product) => (product.productName))}`}
+                                                    {`สินค้ากลุ่มที่ ${index + 1}: ${detail.products.map((product) => (` ${product.productName} ${product.packSize}`))}`}
                                                 </Text>
 
 
@@ -304,7 +317,7 @@ export default function NewsPromotionDetailScreen({
                                                             lineHeight: 30,
                                                         }}>
                                                         {`• ซื้อครบ ${el.quantity} ${el.saleUnit} แถม${el.freebies.map((el2) => (
-                                                            ` ${el2.productName} ${el2.packSize} จำนวน ${el2.quantity} ${el2.saleUOMTH}`
+                                                            ` ${el2.productName} ${el2.packSize?el2.packSize:''} จำนวน ${el2.quantity} ${el2.saleUOMTH?el2.saleUOMTH:''}`
                                                         ))}`}
                                                     </Text>
 
@@ -333,6 +346,27 @@ export default function NewsPromotionDetailScreen({
                         </View>
                     </LinearGradient>
                 </View>
+  </>):(
+    <View style={{flex:1,alignItems:'center'}}>
+        <View style={{marginTop:50,alignItems:'center'}}>
+            <Image source={icons.poster} style={{width:57,height:60}} />
+        <Text semiBold color='text3' style={{marginTop:20}} >ติดตามโปรโมชันพิเศษได้เร็วๆ นี้</Text>
+        <Text semiBold fontSize={16} fontFamily='Sarabun' color='primary' style={{marginTop:10}}>{`วันที่ ${dayjs(data.startDate).format('DD MMMM BBBB')}`}</Text>
+        </View>
+      
+    </View>
+  )}
+
+
+
+
+
+
+
+
+                </ScrollView>
+
+               
 
             </Content>
         </Container>

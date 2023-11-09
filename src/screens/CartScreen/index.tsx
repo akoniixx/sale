@@ -7,7 +7,7 @@ import {
   Platform,
   Keyboard,
 } from 'react-native';
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Container from '../../components/Container/Container';
 import Content from '../../components/Content/Content';
 import { useLocalization } from '../../contexts/LocalizationContext';
@@ -19,7 +19,7 @@ import Button from '../../components/Button/Button';
 import StepOne from './StepOne';
 import FooterShadow from '../../components/FooterShadow/FooterShadow';
 import ModalWarning from '../../components/Modal/ModalWarning';
-import { CartDetailType, useCart } from '../../contexts/CartContext';
+import { CartDetailType, newProductType, useCart } from '../../contexts/CartContext';
 import StepTwo from './StepTwo';
 import icons from '../../assets/icons';
 import Text from '../../components/Text/Text';
@@ -30,6 +30,7 @@ import { orderServices } from '../../services/OrderServices';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuth } from '../../contexts/AuthContext';
 import { factoryServices } from '../../services/FactorySevices';
+import ModalOnlyConfirm from '../../components/Modal/ModalOnlyConfirm';
 
 export interface TypeDataStepTwo {
   specialRequestRemark?: string | null;
@@ -61,11 +62,11 @@ export default function CartScreen({
     setCartList,
     cartDetail,
     setCartDetail,
-    cartApi: { getCartList, getSelectPromotion },
+    cartApi: { getCartList, getSelectPromotion,postCartItem },
   } = useCart();
   const refInput = React.useRef<any>(null);
   const scrollRef = React.useRef<ScrollView | null>(null);
-
+  const [modalReorder,setModalReorder] = useState(false);
   const [loading, setLoading] = React.useState(false);
   const [addressDelivery, setAddressDelivery] = React.useState({
     address: '',
@@ -79,6 +80,28 @@ export default function CartScreen({
     deliveryDest: '',
     numberPlate: null,
   });
+  const reArrangeShipment = (dataList: newProductType[]) => {
+    return dataList.map((item, index) => {
+      return {
+        ...item,
+        order: index + 1,
+      };
+    });
+  };
+
+
+  useEffect(()=>{
+    params?.isReorder&&setModalReorder(true)
+  },[])
+  
+const reArrangeReorder = async() =>{
+  const currentCL = reArrangeShipment(cartList);
+  const { cartList: cl, cartDetail: cD } = await postCartItem(currentCL);
+  await getSelectPromotion(cD.allPromotions);
+  setCartList(cl);
+  setModalReorder(false)
+  
+}
 
   const onCreateOrder = async () => {
     try {
@@ -375,6 +398,16 @@ export default function CartScreen({
             await onCreateOrder();
           }}
           onRequestClose={() => setVisibleConfirm(false)}
+        />
+
+<ModalOnlyConfirm
+          visible={modalReorder}
+          title="จัดเรียงสินค้า"
+          desc="จัดเรียง?"
+          onConfirm={async () => {
+            await reArrangeReorder()
+          }}
+         
         />
       </Container>
    

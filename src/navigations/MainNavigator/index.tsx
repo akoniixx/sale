@@ -54,6 +54,7 @@ export type MainStackParamList = {
   CartScreen: {
     step?: number;
     specialRequestRemark?: string | undefined;
+    isReorder?:boolean
   };
   OrderSuccessScreen: {
     orderId: string;

@@ -17,5 +17,14 @@ const getCustomer = async (customerId:string,company:string) => {
     .catch(err => console.log(JSON.stringify(err.response.data, null, 2)));
 };
 
+const getCustomerByCusComId  =async (customerCompanyId:string) => {
+  return await request
+    .get(
+      `/auth/customer-company/${customerCompanyId}`,
+    )
+    .then(res => {
+      return (res.data)})
+    .catch(err => console.log(JSON.stringify(err.response.data, null, 2)));
+}
 
-export const customerServices = { getDealerZoneById,getCustomer };
+export const customerServices = { getDealerZoneById,getCustomer,getCustomerByCusComId };

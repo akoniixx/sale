@@ -56,9 +56,9 @@ const { setItem } = useAsyncStorage('customerCompanyId');
 
   const onReoder = async () => {
     try {
-      const customer = await customerServices.getCustomer(props.customerCompanyId.toString(),props.company)
+      const customer = await customerServices.getCustomerByCusComId(props.customerCompanyId.toString()) 
       setItem(props.customerCompanyId.toString())
-      setTermPayment(customer.customerCompany[0].termPayment)
+      setTermPayment(customer.termPayment)
       setCustomerNo(props.customerNo)
       setCustomerName(props.customerName)
      /*  setProductBrand( JSON.stringify({

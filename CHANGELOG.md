@@ -1,5 +1,8 @@
 ## [Version - 2]
 
+## Feature [2.7.0] - 2023-11-8
+- search sugation 
+- reorder
 
 ## Feature [2.6.0] - 2023-09-12
 - adv promotion

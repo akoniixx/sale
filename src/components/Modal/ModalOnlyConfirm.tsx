@@ -75,7 +75,7 @@ export default function ModalOnlyConfirm({
             style={{
               height: 40,
               flexDirection: 'row',
-              width: 270,
+              width: '100%',
               borderTopWidth: 1,
               borderTopColor: colors.border1,
             }}>
@@ -86,6 +86,7 @@ export default function ModalOnlyConfirm({
                 style={{
                   flex: 1,
                   justifyContent: 'center',
+                 
                   borderLeftColor: colors.border1,
                 }}>
                 <Text

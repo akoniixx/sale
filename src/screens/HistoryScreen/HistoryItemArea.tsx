@@ -150,7 +150,7 @@ const onReoderInactive = async () => {
         const response = await cartServices.postCart(res)
         if (response) {
             setModalNotReady(false)
-            props.navigation.navigate('CartScreen')
+            props.navigation.navigate('CartScreen',{isReorder:true})
         }
     } catch (error) {
         console.log(error)

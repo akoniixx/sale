@@ -402,12 +402,12 @@ const reArrangeReorder = async() =>{
 
 <ModalOnlyConfirm
           visible={modalReorder}
-          title="จัดเรียงสินค้า"
-          desc="จัดเรียง?"
+          title={`สินค้าในรายการ \nมีการเรียงลำดับการขนสินค้าใหม่ \nกรุณาตรวจสอบลำดับสินค้าอีกครั้ง \nก่อนสรุปคำสั่งซื้อ`}
+          width={'80%'}
           onConfirm={async () => {
             await reArrangeReorder()
           }}
-         
+         textConfirm='ตกลง'
         />
       </Container>
    

@@ -113,9 +113,7 @@ useEffect(()=>{
         <Body navigation={navigation} />
       </Content>
       <HightlightPopup visible={modalVisible} imgUrl={highlight[0]?.imageUrl||''} onRequestClose={()=>setModalVisible(false)}>
-        <View>
-          <Text>skdjkl</Text>
-        </View>
+       
       </HightlightPopup>
       <LoadingSpinner visible={loading} />
     </Container>

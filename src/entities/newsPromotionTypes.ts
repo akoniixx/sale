@@ -112,3 +112,24 @@ interface NewsPromotion {
     productCategoryId?: string;
   }
   
+
+  interface HighlightNews {
+    highlightNewsId: string;
+    company: string;
+    topic: string;
+    startDate: string; // Consider using Date type if transforming to Date object
+    endDate: string; // Consider using Date type if transforming to Date object
+    url: string;
+    newsImage: string;
+    isShowOnSaleApp: boolean;
+    isShowOnShopApp: boolean;
+    status: string; // Could be boolean if it only returns true/false as string
+    isDelete: boolean;
+    createdAt: string; // Consider using Date type if transforming to Date object
+    updatedAt: string; // Consider using Date type if transforming to Date object
+    createdBy: string;
+    updatedBy: string;
+    viewSaleApp: number;
+    viewShopApp: number;
+    imageUrl: string;
+  }

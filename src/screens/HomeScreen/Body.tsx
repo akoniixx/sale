@@ -5,7 +5,7 @@ import Text from '../../components/Text/Text';
 import { useLocalization } from '../../contexts/LocalizationContext';
 import { StackNavigationHelpers } from '@react-navigation/stack/lib/typescript/src/types';
 import { useAuth } from '../../contexts/AuthContext';
-import { NewsPromotionService } from '../../services/NewsPromotionServices';
+import { NewsPromotionService } from '../../services/NewsService/NewsPromotionServices';
 import NewsPromotionCarousel from '../../components/Carousel/NewsPromotionCarousel';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 

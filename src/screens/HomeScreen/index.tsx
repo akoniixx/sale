@@ -8,6 +8,10 @@ import Body from './Body';
 import { StackNavigationHelpers } from '@react-navigation/stack/lib/typescript/src/types';
 import { useAuth } from '../../contexts/AuthContext';
 import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
+import Modal from '../../components/Modal/Modal';
+import HightlightPopup from '../../components/Popup/HightlightPopup';
+import { NewsPromotionService } from '../../services/NewsService/NewsPromotionServices';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface Props {
   navigation: StackNavigationHelpers;
@@ -18,7 +22,32 @@ export default function HomeScreen({ navigation }: Props): JSX.Element {
     authContext: { getUser },
   } = useAuth();
   const [loading, setLoading] = useState<boolean>(false);
+  const [highlight,setHighLight] = useState<HighlightNews[]>([])
+  const [modalVisible,setModalVisible] = useState<boolean>(true)
+
+
+const fetchHitglight = async() => {
+  try {
+    setLoading(true)
+    const company = await AsyncStorage.getItem('company')
+    const res = await NewsPromotionService.getHighlight(company||'')
+     setHighLight(res.data)
+   
+  } catch (error) {
+    console.log(error)
+  }
+  finally{
+    setLoading(false)
+  }
+
+}
+
+useEffect(()=>{
+  fetchHitglight()
+},[])
+
   useEffect(() => {
+    
     if (!state?.user?.userStaffId) {
       try {
         setLoading(true)
@@ -83,6 +112,11 @@ export default function HomeScreen({ navigation }: Props): JSX.Element {
         </ImageBackground>
         <Body navigation={navigation} />
       </Content>
+      <HightlightPopup visible={modalVisible} imgUrl={highlight[0]?.imageUrl||''} onRequestClose={()=>setModalVisible(false)}>
+        <View>
+          <Text>skdjkl</Text>
+        </View>
+      </HightlightPopup>
       <LoadingSpinner visible={loading} />
     </Container>
   );

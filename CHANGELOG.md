@@ -1,5 +1,8 @@
 ## [Version - 2]
 
+## Fix [2.7.1] - 2023-11-15
+- fix fcm info.plist for dev
+
 ## Feature [2.7.0] - 2023-11-8
 - search sugation 
 - reorder

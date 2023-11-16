@@ -73,7 +73,9 @@ export type MainStackParamList = {
   SettingNotificationScreen: undefined;
   FreeSpeciaRequestScreen: undefined
   NewsPromotionDetailScreen: {
-    data:NewsPromotion[]
+    data?:NewsPromotion[]
+    fromNoti?:boolean
+    promotionId?:string
   }
 };
 const Stack = createStackNavigator<MainStackParamList>();

@@ -142,10 +142,40 @@ const App = () => {
       },
     );
     messaging().onMessage(async remoteMessage => {
-      console.log('A new FCM message arrived!', JSON.stringify(remoteMessage));
-      await analytics().logEvent('notification_receive', {
-        notification_type: remoteMessage.data?.type || "default"
-    });
+      const typeNotification = remoteMessage?.data?.type;
+      switch (typeNotification) {
+        case 'ORDER': {
+          Toast.show({
+            type: 'orderToast',
+            text1: remoteMessage?.notification?.title,
+            text2: remoteMessage?.notification?.body,
+            onPress: () => {
+              navigationRef.current?.navigate('HistoryDetailScreen', {
+                orderId: remoteMessage?.data?.orderId,
+                isFromNotification: true,
+              });
+              Toast.hide();
+            }
+          })
+        }
+        case 'PROMOTION':{
+          Toast.show({
+            type: 'promotionToast',
+            text1: remoteMessage?.notification?.title,
+            text2: remoteMessage?.notification?.body,
+            onPress: () => {
+              navigationRef.current?.navigate('NewsPromotionDetailScreen', {
+               
+                fromNoti: true,
+                promotionId:remoteMessage?.data?.promotionId
+              });
+              Toast.hide();
+            }
+          })
+        }
+      }
+
+
     });
   }, []);
 

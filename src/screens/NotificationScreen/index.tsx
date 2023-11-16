@@ -20,10 +20,10 @@ export default function NotificationScreen({ navigation }: Props) {
       value: 'order',
       label: 'คำสั่งซื้อ',
     },
-    // {
-    //   value: 'promotion',
-    //   label: 'โปรโมชัน',
-    // },
+     {
+       value: 'promotion',
+       label: 'โปรโมชัน',
+     },
   ];
   const {
     state: { user },

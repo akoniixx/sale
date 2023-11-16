@@ -112,9 +112,11 @@ useEffect(()=>{
         </ImageBackground>
         <Body navigation={navigation} />
       </Content>
-      <HightlightPopup visible={modalVisible} imgUrl={highlight[0]?.imageUrl||''} onRequestClose={()=>setModalVisible(false)}>
+      {highlight[0]?.status&& 
+      <HightlightPopup visible={modalVisible} imgUrl={highlight[0]?.imageUrl||''} onRequestClose={()=>setModalVisible(false)} url={highlight[0]?.url} />}
+     
        
-      </HightlightPopup>
+     
       <LoadingSpinner visible={loading} />
     </Container>
   );

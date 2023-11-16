@@ -19,9 +19,17 @@ const getNewsPromotion = async (company: string, zone: string) => {
       .catch(err => console.log(err));
   };
 
+  const getNewsPromotionById = async (id:string) => {
+    return await request
+    .get(`/master/promotion/${id}`)
+    .then(res => res.data)
+    .catch(err => console.log(err));
+  }
+
   export const NewsPromotionService = {
     getNewsPromotion,
-    getHighlight
+    getHighlight,
+    getNewsPromotionById
 } 
 
 

@@ -16,7 +16,7 @@
 		1A2292FB1ECC4FDCA1DE876D /* NotoSansThai-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 36C069EB22DD46649D9350F8 /* NotoSansThai-Medium.ttf */; };
 		1AC48D71774F491DB9BC121C /* NotoSansThai-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0E001E0B9C77447894955540 /* NotoSansThai-SemiBold.ttf */; };
 		306F5DFC83EFCDE4B5C48189 /* libPods-SellcodaSale.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9DCCFA95A851D5939296C02B /* libPods-SellcodaSale.a */; };
-		60D975E92A94A96C006E6A99 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 60D975E82A94A96C006E6A99 /* GoogleService-Info.plist */; };
+		60ED0F242B07212F001AE419 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 60ED0F232B07212F001AE419 /* GoogleService-Info.plist */; };
 		7B2ECB0B15EC481496C3BE15 /* Sarabun-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A612EAFD63F947D8BE9B5DEA /* Sarabun-SemiBold.ttf */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		917F6255FA334820938E3A6F /* Sarabun-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BF3251F076714FDDB653DC3F /* Sarabun-Medium.ttf */; };
@@ -53,7 +53,7 @@
 		2E1F2D2341D291D465464665 /* Pods-SellcodaSale.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SellcodaSale.release.xcconfig"; path = "Target Support Files/Pods-SellcodaSale/Pods-SellcodaSale.release.xcconfig"; sourceTree = "<group>"; };
 		36C069EB22DD46649D9350F8 /* NotoSansThai-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "NotoSansThai-Medium.ttf"; path = "../src/assets/fonts/NotoSansThai-Medium.ttf"; sourceTree = "<group>"; };
 		60805CD52951B94100760681 /* SellcodaSale.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = SellcodaSale.entitlements; path = SellcodaSale/SellcodaSale.entitlements; sourceTree = "<group>"; };
-		60D975E82A94A96C006E6A99 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
+		60ED0F232B07212F001AE419 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		6AC2D8E0697DCB04B64F5B9D /* Pods-SellcodaSale-SellcodaSaleTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SellcodaSale-SellcodaSaleTests.debug.xcconfig"; path = "Target Support Files/Pods-SellcodaSale-SellcodaSaleTests/Pods-SellcodaSale-SellcodaSaleTests.debug.xcconfig"; sourceTree = "<group>"; };
 		7FD2E91507684F8498170185 /* NotoSansThai-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "NotoSansThai-Light.ttf"; path = "../src/assets/fonts/NotoSansThai-Light.ttf"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = SellcodaSale/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -157,7 +157,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
-				60D975E82A94A96C006E6A99 /* GoogleService-Info.plist */,
+				60ED0F232B07212F001AE419 /* GoogleService-Info.plist */,
 				13B07FAE1A68108700A75B9A /* SellcodaSale */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* SellcodaSaleTests */,
@@ -286,7 +286,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				60D975E92A94A96C006E6A99 /* GoogleService-Info.plist in Resources */,
+				60ED0F242B07212F001AE419 /* GoogleService-Info.plist in Resources */,
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				FC3FFB40B95B4A86ABFBF20E /* Sarabun-Bold.ttf in Resources */,

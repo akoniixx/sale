@@ -25,39 +25,39 @@ export default function NewsPromotionDetailScreen({
     navigation,
     route,
 }: StackScreenProps<MainStackParamList, 'NewsPromotionDetailScreen'>): JSX.Element {
-    const [data,setData] = useState<NewsPromotion>();
-    const [loading,setLoading] = useState<boolean>(false)
+    const [data, setData] = useState<NewsPromotion>();
+    const [loading, setLoading] = useState<boolean>(false)
 
 
-    const feacthPromotionDetail = async(id:string) =>{
-        try {      
-            setLoading(true)   
-        const res = await  NewsPromotionService.getNewsPromotionById(id)
-        setData(res)
+    const feacthPromotionDetail = async (id: string) => {
+        try {
+            setLoading(true)
+            const res = await NewsPromotionService.getNewsPromotionById(id)
+            setData(res)
         } catch (error) {
             console.log(error)
-        }finally{
+        } finally {
             setLoading(false)
         }
-       
-       
+
+
     }
 
-   
-  
-    useEffect(()=>{
-        if(route.params.fromNoti){
+
+
+    useEffect(() => {
+        if (route.params.fromNoti) {
             feacthPromotionDetail(route.params.promotionId)
-            
-         }else{
+
+        } else {
             setData(route.params.data)
-         }
-    },[])
+        }
+    }, [])
 
 
-  
-   
-   
+
+
+
     const { t } = useLocalization();
     return (
         <Container>
@@ -79,7 +79,7 @@ export default function NewsPromotionDetailScreen({
                             resizeMode='cover'
                             style={{ width: '100%', height: 200 }}
                         />
-                      
+
                     </View>
                     <View style={{ marginVertical: 20 }}>
                         <Text fontSize={20} fontFamily='NotoSans' >
@@ -395,7 +395,7 @@ export default function NewsPromotionDetailScreen({
 
 
             </Content>
-            <LoadingSpinner visible={loading}/>
+            <LoadingSpinner visible={loading} />
         </Container>
     )
 }

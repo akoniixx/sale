@@ -165,7 +165,6 @@ const App = () => {
             text2: remoteMessage?.notification?.body,
             onPress: () => {
               navigationRef.current?.navigate('NewsPromotionDetailScreen', {
-               
                 fromNoti: true,
                 promotionId:remoteMessage?.data?.promotionId
               });

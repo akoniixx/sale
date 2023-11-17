@@ -9,7 +9,7 @@ import { request } from "../../config/request";
   ) => {
 
     return await request
-    .get(`/fcm/notification?page=${page}&take=${take}&sortDirection=${sortDirection}&userStaffId=${userStaffId}`)
+    .get(`/fcm/notification?page=${page}&take=${take}&sortDirection=${sortDirection}&userStaffId=${userStaffId}&type=ORDER`)
     .then(res => res.data)
     .catch(err => {
       throw err;
@@ -26,7 +26,24 @@ import { request } from "../../config/request";
       throw err;
     });
   }
+  const getPromoNotilist = async(
+    page: number,
+    take: number,
+    sortDirection: 'ASC' | 'DESC',
+    userStaffId:string,
+    search?: string,
+   
+  ) => {
+
+    return await request
+    .get(`/fcm/notification?page=${page}&take=${take}&sortDirection=${sortDirection}&userStaffId=${userStaffId}&type=PROMOTION`)
+    .then(res => res.data)
+    .catch(err => {
+      throw err;
+    });
+  }
   export const notiListServices = {
     getNotilist,
-    readNoti
+    readNoti,
+    getPromoNotilist,
   };

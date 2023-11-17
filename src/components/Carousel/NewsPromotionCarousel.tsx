@@ -54,7 +54,9 @@ export default function NewsPromotionCarousel({
                         <TouchableOpacity
                           onPress={ () => {
                           
-                            navigation.navigate('NewsPromotionDetailScreen',item);
+                            navigation.navigate('NewsPromotionDetailScreen',{
+                              data:item
+                            });
                           }}>
                           <PromotionCard background={item.promotionImageSecond} />
                         </TouchableOpacity>

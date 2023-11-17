@@ -56,7 +56,7 @@ export default function NotificationScreen({ navigation }: Props) {
     console.log(user?.userStaffId)
    notiListServices.getNotilist(pageNoti,limit,'DESC',user?.userStaffId||'')
    .then((res)=>{
-    console.log(res)
+    
     setNotiList(res)
     setTimeout(() => {
       setLoading(false)

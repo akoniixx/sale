@@ -1,4 +1,4 @@
-import { request } from '../../config/request';
+import { navRequest, request } from '../../config/request';
 import { ProductTypeParams } from '../../entities/productType';
 
 const getAllProducts = async ({
@@ -88,7 +88,7 @@ const getProductFree = async (payload:any) => {
 }
 
 const getBaseFreebies =async (company:string,itemNo:string) => {
-  return await request
+  return await navRequest
     .get(`/nav/uom-nav?company=${company}&itemNo=${itemNo}`)
     .then(res => res.data)
     .catch(err => {

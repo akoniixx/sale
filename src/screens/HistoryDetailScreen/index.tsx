@@ -854,7 +854,7 @@ export default function HistoryDetailScreen({
               </View>
             ) : null}
             {user?.company !== 'ICPI' ? <>
-              {orderDetail?.status === 'DELIVERY_SUCCESS' || orderDetail?.status === 'SHOPAPP_CANCEL_ORDER' || orderDetail?.status === 'COMPANY_CANCEL_ORDER' ? (
+              {orderDetail?.status === 'DELIVERY_SUCCESS' || orderDetail?.status === 'SHOPAPP_CANCEL_ORDER' || orderDetail?.status === 'COMPANY_CANCEL_ORDER' || orderDetail?.status === 'REJECT_ORDER'  ? (
                 <FooterReorder orderId={orderDetail.orderId} navigation={navigation} orderLength={orderDetail.orderProducts.length} {...orderDetail} />
 
               ) : null}

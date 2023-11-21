@@ -353,7 +353,7 @@ const onReoderInactive = async () => {
         <BadgeStatus status={props.status} />
 {user?.company !== 'ICPI'? 
 <>
- {props?.status === 'DELIVERY_SUCCESS'||props?.status === 'SHOPAPP_CANCEL_ORDER'||props?.status === 'COMPANY_CANCEL_ORDER'? <View >
+ {props?.status === 'DELIVERY_SUCCESS'||props?.status === 'SHOPAPP_CANCEL_ORDER'||props?.status === 'COMPANY_CANCEL_ORDER'|| props?.status === 'REJECT_ORDER'? <View >
  <TouchableOpacity style={{flexDirection:'row',alignItems:'center'}} onPress={()=>{setModalConfirm(true)}}>
  <Text lineHeight={25} color='text3' bold>สั่งอีกครั้ง</Text>
  <Image source={icons.iconNext} style={{width:20,height:20}} />

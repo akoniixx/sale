@@ -13,7 +13,7 @@ const getNewsPromotion = async (company: string, zone: string) => {
   const getHighlight = async (company:string) => {
     return await request
       .get(
-        `/sellcoda-news/highlight?company=${company}&status=PUBLISHED&application=SALE&page=1&take=1`,
+        `/news/highlight?company=${company}&status=PUBLISHED&application=SALE&page=1&take=1`,
       )
       .then(res => res.data.responseData)
       .catch(err => console.log(err));

@@ -5,11 +5,12 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React from 'react';
+import React, { useState } from 'react';
 import Text from '../Text/Text';
 import { numberWithCommas } from '../../utils/functions';
 import { colors } from '../../assets/colors/colors';
 import icons from '../../assets/icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 interface DataObj {
   priceBeforeDiscount: {
     label: string;
@@ -52,11 +53,21 @@ interface DataObj {
 interface Props {
   dataObj: DataObj;
 }
-export default function SummaryList({ dataObj }: Props) {
+export default  function SummaryList({ dataObj }: Props) {
+
   const [isCollapsed, setIsCollapsed] = React.useState({
     discountList: true,
     specialListDiscount: true,
   });
+  const [company,setCompany] = useState<string|null>('')
+
+const getCompany = async()=>{
+  const company = await AsyncStorage.getItem('company')
+ setCompany(company)
+}
+
+
+
   const renderDiscountList = () => {
     return dataObj.discountList.listData?.map((el, idx) => {
       return (
@@ -211,7 +222,8 @@ export default function SummaryList({ dataObj }: Props) {
             )}`}</Text>
           </View>
           {!isCollapsed.specialListDiscount && <>{renderSpecialRequest()}</>}
-          <View style={styles.row}>
+          { company==='ICPL'?(
+            <View style={styles.row}>
             <Text color="text2">ส่วนลดเงินสด</Text>
             <Text
               color="waiting"
@@ -221,6 +233,8 @@ export default function SummaryList({ dataObj }: Props) {
               true,
             )}`}</Text>
           </View>
+          ):null}
+          
           <View style={styles.row}>
             <Text color="text2">ส่วนลดดูแลราคา</Text>
             <Text

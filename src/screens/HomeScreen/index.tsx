@@ -32,6 +32,7 @@ const fetchHitglight = async() => {
     const company = await AsyncStorage.getItem('company')
     const res = await NewsPromotionService.getHighlight(company||'')
     
+    
      setHighLight(res.data)
    
   } catch (error) {
@@ -113,12 +114,12 @@ useEffect(()=>{
         </ImageBackground>
         <Body navigation={navigation} />
       </Content>
-      {highlight[0]?.status==='ACTIVE'&& 
+      {highlight[0]?.status==='true'&& 
       <HightlightPopup visible={modalVisible} imgUrl={highlight[0]?.imageUrl||''} onRequestClose={()=>setModalVisible(false)} url={highlight[0]?.url} />}
      
        
      
-      <LoadingSpinner visible={loading} />
+    {/*   <LoadingSpinner visible={true} /> */}
     </Container>
   );
 }

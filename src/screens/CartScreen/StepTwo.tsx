@@ -273,7 +273,7 @@ export default function StepTwo({
         </View>
         <View style={styles.inputContainer}>
           <Text fontFamily="NotoSans" semiBold fontSize={16}>
-            {user?.company === 'ICPF' && <Text color="error">{`*  `}</Text>}
+           {/*  {user?.company === 'ICPF' && <Text color="error">{`*  `}</Text>} */}
             ข้อมูลทะเบียนรถ
           </Text>
           <InputText
@@ -281,7 +281,7 @@ export default function StepTwo({
             multiline
             blurOnSubmit
             returnKeyType="done"
-            /* isError={isShowError} */
+           /*  isError={isShowError} */
             scrollEnabled={false}
             style={{
               paddingTop: 16,

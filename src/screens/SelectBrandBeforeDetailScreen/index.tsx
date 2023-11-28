@@ -66,6 +66,7 @@ export default function SelectBrandBeforeDetailScreen({
                         width: 50,
                         height: 50,
                         marginRight: 16,
+                        resizeMode:'contain'
                       }}
                     />
                     <Text>{item.product_brand_name}</Text>

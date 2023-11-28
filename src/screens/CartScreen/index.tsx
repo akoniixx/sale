@@ -106,7 +106,7 @@ const reArrangeReorder = async() =>{
   const onCreateOrder = async () => {
     try {
       const currentCompany = user?.company;
-      if (currentCompany !== 'ICPL' && !dataStepTwo.numberPlate) {
+     /*  if (currentCompany !== 'ICPL' && !dataStepTwo.numberPlate) {
         setShowError(true);
         setVisibleConfirm(false);
         refInput?.current?.focus();
@@ -114,7 +114,7 @@ const reArrangeReorder = async() =>{
           scrollRef?.current?.scrollTo({ x: 0, y: 300, animated: true });
         }
         return;
-      }
+      } */
       setLoading(true);
       setVisibleConfirm(false);
       const customerNo = await AsyncStorage.getItem('customerNo');

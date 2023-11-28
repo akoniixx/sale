@@ -5,7 +5,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Text from '../Text/Text';
 import { numberWithCommas } from '../../utils/functions';
 import { colors } from '../../assets/colors/colors';
@@ -66,7 +66,9 @@ const getCompany = async()=>{
  setCompany(company)
 }
 
-
+useEffect(()=>{
+  getCompany()
+},[])
 
   const renderDiscountList = () => {
     return dataObj.discountList.listData?.map((el, idx) => {

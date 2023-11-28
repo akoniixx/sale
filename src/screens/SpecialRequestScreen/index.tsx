@@ -1,5 +1,5 @@
 import { StackScreenProps } from '@react-navigation/stack';
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   Dimensions,
   Image,
@@ -40,7 +40,7 @@ export default function SpecialRequestScreen({
     discountList: true,
     specialRequestList: true,
   });
-
+  const [company,setCompany] = useState<string|null>('')
   const [specialRequestRemark, setSpecialRequestRemark] = React.useState('');
   const { cartList, cartDetail, promotionListValue } = useCart();
   useEffect(() => {
@@ -54,6 +54,16 @@ export default function SpecialRequestScreen({
     setSpecialRequestRemark(remark||'')
     
   }
+
+
+  const getCompany = async()=>{
+    const company = await AsyncStorage.getItem('company')
+   setCompany(company)
+  }
+  
+  useEffect(()=>{
+    getCompany()
+  },[])
 
   const { dataObj } = useMemo(() => {
     const listDataDiscount: {
@@ -352,7 +362,7 @@ export default function SpecialRequestScreen({
                     data={dataObj.discountSpecialRequest.listData}
                   />
                 )}
-                <View
+                {company==='ICPL'? <View
                   style={{
                     flexDirection: 'row',
                     justifyContent: 'space-between',
@@ -378,7 +388,8 @@ export default function SpecialRequestScreen({
                       dataObj.discountCash.value,
                       true,
                     )}`}</Text>
-                </View>
+                </View> :null}
+               
                 <View
                   style={{
                     flexDirection: 'row',

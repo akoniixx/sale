@@ -124,18 +124,11 @@ const App = () => {
             NavigationToHistoryDetail();
           }
           case 'PROMOTION':{
-            Toast.show({
-              type: 'promotionToast',
-              text1: remoteMessage?.notification?.title,
-              text2: remoteMessage?.notification?.body,
-              onPress: () => {
-                navigationRef.current?.navigate('NewsPromotionDetailScreen', {
-                  fromNoti: true,
-                  promotionId:remoteMessage?.data?.promotionId
-                });
-                Toast.hide();
-              }
-            })
+            navigationRef.current?.navigate('NewsPromotionDetailScreen', {
+              fromNoti: true,
+              promotionId:remoteMessage?.data?.promotionId
+            });
+           
           }
         }
       });
@@ -153,18 +146,11 @@ const App = () => {
             NavigationToHistoryDetail();
           }
           case 'PROMOTION':{
-            Toast.show({
-              type: 'promotionToast',
-              text1: remoteMessage?.notification?.title,
-              text2: remoteMessage?.notification?.body,
-              onPress: () => {
-                navigationRef.current?.navigate('NewsPromotionDetailScreen', {
-                  fromNoti: true,
-                  promotionId:remoteMessage?.data?.promotionId
-                });
-                Toast.hide();
-              }
-            })
+            navigationRef.current?.navigate('NewsPromotionDetailScreen', {
+              fromNoti: true,
+              promotionId:remoteMessage?.data?.promotionId
+            });
+            
           }
         }
       },

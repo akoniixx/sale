@@ -123,6 +123,7 @@ const App = () => {
             };
             NavigationToHistoryDetail();
           }
+          break;
           case 'PROMOTION':{
             navigationRef.current?.navigate('NewsPromotionDetailScreen', {
               fromNoti: true,
@@ -130,6 +131,7 @@ const App = () => {
             });
            
           }
+          break;
         }
       });
     messaging().onNotificationOpenedApp(
@@ -145,6 +147,7 @@ const App = () => {
             };
             NavigationToHistoryDetail();
           }
+          break;
           case 'PROMOTION':{
             navigationRef.current?.navigate('NewsPromotionDetailScreen', {
               fromNoti: true,
@@ -152,6 +155,7 @@ const App = () => {
             });
             
           }
+          break;
         }
       },
     );
@@ -172,6 +176,7 @@ const App = () => {
             }
           })
         }
+        break;
         case 'PROMOTION':{
           Toast.show({
             type: 'promotionToast',
@@ -186,6 +191,7 @@ const App = () => {
             }
           })
         }
+        break;
       }
 
 

@@ -60,5 +60,10 @@ export default {
   check: require('./check.png'),
   promoDetail: require('./promoDetail.png'),
   orderNoti: require('./orderNoti.png'),
-  promotionNoti: require('./promotionNoti.png')
+  promotionNoti: require('./promotionNoti.png'),
+  filter: require('./filter.png'),
+  radio: require('./radio.png'),
+  radioEmpty: require('./radioEmpty.png'),
+  checkbox: require('./checkbox.png'),
+  uncheckbox: require('./uncheckbox.png')
 };

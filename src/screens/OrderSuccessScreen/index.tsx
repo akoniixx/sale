@@ -173,6 +173,7 @@ export default function OrderSuccessScreen({
   });
 
   useEffect(() => {
+    console.log(orderData)
     BackHandler.addEventListener('hardwareBackPress', () => {
       return true;
     });
@@ -377,6 +378,38 @@ export default function OrderSuccessScreen({
 
 
                 <DashedLine dashColor={colors.border1} dashGap={6} />
+                {orderData.vat!==0&&<>
+                  <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    height: 50,
+                    alignItems: 'center',
+                  }}>
+        <Text color="text2" semiBold>
+        มูลค่ารวมหลังหักส่วนลด
+        </Text>
+        <Text color="text2" semiBold fontFamily="NotoSans" fontSize={20}>
+          {`฿${numberWithCommas(+orderData?.price-orderData?.totalDiscount, true)}`}
+        </Text>
+      </View>
+      <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    height: 50,
+                    alignItems: 'center',
+                  }}>
+        <Text color="text2" semiBold>
+          {`ภาษีมูลค่าเพิ่ม ${orderData.vatPercentage} %`}
+        </Text>
+        <Text color="text2" semiBold fontFamily="NotoSans" fontSize={20}>
+          {`฿${numberWithCommas(+orderData.vat, true)}`}
+        </Text>
+      </View>
+      <DashedLine dashColor={colors.border1} dashGap={6} />
+                </>}
+              
                 <View
                   style={{
                     flexDirection: 'row',
@@ -395,6 +428,7 @@ export default function OrderSuccessScreen({
                     {`฿${numberWithCommas(orderData.totalPrice, true)}`}
                   </Text>
                 </View>
+               
                 <DashedLine dashColor={colors.border1} dashGap={6} />
                 <View>
                   <View

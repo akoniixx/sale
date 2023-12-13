@@ -66,7 +66,7 @@ useEffect(()=>{
   const name = state.user?.firstname || '';
 
   return (
-    <Container>
+    <Container edges={['left', 'right', 'top']}>
       <Content style={{ padding: 0, flex: 1, width: '100%' }}>
         <ImageBackground
           source={images.HomeScreenBG}

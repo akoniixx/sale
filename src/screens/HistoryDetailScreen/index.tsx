@@ -53,7 +53,7 @@ export default function HistoryDetailScreen({
       try {
         setLoading(true);
         const res = await orderServices.getOrderById(params.orderId);
-
+console.log(res)
         setOrderDetail(res);
 
       } catch (e) {
@@ -144,6 +144,14 @@ export default function HistoryDetailScreen({
         label: 'ส่วนลดรวม',
         value: orderDetail?.totalDiscount || 0,
       },
+      totalPriceNoVat:{
+        label:'มูลค่ารวมหลังหักส่วนลด',
+        value: orderDetail?.price - orderDetail?.totalDiscount
+      },
+      vat:{
+        label: `ภาษีมูลค่าเพิ่ม ${orderDetail?.vatPercentage} %`,
+        value: orderDetail?.vat
+      }
     };
     const fbList: any = [];
     const spfbList: any = [];

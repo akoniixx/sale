@@ -47,4 +47,6 @@ export interface OrderDetailType {
   updateBy: string;
   updateDate: string;
   userStaffId: string;
+  vat:string|number;
+  vatPercentage: string|number;
 }

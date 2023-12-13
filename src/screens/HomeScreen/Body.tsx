@@ -8,6 +8,9 @@ import { useAuth } from '../../contexts/AuthContext';
 import { NewsPromotionService } from '../../services/NewsService/NewsPromotionServices';
 import NewsPromotionCarousel from '../../components/Carousel/NewsPromotionCarousel';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import NewsList from '../../components/News/NewsList';
+import { ScrollView } from 'react-native-gesture-handler';
+import { NewsService } from '../../services/NewsService/NewsServices';
 
 interface Props {
   navigation: StackNavigationHelpers;
@@ -19,6 +22,7 @@ export default function Body({ navigation }: Props): JSX.Element {
   } = useAuth();
   const [loading,setLoading] = useState<boolean>(false)
   const [NewsPromotion,setNewsPromotion] = useState<NewsPromotion[]>([])
+  const [newsList,setNewsList] = useState<Pined[]>([])
   const fecthNewsPromotion = async() => {
       try {
         setLoading(true)
@@ -36,9 +40,26 @@ export default function Body({ navigation }: Props): JSX.Element {
         setLoading(false)
       }
   }
+const fecthNewsList =async () => {
+  try {
+    setLoading(true)
+    const company = await AsyncStorage.getItem('company')
+    const res:Pined[] = await NewsService.getPined(company||'')
+    const filterData:Pined [] = await res.filter((item)=>item.page==='MAIN_PAGE')
+    
+   
+    setNewsList(filterData)
+  } catch (error) {
+    console.log(error)
+  }finally{
+    setLoading(false)
+  }
+}
+  
 
   useEffect(()=>{
 fecthNewsPromotion()
+fecthNewsList()
   },[])
 
   const memoListMenus = useMemo(() => {
@@ -68,6 +89,84 @@ fecthNewsPromotion()
 
     return ListMenus;
   }, [navigation, t, user?.company]);
+
+const renderPromotion = () => (
+  <>
+    {NewsPromotion?.length>0?<View style={{paddingHorizontal:20,marginTop:20}} >
+       <Text bold fontSize={18} fontFamily='NotoSans' >โปรโมชั่น</Text>
+
+       
+      </View>:     
+        <View
+          style={{
+            flex:1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            marginTop:50
+          }}>
+          <Image
+            source={images.News}
+            style={{
+              height: 100,
+              width: 110,
+            }}
+          />
+          <Text color="text3">{t('screens.HomeScreen.news')}</Text>
+        </View>
+}
+     
+      <View style={{alignItems:'center'}}>
+      <NewsPromotionCarousel data={NewsPromotion} loading={loading} navigation={navigation}  />
+      </View> 
+      </>
+)
+
+const renderNews = () => (
+  <View style={{marginBottom:40}}>
+   {newsList?.length>0?<View style={{paddingHorizontal:20,marginTop:20}} >
+    <View style={{flexDirection:'row',justifyContent:'space-between'}}>
+    <Text bold fontSize={18} fontFamily='NotoSans' >ข่าวสาร</Text>
+    <TouchableOpacity onPress={()=> navigation.navigate('NewsScreen')}>
+    <Text semiBold  fontSize={14} color='text3' fontFamily='NotoSans' >ทั้งหมด</Text>
+    </TouchableOpacity>
+   
+    </View>
+      
+
+       
+      </View>:   
+      <View style={{paddingHorizontal:20,marginTop:50}}>
+      <View style={{flexDirection:'row',justifyContent:'space-between'}}>
+      <Text bold fontSize={18} fontFamily='NotoSans' >ข่าวสาร</Text>
+      <TouchableOpacity onPress={()=> navigation.navigate('NewsScreen')}>
+      <Text semiBold  fontSize={14} color='text3' fontFamily='NotoSans' >ทั้งหมด</Text>
+      </TouchableOpacity>
+     
+      </View>
+        <View
+          style={{
+            flex:1,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+          <Image
+            source={images.News}
+            style={{
+              height: 100,
+              width: 110,
+            }}
+          />
+          <Text color="text3">{t('screens.HomeScreen.news')}</Text>
+        </View>
+        </View>
+}
+     
+      <View style={{paddingLeft:20,marginTop:10}}>
+     <NewsList data={newsList} loading={loading} navigation={navigation} />
+      </View> 
+  </View>
+)
+
   return (
     <View style={styles.container}>
       <View style={styles.containerMenu}>
@@ -105,31 +204,16 @@ fecthNewsPromotion()
           );
         })}
       </View>
-      {NewsPromotion?.length>0?<View style={{paddingHorizontal:20,marginTop:20}} >
-       <Text bold fontSize={18} fontFamily='NotoSans' >โปรโมชั่น</Text>
-
+      <ScrollView>
        
-      </View>:     
-        <View
-          style={{
-            flex:1,
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
-          <Image
-            source={images.News}
-            style={{
-              height: 100,
-              width: 110,
-            }}
-          />
-          <Text color="text3">{t('screens.HomeScreen.news')}</Text>
-        </View>
-}
+        {renderPromotion()}
+      
      
-      <View style={{alignItems:'center'}}>
-      <NewsPromotionCarousel data={NewsPromotion} loading={loading} navigation={navigation}  />
-      </View>
+      {renderNews()}
+      
+    
+      </ScrollView>
+    
     </View>
   );
 }
@@ -139,7 +223,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     position: 'relative',
-    bottom: 24,
+  
     backgroundColor: 'white',
   },
   containerMenu: {

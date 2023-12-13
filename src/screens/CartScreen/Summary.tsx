@@ -112,6 +112,14 @@ export default function Summary({ setLoading }: Props): JSX.Element {
         label: 'ส่วนลดรวม',
         value: cartDetail?.totalDiscount,
       },
+      totalPriceNoVat:{
+        label:'มูลค่ารวมหลังหักส่วนลด',
+        value: cartDetail?.totalPriceNoVat
+      },
+      vat:{
+        label: `ภาษีมูลค่าเพิ่ม ${cartDetail?.vatPercentage} %`,
+        value: cartDetail?.vat
+      }
     };
     return {
       dataObj,

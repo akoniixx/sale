@@ -48,6 +48,14 @@ interface DataObj {
     label: string;
     value: number | string;
   };
+  totalPriceNoVat:{
+    label:string,
+    value:  number | string;
+  }
+  vat:{
+    label: string
+    value:  number | string;
+  }
 }
 
 interface Props {
@@ -264,6 +272,37 @@ useEffect(()=>{
           {`-฿${numberWithCommas(+dataObj.totalDiscount.value, true)}`}
         </Text>
       </View>
+      {dataObj?.vat?.value!==0&&<>
+        <View
+        style={[
+          styles.row,
+          {
+            marginBottom: 4,
+          },
+        ]}>
+        <Text color="text2" semiBold>
+          {dataObj?.totalPriceNoVat?.label}
+        </Text>
+        <Text color="text2" semiBold fontFamily="NotoSans" fontSize={20}>
+          {`฿${numberWithCommas(+dataObj?.totalPriceNoVat?.value, true)}`}
+        </Text>
+      </View>
+      <View
+        style={[
+          styles.row,
+          {
+            marginBottom: 4,
+          },
+        ]}>
+        <Text color="text2" semiBold>
+          {dataObj?.vat?.label}
+        </Text>
+        <Text color="text2" semiBold fontFamily="NotoSans" fontSize={20}>
+          {`฿${numberWithCommas(+dataObj?.vat?.value, true)}`}
+        </Text>
+      </View>
+      </>}
+     
     </View>
   );
 }

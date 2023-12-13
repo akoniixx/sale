@@ -20,6 +20,8 @@ import SettingNotificationScreen from '../../screens/SettingNotificationScreen';
 import TCReadOnlyScreen from '../../screens/TCReadOnlyScreen';
 import FreeSpeciaRequestScreen from '../../screens/SpecialRequestScreen/FreeSpeciaRequest';
 import NewsPromotionDetailScreen from '../../screens/NewsPromotionScreen/NewsPromotionDetailScreen';
+import NewsScreen from '../../screens/NewsScreen';
+import NewsDetailScreen from '../../screens/NewsScreen/NewsDetailScreen';
 
 export type MainStackParamList = {
   MainScreen: {
@@ -76,6 +78,10 @@ export type MainStackParamList = {
     data?:NewsPromotion[]
     fromNoti?:boolean
     promotionId?:string
+  }
+  NewsScreen: undefined;
+  NewsDetailScreen:{
+    newsId:string
   }
 };
 const Stack = createStackNavigator<MainStackParamList>();
@@ -150,8 +156,14 @@ export default function MainNavigator() {
         name="SettingNotificationScreen"
         component={SettingNotificationScreen}
       />
+      <Stack.Screen
+        name="NewsScreen"
+        component={NewsScreen}
+      />
       <Stack.Screen name="TCReadOnlyScreen" component={TCReadOnlyScreen} />
       <Stack.Screen name="NewsPromotionDetailScreen" component={NewsPromotionDetailScreen} />
+      <Stack.Screen name="NewsDetailScreen" component={NewsDetailScreen} />
+      
     </Stack.Navigator>
   );
 }

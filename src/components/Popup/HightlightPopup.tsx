@@ -15,6 +15,8 @@ import {
 import Text from '../Text/Text';
 import ImageCache from '../ImageCache/ImageCache';
 import icons from '../../assets/icons';
+import { NewsPromotionService } from '../../services/NewsService/NewsPromotionServices';
+import { useAuth } from '../../contexts/AuthContext';
 
 type Props = {
     onRequestClose?: () => void;
@@ -22,6 +24,7 @@ type Props = {
     imgUrl: string
     url:string
     width?: string;
+    highlightNewsId: string
     
 };
 
@@ -30,16 +33,21 @@ export default function HightlightPopup({
     onRequestClose,
     imgUrl,
     width = '90%',
-    url
+    url,
+    highlightNewsId
     
 
 }: Props) {
     const [loading,setLoading] = useState(false)
 
-
+    const {
+        state: { user }
+    } = useAuth();
     
     const handlePress = useCallback(async () => {
         // Checking if the link is supported for links with custom URL scheme.
+        await NewsPromotionService.postViewHighlight(highlightNewsId,user?.userStaffId||'')
+     
         const supported = await Linking.canOpenURL(url);
     
         if (supported) {

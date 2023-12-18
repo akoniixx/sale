@@ -3,7 +3,7 @@ import axios from 'axios';
 import { navigate } from '../navigations/RootNavigator';
 import { useAuth } from '../contexts/AuthContext';
 
-export const API_URL = 'https://sellcoda-api.iconkaset.com';
+export const API_URL = 'https://sellcoda-api-dev.iconkaset.com';
 //export const API_URL = 'https://api-sellcoda.iconkaset.com';
 export const NAV_API_URL = 'https://api-dev-sellcoda.iconkaset.com'
 

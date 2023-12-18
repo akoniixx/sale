@@ -25,11 +25,23 @@ const getNewsPromotion = async (company: string, zone: string) => {
     .then(res => res.data)
     .catch(err => console.log(err));
   }
+  const postViewHighlight = async (highlightNewsId:string,viewedBy:string) => {
+    const payload = {
+      highlightNewsId:highlightNewsId,
+      viewedBy:viewedBy,
+      app:'SALE'
+    }
+    return await request
+      .post(`/news/highlight/view`, payload)
+      .then(res => res.data)
+      .catch(err => console.log(JSON.stringify(err.response.data, null, 2)));
+  };
 
   export const NewsPromotionService = {
     getNewsPromotion,
     getHighlight,
-    getNewsPromotionById
+    getNewsPromotionById,
+    postViewHighlight
 } 
 
 

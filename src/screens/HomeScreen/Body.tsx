@@ -205,11 +205,32 @@ const renderNews = () => (
         })}
       </View>
       <ScrollView>
-       
-        {renderPromotion()}
+       {newsList?.length<=0&&NewsPromotion?.length<=0?
+      <>
+       <View
+          style={{
+            flex:1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            marginTop:'10%'
+          }}>
+          <Image
+            source={images.News}
+            style={{
+              height: 100,
+              width: 110,
+            }}
+          />
+          <Text color="text3">{t('screens.HomeScreen.news')}</Text>
+        </View>
+      </> :<>
+      {renderPromotion()}
       
      
       {renderNews()}
+      </>
+      }
+       
       
     
       </ScrollView>

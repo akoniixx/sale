@@ -115,7 +115,7 @@ useEffect(()=>{
         <Body navigation={navigation} />
       </Content>
       {highlight[0]?.status==='true'&& 
-      <HightlightPopup visible={modalVisible} imgUrl={highlight[0]?.imageUrl||''} onRequestClose={()=>setModalVisible(false)} url={highlight[0]?.url} />}
+      <HightlightPopup visible={modalVisible} imgUrl={highlight[0]?.imageUrl||''} onRequestClose={()=>setModalVisible(false)} url={highlight[0]?.url} highlightNewsId={highlight[0]?.highlightNewsId} />}
      
        
      

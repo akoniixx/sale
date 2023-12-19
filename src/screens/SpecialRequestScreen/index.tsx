@@ -76,7 +76,7 @@ export default function SpecialRequestScreen({
       valueLabel: string;
       value: string;
     }[] = [];
-    cartDetail.orderProducts
+    cartDetail?.orderProducts
       .filter(el => !el.isFreebie)
       .map((item: any) => {
         const dataPush = {
@@ -107,29 +107,29 @@ export default function SpecialRequestScreen({
     const dataObj = {
       priceBeforeDiscount: {
         label: 'ราคาก่อนลด',
-        value: cartDetail.price,
+        value: cartDetail?.price,
       },
       discountList: {
         label: 'ส่วนลดจากรายการ',
-        value: cartDetail.discount,
+        value: cartDetail?.discount,
         listData: listDataDiscount,
       },
       discountSpecialRequest: {
         label: 'ส่วนลดพิเศษ (Special Req.)',
-        value: cartDetail.specialRequestDiscount,
+        value: cartDetail?.specialRequestDiscount,
         listData: listDataDiscountSpecialRequest,
       },
       discountCo: {
         label: 'ส่วนลดดูราคา (CO. ดูแลราคา / วงเงินเคลม)',
-        value: cartDetail.coDiscount,
+        value: cartDetail?.coDiscount,
       },
       discountCash: {
         label: 'ส่วนลดเงินสด',
-        value: cartDetail.cashDiscount,
+        value: cartDetail?.cashDiscount,
       },
       totalDiscount: {
         label: 'ส่วนลดรวม',
-        value: cartDetail.totalDiscount,
+        value: cartDetail?.totalDiscount,
       },
     };
     return {
@@ -473,7 +473,7 @@ export default function SpecialRequestScreen({
                   fontFamily="NotoSans"
                   color="primary"
                   bold>{`฿${numberWithCommas(
-                    cartDetail.totalPrice,
+                    cartDetail?.totalPrice,
                     true,
                   )}`}</Text>
               </View>

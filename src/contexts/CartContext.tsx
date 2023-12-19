@@ -425,7 +425,7 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
         }
         
         // console.log('payload', JSON.stringify(payload.allPromotions, null, 2));
-          
+       /* console.log('payload', JSON.stringify(payload)) */
         const result = await cartServices.postCart(payload);
         
         // console.log('result', JSON.stringify(result.allPromotions, null, 2));

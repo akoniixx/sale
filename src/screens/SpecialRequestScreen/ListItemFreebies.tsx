@@ -31,7 +31,7 @@ const ListItemFreebies = () => {
   const getBaseToFreebies = async () => {
     try {
       const updatedList = await Promise.all(
-        cartDetail.specialRequestFreebies.map(async (product) => {
+        cartDetail?.specialRequestFreebies.map(async (product) => {
           try {
             const res = await productServices.getBaseFreebies(user?.company || '', product.productFreebiesCodeNAV ? product.productFreebiesCodeNAV : product.productCodeNAV);
 
@@ -63,7 +63,7 @@ const ListItemFreebies = () => {
   useEffect(() => {
     getBaseToFreebies()
 
-  }, [cartDetail.specialRequestFreebies])
+  }, [cartDetail?.specialRequestFreebies])
 
   const onIncrease = async (id: string | number) => {
     try {

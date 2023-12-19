@@ -107,7 +107,12 @@ export default function FreeSpeciaRequestScreen({ navigation, route }: Props) {
         productBrandId: pB?.product_brand_id,
        
       });
-    setProduct(result.data)
+      const updatedProducts = result.data.map(product => {
+        const newProduct = { ...product }; // Create a copy of the object
+        delete newProduct.promotion; // Remove the 'promotion' field
+        return newProduct;
+      });
+    setProduct(updatedProducts)
       setLoading(false)
     } 
     catch (error) {
@@ -140,9 +145,9 @@ export default function FreeSpeciaRequestScreen({ navigation, route }: Props) {
   }
 
   useEffect(() => {
-    if(cartDetail.specialRequestFreebies){
+    if(cartDetail?.specialRequestFreebies){
       
-      let selected = Array.from(new Set([...cartDetail.specialRequestFreebies,...selectedItems]))
+      let selected = Array.from(new Set([...cartDetail?.specialRequestFreebies,...selectedItems]))
       
       setSelectedItems(selected)
 

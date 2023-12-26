@@ -174,7 +174,7 @@ console.log(res)
               productName: fr.productName,
               id: fr.productId,
               quantity: fr.quantity,
-              baseUnit: fr.saleUOMTH || fr.saleUOM || '',
+              baseUnit: fr.baseUnitOfMeaTh || fr.saleUOMTH || fr.saleUOM || '',
               status: fr.productStatus,
               productImage: fr.productImage,
             };

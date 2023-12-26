@@ -243,7 +243,7 @@ export default function PromotionItem({
                         buy: el.quantity,
                         free: el2.quantity,
                         productNameFree: el2.productName,
-                        unitFree: el2.saleUOMTH || el2.saleUOM || '',
+                        unitFree: el2.baseUnitOfMeaTh||el2.saleUOMTH || el2.saleUOM || '',
                         unitBuy: unitBuy || '',
                       },
                     )} `}

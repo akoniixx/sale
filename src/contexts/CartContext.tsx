@@ -297,7 +297,7 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
           allPromotions: cartDetail?.allPromotions || [],
           specialRequestFreebies: cartDetail?.specialRequestFreebies || []
         };
-
+        
         const newData = await cartServices.postCart(payload);
         setCartDetail(prev => ({
           ...prev,
@@ -329,7 +329,7 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
         allPromotions: cartDetail?.allPromotions || [],
         specialRequestFreebies: cartDetail?.specialRequestFreebies || []
       };
-
+      
       const data = await cartServices.postCart(payload);
 
       setCartDetail(prev => ({
@@ -425,9 +425,9 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
         }
         
         // console.log('payload', JSON.stringify(payload.allPromotions, null, 2));
-       /* console.log('payload', JSON.stringify(payload)) */
+      /*  console.log('payload', JSON.stringify(payload)) */
         const result = await cartServices.postCart(payload);
-        
+       /*  console.log('payload', JSON.stringify(result)) */
         // console.log('result', JSON.stringify(result.allPromotions, null, 2));
         setCartDetail(result);
         const newFormat = (result?.orderProducts || [])
@@ -466,7 +466,7 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
                 productName: el.productName,
                 id: el.productId,
                 quantity: el.quantity,
-                baseUnit: el.saleUOMTH || el.saleUOM || '',
+                baseUnit: el.baseUnitOfMeaTh|| '',
                 status: el.productStatus,
                 productImage: el.productImage,
               };

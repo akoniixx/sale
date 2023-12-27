@@ -22,6 +22,7 @@ import FreeSpeciaRequestScreen from '../../screens/SpecialRequestScreen/FreeSpec
 import NewsPromotionDetailScreen from '../../screens/NewsPromotionScreen/NewsPromotionDetailScreen';
 import NewsScreen from '../../screens/NewsScreen';
 import NewsDetailScreen from '../../screens/NewsScreen/NewsDetailScreen';
+import UploadFileScreen from '../../screens/UploadFileScreen/UploadFileScreen';
 
 export type MainStackParamList = {
   MainScreen: {
@@ -83,6 +84,7 @@ export type MainStackParamList = {
   NewsDetailScreen:{
     newsId:string
   }
+  UploadFileScreen:undefined
 };
 const Stack = createStackNavigator<MainStackParamList>();
 export default function MainNavigator() {
@@ -163,6 +165,7 @@ export default function MainNavigator() {
       <Stack.Screen name="TCReadOnlyScreen" component={TCReadOnlyScreen} />
       <Stack.Screen name="NewsPromotionDetailScreen" component={NewsPromotionDetailScreen} />
       <Stack.Screen name="NewsDetailScreen" component={NewsDetailScreen} />
+      <Stack.Screen name='UploadFileScreen' component={UploadFileScreen} />
       
     </Stack.Navigator>
   );

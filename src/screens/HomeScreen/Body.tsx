@@ -46,9 +46,17 @@ const fecthNewsList =async () => {
     const company = await AsyncStorage.getItem('company')
     const res:Pined[] = await NewsService.getPined(company||'')
     const filterData:Pined [] = await res.filter((item)=>item.page==='MAIN_PAGE')
+    const resNews: NewsInterface[] = await NewsService.getNewsList(company || '', 1, 99, 'NEWEST', '')
+    
+    if(res.length<5){
+      const joinArray = res.concat(resNews)
+      setNewsList(joinArray)
+    }else{
+      setNewsList(filterData)
+    }
     
    
-    setNewsList(filterData)
+   
   } catch (error) {
     console.log(error)
   }finally{

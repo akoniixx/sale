@@ -40,6 +40,7 @@
 			</dict>
 		</dict>
 	</dict>
+	
 	<key>NSCameraUsageDescription</key>
 	<string>$(PRODUCT_NAME) requires your permission to track in order to show you more relevant ads. requires access to the camera to take profile images.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>

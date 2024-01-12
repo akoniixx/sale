@@ -198,8 +198,6 @@ const storeImageUris = async (uris: []) => {
                     dashThickness={1}
                 />
 
-                {
-                    file?.length != undefined && file?.length > 0 ?
                         <View style={{ marginTop: 30, flex: 1 }}>
                             <Text>{`เอกสารทั้งหมด ${file?.length}/5 ภาพ`}</Text>
                             <View style={{ marginTop: 20, flex: 1 }}>
@@ -264,8 +262,7 @@ const storeImageUris = async (uris: []) => {
                                     ))}
                                 </ScrollView>
                             </View>
-                        </View> : null
-                }
+                        </View> 
             </View>
 
 

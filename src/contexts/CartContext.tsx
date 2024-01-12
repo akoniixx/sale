@@ -466,7 +466,7 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
                 productName: el.productName,
                 id: el.productId,
                 quantity: el.quantity,
-                baseUnit: el.baseUnitOfMeaTh|| '',
+                baseUnit: el.baseUnitOfMeaTh|| el.saleUOMTH || el.saleUOM || '',
                 status: el.productStatus,
                 productImage: el.productImage,
               };

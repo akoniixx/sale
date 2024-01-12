@@ -15,6 +15,7 @@ import { orderServices } from "../../services/OrderServices";
 import { HistoryDataType } from "../../entities/historyTypes";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 import Animated, { useAnimatedStyle, useSharedValue, withRepeat, withTiming } from "react-native-reanimated";
+import ModalWarning from "../../components/Modal/ModalWarning";
 
 interface file {
     base64?: string;
@@ -41,6 +42,8 @@ export default function EditFileScreen({
     const [toggleModle, setToggleModal] = useState<boolean>(false)
     const [loading, setLoading] = useState<boolean>(false)
     const [history, setHistory] = useState<HistoryDataType>()
+    const [urlDelete, setUrlDelete] = useState()
+    const [modalDelete, setmodalDelete] = useState<boolean>(false)
     const [fileUploading, setFileUploading] = useState<file[] | undefined>([])
     const params = route.params
     const uploadFile = async () => {
@@ -77,11 +80,9 @@ export default function EditFileScreen({
 
     const storeImageUris = async (uris: any) => {
         try {
-            setLoading(true)
+          
             if (file.length < 5) {
-                let result = file?.concat(uris)
-
-
+               
                 let uploading = uris.map((e) => ({
                     e,
                     uri: icons.circulProgress
@@ -117,7 +118,7 @@ export default function EditFileScreen({
                     setFileUploading(uploading)
                     setTimeout(() => {
                         setFileUploading([])
-                        setFile(result)
+                        getImageUris()
 
                     }, 2000);
 
@@ -128,7 +129,7 @@ export default function EditFileScreen({
         } catch (error: any) {
             console.log(error.response.data);
         } finally {
-            setLoading(false)
+           
         }
     };
 
@@ -154,24 +155,32 @@ export default function EditFileScreen({
             setLoading(false)
         }
     };
+    const openModalDelete = async (uriToRemove:any) => {
 
-    const removeImageUri = async (uriToRemove) => {
+        setUrlDelete(uriToRemove)
+        setmodalDelete(true)
+
+    }
+    const removeImageUri = async (uriToRemove:any) => {
         try {
+            setLoading(true)
             const data = new FormData()
             data.append('orderId', history?.orderId)
             data.append('updateBy', history?.userStaffId)
             data.append('orderFileId', uriToRemove)
             data.append('action', 'DELETE')
 
-            console.log(JSON.stringify(data))
+           
             const res = await orderServices.uploadFile(data)
             if (res) {
-                console.log(res)
+                getImageUris()
             }
 
 
         } catch (error: any) {
             console.error(error.response.data);
+        }finally{
+            setLoading(false)
         }
     };
 
@@ -237,11 +246,10 @@ export default function EditFileScreen({
                     }}
                     dashThickness={1}
                 />
-
-                {
-                    file?.length != undefined && file?.length > 0 ?
-                        <View style={{ marginTop: 30, flex: 1 }}>
+ <View style={{ marginTop: 30, flex: 1 }}>
                             <Text>{`เอกสารทั้งหมด ${file?.length}/5 ภาพ`}</Text>
+             
+                       
                             <View style={{ marginTop: 20, flex: 1 }}>
                                 <ScrollView contentContainerStyle={{ flexGrow: 1 }} style={{ flex: 1 }} >
                                     {file != undefined && file?.map((item, idx) => (
@@ -256,7 +264,7 @@ export default function EditFileScreen({
                                                     <TouchableOpacity onPress={() => viewImage(item.uri)}>
                                                         <Image source={icons.viewDoc} style={{ width: 25, height: 25, marginRight: 20 }} />
                                                     </TouchableOpacity>
-                                                    <TouchableOpacity onPress={() => removeImageUri(item.orderFileId)}>
+                                                    <TouchableOpacity onPress={() =>  openModalDelete(item.orderFileId)}>
                                                         <Image source={icons.binRed} style={{ width: 25, height: 25 }} />
                                                     </TouchableOpacity>
 
@@ -304,14 +312,27 @@ export default function EditFileScreen({
                                     ))}
                                 </ScrollView>
                             </View>
-                        </View> : null
-                }
-
+                     
+ </View> 
             </View>
 
 
 
-            {/* <LoadingSpinner visible={loading} /> */}
+            <ModalWarning
+                titleCenter
+                title={'ยืนยันการลบ'}
+                desc={`กรุณาตรวจสอบความถูกต้อง\nก่อนยืนยันการลบเอกสาร`}
+                visible={modalDelete}
+                onConfirm={() => {
+                    removeImageUri(urlDelete)
+                    setmodalDelete(false);
+
+                }}
+                onRequestClose={() => {
+                    setmodalDelete(false);
+                }}
+            />
+            <LoadingSpinner visible={loading} />
         </SafeAreaView>
 
     )

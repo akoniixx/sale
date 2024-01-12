@@ -172,36 +172,44 @@ export default function CartScreen({
         setVisibleConfirm(false);
         setLoading(false);
         await AsyncStorage.removeItem('specialRequestRemark')
-        try {
-          setLoading(true);
-          const storedUrisJson = await AsyncStorage.getItem('imageUris');
-          let storedUris:object[] = storedUrisJson ? JSON.parse(storedUrisJson) : [];
-          const data = new FormData()
-          storedUris.forEach((e, index) => {
-            data.append('files', {
-              name: `image${index}.jpg`,
-              type: e.type,
-              uri: e.uri
+        const storedUrisJson = await AsyncStorage.getItem('imageUris');
+        if(storedUrisJson){
+          try {
+            setLoading(true);
+            const storedUrisJson = await AsyncStorage.getItem('imageUris');
+            let storedUris:object[] = storedUrisJson ? JSON.parse(storedUrisJson) : [];
+            const data = new FormData()
+            storedUris.forEach((e, index) => {
+              data.append('files', {
+                name: `image${index}.jpg`,
+                type: e.type,
+                uri: e.uri
+              });
             });
-          });
-      
-          data.append('orderId', result.orderId)
-          data.append('updateBy', result.userStaffId)
-          data.append('action', 'CREATE')
         
-         const res =  await orderServices.uploadFile(data)
-         if(res){
-          await AsyncStorage.removeItem('imageUris')
+            data.append('orderId', result.orderId)
+            data.append('updateBy', result.userStaffId)
+            data.append('action', 'CREATE')
+          
+           const res =  await orderServices.uploadFile(data)
+           if(res){
+            await AsyncStorage.removeItem('imageUris')
+            navigation.navigate('OrderSuccessScreen', {
+              orderId: result.orderId,
+            });
+           }
+          
+          } catch (e) {
+           console.log(e)
+          } finally {
+            setLoading(false);
+          }
+        }else{
           navigation.navigate('OrderSuccessScreen', {
             orderId: result.orderId,
           });
-         }
-        
-        } catch (e) {
-         console.log(e)
-        } finally {
-          setLoading(false);
         }
+        
       }
     } catch (e: any) {
       console.log(JSON.stringify(e.response.data, null, 2));

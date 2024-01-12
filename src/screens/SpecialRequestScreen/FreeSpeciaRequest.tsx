@@ -1,4 +1,4 @@
-import { Image, KeyboardAvoidingView, Platform, TouchableOpacity, View ,Alert} from 'react-native';
+import { Image, KeyboardAvoidingView, Platform, TouchableOpacity, View, Alert } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import Text from '../../components/Text/Text';
 import { colors } from '../../assets/colors/colors';
@@ -34,7 +34,7 @@ export default function FreeSpeciaRequestScreen({ navigation, route }: Props) {
   const [page, setPage] = React.useState<number>(1);
   const [searchValue, setSearchValue] = useState<string | undefined>();
   const [freebies, setFreebies] = useState<SpFreebies[]>([])
-  const [product,setProduct] = useState<SpFreebies[]>([])
+  const [product, setProduct] = useState<SpFreebies[]>([])
   const [selectedItems, setSelectedItems] = useState<SpFreebies[]>([]);
   const [visibleConfirm, setVisibleConfirm] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
@@ -51,8 +51,8 @@ export default function FreeSpeciaRequestScreen({ navigation, route }: Props) {
     },
   ];
 
-  
-  
+
+
   const {
     state: { user },
   } = useAuth();
@@ -64,17 +64,17 @@ export default function FreeSpeciaRequestScreen({ navigation, route }: Props) {
   } = useCart();
 
   const handleSelect = (idx: SpFreebies) => {
-    if (selectedItems.some(item =>item.productFreebiesId? item.productFreebiesId === idx.productFreebiesId:item.productId===idx.productId)) {
-      setSelectedItems(prev => prev.filter(i =>i.productFreebiesId? i.productFreebiesId !== idx.productFreebiesId: i.productId!==idx.productId));
-    } else  {
+    if (selectedItems.some(item => item.productFreebiesId ? item.productFreebiesId === idx.productFreebiesId : item.productId === idx.productId)) {
+      setSelectedItems(prev => prev.filter(i => i.productFreebiesId ? i.productFreebiesId !== idx.productFreebiesId : i.productId !== idx.productId));
+    } else {
       const itemWithQuantity = { ...idx, quantity: 1 };
       setSelectedItems(prev => [...prev, itemWithQuantity]);
-    } 
+    }
   };
 
   const getFreebies = async () => {
     setLoading(true)
-    const payload: any ={
+    const payload: any = {
       company: user?.company,
       searchText: searchValue
     }
@@ -82,7 +82,7 @@ export default function FreeSpeciaRequestScreen({ navigation, route }: Props) {
       const res = await productServices.getProductFree(payload)
       setFreebies(res.data)
       setLoading(false)
-    } 
+    }
     catch (error) {
       console.log(error)
     }
@@ -105,16 +105,16 @@ export default function FreeSpeciaRequestScreen({ navigation, route }: Props) {
         searchText: searchValue,
         customerCompanyId: customerCompanyId || '',
         productBrandId: pB?.product_brand_id,
-       
+
       });
       const updatedProducts = result.data.map(product => {
         const newProduct = { ...product }; // Create a copy of the object
         delete newProduct.promotion; // Remove the 'promotion' field
         return newProduct;
       });
-    setProduct(updatedProducts)
+      setProduct(updatedProducts)
       setLoading(false)
-    } 
+    }
     catch (error) {
       console.log(error)
     }
@@ -122,21 +122,21 @@ export default function FreeSpeciaRequestScreen({ navigation, route }: Props) {
       setLoading(false)
     }
 
-    
+
   }
 
   const onSearch = (v: string | undefined) => {
     setDebounceSearchValue(v);
   };
 
-  const onConfirm = async() => {
+  const onConfirm = async () => {
     setVisibleConfirm(false)
     try {
       setLoading(true);
-      await postCartItem(cartList,selectedItems)
+      await postCartItem(cartList, selectedItems)
       navigation.navigate('SpecialRequestScreen')
-      
-     
+
+
     } catch (error) {
       console.log(error);
     } finally {
@@ -145,10 +145,10 @@ export default function FreeSpeciaRequestScreen({ navigation, route }: Props) {
   }
 
   useEffect(() => {
-    if(cartDetail?.specialRequestFreebies){
-      
-      let selected = Array.from(new Set([...cartDetail?.specialRequestFreebies,...selectedItems]))
-      
+    if (cartDetail?.specialRequestFreebies) {
+
+      let selected = Array.from(new Set([...cartDetail?.specialRequestFreebies, ...selectedItems]))
+
       setSelectedItems(selected)
 
     }
@@ -164,14 +164,14 @@ export default function FreeSpeciaRequestScreen({ navigation, route }: Props) {
     }}>
       {freebies?.map((el, idx) => (
         <TouchableOpacity key={idx} onPress={() => handleSelect(el)}>
-         
+
           <View
             key={idx}
             style={{
               flexDirection: 'row',
               paddingVertical: 20,
               flex: 1,
-              backgroundColor: selectedItems.some(item=>item.productFreebiesId === el.productFreebiesId) ? '#F8FAFF' : 'transparent',
+              backgroundColor: selectedItems.some(item => item.productFreebiesId === el.productFreebiesId) ? '#F8FAFF' : 'transparent',
               borderBottomColor: colors.border1,
               borderBottomWidth: 0.5,
               borderStyle: 'solid'
@@ -183,7 +183,7 @@ export default function FreeSpeciaRequestScreen({ navigation, route }: Props) {
 
                 width: '80%'
               }}>
-               
+
               {el.productFreebiesImage ? (
                 <ImageCache
                   uri={getNewPath(el.productFreebiesImage)}
@@ -213,12 +213,12 @@ export default function FreeSpeciaRequestScreen({ navigation, route }: Props) {
                     flexDirection: 'row',
                     alignItems: 'center',
                   }}>
-                  
+
                 </View>
               </View>
             </View>
             <View style={{ alignItems: 'center', alignSelf: 'center', width: 40 }}>
-              {selectedItems.some(item=>item.productFreebiesId === el.productFreebiesId) && <Image source={icons.check} style={{ width: 20, height: 20 }} />}
+              {selectedItems.some(item => item.productFreebiesId === el.productFreebiesId) && <Image source={icons.check} style={{ width: 20, height: 20 }} />}
             </View>
           </View>
         </TouchableOpacity>
@@ -240,7 +240,7 @@ export default function FreeSpeciaRequestScreen({ navigation, route }: Props) {
               flexDirection: 'row',
               paddingVertical: 20,
               flex: 1,
-              backgroundColor: selectedItems.some(item=>item.productId === el.productId) ? '#F8FAFF' : 'transparent',
+              backgroundColor: selectedItems.some(item => item.productId === el.productId) ? '#F8FAFF' : 'transparent',
               borderBottomColor: colors.border1,
               borderBottomWidth: 0.5,
               borderStyle: 'solid'
@@ -288,7 +288,7 @@ export default function FreeSpeciaRequestScreen({ navigation, route }: Props) {
               </View>
             </View>
             <View style={{ alignItems: 'center', alignSelf: 'center', width: 40 }}>
-              {selectedItems.some(item=>item.productId === el.productId) && <Image source={icons.check} style={{ width: 20, height: 20 }} />}
+              {selectedItems.some(item => item.productId === el.productId) && <Image source={icons.check} style={{ width: 20, height: 20 }} />}
             </View>
           </View>
         </TouchableOpacity>
@@ -314,9 +314,9 @@ export default function FreeSpeciaRequestScreen({ navigation, route }: Props) {
          }} */
         />
         <Content>
-        <View
+          <View
             style={{
-              marginBottom:20
+              marginBottom: 20
             }}>
             <View
               style={{
@@ -364,15 +364,15 @@ export default function FreeSpeciaRequestScreen({ navigation, route }: Props) {
               setPage(1);
             }}
           />
-         
 
-                {type==='product'?
-                 renderProduct()
-                
+
+          {type === 'product' ?
+            renderProduct()
+
             :
             renderFreebies()
-              }
-         
+          }
+
         </Content>
         <FooterShadow
           style={{
@@ -400,15 +400,15 @@ export default function FreeSpeciaRequestScreen({ navigation, route }: Props) {
         </FooterShadow>
       </KeyboardAvoidingView>
       <ModalWarning
-          visible={visibleConfirm}
-          title="ยืนยันการเพิ่มของแถม"
-          desc={`ต้องการยืนยันการเพิ่มของแถม Special Request ${selectedItems.length} รายการ ใช่หรือไม่ ?`}
-          onConfirm={async () => {
-            await onConfirm();
-          }}
-          onRequestClose={() => setVisibleConfirm(false)}
-        />
-         <LoadingSpinner visible={loading} />
+        visible={visibleConfirm}
+        title="ยืนยันการเพิ่มของแถม"
+        desc={`ต้องการยืนยันการเพิ่มของแถม Special Request ${selectedItems.length} รายการ ใช่หรือไม่ ?`}
+        onConfirm={async () => {
+          await onConfirm();
+        }}
+        onRequestClose={() => setVisibleConfirm(false)}
+      />
+      <LoadingSpinner visible={loading} />
     </Container>
   )
 

@@ -54,4 +54,13 @@ export interface HistoryDataType {
     isFreebie: boolean;
     price: number
   }[];
+  orderFiles:orderFiles[]
 }
+ export interface orderFiles{
+  createAt:string
+  filePath:string
+  isDeleted:boolean
+  orderFileId:string
+  orderId:string
+  updateAt:string
+ }

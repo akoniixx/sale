@@ -26,7 +26,7 @@ import Text from '../../components/Text/Text';
 import { StackScreenProps } from '@react-navigation/stack';
 import { MainStackParamList } from '../../navigations/MainNavigator';
 import { useFocusEffect } from '@react-navigation/native';
-import { orderServices } from '../../services/OrderServices';
+import { orderServices, payloadUploadFile } from '../../services/OrderServices';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuth } from '../../contexts/AuthContext';
 import { factoryServices } from '../../services/FactorySevices';
@@ -62,11 +62,11 @@ export default function CartScreen({
     setCartList,
     cartDetail,
     setCartDetail,
-    cartApi: { getCartList, getSelectPromotion,postCartItem },
+    cartApi: { getCartList, getSelectPromotion, postCartItem },
   } = useCart();
   const refInput = React.useRef<any>(null);
   const scrollRef = React.useRef<ScrollView | null>(null);
-  const [modalReorder,setModalReorder] = useState(false);
+  const [modalReorder, setModalReorder] = useState(false);
   const [loading, setLoading] = React.useState(false);
   const [addressDelivery, setAddressDelivery] = React.useState({
     address: '',
@@ -90,31 +90,31 @@ export default function CartScreen({
   };
 
 
-  useEffect(()=>{
-    params?.isReorder&&setModalReorder(true)
-  },[])
-  
-const reArrangeReorder = async() =>{
-  const currentCL = reArrangeShipment(cartList);
-  const { cartList: cl, cartDetail: cD } = await postCartItem(currentCL);
-  await getSelectPromotion(cD.allPromotions);
-  setCartList(cl);
-  setModalReorder(false)
-  
-}
+  useEffect(() => {
+    params?.isReorder && setModalReorder(true)
+  }, [])
+
+  const reArrangeReorder = async () => {
+    const currentCL = reArrangeShipment(cartList);
+    const { cartList: cl, cartDetail: cD } = await postCartItem(currentCL);
+    await getSelectPromotion(cD.allPromotions);
+    setCartList(cl);
+    setModalReorder(false)
+
+  }
 
   const onCreateOrder = async () => {
     try {
       const currentCompany = user?.company;
-     /*  if (currentCompany !== 'ICPL' && !dataStepTwo.numberPlate) {
-        setShowError(true);
-        setVisibleConfirm(false);
-        refInput?.current?.focus();
-        if (scrollRef?.current) {
-          scrollRef?.current?.scrollTo({ x: 0, y: 300, animated: true });
-        }
-        return;
-      } */
+      /*  if (currentCompany !== 'ICPL' && !dataStepTwo.numberPlate) {
+         setShowError(true);
+         setVisibleConfirm(false);
+         refInput?.current?.focus();
+         if (scrollRef?.current) {
+           scrollRef?.current?.scrollTo({ x: 0, y: 300, animated: true });
+         }
+         return;
+       } */
       setLoading(true);
       setVisibleConfirm(false);
       const customerNo = await AsyncStorage.getItem('customerNo');
@@ -160,11 +160,11 @@ const reArrangeReorder = async() =>{
       if (dataStepTwo.numberPlate) {
         payload.numberPlate = dataStepTwo.numberPlate;
       }
-       /* console.log('payload', JSON.stringify(payload, null, 2)); */
+      /* console.log('payload', JSON.stringify(payload, null, 2)); */
       const result = await orderServices.createOrder(payload);
       if (result) {
         // console.log('result', JSON.stringify(result, null, 2));
-        setCartDetail({}as CartDetailType)
+        setCartDetail({} as CartDetailType)
         setCartList([]);
         setFreebieListItem([]);
         setPromotionList([]);
@@ -172,9 +172,36 @@ const reArrangeReorder = async() =>{
         setVisibleConfirm(false);
         setLoading(false);
         await AsyncStorage.removeItem('specialRequestRemark')
-        navigation.navigate('OrderSuccessScreen', {
-          orderId: result.orderId,
-        });
+        try {
+          setLoading(true);
+          const storedUrisJson = await AsyncStorage.getItem('imageUris');
+          let storedUris:object[] = storedUrisJson ? JSON.parse(storedUrisJson) : [];
+          const data = new FormData()
+          storedUris.forEach((e, index) => {
+            data.append('files', {
+              name: `image${index}.jpg`,
+              type: e.type,
+              uri: e.uri
+            });
+          });
+      
+          data.append('orderId', result.orderId)
+          data.append('updateBy', result.userStaffId)
+          data.append('action', 'CREATE')
+        
+         const res =  await orderServices.uploadFile(data)
+         if(res){
+          await AsyncStorage.removeItem('imageUris')
+          navigation.navigate('OrderSuccessScreen', {
+            orderId: result.orderId,
+          });
+         }
+        
+        } catch (e) {
+         console.log(e)
+        } finally {
+          setLoading(false);
+        }
       }
     } catch (e: any) {
       console.log(JSON.stringify(e.response.data, null, 2));
@@ -276,140 +303,140 @@ const reArrangeReorder = async() =>{
   }, [params?.specialRequestRemark]);
 
   return (
-   
-      <Container>
-        <Header
-          onBackCustom={() => {
-            currentStep === 0
-              ? navigation.goBack()
-              : setCurrentStep(currentStep - 1);
-          }}
-          title={t('screens.CartScreen.title')}
-        />
-        <Content
+
+    <Container>
+      <Header
+        onBackCustom={() => {
+          currentStep === 0
+            ? navigation.goBack()
+            : setCurrentStep(currentStep - 1);
+        }}
+        title={t('screens.CartScreen.title')}
+      />
+      <Content
+        style={{
+          backgroundColor: colors.background1,
+          padding: 0,
+        }}>
+        <View
           style={{
-            backgroundColor: colors.background1,
-            padding: 0,
+            backgroundColor: colors.white,
+            paddingVertical: 12,
+            justifyContent: 'center',
+            marginVertical: 8,
           }}>
-          <View
+          <Step
+            onPress={step => {
+              if (cartList.length > 0) {
+                setCurrentStep(step === 2 ? currentStep : step);
+              }
+            }}
+            currentStep={currentStep}
+            labelList={[
+              'รายการคำสั่งซื้อ',
+              'สรุปคำสั่งซื้อ',
+              'สั่งซื้อสำเร็จ',
+            ]}
+          />
+        </View>
+        <ScrollView ref={ref => (scrollRef.current = ref)}>
+          {renderStep()}
+        </ScrollView>
+      </Content>
+      <FooterShadow
+        style={{
+          paddingBottom: isKeyboardVisible ? 0 : 16,
+        }}>
+        {currentStep === 0 && (
+          <Button
+            onPress={() => {
+              if (cartList.length < 1) {
+                return setVisible(true);
+              }
+              setCurrentStep(prev => prev + 1);
+            }}
+            title={t('screens.CartScreen.stepOneButton')}
+          />
+        )}
+        {currentStep === 1 && (
+          <TouchableOpacity
+            onPress={() => {
+              setVisibleConfirm(true);
+            }}
             style={{
-              backgroundColor: colors.white,
-              paddingVertical: 12,
+              width: '100%',
+              height: 50,
               justifyContent: 'center',
-              marginVertical: 8,
+              alignItems: 'center',
+              backgroundColor: colors.primary,
+              borderRadius: 8,
             }}>
-            <Step
-              onPress={step => {
-                if (cartList.length > 0) {
-                  setCurrentStep(step === 2 ? currentStep : step);
-                }
-              }}
-              currentStep={currentStep}
-              labelList={[
-                'รายการคำสั่งซื้อ',
-                'สรุปคำสั่งซื้อ',
-                'สั่งซื้อสำเร็จ',
-              ]}
-            />
-          </View>
-          <ScrollView ref={ref => (scrollRef.current = ref)}>
-            {renderStep()}
-          </ScrollView>
-        </Content>
-        <FooterShadow
-          style={{
-            paddingBottom: isKeyboardVisible ? 0 : 16,
-          }}>
-          {currentStep === 0 && (
-            <Button
-              onPress={() => {
-                if (cartList.length < 1) {
-                  return setVisible(true);
-                }
-                setCurrentStep(prev => prev + 1);
-              }}
-              title={t('screens.CartScreen.stepOneButton')}
-            />
-          )}
-          {currentStep === 1 && (
-            <TouchableOpacity
-              onPress={() => {
-                setVisibleConfirm(true);
-              }}
+            <View
               style={{
-                width: '100%',
-                height: 50,
-                justifyContent: 'center',
-                alignItems: 'center',
-                backgroundColor: colors.primary,
-                borderRadius: 8,
+                position: 'absolute',
+                left: 16,
               }}>
+              <Image
+                source={icons.cartFill}
+                style={{
+                  width: 24,
+                  height: 24,
+                }}
+              />
               <View
                 style={{
+                  width: 16,
+                  height: 16,
                   position: 'absolute',
-                  left: 16,
+                  right: -6,
+                  borderColor: colors.primary,
+                  borderWidth: 1,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  borderRadius: 12,
+                  zIndex: 1,
+                  padding: 2,
+                  backgroundColor: colors.white,
                 }}>
-                <Image
-                  source={icons.cartFill}
-                  style={{
-                    width: 24,
-                    height: 24,
-                  }}
-                />
-                <View
-                  style={{
-                    width: 16,
-                    height: 16,
-                    position: 'absolute',
-                    right: -6,
-                    borderColor: colors.primary,
-                    borderWidth: 1,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    borderRadius: 12,
-                    zIndex: 1,
-                    padding: 2,
-                    backgroundColor: colors.white,
-                  }}>
-                  <Text color="primary" fontSize={12} lineHeight={12}>
-                    {cartList.length}
-                  </Text>
-                </View>
+                <Text color="primary" fontSize={12} lineHeight={12}>
+                  {cartList.length}
+                </Text>
               </View>
-              <Text color="white" bold fontSize={18} fontFamily="NotoSans">
-                {t('screens.CartScreen.stepTwoButton')}
-              </Text>
-            </TouchableOpacity>
-          )}
-        </FooterShadow>
-        <ModalWarning
-          visible={visible}
-          onlyCancel
-          onRequestClose={() => setVisible(false)}
-          textCancel={'ตกลง'}
-          title="ไม่สามารถสั่งสินค้าได้"
-          desc="คุณต้องเพิ่มสินค้าที่ต้องการสั่งซื้อในตะกร้านี้"
-        />
-        <ModalWarning
-          visible={visibleConfirm}
-          title="ยืนยันคำสั่งซื้อ"
-          desc="ต้องการยืนยันคำสั่งซื้อใช่หรือไม่?"
-          onConfirm={async () => {
-            await onCreateOrder();
-          }}
-          onRequestClose={() => setVisibleConfirm(false)}
-        />
+            </View>
+            <Text color="white" bold fontSize={18} fontFamily="NotoSans">
+              {t('screens.CartScreen.stepTwoButton')}
+            </Text>
+          </TouchableOpacity>
+        )}
+      </FooterShadow>
+      <ModalWarning
+        visible={visible}
+        onlyCancel
+        onRequestClose={() => setVisible(false)}
+        textCancel={'ตกลง'}
+        title="ไม่สามารถสั่งสินค้าได้"
+        desc="คุณต้องเพิ่มสินค้าที่ต้องการสั่งซื้อในตะกร้านี้"
+      />
+      <ModalWarning
+        visible={visibleConfirm}
+        title="ยืนยันคำสั่งซื้อ"
+        desc="ต้องการยืนยันคำสั่งซื้อใช่หรือไม่?"
+        onConfirm={async () => {
+          await onCreateOrder();
+        }}
+        onRequestClose={() => setVisibleConfirm(false)}
+      />
 
-<ModalOnlyConfirm
-          visible={modalReorder}
-          title={`สินค้าในรายการ \nมีการเรียงลำดับการขนสินค้าใหม่ \nกรุณาตรวจสอบลำดับสินค้าอีกครั้ง \nก่อนสรุปคำสั่งซื้อ`}
-          width={'80%'}
-          onConfirm={async () => {
-            await reArrangeReorder()
-          }}
-         textConfirm='ตกลง'
-        />
-      </Container>
-   
+      <ModalOnlyConfirm
+        visible={modalReorder}
+        title={`สินค้าในรายการ \nมีการเรียงลำดับการขนสินค้าใหม่ \nกรุณาตรวจสอบลำดับสินค้าอีกครั้ง \nก่อนสรุปคำสั่งซื้อ`}
+        width={'80%'}
+        onConfirm={async () => {
+          await reArrangeReorder()
+        }}
+        textConfirm='ตกลง'
+      />
+    </Container>
+
   );
 }

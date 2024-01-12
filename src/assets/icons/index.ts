@@ -68,5 +68,7 @@ export default {
   uncheckbox: require('./uncheckbox.png'),
   doc: require('./doc.png'),
   binRed: require('./binRed.png'),
-  viewDoc: require('./viewDoc.png')
+  viewDoc: require('./viewDoc.png'),
+  circulProgress: require('./circulProgress.png'),
+  uploadSucsess: require('./uploadSucsess.png')
 };

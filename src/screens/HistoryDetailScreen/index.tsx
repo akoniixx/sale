@@ -53,7 +53,7 @@ export default function HistoryDetailScreen({
       try {
         setLoading(true);
         const res = await orderServices.getOrderById(params.orderId);
-console.log(res)
+
         setOrderDetail(res);
 
       } catch (e) {
@@ -652,7 +652,24 @@ console.log(res)
                     </View>
                   </View>
               ):null }
-
+ <View style={{ padding: 16, backgroundColor: 'white' }}>
+ <View style={{ flexDirection: 'row' }}>
+                      <Image source={icons.doc} style={{ width: 24, height: 24, marginRight: 8 }} />
+                      <Text fontSize={16} lineHeight={24} bold fontFamily='NotoSans' color='text3'>เอกสาร</Text>
+                    </View>
+        <TouchableOpacity style={{ borderWidth: 1, borderColor: colors.border1, padding: 15, borderRadius: 8, marginTop: 10 }}
+          onPress={() => navigation.navigate('EditFileScreen', {
+            orderId: orderDetail?.orderId? orderDetail.orderId:''
+          })}>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+             
+              <Text fontFamily="NotoSans">เอกสารที่เกี่ยวข้อง</Text>
+            </View>
+            <Image style={{ width: 24, height: 24 }} source={icons.iconNext} />
+          </View>
+        </TouchableOpacity>
+      </View>
               <View
                 style={{
                   marginTop: 8,

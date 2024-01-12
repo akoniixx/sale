@@ -1,6 +1,6 @@
 import { StackScreenProps } from "@react-navigation/stack";
 import React, { useEffect, useState } from "react";
-import { Image, SafeAreaView, ScrollView, TouchableOpacity, View, Modal as ModalRN, StyleSheet, ImageBackground, ActivityIndicator, Easing, } from "react-native";
+import { Image, SafeAreaView, ScrollView, TouchableOpacity, View, Modal as ModalRN, StyleSheet, ImageBackground, ActivityIndicator, } from "react-native";
 import { MainStackParamList } from "../../navigations/MainNavigator";
 import Container from "../../components/Container/Container";
 import Header from "../../components/Header/Header";
@@ -10,32 +10,39 @@ import { colors } from "../../assets/colors/colors";
 import DashedLine from "react-native-dashed-line";
 import { Asset, ImagePickerResponse, launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import ModalWarning from "../../components/Modal/ModalWarning";
+import moment from 'moment'
+import { orderServices } from "../../services/OrderServices";
+import { HistoryDataType } from "../../entities/historyTypes";
+import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 import Animated, { useAnimatedStyle, useSharedValue, withRepeat, withTiming } from "react-native-reanimated";
 
 interface file {
-    fileName: string
-    fileSize: number
-    height: number
-    width: number
-    type: string
-    uri: string
-
+    base64?: string;
+    uri?: string;
+    width?: number;
+    height?: number;
+    originalPath?: string;
+    fileSize?: number;
+    type?: string;
+    fileName?: string;
+    duration?: number;
+    bitrate?: number;
+    timestamp?: string;
+    id?: string;
+    orderFileId?: string
 }
 
-export default function UploadFileScreen({
+export default function EditFileScreen({
     route,
     navigation,
-}: StackScreenProps<MainStackParamList, 'UploadFileScreen'>) {
-    const [file, setFile] = useState<Asset[] | undefined>([]);
+}: StackScreenProps<MainStackParamList, 'EditFileScreen'>) {
+    const [file, setFile] = useState<file[] | undefined>([]);
     const [url, setUrl] = useState()
-    const [urlDelete, setUrlDelete] = useState()
     const [toggleModle, setToggleModal] = useState<boolean>(false)
     const [loading, setLoading] = useState<boolean>(false)
-    const [modalDelete, setmodalDelete] = useState<boolean>(false)
-    const [fileUploading, setFileUploading] = useState<Asset[] | undefined>([])
-  
-const easing = Easing.bezier(0.25, -0.5, 0.25, 1);
+    const [history, setHistory] = useState<HistoryDataType>()
+    const [fileUploading, setFileUploading] = useState<file[] | undefined>([])
+    const params = route.params
     const uploadFile = async () => {
         const result: ImagePickerResponse = await launchImageLibrary({
             mediaType: 'photo',
@@ -55,11 +62,11 @@ const easing = Easing.bezier(0.25, -0.5, 0.25, 1);
     }
     const rotation = useSharedValue(0);
 
-const animatedStyle = useAnimatedStyle(() => {
-    return {
-        transform: [{ rotate: `${rotation.value}deg` }],
-    };
-});
+    const animatedStyle = useAnimatedStyle(() => {
+        return {
+            transform: [{ rotate: `${rotation.value}deg` }],
+        };
+    });
     const startUploadingAnimation = () => {
         rotation.value = withRepeat(withTiming(360, { duration: 2000 }), -1, false);
     };
@@ -67,74 +74,107 @@ const animatedStyle = useAnimatedStyle(() => {
         // Stop the animation
         rotation.value = 0; // Reset rotation
     };
-const storeImageUris = async (uris: []) => {
-    try {
-        const storedUrisJson = await AsyncStorage.getItem('imageUris');
-        let storedUris = storedUrisJson ? JSON.parse(storedUrisJson) : [];
-        if (file.length < 5) {
-            let result = storedUris.concat(uris);
-            let uploading = uris.map((e)=>({
-                e,
-                uri: icons.circulProgress
 
-            }))
-            setFileUploading(uploading);
+    const storeImageUris = async (uris: any) => {
+        try {
+            setLoading(true)
+            if (file.length < 5) {
+                let result = file?.concat(uris)
 
-            // Trigger the animation start - assuming this is a function that changes UI
-            startUploadingAnimation();
-            setTimeout(() => {
-                stopSpinning()
-                let uploading = uris.map((e)=>({
+
+                let uploading = uris.map((e) => ({
                     e,
-                    uri: icons.uploadSucsess
-    
+                    uri: icons.circulProgress
+
                 }))
-                setFileUploading(uploading)
-               
-            }, 2000);
-            setTimeout(() => {
-                setFileUploading([])
-                setFile(result);
-            }, 3000);
-            await AsyncStorage.setItem('imageUris', JSON.stringify(result));
-        } else {
-            console.log('Cannot add more images. Limit is 5.');
+                setFileUploading(uploading);
+                startUploadingAnimation();
+
+                const data = new FormData()
+                uris.forEach((e, index) => {
+                    data.append('files', {
+                        name: `image${index}.jpg`,
+                        type: e.type,
+                        uri: e.uri
+                    });
+                });
+
+                data.append('orderId', history?.orderId)
+                data.append('updateBy', history?.userStaffId)
+                data.append('action', 'CREATE')
+
+
+                const res = await orderServices.uploadFile(data)
+
+                if (res) {
+                    stopSpinning()
+
+                    let uploading = uris.map((e) => ({
+                        e,
+                        uri: icons.uploadSucsess
+
+                    }))
+                    setFileUploading(uploading)
+                    setTimeout(() => {
+                        setFileUploading([])
+                        setFile(result)
+
+                    }, 2000);
+
+                }
+            } else {
+                console.log('Cannot add more images. Limit is 5.');
+            }
+        } catch (error: any) {
+            console.log(error.response.data);
+        } finally {
+            setLoading(false)
         }
-    } catch (error) {
-        console.log(error);
-    }
-};
+    };
 
     const getImageUris = async () => {
         try {
-            const jsonValue = await AsyncStorage.getItem('imageUris');
-            jsonValue != null ? setFile(JSON.parse(jsonValue)) : [];
-            return jsonValue
+            setLoading(true)
+            const res: HistoryDataType = await orderServices.getOrderById(params.orderId);
+            setHistory(res)
+            let data: file[] = res.orderFiles.map((e, idx) => ({
+
+                uri: e.filePath,
+                fileName: `${idx}-${moment().unix()}`,
+                id: e.orderFileId,
+                orderFileId: e.orderFileId
+
+            }))
+
+            setFile(data)
         } catch (error) {
             console.log(error);
+        }
+        finally {
+            setLoading(false)
         }
     };
 
     const removeImageUri = async (uriToRemove) => {
         try {
-            let storedUris = file ? file : [];
-            storedUris = storedUris.filter(e => e.uri !== uriToRemove);
-            setFile(storedUris)
-            await AsyncStorage.setItem('imageUris', JSON.stringify(storedUris));
+            const data = new FormData()
+            data.append('orderId', history?.orderId)
+            data.append('updateBy', history?.userStaffId)
+            data.append('orderFileId', uriToRemove)
+            data.append('action', 'DELETE')
 
-        } catch (error) {
-            console.error(error);
+            console.log(JSON.stringify(data))
+            const res = await orderServices.uploadFile(data)
+            if (res) {
+                console.log(res)
+            }
+
+
+        } catch (error: any) {
+            console.error(error.response.data);
         }
     };
 
-    const openModalDelete = async (uriToRemove) => {
-
-        setUrlDelete(uriToRemove)
-        setmodalDelete(true)
-
-    }
-    
-    
 
     useEffect(() => {
         getImageUris()
@@ -203,7 +243,7 @@ const storeImageUris = async (uris: []) => {
                         <View style={{ marginTop: 30, flex: 1 }}>
                             <Text>{`เอกสารทั้งหมด ${file?.length}/5 ภาพ`}</Text>
                             <View style={{ marginTop: 20, flex: 1 }}>
-                                <ScrollView contentContainerStyle={{ flexGrow: 1 }} style={{ flex: 1 }} stickyHeaderIndices={[1]} >
+                                <ScrollView contentContainerStyle={{ flexGrow: 1 }} style={{ flex: 1 }} >
                                     {file != undefined && file?.map((item, idx) => (
                                         <View style={{ marginTop: 10 }} key={idx}>
                                             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }} >
@@ -216,7 +256,7 @@ const storeImageUris = async (uris: []) => {
                                                     <TouchableOpacity onPress={() => viewImage(item.uri)}>
                                                         <Image source={icons.viewDoc} style={{ width: 25, height: 25, marginRight: 20 }} />
                                                     </TouchableOpacity>
-                                                    <TouchableOpacity onPress={() => openModalDelete(item.uri)}>
+                                                    <TouchableOpacity onPress={() => removeImageUri(item.orderFileId)}>
                                                         <Image source={icons.binRed} style={{ width: 25, height: 25 }} />
                                                     </TouchableOpacity>
 
@@ -237,19 +277,19 @@ const storeImageUris = async (uris: []) => {
                                         <View style={{ marginTop: 10 }} key={idx}>
                                             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }} >
                                                 <View style={{ flexDirection: 'row', maxWidth: '60%', alignItems: 'center' }}>
-                                                    <Animated.View style={{ width: 40, height: 40, marginRight: 20 ,backgroundColor:'#EFF3FD',justifyContent:'center',alignItems:'center'}}>
-                                                        <Animated.Image 
-                                                        source={item.uri}
-                                                        style={[ animatedStyle,{
-                                                            width:20,
-                                                            height:20,
-                                                        }]}
+                                                    <Animated.View style={{ width: 40, height: 40, marginRight: 20, backgroundColor: '#EFF3FD', justifyContent: 'center', alignItems: 'center' }}>
+                                                        <Animated.Image
+                                                            source={item.uri}
+                                                            style={[animatedStyle, {
+                                                                width: 20,
+                                                                height: 20,
+                                                            }]}
                                                         />
                                                     </Animated.View>
-                                                 
+
                                                     <Text numberOfLines={1} ellipsizeMode='tail'>{item.fileName}</Text>
                                                 </View>
-                                               
+
                                             </View>
                                             <DashedLine
                                                 dashColor={colors.border2}
@@ -266,24 +306,12 @@ const storeImageUris = async (uris: []) => {
                             </View>
                         </View> : null
                 }
+
             </View>
 
 
-            <ModalWarning
-                titleCenter
-                title={'ยืนยันการลบ'}
-                desc={`กรุณาตรวจสอบความถูกต้อง\nก่อนยืนยันการลบเอกสาร`}
-                visible={modalDelete}
-                onConfirm={() => {
-                    removeImageUri(urlDelete)
-                    setmodalDelete(false);
 
-                }}
-                onRequestClose={() => {
-                    setmodalDelete(false);
-                }}
-            />
-
+            {/* <LoadingSpinner visible={loading} /> */}
         </SafeAreaView>
 
     )

@@ -70,6 +70,7 @@ navRequest.interceptors.request.use(
   },
 );
 
+
 navRequest.interceptors.response.use(
   function (response) {
     return response;
@@ -86,3 +87,15 @@ navRequest.interceptors.response.use(
     return Promise.reject(error);
   },
 );
+
+export const uploadFileInstance = axios.create({
+  baseURL: API_URL,
+});
+
+uploadFileInstance.interceptors.request.use(async (config: any) => {
+  const token = await AsyncStorage.getItem('token');
+  config.headers['Content-Type'] = 'multipart/form-data';
+  config.headers.Authorization = `Bearer ${token}`;
+  return config;
+});
+

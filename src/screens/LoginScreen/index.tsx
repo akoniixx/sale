@@ -59,6 +59,7 @@ export default function LoginScreen({ navigation }: Props): JSX.Element {
         tel: v.tel,
       });
     } catch (e: any) {
+      console.log(e)
      
       if (e?.response?.data?.statusCode) {
         setErrorCode(e.response.data.statusCode);

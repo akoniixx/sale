@@ -20,55 +20,55 @@ export default function Body({ navigation }: Props): JSX.Element {
   const {
     state: { user },
   } = useAuth();
-  const [loading,setLoading] = useState<boolean>(false)
-  const [NewsPromotion,setNewsPromotion] = useState<NewsPromotion[]>([])
-  const [newsList,setNewsList] = useState<Pined[]>([])
-  const fecthNewsPromotion = async() => {
-      try {
-        setLoading(true)
-        const company = await AsyncStorage.getItem('company')
-        const zone = await AsyncStorage.getItem('zone')
-        const res = await NewsPromotionService.getNewsPromotion(company||'',zone||'')
-        const sortedData: NewsPromotion[] = await res.data.sort((a: NewsPromotion, b: NewsPromotion) => {
-          return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
-        });
-        
-        setNewsPromotion(sortedData.slice(0, 5))
-      } catch (error) {
-        console.log(error)
-      } finally{
-        setLoading(false)
-      }
-  }
-const fecthNewsList =async () => {
-  try {
-    setLoading(true)
-    const company = await AsyncStorage.getItem('company')
-    const res:Pined[] = await NewsService.getPined(company||'')
-    const filterData:Pined [] = await res.filter((item)=>item.page==='MAIN_PAGE')
-    const resNews: NewsInterface[] = await NewsService.getNewsList(company || '', 1, 99, 'NEWEST', '')
-    
-    if(res.length<5){
-      const joinArray = res.concat(resNews)
-      setNewsList(joinArray)
-    }else{
-      setNewsList(filterData)
-    }
-    
-   
-   
-  } catch (error) {
-    console.log(error)
-  }finally{
-    setLoading(false)
-  }
-}
-  
+  const [loading, setLoading] = useState<boolean>(false)
+  const [NewsPromotion, setNewsPromotion] = useState<NewsPromotion[]>([])
+  const [newsList, setNewsList] = useState<Pined[]>([])
+  const fecthNewsPromotion = async () => {
+    try {
+      setLoading(true)
+      const company = await AsyncStorage.getItem('company')
+      const zone = await AsyncStorage.getItem('zone')
+      const res = await NewsPromotionService.getNewsPromotion(company || '', zone || '')
+      const sortedData: NewsPromotion[] = await res.data.sort((a: NewsPromotion, b: NewsPromotion) => {
+        return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
+      });
 
-  useEffect(()=>{
-fecthNewsPromotion()
-fecthNewsList()
-  },[])
+      setNewsPromotion(sortedData.slice(0, 5))
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setLoading(false)
+    }
+  }
+  const fecthNewsList = async () => {
+    try {
+      setLoading(true)
+      const company = await AsyncStorage.getItem('company')
+      const res: Pined[] = await NewsService.getPined(company || '')
+      const filterData: Pined[] = await res.filter((item) => item.page === 'MAIN_PAGE')
+      const resNews: NewsInterface[] = await NewsService.getNewsList(company || '', 1, 99, 'NEWEST', '')
+
+      if (res.length < 5) {
+        const joinArray = res.concat(resNews)
+        setNewsList(joinArray)
+      } else {
+        setNewsList(filterData)
+      }
+
+
+
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+
+  useEffect(() => {
+    fecthNewsPromotion()
+    fecthNewsList()
+  }, [])
 
   const memoListMenus = useMemo(() => {
     const ListMenus = [
@@ -98,19 +98,22 @@ fecthNewsList()
     return ListMenus;
   }, [navigation, t, user?.company]);
 
-const renderPromotion = () => (
-  <>
-    {NewsPromotion?.length>0?<View style={{paddingHorizontal:20,marginTop:20}} >
-       <Text bold fontSize={18} fontFamily='NotoSans' >โปรโมชั่น</Text>
+  const renderPromotion = () => (
+    <>
+      {NewsPromotion?.length > 0 ? <View style={{ paddingHorizontal: 20, marginTop: 20 }} >
+        <Text bold fontSize={18} fontFamily='NotoSans' >โปรโมชั่น</Text>
 
-       
-      </View>:     
+
+      </View> :
+
+
+newsList?.length ==0 ? 
         <View
           style={{
-            flex:1,
+            flex: 1,
             justifyContent: 'center',
             alignItems: 'center',
-            marginTop:50
+            marginTop: 50
           }}>
           <Image
             source={images.News}
@@ -120,60 +123,60 @@ const renderPromotion = () => (
             }}
           />
           <Text color="text3">{t('screens.HomeScreen.news')}</Text>
-        </View>
-}
-     
-      <View style={{alignItems:'center'}}>
-      <NewsPromotionCarousel data={NewsPromotion} loading={loading} navigation={navigation}  />
-      </View> 
-      </>
-)
+        </View>: null
+      }
 
-const renderNews = () => (
-  <View style={{marginBottom:40}}>
-   {newsList?.length>0?<View style={{paddingHorizontal:20,marginTop:20}} >
-    <View style={{flexDirection:'row',justifyContent:'space-between'}}>
-    <Text bold fontSize={18} fontFamily='NotoSans' >ข่าวสาร</Text>
-    <TouchableOpacity onPress={()=> navigation.navigate('NewsScreen')}>
-    <Text semiBold  fontSize={14} color='text3' fontFamily='NotoSans' >ทั้งหมด</Text>
-    </TouchableOpacity>
-   
-    </View>
-      
-
-       
-      </View>:   
-      <View style={{paddingHorizontal:20,marginTop:50}}>
-      <View style={{flexDirection:'row',justifyContent:'space-between'}}>
-      <Text bold fontSize={18} fontFamily='NotoSans' >ข่าวสาร</Text>
-      <TouchableOpacity onPress={()=> navigation.navigate('NewsScreen')}>
-      <Text semiBold  fontSize={14} color='text3' fontFamily='NotoSans' >ทั้งหมด</Text>
-      </TouchableOpacity>
-     
+      <View style={{ alignItems: 'center' }}>
+        <NewsPromotionCarousel data={NewsPromotion} loading={loading} navigation={navigation} />
       </View>
-        <View
-          style={{
-            flex:1,
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
-          <Image
-            source={images.News}
+    </>
+  )
+
+  const renderNews = () => (
+    <View style={{ marginBottom: 40 }}>
+      {newsList?.length > 0 ? <View style={{ paddingHorizontal: 20, marginTop: 20 }} >
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          <Text bold fontSize={18} fontFamily='NotoSans' >ข่าวสาร</Text>
+          <TouchableOpacity onPress={() => navigation.navigate('NewsScreen')}>
+            <Text semiBold fontSize={14} color='text3' fontFamily='NotoSans' >ทั้งหมด</Text>
+          </TouchableOpacity>
+
+        </View>
+
+
+
+      </View> :
+        <View style={{ paddingHorizontal: 20, marginTop: 50 }}>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+            <Text bold fontSize={18} fontFamily='NotoSans' >ข่าวสาร</Text>
+            <TouchableOpacity onPress={() => navigation.navigate('NewsScreen')}>
+              <Text semiBold fontSize={14} color='text3' fontFamily='NotoSans' >ทั้งหมด</Text>
+            </TouchableOpacity>
+
+          </View>
+          <View
             style={{
-              height: 100,
-              width: 110,
-            }}
-          />
-          <Text color="text3">{t('screens.HomeScreen.news')}</Text>
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
+            <Image
+              source={images.News}
+              style={{
+                height: 100,
+                width: 110,
+              }}
+            />
+            <Text color="text3">{t('screens.HomeScreen.news')}</Text>
+          </View>
         </View>
-        </View>
-}
-     
-      <View style={{paddingLeft:20,marginTop:10}}>
-     <NewsList data={newsList} loading={loading} navigation={navigation} />
-      </View> 
-  </View>
-)
+      }
+
+      <View style={{ paddingLeft: 20, marginTop: 10 }}>
+        <NewsList data={newsList} loading={loading} navigation={navigation} />
+      </View>
+    </View>
+  )
 
   return (
     <View style={styles.container}>
@@ -213,36 +216,36 @@ const renderNews = () => (
         })}
       </View>
       <ScrollView>
-       {newsList?.length<=0&&NewsPromotion?.length<=0?
-      <>
-       <View
-          style={{
-            flex:1,
-            justifyContent: 'center',
-            alignItems: 'center',
-            marginTop:'10%'
-          }}>
-          <Image
-            source={images.News}
-            style={{
-              height: 100,
-              width: 110,
-            }}
-          />
-          <Text color="text3">{t('screens.HomeScreen.news')}</Text>
-        </View>
-      </> :<>
-      {renderPromotion()}
-      
-     
-      {renderNews()}
-      </>
-      }
-       
-      
-    
+        {newsList?.length <= 0 && NewsPromotion?.length <= 0 ?
+          <>
+            <View
+              style={{
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+                marginTop: '10%'
+              }}>
+              <Image
+                source={images.News}
+                style={{
+                  height: 100,
+                  width: 110,
+                }}
+              />
+              <Text color="text3">{t('screens.HomeScreen.news')}</Text>
+            </View>
+          </> : <>
+            {renderPromotion()}
+
+
+            {renderNews()}
+          </>
+        }
+
+
+
       </ScrollView>
-    
+
     </View>
   );
 }
@@ -252,7 +255,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     position: 'relative',
-  
+
     backgroundColor: 'white',
   },
   containerMenu: {
@@ -262,7 +265,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
   },
   body: {
-    
+
     padding: 20,
   },
 });

@@ -27,7 +27,7 @@ export default function NewsScreen({ navigation }: Props): JSX.Element {
     const [pined, setPined] = useState<Pined[]>([])
     const [newsList, setNewsList] = useState<NewsInterface[]>([])
     const [loading, setLoading] = useState(false)
-    const [sortBy, setSortBy] = useState<string>('NEWEST');
+    const [sortBy, setSortBy] = useState<'MOST_READ'|'NEWEST'>('NEWEST');
     const [checkBox, setCheckBox] = useState<CheckBoxItem[]>([
         {
             id: 1,
@@ -86,11 +86,11 @@ export default function NewsScreen({ navigation }: Props): JSX.Element {
 
     }
 
-    const fecthNewsList = async (sortingType: string, type: string) => {
+    const fecthNewsList = async (sortingType: 'MOST_READ'|'NEWEST', type: string) => {
         try {
             setLoading(true)
             const company = await AsyncStorage.getItem('company')
-            const res: NewsInterface[] = await NewsService.getNewsList(company || '', 1, 99, 'NEWEST', '')
+            const res: NewsInterface[] = await NewsService.getNewsList(company || '', 1, 99, sortingType?sortingType:'NEWEST', type?type:'')
             setNewsList(res)
         } catch (error) {
             console.log(error)
@@ -127,6 +127,7 @@ export default function NewsScreen({ navigation }: Props): JSX.Element {
     };
     const handleSubmit = async () => {
         const selectedValues = getSelectedValues();
+        console.log(selectedValues)
         await fecthNewsList(sortBy, selectedValues)
         filterNews.current.hide();
 
@@ -155,7 +156,7 @@ export default function NewsScreen({ navigation }: Props): JSX.Element {
                     </TouchableOpacity>
                 }
             />
-            {/*    <ScrollView contentContainerStyle={{ flexGrow: 1, }} style={{flex:1}}> */}
+           
             <View style={{ flex: 1, paddingHorizontal: 20 }}>
                 {pined.length !== 0 && <>
                     <View style={{ maxHeight: 140 }}>
@@ -202,7 +203,7 @@ export default function NewsScreen({ navigation }: Props): JSX.Element {
                 </View>
 
             </View>
-            {/*  </ScrollView> */}
+           
             <ActionSheet ref={filterNews}>
                 <View
                     style={{

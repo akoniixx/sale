@@ -40,6 +40,7 @@ export default function NewsDetailScreen({
             setLoading(true)
             const company = await AsyncStorage.getItem('company')
             const res: NewsDetail = await NewsService.getNews(company || '', route.params.newsId)
+            console.log(res)
             setData(res)
            
         } catch (error) {
@@ -91,8 +92,11 @@ export default function NewsDetailScreen({
                         <DashedLine
                             dashColor={colors.border1}
                             dashGap={0}
-                            dashLength={8} />
+                            dashLength={8}
+                            style={{marginBottom:20}}
+                            />
                         <MemoizedRenderHtml
+                        
                             renderers={renderers}
                             WebView={WebView}
                             customHTMLElementModels={customHTMLElementModels}
@@ -110,7 +114,7 @@ export default function NewsDetailScreen({
                             tagsStyles={{
                                 img: {
                                     width: Dimensions.get('screen').width - 30,
-                                    marginRight: 30,
+                                   alignSelf:'center',
                                     resizeMode: 'contain',
                                 },
                                 strong: {

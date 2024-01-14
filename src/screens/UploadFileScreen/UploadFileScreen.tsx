@@ -13,6 +13,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import ModalWarning from "../../components/Modal/ModalWarning";
 import Animated, { useAnimatedStyle, useSharedValue, withRepeat, withTiming } from "react-native-reanimated";
 
+import ImageViewer from 'react-native-image-zoom-viewer';
+
 interface file {
     fileName: string
     fileSize: number
@@ -28,7 +30,7 @@ export default function UploadFileScreen({
     navigation,
 }: StackScreenProps<MainStackParamList, 'UploadFileScreen'>) {
     const [file, setFile] = useState<Asset[] | undefined>([]);
-    const [url, setUrl] = useState()
+    const [url, setUrl] = useState<string>()
     const [urlDelete, setUrlDelete] = useState()
     const [toggleModle, setToggleModal] = useState<boolean>(false)
     const [loading, setLoading] = useState<boolean>(false)
@@ -155,15 +157,26 @@ const storeImageUris = async (uris: []) => {
                 <Image source={icons.closeBlack} style={{ width: 24, height: 24, marginRight: 20 }} />
             </TouchableOpacity>
             <View style={[styles.modalView]}>
-                <ImageBackground source={{ uri: url }} style={{ width: '100%', height: '100%' }} onLoadStart={() => setLoading(true)} onLoadEnd={() => setLoading(false)}>
-                    <ActivityIndicator animating={loading} size={'large'} style={{
-                        position: 'absolute',
-                        left: 0,
-                        right: 0,
-                        top: 0,
-                        bottom: 0,
-                    }} />
-                </ImageBackground>
+                <ImageViewer minScale={0.5}
+            
+            backgroundColor="rgba(0,0,0,0)"
+              imageUrls={[{url:url}]}
+  
+  style={{ width: '100%', height: '100%' }} 
+  renderIndicator={()=>(<></>)}
+  loadingRender={()=>(
+    <ActivityIndicator animating={true} size={'large'} style={{
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        top: 0,
+        bottom: 0,
+    }} />
+  )}
+  renderHeader={()=>(<></>)}
+  />
+                    
+               
             </View>
         </View>
     </ModalRN>)
@@ -175,7 +188,7 @@ const storeImageUris = async (uris: []) => {
                 <View style={{ marginTop: 20 }}>
                     <View>
                         <Text lineHeight={40} fontFamily='NotoSans' bold> อัพโหลดเอกสารเป็นไฟล์ภาพ</Text>
-                        <Text fontSize={14} bold color='text3'>เพิ่มเอกสารได้สูงสุด 5 ภาพ</Text>
+                        <Text fontSize={14} lineHeight={25} bold color='text3'>เพิ่มเอกสารได้สูงสุด 5 ภาพ</Text>
                     </View>
                     <View style={{ marginTop: 20 }}>
                         <TouchableOpacity disabled={file?.length === 5} style={{ backgroundColor: file?.length === 5 ? colors.border1 : colors.primary, alignItems: 'center', paddingVertical: 12, borderRadius: 8 }}
@@ -199,7 +212,10 @@ const storeImageUris = async (uris: []) => {
                 />
 
                         <View style={{ marginTop: 30, flex: 1 }}>
-                            <Text>{`เอกสารทั้งหมด ${file?.length}/5 ภาพ`}</Text>
+                            {file?.length == 0&& fileUploading?.length==0? <></>: 
+                            <Text>{`เอกสารทั้งหมด ${file?.length}/5 ภาพ`}</Text>}
+                           
+
                             <View style={{ marginTop: 20, flex: 1 }}>
                                 <ScrollView contentContainerStyle={{ flexGrow: 1 }} style={{ flex: 1 }} stickyHeaderIndices={[1]} >
                                     {file != undefined && file?.map((item, idx) => (
@@ -299,8 +315,8 @@ const styles = StyleSheet.create({
         display: 'flex',
         justifyContent: 'space-between',
         margin: 20,
-        backgroundColor: 'white',
-        borderRadius: 15,
+       backgroundColor:'white',
+        
         height: '60%',
 
         alignItems: 'center',

@@ -5,7 +5,7 @@ import {
   Image,
   TouchableOpacity,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Text from '../../components/Text/Text';
 import InputText from '../../components/InputText/InputText';
 import Button from '../../components/Button/Button';
@@ -22,6 +22,8 @@ import { useCart } from '../../contexts/CartContext';
 import ImageCache from '../../components/ImageCache/ImageCache';
 import images from '../../assets/images';
 import { getNewPath } from '../../utils/functions';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from '@react-navigation/native';
 
 interface Props {
   loading: boolean;
@@ -63,6 +65,18 @@ export default function StepTwo({
   } = useAuth();
 
   const [isCollapsed, setIsCollapsed] = useState<boolean>(true)
+  const [file, setFile] = useState([])
+const getFile =async () => {
+  const storedUrisJson = await AsyncStorage.getItem('imageUris');
+  let storedUris = storedUrisJson ? JSON.parse(storedUrisJson) : [];
+  setFile(storedUris)
+}
+
+useFocusEffect(
+  React.useCallback(() => {
+    getFile()
+  },[]))
+
 
   return (
     <>
@@ -180,7 +194,7 @@ export default function StepTwo({
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Image style={{ width: 24, height: 24, marginRight: 10 }} source={icons.doc} />
-              <Text fontFamily="NotoSans">เพิ่มเอกสารที่เกี่ยวข้อง</Text>
+              <Text fontFamily="NotoSans">{`เพิ่มเอกสารที่เกี่ยวข้อง(${file.length} ภาพ)`}</Text>
             </View>
             <Image style={{ width: 24, height: 24 }} source={icons.iconNext} />
           </View>

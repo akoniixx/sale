@@ -159,13 +159,14 @@ export default function NewsScreen({ navigation }: Props): JSX.Element {
            
             <View style={{ flex: 1, paddingHorizontal: 20 }}>
                 {pined.length !== 0 && <>
-                    <View style={{ maxHeight: 140 }}>
+                    <View >
                         <PinedCarousel data={pined} navigation={navigation} />
                     </View>
                     <DashedLine
                         dashColor={colors.border2}
                         dashGap={0}
                         dashLength={0.5}
+                        style={{marginTop:10}}
 
                     />
                 </>}

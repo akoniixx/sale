@@ -213,7 +213,7 @@ const storeImageUris = async (uris: []) => {
 
                         <View style={{ marginTop: 30, flex: 1 }}>
                             {file?.length == 0&& fileUploading?.length==0? <></>: 
-                            <Text>{`เอกสารทั้งหมด ${file?.length}/5 ภาพ`}</Text>}
+                            <Text lineHeight={25}>{`เอกสารทั้งหมด ${file?.length}/5 ภาพ`}</Text>}
                            
 
                             <View style={{ marginTop: 20, flex: 1 }}>

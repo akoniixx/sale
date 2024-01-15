@@ -76,6 +76,7 @@ export default function PinedCarousel({
           inactiveDotOpacity={0.4}
           inactiveDotScale={0.9}
           tappableDots={true}
+          containerStyle={{paddingVertical:10,marginTop:0}}
         />
      
     </>

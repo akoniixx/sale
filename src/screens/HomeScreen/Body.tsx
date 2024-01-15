@@ -48,9 +48,9 @@ export default function Body({ navigation }: Props): JSX.Element {
       const filterData: Pined[] = await res.filter((item) => item.page === 'MAIN_PAGE')
       const resNews: NewsInterface[] = await NewsService.getNewsList(company || '', 1, 99, 'NEWEST', '')
 
-      if (res.length < 5) {
-        const joinArray = res.concat(resNews)
-        setNewsList(joinArray)
+      if (res?.length==0||res==undefined) {
+        
+        setNewsList(resNews)
       } else {
         setNewsList(filterData)
       }

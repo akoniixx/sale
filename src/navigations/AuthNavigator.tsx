@@ -6,6 +6,7 @@ import WelcomeScreen from '../screens/WelcomeScreen';
 import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { navigate } from './RootNavigator';
+import TermAndConditionScreen from '../screens/TermAndConditionScreen';
 
 export type AuthStackParamList = {
   LoginScreen: undefined;
@@ -15,6 +16,7 @@ export type AuthStackParamList = {
     tel: string;
   };
   WelcomeScreen: undefined;
+  TermAndConditionScreen:undefined
 };
 const Stack = createStackNavigator<AuthStackParamList>();
 export default function AuthNavigator() {
@@ -39,6 +41,7 @@ export default function AuthNavigator() {
         <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} />
         <Stack.Screen name="OtpScreen" component={OtpScreen} />
         <Stack.Screen name="LoginScreen" component={LoginScreen} />
+        <Stack.Screen name="TermAndConditionScreen" component={TermAndConditionScreen} />
       </Stack.Group>
     </Stack.Navigator>
   );

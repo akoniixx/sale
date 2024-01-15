@@ -98,18 +98,16 @@ const Stack = createStackNavigator<MainStackParamList>();
 export default function MainNavigator() {
   useEffect(() => {
     const getAlreadyAcceptTerm = async () => {
-      const alreadyAcceptTerm = await AsyncStorage.getItem('alreadyAcceptTerm');
+     
       const isFromNotification = await AsyncStorage.getItem(
         'isFromNotification',
       );
-      if (alreadyAcceptTerm === null) {
-        navigate('TermAndConditionScreen');
-      } else {
+     
         if (isFromNotification === 'true') {
           return await AsyncStorage.removeItem('isFromNotification');
         }
         navigate('MainScreen');
-      }
+      
     };
     getAlreadyAcceptTerm();
   }, []);

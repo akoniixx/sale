@@ -76,7 +76,8 @@ export default function FreeSpeciaRequestScreen({ navigation, route }: Props) {
     setLoading(true)
     const payload: any = {
       company: user?.company,
-      searchText: searchValue
+      searchText: searchValue,
+      productFreebiesStatus:'ACTIVE'
     }
     try {
       const res = await productServices.getProductFree(payload)

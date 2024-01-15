@@ -18,6 +18,7 @@ import { AuthServices } from '../../services/AuthServices';
 import { useAuth } from '../../contexts/AuthContext';
 import { AuthStackParamList } from '../../navigations/AuthNavigator';
 import { navigate } from '../../navigations/RootNavigator';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 export default function OtpScreen({
@@ -71,9 +72,14 @@ export default function OtpScreen({
 
       try {
         const res = await login(payload);
-
+        const alreadyAcceptTerm = await AsyncStorage.getItem('alreadyAcceptTerm');
         if (res.accessToken) {
-          navigate('Main');
+if(alreadyAcceptTerm){
+  navigate('TermAndConditionScreen');
+}else{
+  navigate('Main')
+}
+        
         }
       } catch (e:any) {
       

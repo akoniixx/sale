@@ -234,7 +234,7 @@ export default function EditFileScreen({
                 <View style={{ marginTop: 20 }}>
                     <View>
                         <Text lineHeight={40} fontFamily='NotoSans' bold> อัพโหลดเอกสารเป็นไฟล์ภาพ</Text>
-                        <Text fontSize={14} bold color='text3'>เพิ่มเอกสารได้สูงสุด 5 ภาพ</Text>
+                        <Text lineHeight={25} fontSize={14} bold color='text3'>เพิ่มเอกสารได้สูงสุด 5 ภาพ</Text>
                     </View>
                     <View style={{ marginTop: 20 }}>
                         <TouchableOpacity disabled={file?.length === 5} style={{ backgroundColor: file?.length === 5 ? colors.border1 : colors.primary, alignItems: 'center', paddingVertical: 12, borderRadius: 8 }}

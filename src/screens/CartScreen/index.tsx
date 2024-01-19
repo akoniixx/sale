@@ -162,6 +162,8 @@ export default function CartScreen({
       }
       /* console.log('payload', JSON.stringify(payload, null, 2)); */
       const result = await orderServices.createOrder(payload);
+        
+     
       if (result) {
         // console.log('result', JSON.stringify(result, null, 2));
         setCartDetail({} as CartDetailType)

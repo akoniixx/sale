@@ -8,8 +8,9 @@ import {
   ScrollView,
   TouchableWithoutFeedback,
   Keyboard,
+  SafeAreaView,
 } from 'react-native';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import ActionSheet, { SheetProps } from 'react-native-actions-sheet';
 import Text from '../../Text/Text';
 import icons from '../../../assets/icons';
@@ -23,11 +24,13 @@ import * as Yup from 'yup';
 import { SubmitButton } from '../../Form/SubmitButton';
 import { factoryServices } from '../../../services/FactorySevices';
 import { useAuth } from '../../../contexts/AuthContext';
+import InputText from '../../InputText/InputText';
 export default function SelectLocationSheet(props: SheetProps) {
   const {
     state: { user },
   } = useAuth();
   const [selected, setSelected] = React.useState('SHOP');
+  const [remark,setRemark] = useState('')
   const [storeAddress, setStoreAddress] = React.useState({
     name: '',
     addressText: '',
@@ -67,6 +70,7 @@ export default function SelectLocationSheet(props: SheetProps) {
   ];
   useEffect(() => {
     const getFactory = async () => {
+      setRemark(props.payload.comment || '')
       const factoryData = await factoryServices.getFactory(user?.company || '');
       setFactoryAddress({
         name: factoryData.factoryName,
@@ -107,7 +111,8 @@ export default function SelectLocationSheet(props: SheetProps) {
         height: '100%',
       }}
       id={props.sheetId}>
-      <ScrollView
+        <SafeAreaView style={{flex:1}}  >
+        <ScrollView
         contentContainerStyle={{
           flexGrow: 1,
           height: '100%',
@@ -238,6 +243,7 @@ export default function SelectLocationSheet(props: SheetProps) {
                           {storeAddress.name}
                         </Text>
                         <Text
+                          
                           fontSize={16}
                           lineHeight={24}
                           style={{
@@ -288,22 +294,31 @@ export default function SelectLocationSheet(props: SheetProps) {
                 </Text>
                 <View
                   style={{
-                    marginTop: 8,
+                    marginVertical: 8,
                   }}>
-                  <Text fontSize={16} fontFamily="NotoSans">
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                    <Text fontSize={16} fontFamily="NotoSans" style={{marginBottom:8}}>
                     หมายเหตุ (ลูกค้า)
                   </Text>
-                  <InputTextForm
+                  <Text fontSize={16} fontFamily="NotoSans" style={{marginBottom:8}}>
+                    {remark.length||0}/150
+                  </Text>
+                    </View>
+                  
+                  <InputText
+                  onChangeText={(text)=>setRemark(text)}
                     blurOnSubmit={true}
                     defaultValue={props.payload.comment || ''}
-                    name="comment"
+                   
                     multiline
+                    maxLength={150}
                     returnKeyType="done"
                     onSubmitEditing={() => {
                       Keyboard.dismiss();
                     }}
                     style={{
                       minHeight: Platform.OS === 'ios' ? 140 : 80,
+                      
                     }}
                     numberOfLines={4}
                     placeholder="ใส่หมายเหตุ..."
@@ -327,18 +342,18 @@ export default function SelectLocationSheet(props: SheetProps) {
                     selected === 'OTHER'
                       ? {
                           name: data.address,
-                          comment: data.comment,
+                          comment: remark,
                         }
                       : selected === 'SHOP'
                       ? {
                           name: storeAddress.name,
                           address: storeAddress.addressText,
-                          comment: data.comment,
+                          comment:remark,
                         }
                       : {
                           name: factoryAddress.name,
                           address: factoryAddress.addressText,
-                          comment: data.comment,
+                          comment: remark,
                         };
                   SheetManager.hide(props.sheetId, {
                     payload: {
@@ -354,6 +369,8 @@ export default function SelectLocationSheet(props: SheetProps) {
           )}
         </Form>
       </ScrollView>
+        </SafeAreaView>
+     
     </ActionSheet>
   );
 }

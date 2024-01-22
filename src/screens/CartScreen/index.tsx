@@ -247,9 +247,11 @@ export default function CartScreen({
     React.useCallback(() => {
       const getInitData = async () => {
         const getFactory = async () => {
+         
           const factoryData = await factoryServices.getFactory(
             user?.company || '',
           );
+         
           setAddressDelivery(prev => ({
             ...prev,
             name: factoryData.name,
@@ -277,10 +279,11 @@ export default function CartScreen({
         if (user?.company && user?.company === 'ICPL') {
           getShopLocation();
         }
-        if (user?.company && user?.company === 'ICPF') {
+       else if (user?.company && user?.company === 'ICPF') {
           getFactory();
+        }else{
+          getShopLocation();
         }
-
         if (params?.step) {
           setCurrentStep(params.step);
         }

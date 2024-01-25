@@ -16,11 +16,15 @@ interface Props {
   setIsDelCart: React.Dispatch<React.SetStateAction<boolean>>;
   productItem: ProductSummary;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsError: (v: boolean) => void
+  setErrorMessege: (v: string) => void
 }
 export default function Footer({
   id,
   setIsAddCart,
   setIsDelCart,
+  setIsError,
+  setErrorMessege,
   navigation,
   productItem,
   setLoading,
@@ -36,7 +40,7 @@ export default function Footer({
   const currentProduct = cartList?.find(
     item => item?.productId.toString() === id,
   );
-  const [notFirstFetch, setIsNotFirstFetch] = React.useState(false);
+ 
 
   const [debounceCount, loading] = useDebounce(currentProduct?.amount, 500);
 
@@ -45,27 +49,6 @@ export default function Footer({
       setCurrentCount(currentProduct.amount);
     }
   }, [currentProduct]);
-
-  useEffect(() => {
-    const updateAmount = async () => {
-      try {
-        setLoading(true);
-
-        await postCartItem(cartList);
-
-        setIsAddCart(true);
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (debounceCount && notFirstFetch) {
-      updateAmount();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debounceCount]);
 
   const promotionIdList = (productItem?.promotion || []).map(el => {
     return {
@@ -98,9 +81,10 @@ export default function Footer({
       } else {
         newCartList[findIndex].amount = Number(quantity);
         setCartList(newCartList);
-        setIsNotFirstFetch(true);
+     
       }
     } else {
+      console.log('b')
       const newCartList: any = [
         ...cartList,
         {
@@ -111,9 +95,16 @@ export default function Footer({
           order: cartList.length + 1,
         },
       ];
-      setCartList(newCartList);
-      setLoading(false);
-      setIsNotFirstFetch(true);
+
+      try {
+        const res = await postCartItem(newCartList);
+        setIsAddCart(true);
+        setCartList(newCartList);
+      } catch (error: any) {
+        setIsError(true)
+        setErrorMessege(error.message)
+        console.log(error, 'from catch detail')
+      }
     }
   };
   const onIncrease = async () => {
@@ -124,8 +115,19 @@ export default function Footer({
       const newCartList = [...cartList];
 
       newCartList[findIndex].amount += 5;
+      try {
+        setLoading(true);
+        await postCartItem(newCartList);
+        setIsAddCart(true);
+        setCartList(newCartList);
+      } catch (error: any) {
+        setIsError(true)
+        setErrorMessege(error.message)
+        console.log(error, 'from catch detail')
+      } finally {
+        setLoading(false);
+      }
 
-      setCartList(newCartList);
     } else {
       const newCartList: any = [
         ...cartList,
@@ -137,9 +139,21 @@ export default function Footer({
           order: cartList.length + 1,
         },
       ];
-      setCartList(newCartList);
+      try {
+        const res = await postCartItem(newCartList);
+        setIsAddCart(true);
+        setCartList(newCartList);
+      } catch (error: any) {
+        setIsError(true)
+        setErrorMessege(error.message)
+        console.log(error, 'from catch detail')
+
+      } finally {
+
+      }
+
     }
-    setIsNotFirstFetch(true);
+ 
   };
   const onDecrease = async () => {
     const findIndex = cartList?.findIndex(
@@ -152,7 +166,7 @@ export default function Footer({
       if (amount > 5) {
         newCartList[findIndex].amount -= 5;
         setCartList(newCartList);
-        setIsNotFirstFetch(true);
+       
       } else {
         newCartList.splice(findIndex, 1);
         setCartList(newCartList);

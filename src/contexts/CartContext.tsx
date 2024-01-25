@@ -481,7 +481,7 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
           cartDetail: result || {},
         };
       } catch (e) {
-        console.log(e);
+       throw(e)
       }
     };
   }, [

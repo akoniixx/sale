@@ -26,7 +26,7 @@ const postCart = async (payload: CartItemType) => {
   return await request
     .post(`/order-cart/cart/sale`, payload)
     .then(res => res.data)
-    .catch(err => console.log(JSON.stringify(err.response.data, null, 2)));
+    .catch(err => {throw(err.response.data)});
 };
 const getCartList = async ({ userStaffId, customerCompanyId }: GetCartType) => {
   return await request

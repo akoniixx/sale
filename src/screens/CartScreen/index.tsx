@@ -160,8 +160,9 @@ export default function CartScreen({
       if (dataStepTwo.numberPlate) {
         payload.numberPlate = dataStepTwo.numberPlate;
       }
-      /* console.log('payload', JSON.stringify(payload, null, 2)); */
+      console.log('payload', JSON.stringify(payload, null, 2));
       const result = await orderServices.createOrder(payload);
+     /*  console.log(result) */
         
      
       if (result) {

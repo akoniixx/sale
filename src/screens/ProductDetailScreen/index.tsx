@@ -16,6 +16,7 @@ import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
 import { ProductSummary } from '../../entities/productType';
 import { KeyboardAvoidingView, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import ModalWarning from '../../components/Modal/ModalWarning';
 
 export default function ProductDetailScreen({
   route,
@@ -25,8 +26,16 @@ export default function ProductDetailScreen({
   const { t } = useLocalization();
   const [isAddCart, setIsAddCart] = React.useState(false);
   const [isDelCart, setIsDelCart] = React.useState(false);
+  const [isError, setIsError] = React.useState(false);
+  const [errorMessege, setErrorMessege] = React.useState<string>('');
   const [productItem, setProductItem] = React.useState<ProductSummary>();
   const [loading, setLoading] = useState(false);
+
+
+const onError = () =>{
+  setIsError(false)
+  navigation.goBack()
+}
 
   useFocusEffect(
     React.useCallback(() => {
@@ -52,6 +61,7 @@ export default function ProductDetailScreen({
     }, [id]),
   );
   return (
+    <>
     <Container>
       <Header componentRight={<CartBadge navigation={navigation} />} />
       <KeyboardAvoidingView
@@ -78,9 +88,19 @@ export default function ProductDetailScreen({
               setIsAddCart={setIsAddCart}
               setIsDelCart={setIsDelCart}
               setLoading={setLoading}
+              setIsError={setIsError}
+              setErrorMessege={setErrorMessege}
               productItem={productItem}
             />
           )}
+           <ModalWarning
+     visible={isError}
+     onlyCancel
+     onRequestClose={() => onError()}
+     textCancel={'ตกลง'}
+     title={`${errorMessege?errorMessege:''}`}
+     desc="กรุณาสร้างคำสั่งซื้อใหม่แยกประเภทสินค้า"
+   />
         </Content>
       </KeyboardAvoidingView>
       <LoadingSpinner visible={loading} />
@@ -94,6 +114,9 @@ export default function ProductDetailScreen({
         message={t('modalMessage.deleteCart')}
         onRequestClose={() => setIsDelCart(false)}
       />
+      
     </Container>
+    
+   </>
   );
 }

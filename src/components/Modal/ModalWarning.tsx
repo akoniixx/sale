@@ -54,12 +54,14 @@ export default function ModalWarning({
               paddingVertical: 16,
               paddingHorizontal: 16,
               minHeight,
+              alignItems:'center'
             }}>
             <Text semiBold lineHeight={28} center={!titleCenter}>
               {title}
             </Text>
             {desc && (
               <Text
+                
                 fontSize={14}
                 fontFamily="Sarabun"
                 color="text3"

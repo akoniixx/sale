@@ -20,6 +20,7 @@ import FastImage from 'react-native-fast-image';
 import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
 import { useAuth } from '../../contexts/AuthContext';
 import { useDebounce } from '../../hook';
+import { err } from 'react-native-svg/lib/typescript/xml';
 
 interface Props extends ProductType {
   name?: string;
@@ -30,6 +31,8 @@ interface Props extends ProductType {
   onPressCart?: () => void;
   setIsAddCart: (v: boolean) => void;
   setIsDelCart: (v: boolean) => void;
+  setIsError: (v: boolean) => void;
+  setErrorMessege: (v:any) => void
   navigation: any;
   idItem: string;
   promotion?: any;
@@ -37,6 +40,8 @@ interface Props extends ProductType {
 export default function Item({
   setIsAddCart,
   setIsDelCart,
+  setIsError,
+  setErrorMessege,
   navigation,
   idItem,
   productName,
@@ -305,10 +310,20 @@ export default function Item({
                   orderProductPromotions,
                 },
               ];
-              setIsAddCart(true);
-
-              setCartList(newCartList);
-              await postCartItem(newCartList);
+             
+              try {
+                const res =  await postCartItem(newCartList);
+                setCartList(newCartList);
+                setIsAddCart(true);
+              } catch (error:any) {
+                setIsError(true)
+                setErrorMessege(error.message)
+                console.log(error,'from catch')
+              }
+           
+           
+            
+              
               props.onPressCart && props.onPressCart();
             }}
             style={{

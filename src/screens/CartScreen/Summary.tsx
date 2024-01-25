@@ -131,7 +131,7 @@ export default function Summary({ setLoading }: Props): JSX.Element {
     const list = [
       {
         title:
-          user?.company === 'ICPF' ? 'เงินสด' : 'เงินสด (รับส่วนลดเพิ่ม 1.5%)',
+          user?.company === 'ICPF'|| user?.company === 'MGT'? 'เงินสด' : 'เงินสด (รับส่วนลดเพิ่ม 1.5%)',
         value: 'CASH',
         key: 'cash',
       },

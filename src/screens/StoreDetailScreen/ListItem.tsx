@@ -19,6 +19,7 @@ import { productServices } from '../../services/ProductServices';
 import { useAuth } from '../../contexts/AuthContext';
 import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import ModalWarning from '../../components/Modal/ModalWarning';
 
 interface Props {
   nameDealer: string;
@@ -49,6 +50,8 @@ export default function ListItem({
   const [dataBrand, setDataBrand] = React.useState<ProductCategory[]>([]);
   const [isAddCart, setIsAddCart] = React.useState(false);
   const [isDelCart, setIsDelCart] = React.useState(false);
+  const [isError, setIsError] = React.useState(false);
+  const [errorMessege, setErrorMessege] = React.useState<string>('');
   const {
     state: { user },
   } = useAuth();
@@ -353,6 +356,8 @@ export default function ListItem({
             navigation={navigation}
             setIsAddCart={setIsAddCart}
             setIsDelCart={setIsDelCart}
+            setIsError={setIsError}
+            setErrorMessege={setErrorMessege}
           />
         </>
       );
@@ -416,6 +421,19 @@ export default function ListItem({
         message={t('modalMessage.addCart')}
         onRequestClose={() => setIsAddCart(false)}
       />
+       <ModalWarning
+        visible={isError}
+        onlyCancel
+        onRequestClose={() => setIsError(false)}
+        textCancel={'ตกลง'}
+        title={`${errorMessege?errorMessege:''}`}
+        desc="กรุณาสร้างคำสั่งซื้อใหม่แยกประเภทสินค้า"
+      />
+     {/*  <ModalMessage
+        visible={isError}
+        message={errorMessege?errorMessege:''}
+        onRequestClose={() => setIsError(false)}
+      /> */}
       <ModalMessage
         visible={isDelCart}
         message={t('modalMessage.deleteCart')}

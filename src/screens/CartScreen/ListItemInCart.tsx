@@ -198,6 +198,9 @@ export default function ListItemInCart({
       };
     });
   }, [cartList]);
+
+
+
   const RenderList = (load: boolean) => {
     return (
       <>
@@ -205,15 +208,16 @@ export default function ListItemInCart({
           const isUsePromotion = cartDetail?.allPromotions?.find(el => {
             const isFindPromotionId = item.orderProductPromotions.find(
               el2 =>
-                el2.promotionId === el.promotionId /* &&
-                el2.promotionType === 'DISCOUNT_NOT_MIX'|| el.promotionType === 'DISCOUNT_MIX', */
+                el2.promotionId === el.promotionId &&
+                el2.promotionType === 'DISCOUNT_NOT_MIX'|| el.promotionType === 'DISCOUNT_MIX',
             );
             return el.isUse && !!isFindPromotionId;
           });
+         
           const currentDiscount: any = item.orderProductPromotions.find(
             el =>
-              el.promotionId === isUsePromotion?.promotionId /* &&
-              el.promotionType === 'DISCOUNT_NOT_MIX'|| el.promotionType === 'DISCOUNT_MIX', */
+              el.promotionId === isUsePromotion?.promotionId &&
+              el.promotionType === 'DISCOUNT_NOT_MIX'|| el.promotionType === 'DISCOUNT_MIX',
           );
 
           const sumDiscount =

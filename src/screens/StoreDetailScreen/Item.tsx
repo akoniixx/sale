@@ -318,7 +318,7 @@ export default function Item({
               } catch (error:any) {
                 setIsError(true)
                 setErrorMessege(error.message)
-                console.log(error,'from catch')
+                console.log(error)
               }
            
            

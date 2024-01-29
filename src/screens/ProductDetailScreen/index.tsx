@@ -33,8 +33,11 @@ export default function ProductDetailScreen({
 
 
 const onError = () =>{
+  setTimeout(() => {
+    navigation.goBack()
+  }, 500);
   setIsError(false)
-  navigation.goBack()
+  
 }
 
   useFocusEffect(
@@ -90,6 +93,7 @@ const onError = () =>{
               setLoading={setLoading}
               setIsError={setIsError}
               setErrorMessege={setErrorMessege}
+              isError={isError}
               productItem={productItem}
             />
           )}
@@ -98,7 +102,7 @@ const onError = () =>{
      onlyCancel
      onRequestClose={() => onError()}
      textCancel={'ตกลง'}
-     title={`${errorMessege?errorMessege:''}`}
+     title={`${isError&&'elelele'}${errorMessege?errorMessege:''}`}
      desc="กรุณาสร้างคำสั่งซื้อใหม่แยกประเภทสินค้า"
    />
         </Content>

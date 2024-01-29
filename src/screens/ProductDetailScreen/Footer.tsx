@@ -18,6 +18,7 @@ interface Props {
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   setIsError: (v: boolean) => void
   setErrorMessege: (v: string) => void
+  isError: boolean
 }
 export default function Footer({
   id,
@@ -28,10 +29,12 @@ export default function Footer({
   navigation,
   productItem,
   setLoading,
+  isError,
 }: Props): JSX.Element {
   const { t } = useLocalization();
 
   const [currentCount, setCurrentCount] = useState(0);
+  const [error,setError] = useState(false)
   const {
     cartList,
     setCartList,
@@ -63,49 +66,54 @@ export default function Footer({
     quantity: string;
     id?: any;
   }) => {
-    const findIndex = cartList?.findIndex(
-      item => item?.productId.toString() === id.toString(),
-    );
-    if (findIndex !== -1) {
-      const newCartList = [...cartList];
-      if (+quantity < 1) {
-        setLoading(true);
+   
 
-        newCartList.splice(findIndex, 1);
-        setCartList(newCartList);
-        await postCartItem(newCartList);
-        setIsDelCart(true);
-        setLoading(false);
+if(!error){
+  const findIndex = cartList?.findIndex(
+    item => item?.productId.toString() === id.toString(),
+  );
+  if (findIndex !== -1) {
+    const newCartList = [...cartList];
+    if (+quantity < 1) {
+      setLoading(true);
 
-        return;
-      } else {
-        newCartList[findIndex].amount = Number(quantity);
-        setCartList(newCartList);
-     
-      }
+      newCartList.splice(findIndex, 1);
+      setCartList(newCartList);
+      await postCartItem(newCartList);
+      setIsDelCart(true);
+      setLoading(false);
+
+      return;
     } else {
-      console.log('b')
-      const newCartList: any = [
-        ...cartList,
-        {
-          ...productItem,
-          productId: id,
-          amount: Number(quantity),
-          orderProductPromotions: promotionIdList || [],
-          order: cartList.length + 1,
-        },
-      ];
-
-      try {
-        const res = await postCartItem(newCartList);
-        setIsAddCart(true);
-        setCartList(newCartList);
-      } catch (error: any) {
-        setIsError(true)
-        setErrorMessege(error.message)
-        console.log(error, 'from catch detail')
-      }
+      newCartList[findIndex].amount = Number(quantity);
+      setCartList(newCartList);
+   
     }
+  } else {
+    const newCartList: any = [
+      ...cartList,
+      {
+        ...productItem,
+        productId: id,
+        amount: Number(quantity),
+        orderProductPromotions: promotionIdList || [],
+        order: cartList.length + 1,
+      },
+    ];
+
+    try {
+      const res = await postCartItem(newCartList);
+      setIsAddCart(true);
+      setCartList(newCartList);
+    } catch (error: any) {
+      setIsError(true)
+      setErrorMessege(error.message)
+      console.log(error, 'from catch detail')
+    }
+  }
+}
+
+   
   };
   const onIncrease = async () => {
     const findIndex = cartList?.findIndex(
@@ -176,7 +184,6 @@ export default function Footer({
     }
   };
   const onOrder = async () => {
-    try {
       // setDisabledButton(true);
       const findIndex = cartList?.findIndex(
         item => item?.productId.toString() === id,
@@ -187,6 +194,7 @@ export default function Footer({
         newCartList[findIndex].amount = currentCount;
         setCartList(newCartList);
         await postCartItem(newCartList);
+        navigation.navigate('CartScreen');
       } else {
         const newCartList: any = [
           ...cartList,
@@ -198,16 +206,26 @@ export default function Footer({
             order: cartList?.length + 1,
           },
         ];
-        setCartList(newCartList);
-        await postCartItem(newCartList);
+
+        try {
+          const res = await postCartItem(newCartList);
+          setIsAddCart(true);
+          setCartList(newCartList);
+          navigation.navigate('CartScreen');
+        } catch (error: any) {
+          console.log
+          setError(true)
+          setIsError(true)
+          setErrorMessege(error.message)
+        
+  
+        } 
+
+       /*  setCartList(newCartList);
+        await postCartItem(newCartList); */
       }
       // setIsAddCart(true);
       // setDisabledButton(false);
-
-      navigation.navigate('CartScreen');
-    } catch (e) {
-      console.log(e);
-    }
   };
   return (
     <View style={styles().container}>

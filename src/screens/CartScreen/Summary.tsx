@@ -1,5 +1,5 @@
 import { View, StyleSheet, TouchableOpacity, Image } from 'react-native';
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Text from '../../components/Text/Text';
 import { useLocalization } from '../../contexts/LocalizationContext';
 import { colors } from '../../assets/colors/colors';
@@ -22,6 +22,8 @@ export default function Summary({ setLoading }: Props): JSX.Element {
   } = useAuth();
 
   const [termPayment, setTermPayment] = React.useState<string>('');
+  const [company,setCompany] = useState<string>('')
+  const [idkey,setIdkey] = useState<string>('')
 
   const {
     cartDetail,
@@ -31,14 +33,29 @@ export default function Summary({ setLoading }: Props): JSX.Element {
   } = useCart();
   useEffect(() => {
     const getTerm = async () => {
+      const company = await AsyncStorage.getItem('company')
+      setCompany(company||'')
       const termPayment = await AsyncStorage.getItem('termPayment');
       if (termPayment) {
         setTermPayment(termPayment);
-        const isCredit =
-          termPayment && termPayment.toUpperCase().startsWith('N');
-        if (isCredit) {
-          await postEditPaymentMethod('CREDIT');
+
+        if (termPayment && termPayment.toUpperCase().startsWith('N') && termPayment != 'N0') {
+          await postEditPaymentMethod('CREDIT', false);
+          setIdkey('credit')
+        } else if (
+          termPayment && termPayment == 'N0'
+        ) {
+          await postEditPaymentMethod('CASH', false);
+          setIdkey('credit')
         }
+
+        else {
+          await postEditPaymentMethod('CASH',company=="ICPL")
+          setIdkey('cash')
+        }
+
+
+
       }
     };
     getTerm();
@@ -59,9 +76,8 @@ export default function Summary({ setLoading }: Props): JSX.Element {
       .map((item: any) => {
         const dataPush = {
           label: item.productName,
-          valueLabel: `(฿${numberWithCommas(item.marketPrice)} x ${
-            item.quantity
-          } ${item.saleUOMTH ? item.saleUOMTH : item.saleUOM || 'Unit'})`,
+          valueLabel: `(฿${numberWithCommas(item.marketPrice)} x ${item.quantity
+            } ${item.saleUOMTH ? item.saleUOMTH : item.saleUOM || 'Unit'})`,
         };
         if (item.specialRequestDiscount > 0) {
           listDataDiscountSpecialRequest.push({
@@ -76,7 +92,7 @@ export default function Summary({ setLoading }: Props): JSX.Element {
               el2 => el2 === el.promotionId,
             );
 
-            if (el.promotionType === 'DISCOUNT_NOT_MIX'||el.promotionType === 'DISCOUNT_MIX' && isFind) {
+            if (el.promotionType === 'DISCOUNT_NOT_MIX' || el.promotionType === 'DISCOUNT_MIX' && isFind) {
               listDataDiscount.push({
                 ...dataPush,
                 value: el.conditionDetail.conditionDiscount,
@@ -112,11 +128,11 @@ export default function Summary({ setLoading }: Props): JSX.Element {
         label: 'ส่วนลดรวม',
         value: cartDetail?.totalDiscount,
       },
-      totalPriceNoVat:{
-        label:'มูลค่ารวมหลังหักส่วนลด',
+      totalPriceNoVat: {
+        label: 'มูลค่ารวมหลังหักส่วนลด',
         value: cartDetail?.totalPriceNoVat
       },
-      vat:{
+      vat: {
         label: `ภาษีมูลค่าเพิ่ม ${cartDetail?.vatPercentage} %`,
         value: cartDetail?.vat
       }
@@ -127,28 +143,81 @@ export default function Summary({ setLoading }: Props): JSX.Element {
   }, [cartDetail, promotionListValue]);
 
   const radioList = useMemo(() => {
-    const isCredit = termPayment && termPayment.toUpperCase().startsWith('N');
+
+    const isCredit = termPayment && termPayment.toUpperCase().startsWith('N') && termPayment !=='N0'
+    const isN0 = termPayment  && termPayment ==='N0'
     const list = [
       {
-        title:
-          user?.company === 'ICPF'|| user?.company === 'MGT'? 'เงินสด' : 'เงินสด (รับส่วนลดเพิ่ม 1.5%)',
-        value: 'CASH',
+        title: 'เงินสด ',
+        value: {
+          value: 'CASH',
+          useCashDiscount: false,
+          idKey:'cash'
+        },
         key: 'cash',
       },
       {
         title: 'เครดิต',
-        value: 'CREDIT',
+        value: {
+          value: 'CREDIT',
+          useCashDiscount: false,
+          idKey:'credit'
+        },
         key: 'credit',
       },
     ];
-    if (isCredit) {
-      const split = termPayment.toUpperCase().split('N');
-      const numberDayCredit = Number(split[1]);
-      list[1].title = `เครดิต (${numberDayCredit} วัน)`;
-      return numberDayCredit > 0 ? list : list.slice(1);
-    } else {
-      return list.slice(0, 1);
-    }
+
+    const listLadda = [
+      {
+        title: 'เงินสด (รับส่วนลดเพิ่ม 1.5%)',
+        value: {
+          value: 'CASH',
+          useCashDiscount: true,
+          idKey:'cash'
+        },
+        key: 'cash',
+      },
+      {
+        title: 'เครดิต ',
+        value: {
+          value: 'CREDIT',
+          useCashDiscount: false,
+          idKey:'credit',
+        },
+        key: 'credit',
+      },
+    ];
+
+   
+if(company==='ICPL'){
+  if (isCredit) {
+    const split = termPayment.toUpperCase().split('N');
+    const numberDayCredit = Number(split[1]);
+    listLadda[1].title = `เครดิต (${numberDayCredit} วัน)`;
+    return numberDayCredit > 0 ? listLadda : listLadda.slice(1);
+  } else if(isN0){
+    const split = termPayment.toUpperCase().split('N');
+    const numberDayCredit = Number(split[1]);
+    listLadda[1].value.value = 'CASH'
+    listLadda[1].title = `เครดิต (${numberDayCredit} วัน)`;
+    return listLadda.slice(1)
+  }else{
+    listLadda[1].value.value = 'CASH'
+    listLadda[1].title = `เครดิต (0 วัน)`;
+    return listLadda;
+  }
+}else{
+  if(isCredit){
+    const split = termPayment.toUpperCase().split('N');
+    const numberDayCredit = Number(split[1]);
+    list[1].title = `เครดิต (${numberDayCredit} วัน)`;
+    return list.slice(1)
+  }else{
+    return list.slice(0,1)
+  }
+  
+}
+     
   }, [termPayment, user?.company]);
 
   return (
@@ -182,21 +251,24 @@ export default function Summary({ setLoading }: Props): JSX.Element {
               borderBottomColor: colors.border1,
               borderBottomWidth: 1,
             }}>
-             
+
             <Radio
               value={cartDetail?.paymentMethod}
-              onChange={async value => {
+              idkey={idkey}     
+              onChange={async (value) => {
                 try {
                   setLoading(true);
-                  await postEditPaymentMethod(value);
+                  await postEditPaymentMethod(value.value, value.useCashDiscount);
+                  setIdkey(value.idKey)
                   setLoading(false);
                 } catch (error) {
                   console.log(error);
                 } finally {
                   setLoading(false);
                 }
-              }}
-              radioLists={radioList}
+              } }
+              radioLists={radioList} 
+                       
             />
           </View>
           <View

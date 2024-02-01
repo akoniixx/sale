@@ -6,16 +6,26 @@ import { colors } from '../../assets/colors/colors';
 interface Props {
   radioLists: {
     title: string;
-    value: string;
+    value: {
+      value: string,
+      useCashDiscount:boolean,
+      idKey:string
+    };
     key: string;
   }[];
-  onChange?: (value: string) => void;
+  idkey:string
+  onChange?: (value: {
+    value: string,
+    useCashDiscount:boolean
+    idKey:string
+  }) => void;
   value?: string;
   label?: string;
 }
 export default function Radio({
   radioLists,
   value,
+  idkey,
   onChange,
 }: Props): JSX.Element {
   return (
@@ -29,7 +39,7 @@ export default function Radio({
               onPress={() => onChange?.(item.value)}
               style={
                 styles({
-                  selected: value === item.value,
+                  selected: idkey === item.value.idKey,
                 }).radio
               }
             />

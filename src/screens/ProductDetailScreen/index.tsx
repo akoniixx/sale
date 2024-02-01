@@ -102,7 +102,7 @@ const onError = () =>{
      onlyCancel
      onRequestClose={() => onError()}
      textCancel={'ตกลง'}
-     title={`${isError&&'elelele'}${errorMessege?errorMessege:''}`}
+     title={`${errorMessege?errorMessege:''}`}
      desc="กรุณาสร้างคำสั่งซื้อใหม่แยกประเภทสินค้า"
    />
         </Content>

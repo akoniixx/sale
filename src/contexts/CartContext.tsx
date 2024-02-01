@@ -145,7 +145,7 @@ interface ContextCart {
       newAllPromotion?: PromotionTypeCart[],
     ) => Promise<any>;
     postEditIsUseCod: ({ isUseCOD }: { isUseCOD: boolean }) => Promise<any>;
-    postEditPaymentMethod: (paymentMethod: string) => Promise<any>;
+    postEditPaymentMethod: (paymentMethod: string,useCashDiscount: boolean) => Promise<any>;
   };
   setCartList: React.Dispatch<React.SetStateAction<newProductType[]>>;
   setCartDetail: React.Dispatch<React.SetStateAction<CartDetailType>>;
@@ -308,7 +308,7 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
         console.log(error);
       }
     };
-    const postEditPaymentMethod = async (paymentMethod: string) => {
+    const postEditPaymentMethod = async (paymentMethod: string,useCashDiscount:boolean) => {
       const orderProducts = cartList.map(item => {
         return {
           productId: +item.productId,
@@ -327,7 +327,8 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
         orderProducts,
         customerCompanyId: customerCompanyId ? +customerCompanyId : 0,
         allPromotions: cartDetail?.allPromotions || [],
-        specialRequestFreebies: cartDetail?.specialRequestFreebies || []
+        specialRequestFreebies: cartDetail?.specialRequestFreebies || [],
+        useCashDiscount
       };
       
       const data = await cartServices.postCart(payload);

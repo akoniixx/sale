@@ -5,8 +5,8 @@
   "scripts": {
     "android": "react-native run-android",
     "start-iphone8": "react-native run-ios --simulator='iPhone 8'",
-    "ios": "react-native run-ios",
-    "start": "react-native run-ios --simulator='iPhone 15 Pro Max'",
+    "ios": "react-native run-ios --simulator='iPhone 15 Pro Max'",
+    "start": "react-native run-ios",
     "port": "react-native start --port 8999",
     "test": "jest",
     "lint": "tsc --noEmit && eslint --ext .js,.jsx,.ts,.tsx ./",

@@ -132,6 +132,7 @@ export interface CartDetailType {
   coAmount: string;
   cashDiscount: number;
   allPromotions: PromotionTypeCart[];
+  useCashDiscount: boolean;
   [key: string]: any;
 }
 interface ContextCart {
@@ -180,7 +181,8 @@ const CartContext = React.createContext<ContextCart>({
     cashDiscount: 0,
     paymentMethod: 'CASH',
     allPromotions: [],
-    specialRequestFreebies:[]
+    specialRequestFreebies:[],
+    useCashDiscount:false,
   },
 
   cartApi: {
@@ -217,7 +219,8 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
     cashDiscount: 0,
     coAmount: '0',
     isUseCOD: false,
-    specialRequestFreebies: []
+    specialRequestFreebies: [],
+    useCashDiscount: false
   });
 
   const [promotionList, setPromotionList] = React.useState<any>([]);
@@ -295,7 +298,9 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
           paymentMethod: cartDetail?.paymentMethod || '',
           customerCompanyId: customerCompanyId ? +customerCompanyId : 0,
           allPromotions: cartDetail?.allPromotions || [],
-          specialRequestFreebies: cartDetail?.specialRequestFreebies || []
+          specialRequestFreebies: cartDetail?.specialRequestFreebies || [],
+          useCashDiscount: cartDetail?.useCashDiscount || false
+          
         };
         
         const newData = await cartServices.postCart(payload);
@@ -414,7 +419,8 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
           customerCompanyId: customerCompanyId ? +customerCompanyId : 0,
           paymentMethod: cartDetail?.paymentMethod || 'CASH',
           allPromotions: cartDetail?.allPromotions || [],
-          specialRequestFreebies: cartDetail?.specialRequestFreebies || []
+          specialRequestFreebies: cartDetail?.specialRequestFreebies || [],
+          useCashDiscount: cartDetail?.useCashDiscount || false
         };
 
         if (specialRequestFreebies){
@@ -491,6 +497,7 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
     cartDetail?.paymentMethod,
     cartDetail?.isUseCOD,
     cartDetail?.allPromotions,
+    cartDetail?.useCashDiscount
   ]);
   return (
     <CartContext.Provider

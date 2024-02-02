@@ -142,7 +142,7 @@ export default function CartScreen({
         paymentMethod: cartDetail.paymentMethod,
         sellerName: `${user?.firstname} ${user?.lastname}`,
         customerZone: user?.zone,
-
+        useCashDiscount: cartDetail.useCashDiscount,
         deliveryDest: dataStepTwo.deliveryDest,
         deliveryAddress: dataStepTwo.deliveryAddress,
         deliveryRemark: dataStepTwo.deliveryRemark || '',
@@ -160,7 +160,7 @@ export default function CartScreen({
       if (dataStepTwo.numberPlate) {
         payload.numberPlate = dataStepTwo.numberPlate;
       }
-     /*  console.log('payload', JSON.stringify(payload, null, 2)); */
+    /*   console.log('payload', JSON.stringify(payload, null, 2)); */
       const result = await orderServices.createOrder(payload);
      /*  console.log(result) */
         

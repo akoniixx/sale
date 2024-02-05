@@ -492,7 +492,7 @@ export default function HistoryDetailScreen({
                   style={{
                     marginBottom: 8,
                   }}>
-                  {orderDetail?.saleCoRemark || orderDetail?.deliveryRemark || '-'}
+                  { orderDetail?.deliveryRemark || '-'}
                 </Text>
               </View>
               <DashedLine

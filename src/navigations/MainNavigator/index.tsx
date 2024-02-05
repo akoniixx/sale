@@ -25,6 +25,8 @@ import NewsDetailScreen from '../../screens/NewsScreen/NewsDetailScreen';
 import UploadFileScreen from '../../screens/UploadFileScreen/UploadFileScreen';
 import EditFileScreen from '../../screens/HistoryDetailScreen/EditFilescreen';
 import { HistoryDataType, orderFiles } from '../../entities/historyTypes';
+import CancelOrderScreen from '../../screens/CancelOrderScreen';
+import CancelOrderSuccessScreen from '../../screens/CancelOrderSuccessScreen';
 
 export type MainStackParamList = {
   MainScreen: {
@@ -92,6 +94,63 @@ export type MainStackParamList = {
   EditFileScreen:{
     orderId:string
   }
+  CancelOrderScreen: {
+    orderId: string;
+    orderProducts: {
+      baseUom: string;
+      commonName: string;
+      marketPrice: number;
+      isFreebie: boolean;
+
+      orderId: string;
+      orderProductId: string;
+      packSize: string;
+      packingUom: string;
+      productCodeNav: string;
+      productId: number;
+      productName: string;
+      productImage: string | null;
+      qtySaleUnit: number;
+      quantity: number;
+      saleUOM: string;
+      saleUOMTH: string;
+      shipmentOrder: number;
+      totalPrice: number;
+    }[];
+    paidStatus: string;
+    soNo: string | null;
+    navNo: string | null;
+    orderNo: string;
+  };
+  CancelOrderSuccessScreen: {
+    updateAt: string;
+    orderId: string;
+    cancelRemark: string;
+    orderProducts: {
+      baseUom: string;
+      commonName: string;
+      marketPrice: number;
+      orderId: string;
+      orderProductId: string;
+      packSize: string;
+      packingUom: string;
+      productCodeNav: string;
+      productId: number;
+      productName: string;
+      productImage: string | null;
+      qtySaleUnit: number;
+      quantity: number;
+      saleUOM: string;
+      saleUOMTH: string;
+      shipmentOrder: number;
+      totalPrice: number;
+      isFreebie: boolean;
+    }[];
+    paidStatus: string;
+    soNo: string | null;
+    navNo: string | null;
+    orderNo: string;
+  };
   
 };
 const Stack = createStackNavigator<MainStackParamList>();
@@ -173,7 +232,8 @@ export default function MainNavigator() {
       <Stack.Screen name="NewsDetailScreen" component={NewsDetailScreen} />
       <Stack.Screen name='UploadFileScreen' component={UploadFileScreen} />
       <Stack.Screen name='EditFileScreen' component={EditFileScreen} />
-      
+      <Stack.Screen name='CancelOrderScreen' component={CancelOrderScreen} />
+      <Stack.Screen name='CancelOrderSuccessScreen' component={CancelOrderSuccessScreen} />      
       
     </Stack.Navigator>
   );

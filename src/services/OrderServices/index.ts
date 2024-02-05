@@ -40,9 +40,24 @@ const uploadFile =async (data: FormData) => {
   const response = await uploadFileInstance.post(`/order-cart/order/update-file`,data)
   return response.data
 }
+const postStatusOrder = async (payload: {
+  orderId: string;
+  status: string;
+  paidStatus: string;
+  cancelRemark: string;
+  soNo: string | null;
+  navNo: string | null;
+  updateBy: string;
+}) => {
+  return await request
+    .post('/order-cart/order/update-order-status', payload)
+    .then(res => res.data)
+    .catch(err => err);
+};
+
 export const orderServices = {
   createOrder,
   getOrderById,
-  uploadFile
-  
+  uploadFile,
+  postStatusOrder
 };

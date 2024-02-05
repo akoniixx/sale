@@ -30,6 +30,8 @@ import SummaryTotal from '../../components/SummaryList/SummaryTotal';
 import FooterReorder from './FooterReorder';
 import { promotionTypeMap } from '../../utils/mappingObj';
 import { useAuth } from '../../contexts/AuthContext';
+import FooterButton from './FooterButton';
+import { useFocusEffect } from '@react-navigation/native';
 
 const locationMapping = {
   SHOP: 'จัดส่งที่ร้าน',
@@ -48,6 +50,25 @@ export default function HistoryDetailScreen({
     state: { user },
   } = useAuth();
   const [loading, setLoading] = React.useState<boolean>(false);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const getOrderDetailById = async () => {
+        try {
+          setLoading(true);
+          const res = await orderServices.getOrderById(params.orderId);
+          setOrderDetail(res);
+        } catch (e) {
+          console.log(e);
+        } finally {
+          setLoading(false);
+        }
+      };
+      getOrderDetailById();
+    }, [params.orderId]),
+  );
+
+
   React.useEffect(() => {
     const getOrderDetailById = async () => {
       try {
@@ -144,11 +165,11 @@ export default function HistoryDetailScreen({
         label: 'ส่วนลดรวม',
         value: orderDetail?.totalDiscount || 0,
       },
-      totalPriceNoVat:{
-        label:'มูลค่ารวมหลังหักส่วนลด',
+      totalPriceNoVat: {
+        label: 'มูลค่ารวมหลังหักส่วนลด',
         value: orderDetail?.price - orderDetail?.totalDiscount
       },
-      vat:{
+      vat: {
         label: `ภาษีมูลค่าเพิ่ม ${orderDetail?.vatPercentage} %`,
         value: orderDetail?.vat
       }
@@ -205,9 +226,9 @@ export default function HistoryDetailScreen({
 
   const getUniquePromotions = (orderProducts) => {
     const seenPromotions = new Set();
-    
+
     // Use flatMap to flatten the promotions, and then filter based on unique values.
-    return orderProducts.flatMap(el => 
+    return orderProducts.flatMap(el =>
       el.orderProductPromotions.filter(itm => {
         const key = `${itm.promotionType}-${itm.promotionName}`;
         if (!seenPromotions.has(key)) {
@@ -492,7 +513,7 @@ export default function HistoryDetailScreen({
                   style={{
                     marginBottom: 8,
                   }}>
-                  { orderDetail?.deliveryRemark || '-'}
+                  {orderDetail?.deliveryRemark || '-'}
                 </Text>
               </View>
               <DashedLine
@@ -630,46 +651,46 @@ export default function HistoryDetailScreen({
                   marginHorizontal: 16,
                 }}
               />
-              
-              {orderDetail?.orderProducts[0].orderProductPromotions.length > 0 ?(
-                <View style={{
-                    marginTop: 8,
-                    paddingHorizontal: 16,
-                  }}>
-                    <View style={{ flexDirection: 'row' }}>
-                      <Image source={icons.promoDetail} style={{ width: 24, height: 24, marginRight: 8 }} />
-                      <Text fontSize={16} lineHeight={24} bold fontFamily='NotoSans' color='text3'>รายละเอียดโปรโมชัน</Text>
-                    </View>
 
-                    <View style={{ borderWidth: 0.5, padding: 20, backgroundColor: '#F8FAFF', borderColor: '#EAEAEA', marginVertical: 10 }}>
-                    {
-  getUniquePromotions(orderDetail?.orderProducts || []).map(promo => (
-    <Text fontFamily="Sarabun">
-      {`• ${promotionTypeMap(promo.promotionType)} - ${promo.promotionName}`}
-    </Text>
-  ))
-}
-                    </View>
+              {orderDetail?.orderProducts[0].orderProductPromotions.length > 0 ? (
+                <View style={{
+                  marginTop: 8,
+                  paddingHorizontal: 16,
+                }}>
+                  <View style={{ flexDirection: 'row' }}>
+                    <Image source={icons.promoDetail} style={{ width: 24, height: 24, marginRight: 8 }} />
+                    <Text fontSize={16} lineHeight={24} bold fontFamily='NotoSans' color='text3'>รายละเอียดโปรโมชัน</Text>
                   </View>
-              ):null }
- <View style={{ padding: 16, backgroundColor: 'white' }}>
- <View style={{ flexDirection: 'row' }}>
-                      <Image source={icons.doc} style={{ width: 24, height: 24, marginRight: 8 }} />
-                      <Text fontSize={16} lineHeight={24} bold fontFamily='NotoSans' color='text3'>เอกสาร </Text>
+
+                  <View style={{ borderWidth: 0.5, padding: 20, backgroundColor: '#F8FAFF', borderColor: '#EAEAEA', marginVertical: 10 }}>
+                    {
+                      getUniquePromotions(orderDetail?.orderProducts || []).map(promo => (
+                        <Text fontFamily="Sarabun">
+                          {`• ${promotionTypeMap(promo.promotionType)} - ${promo.promotionName}`}
+                        </Text>
+                      ))
+                    }
+                  </View>
+                </View>
+              ) : null}
+              <View style={{ padding: 16, backgroundColor: 'white' }}>
+                <View style={{ flexDirection: 'row' }}>
+                  <Image source={icons.doc} style={{ width: 24, height: 24, marginRight: 8 }} />
+                  <Text fontSize={16} lineHeight={24} bold fontFamily='NotoSans' color='text3'>เอกสาร </Text>
+                </View>
+                <TouchableOpacity style={{ borderWidth: 1, borderColor: colors.border1, padding: 15, borderRadius: 8, marginTop: 10 }}
+                  onPress={() => navigation.navigate('EditFileScreen', {
+                    orderId: orderDetail?.orderId ? orderDetail.orderId : ''
+                  })}>
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+
+                      <Text fontFamily="NotoSans">เอกสารที่เกี่ยวข้อง {orderDetail?.orderFiles?.length != 0 ? '(' + orderDetail?.orderFiles.length + ' ภาพ)' : ''}</Text>
                     </View>
-        <TouchableOpacity style={{ borderWidth: 1, borderColor: colors.border1, padding: 15, borderRadius: 8, marginTop: 10 }}
-          onPress={() => navigation.navigate('EditFileScreen', {
-            orderId: orderDetail?.orderId? orderDetail.orderId:''
-          })}>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-             
-              <Text fontFamily="NotoSans">เอกสารที่เกี่ยวข้อง {orderDetail?.orderFiles?.length!=0?'('+ orderDetail?.orderFiles.length+' ภาพ)':''}</Text>
-            </View>
-            <Image style={{ width: 24, height: 24 }} source={icons.iconNext} />
-          </View>
-        </TouchableOpacity>
-      </View>
+                    <Image style={{ width: 24, height: 24 }} source={icons.iconNext} />
+                  </View>
+                </TouchableOpacity>
+              </View>
               <View
                 style={{
                   marginTop: 8,
@@ -879,11 +900,13 @@ export default function HistoryDetailScreen({
               </View>
             ) : null}
             {user?.company !== 'ICPI' ? <>
-              {orderDetail?.status === 'DELIVERY_SUCCESS' || orderDetail?.status === 'SHOPAPP_CANCEL_ORDER' || orderDetail?.status === 'COMPANY_CANCEL_ORDER' || orderDetail?.status === 'REJECT_ORDER'  ? (
+              {orderDetail?.status === 'DELIVERY_SUCCESS' || orderDetail?.status === 'SHOPAPP_CANCEL_ORDER' || orderDetail?.status === 'COMPANY_CANCEL_ORDER' || orderDetail?.status === 'REJECT_ORDER' ? (
                 <FooterReorder orderId={orderDetail.orderId} navigation={navigation} orderLength={orderDetail.orderProducts.length} {...orderDetail} />
 
               ) : null}
             </> : null}
+
+
 
           </View>
           <Image
@@ -898,6 +921,9 @@ export default function HistoryDetailScreen({
           />
 
 
+          {orderDetail?.status === 'WAIT_APPROVE_ORDER' || orderDetail?.status === 'WAIT_CONFIRM_ORDER' || orderDetail?.status === 'CONFIRM_ORDER'
+            ? <FooterButton orderDetail={orderDetail} navigation={navigation} /> : null
+          }
           <View
             style={{
               height: 100,

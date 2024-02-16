@@ -61,14 +61,10 @@ export default function ModalWarning({
             </Text>
             {desc && (
               <Text
-                
                 fontSize={14}
                 fontFamily="Sarabun"
                 color="text3"
-                lineHeight={26}
-                style={{
-                  width: 250,
-                }}>
+                lineHeight={26}>
                 {desc}
               </Text>
             )}
@@ -77,7 +73,8 @@ export default function ModalWarning({
             style={{
               height: 40,
               flexDirection: 'row',
-              width: 270,
+              width:'100%',
+              maxWidth:250,
               borderTopWidth: 1,
               borderTopColor: colors.border1,
             }}>

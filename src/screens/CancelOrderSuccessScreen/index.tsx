@@ -84,7 +84,7 @@ export default function CancelOrderSuccessScreen({
               backgroundColor: colors.white,
             }}>
             <Text fontFamily="NotoSans" semiBold>
-              เหตุผลที่ยกเลิก (ลูกค้า)
+            เหตุผลที่ยกเลิก (พนักงานขาย)
             </Text>
             <Text color="text2">{cancelRemark}</Text>
           </View>

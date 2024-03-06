@@ -11,64 +11,77 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import NewsList from '../../components/News/NewsList';
 import { ScrollView } from 'react-native-gesture-handler';
 import { NewsService } from '../../services/NewsService/NewsServices';
+import { useSpecialRequest } from '../../contexts/SpecialRequestContext';
+import { colors } from '../../assets/colors/colors';
 
 interface Props {
   navigation: StackNavigationHelpers;
 }
 export default function Body({ navigation }: Props): JSX.Element {
   const { t } = useLocalization();
+  const { countSpecialRequest = 0 } = useSpecialRequest();
   const {
     state: { user },
   } = useAuth();
-  const [loading, setLoading] = useState<boolean>(false)
-  const [NewsPromotion, setNewsPromotion] = useState<NewsPromotion[]>([])
-  const [newsList, setNewsList] = useState<Pined[]>([])
+  const [loading, setLoading] = useState<boolean>(false);
+  const [NewsPromotion, setNewsPromotion] = useState<NewsPromotion[]>([]);
+  const [newsList, setNewsList] = useState<Pined[]>([]);
   const fecthNewsPromotion = async () => {
     try {
-      setLoading(true)
-      const company = await AsyncStorage.getItem('company')
-      const zone = await AsyncStorage.getItem('zone')
-      const res = await NewsPromotionService.getNewsPromotion(company || '', zone || '')
-      const sortedData: NewsPromotion[] = await res.data.sort((a: NewsPromotion, b: NewsPromotion) => {
-        return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
-      });
+      setLoading(true);
+      const company = await AsyncStorage.getItem('company');
+      const zone = await AsyncStorage.getItem('zone');
+      const res = await NewsPromotionService.getNewsPromotion(
+        company || '',
+        zone || '',
+      );
+      const sortedData: NewsPromotion[] = await res.data.sort(
+        (a: NewsPromotion, b: NewsPromotion) => {
+          return (
+            new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+          );
+        },
+      );
 
-      setNewsPromotion(sortedData.slice(0, 5))
+      setNewsPromotion(sortedData.slice(0, 5));
     } catch (error) {
-      console.log(error)
+      console.log(error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
   const fecthNewsList = async () => {
     try {
-      setLoading(true)
-      const company = await AsyncStorage.getItem('company')
-      const res: Pined[] = await NewsService.getPined(company || '')
-      const filterData: Pined[] = await res.filter((item) => item.page === 'MAIN_PAGE')
-      const resNews: NewsInterface[] = await NewsService.getNewsList(company || '', 1, 99, 'NEWEST', '')
+      setLoading(true);
+      const company = await AsyncStorage.getItem('company');
+      const res: Pined[] = await NewsService.getPined(company || '');
+      const filterData: Pined[] = await res.filter(
+        item => item.page === 'MAIN_PAGE',
+      );
+      const resNews: NewsInterface[] = await NewsService.getNewsList(
+        company || '',
+        1,
+        99,
+        'NEWEST',
+        '',
+      );
 
-      if (res?.length==0||res==undefined) {
-        
-        setNewsList(resNews)
+      if (res?.length == 0 || res == undefined) {
+        setNewsList(resNews);
       } else {
-        setNewsList(filterData)
+        setNewsList(filterData);
       }
-
-
-
     } catch (error) {
-      console.log(error)
+      console.log(error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
-
+  };
 
   useEffect(() => {
-    fecthNewsPromotion()
-    fecthNewsList()
-  }, [])
+    fecthNewsPromotion();
+    fecthNewsList();
+  }, []);
 
   const memoListMenus = useMemo(() => {
     const ListMenus = [
@@ -94,26 +107,40 @@ export default function Body({ navigation }: Props): JSX.Element {
         return el.name !== 'Order';
       });
     }
+    if (user?.role === 'SALE MANAGER') {
+      return [
+        ...ListMenus,
+        {
+          title: 'อนุมัติคำสั่งซื้อ',
+          image: images.iconSpecialRequest,
+          name: 'SpecialRequest',
+          onPress: () => {
+            navigation.navigate('SpecialRequestApproveScreen');
+          },
+        },
+      ].filter(el => {
+        return el.name !== 'Order';
+      });
+    }
 
     return ListMenus;
-  }, [navigation, t, user?.company]);
+  }, [navigation, t, user?.company, user?.role]);
 
   const renderPromotion = () => (
     <>
-      {NewsPromotion?.length > 0 ? <View style={{ paddingHorizontal: 20, marginTop: 20 }} >
-        <Text bold fontSize={18} fontFamily='NotoSans' >โปรโมชั่น</Text>
-
-
-      </View> :
-
-
-newsList?.length ==0 ? 
+      {NewsPromotion?.length > 0 ? (
+        <View style={{ paddingHorizontal: 20, marginTop: 20 }}>
+          <Text bold fontSize={18} fontFamily="NotoSans">
+            โปรโมชั่น
+          </Text>
+        </View>
+      ) : newsList?.length == 0 ? (
         <View
           style={{
             flex: 1,
             justifyContent: 'center',
             alignItems: 'center',
-            marginTop: 50
+            marginTop: 50,
           }}>
           <Image
             source={images.News}
@@ -123,36 +150,47 @@ newsList?.length ==0 ?
             }}
           />
           <Text color="text3">{t('screens.HomeScreen.news')}</Text>
-        </View>: null
-      }
+        </View>
+      ) : null}
 
       <View style={{ alignItems: 'center' }}>
-        <NewsPromotionCarousel data={NewsPromotion} loading={loading} navigation={navigation} />
+        <NewsPromotionCarousel
+          data={NewsPromotion}
+          loading={loading}
+          navigation={navigation}
+        />
       </View>
     </>
-  )
+  );
 
   const renderNews = () => (
     <View style={{ marginBottom: 40 }}>
-      {newsList?.length > 0 ? <View style={{ paddingHorizontal: 20, marginTop: 20 }} >
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-          <Text bold fontSize={18} fontFamily='NotoSans' >ข่าวสาร</Text>
-          <TouchableOpacity onPress={() => navigation.navigate('NewsScreen')}>
-            <Text semiBold fontSize={14} color='text3' fontFamily='NotoSans' >ทั้งหมด</Text>
-          </TouchableOpacity>
-
-        </View>
-
-
-
-      </View> :
-        <View style={{ paddingHorizontal: 20, marginTop: 50 }}>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <Text bold fontSize={18} fontFamily='NotoSans' >ข่าวสาร</Text>
+      {newsList?.length > 0 ? (
+        <View style={{ paddingHorizontal: 20, marginTop: 20 }}>
+          <View
+            style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+            <Text bold fontSize={18} fontFamily="NotoSans">
+              ข่าวสาร
+            </Text>
             <TouchableOpacity onPress={() => navigation.navigate('NewsScreen')}>
-              <Text semiBold fontSize={14} color='text3' fontFamily='NotoSans' >ทั้งหมด</Text>
+              <Text semiBold fontSize={14} color="text3" fontFamily="NotoSans">
+                ทั้งหมด
+              </Text>
             </TouchableOpacity>
-
+          </View>
+        </View>
+      ) : (
+        <View style={{ paddingHorizontal: 20, marginTop: 50 }}>
+          <View
+            style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+            <Text bold fontSize={18} fontFamily="NotoSans">
+              ข่าวสาร
+            </Text>
+            <TouchableOpacity onPress={() => navigation.navigate('NewsScreen')}>
+              <Text semiBold fontSize={14} color="text3" fontFamily="NotoSans">
+                ทั้งหมด
+              </Text>
+            </TouchableOpacity>
           </View>
           <View
             style={{
@@ -170,13 +208,13 @@ newsList?.length ==0 ?
             <Text color="text3">{t('screens.HomeScreen.news')}</Text>
           </View>
         </View>
-      }
+      )}
 
       <View style={{ paddingLeft: 20, marginTop: 10 }}>
         <NewsList data={newsList} loading={loading} navigation={navigation} />
       </View>
     </View>
-  )
+  );
 
   return (
     <View style={styles.container}>
@@ -191,39 +229,69 @@ newsList?.length ==0 ?
                 paddingHorizontal: 16,
               }}>
               <TouchableOpacity onPress={item.onPress}>
-                <Image
-                  source={item.image}
-                  resizeMode="stretch"
-                  style={{
-                    width: 80,
-                    height: 80,
-                    marginTop: item.name === 'History' ? 2 : 0,
-                  }}
-                />
-
-                <Text
-                  center
-                  fontFamily="NotoSans"
-                  style={{
-                    position: 'relative',
-                    bottom: item.name === 'History' ? 1 : 0,
-                  }}>
-                  {item.title}
-                </Text>
+                {item.name === 'SpecialRequest' ? (
+                  <>
+                    <Image
+                      source={item.image}
+                      resizeMode="stretch"
+                      style={{
+                        width: 68,
+                        height: 70,
+                      }}
+                    />
+                    {countSpecialRequest > 0 && (
+                      <View style={styles.badge}>
+                        <Text color="white">{countSpecialRequest}</Text>
+                      </View>
+                    )}
+                  </>
+                ) : (
+                  <Image
+                    source={item.image}
+                    resizeMode="stretch"
+                    style={{
+                      width: 80,
+                      height: 80,
+                      marginTop: item.name === 'History' ? 4 : 0,
+                    }}
+                  />
+                )}
+                {item.name === 'SpecialRequest' ? (
+                  <Text
+                    center
+                    fontFamily="NotoSans"
+                    style={{
+                      position: 'relative',
+                      bottom: -5.5,
+                      right: 10,
+                    }}>
+                    {item.title}
+                  </Text>
+                ) : (
+                  <Text
+                    center
+                    fontFamily="NotoSans"
+                    style={{
+                      position: 'relative',
+                      bottom: item.name === 'History' ? 1.5 : 0,
+                    }}>
+                    {item.title}
+                  </Text>
+                )}
               </TouchableOpacity>
             </View>
           );
         })}
       </View>
       <ScrollView>
-        {newsList?.length <= 0 && NewsPromotion?.length <= 0 ?
+        {newsList?.length <= 0 && NewsPromotion?.length <= 0 ? (
           <>
             <View
               style={{
                 flex: 1,
                 justifyContent: 'center',
                 alignItems: 'center',
-                marginTop: '10%'
+                marginTop: '10%',
               }}>
               <Image
                 source={images.News}
@@ -234,18 +302,15 @@ newsList?.length ==0 ?
               />
               <Text color="text3">{t('screens.HomeScreen.news')}</Text>
             </View>
-          </> : <>
+          </>
+        ) : (
+          <>
             {renderPromotion()}
-
 
             {renderNews()}
           </>
-        }
-
-
-
+        )}
       </ScrollView>
-
     </View>
   );
 }
@@ -263,9 +328,20 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     borderBottomColor: '#E5E5E5',
     borderBottomWidth: 1,
+    flexWrap: 'wrap',
   },
   body: {
-
     padding: 20,
+  },
+  badge: {
+    backgroundColor: colors.error,
+    position: 'absolute',
+    right: 16,
+    top: 0,
+    borderRadius: 20,
+    width: 28,
+    height: 22,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

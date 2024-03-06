@@ -21,7 +21,7 @@ interface UserType {
   status?: string;
   telephone?: string;
   userStaffId?: string;
-  zone?: string;
+  zone?: string | string[];
   profileImage?: string;
 }
 
@@ -126,15 +126,14 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
       },
       login: async (payload: any) => {
         try {
-        
           const { data } = await AuthServices.verifyOtp(payload);
           if (data) {
             const token = await messaging().getToken();
             await AsyncStorage.setItem('fcmtoken', token);
             await AsyncStorage.setItem('token', data.accessToken);
             await AsyncStorage.setItem('userStaffId', data.data.userStaffId);
-            await AsyncStorage.setItem('company',data.data.company)
-            await AsyncStorage.setItem('zone',data.data.zone)
+            await AsyncStorage.setItem('company', data.data.company);
+            await AsyncStorage.setItem('zone', data.data.zone);
             const fcmtoken = await AsyncStorage.getItem('fcmtoken');
             if (fcmtoken) {
               try {
@@ -156,19 +155,16 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
       },
       logout: async () => {
         const fmctoken = await AsyncStorage.getItem('fcmtoken');
-        await userServices.removeDeviceToken(fmctoken)
-        .then(async res=>{
+        await userServices.removeDeviceToken(fmctoken).then(async res => {
           await AsyncStorage.removeItem('token');
           await AsyncStorage.removeItem('user');
           await AsyncStorage.removeItem('fcmtoken');
           await AsyncStorage.removeItem('company');
           await AsyncStorage.removeItem('zone');
           dispatch({ type: 'LOGOUT' });
-        })
-        
-        
-         /*  navigate('LoginScreen'); */
-        
+        });
+
+        /*  navigate('LoginScreen'); */
       },
     }),
     [],

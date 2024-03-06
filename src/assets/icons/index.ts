@@ -50,6 +50,8 @@ export default {
   iconStoreActive: require('./iconStoreActive.png'),
   iconStoreInActive: require('./iconStoreInActive.png'),
   iconCalendar: require('./iconCalendar.png'),
+  iconCalendarActive: require('./iconCalendarActive.png'),
+
   package: require('./package.png'),
   locationGray: require('./locationGray.png'),
   iconNotification: require('./iconNotification.png'),
@@ -70,5 +72,6 @@ export default {
   binRed: require('./binRed.png'),
   viewDoc: require('./viewDoc.png'),
   circulProgress: require('./circulProgress.png'),
-  uploadSucsess: require('./uploadSucsess.png')
+  uploadSucsess: require('./uploadSucsess.png'),
+  iconSearchGrey: require('./iconSearchGrey.png'),
 };

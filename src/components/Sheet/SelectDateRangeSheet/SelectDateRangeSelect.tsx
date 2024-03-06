@@ -30,6 +30,8 @@ export default function SelectDateRangeSelect(props: SheetProps) {
 
   return (
     <ActionSheet
+      useBottomSafeAreaPadding={false}
+      safeAreaInsets={{ bottom: 0, top: 0, left: 0, right: 0 }}
       onClose={async () => {
         await SheetManager.hide(props.sheetId, {
           payload: dateRange,

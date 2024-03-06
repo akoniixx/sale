@@ -17,6 +17,7 @@ interface ButtonStyledProps {
   radius?: number;
   noBorder?: boolean;
   disabled?: boolean;
+  transparent?: boolean;
 }
 interface Props extends TouchableOpacityProps, ButtonStyledProps {
   title?: string;
@@ -24,6 +25,7 @@ interface Props extends TouchableOpacityProps, ButtonStyledProps {
   textStyle?: TextStyle;
   iconFont?: React.ReactNode;
   iconBack?: React.ReactNode;
+  transparent?: boolean;
 }
 export default function Button({ title, ...props }: Props): JSX.Element {
   return (
@@ -42,7 +44,13 @@ export default function Button({ title, ...props }: Props): JSX.Element {
             fontFamily="NotoSans"
             bold
             fontSize={props.fontSize}
-            color={props.secondary ? 'primary' : 'white'}>
+            color={
+              props.secondary
+                ? 'primary'
+                : props.transparent
+                ? 'text1'
+                : 'white'
+            }>
             {title}
           </Text>
         )}
@@ -57,9 +65,12 @@ const styled = ({
   danger,
   radius = 8,
   disabled = false,
+  transparent,
 }: ButtonStyledProps) => {
   const backgroundColor = secondary
     ? colors.background2
+    : transparent
+    ? 'transparent'
     : success
     ? colors.success
     : danger

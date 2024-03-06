@@ -34,8 +34,8 @@ export default function SearchInput({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        borderWidth: 1,
-        borderColor: isFocused ? colors.text1 : colors.border1,
+        borderWidth: 0.5,
+        borderColor: isFocused ? colors.text2 : colors.border1,
 
         borderRadius: 6,
 

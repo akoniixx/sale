@@ -12,7 +12,7 @@ export default function Container({
   ...props
 }: Props) {
   return (
-    <SafeAreaView {...props} style={containerStyles}  >
+    <SafeAreaView {...props} style={containerStyles}>
       {children}
     </SafeAreaView>
   );

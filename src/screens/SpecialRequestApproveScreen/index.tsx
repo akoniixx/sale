@@ -203,6 +203,28 @@ export default function SpecialRequestApproveScreen({
   ]);
 
   const TAB_LIST = useMemo(() => {
+    if (currentTab === 0) {
+      const isFilter =
+        searchValue.searchText ||
+        searchValue.area.length > 0 ||
+        (searchValue.dateRange?.endDate && searchValue.dateRange?.startDate);
+      return [
+        {
+          label: `รออนุมัติ ${
+            isFilter
+              ? `(${dataList.count || 0})`
+              : `(${countSpecialRequest || 0})`
+          } `,
+          value: 'wait',
+        },
+        { label: 'อนุมัติแล้ว', value: 'approve' },
+        {
+          label: 'ไม่อนุมัติ',
+          value: 'notApprove',
+        },
+      ];
+    }
+
     return [
       {
         label: `รออนุมัติ ${
@@ -216,7 +238,7 @@ export default function SpecialRequestApproveScreen({
         value: 'notApprove',
       },
     ];
-  }, [countSpecialRequest]);
+  }, [countSpecialRequest, dataList.count, currentTab, searchValue]);
 
   const getSuggestions = async (value: string) => {
     try {
@@ -368,7 +390,11 @@ export default function SpecialRequestApproveScreen({
               setCurrentTab={(index: number) => {
                 setCurrentTab(index);
                 setPage(1);
-                setSearchValue(initialSearch);
+                setSearchValue(prev => ({
+                  ...prev,
+                  dateRange: initialSearch.dateRange,
+                  area: initialSearch.area,
+                }));
               }}
             />
           </View>

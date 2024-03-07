@@ -149,6 +149,14 @@ export default function HistoryScreen({ navigation }: any): JSX.Element {
   const onSearch = (v: string | undefined) => {
     setDebounceSearchValue(v);
   };
+  const [zone, setZone] = React.useState<string | undefined>('');
+  const isSaleManager = useMemo(() => {
+    if (user) {
+      return user?.role === 'SALE MANAGER';
+    } else {
+      return false;
+    }
+  }, [user]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -161,14 +169,21 @@ export default function HistoryScreen({ navigation }: any): JSX.Element {
         page: 1,
         endDate: dateRange.endDate,
         startDate: dateRange.startDate,
-        userStaffId: user?.userStaffId,
-        zone: user?.zone,
       };
       if (isHasCustomerId) {
         payload.customerCompanyId = customerCompanyId;
       }
       if (tabValue.length > 0) {
         payload.status = tabValue;
+      }
+      if (isSaleManager) {
+        payload.zone = zone ? zone : Array.isArray(user?.zone) && user?.zone[0];
+        if (!zone) {
+          setZone(payload.zone);
+        }
+      } else {
+        payload.zone = user?.zone;
+        payload.userStaffId = user?.userStaffId;
       }
 
       try {
@@ -195,6 +210,8 @@ export default function HistoryScreen({ navigation }: any): JSX.Element {
     isHasCustomerId,
     customerCompanyId,
     user?.zone,
+    isSaleManager,
+    zone,
   ]);
   useFocusEffect(
     useCallback(() => {
@@ -205,7 +222,6 @@ export default function HistoryScreen({ navigation }: any): JSX.Element {
       const fetchData = async () => {
         setLoading(true);
         const payload: any = {
-          userStaffId: user?.userStaffId,
           status: tabValue.length > 0 ? tabValue : [],
           search: debounceSearchValue,
           take: limit,
@@ -213,16 +229,25 @@ export default function HistoryScreen({ navigation }: any): JSX.Element {
           page: 1,
           endDate: dateRange.endDate,
           startDate: dateRange.startDate,
-          zone: user?.zone,
           customerCompanyId: customerCompanyId,
         };
+
+        if (isSaleManager) {
+          payload.zone = zone
+            ? zone
+            : Array.isArray(user?.zone) && user?.zone[0];
+        } else {
+          payload.zone = user?.zone;
+          payload.userStaffId = user?.userStaffId;
+        }
+
         if (isHasCustomerId) {
           payload.customerCompanyId = customerCompanyId;
         }
         if (tabValue.length > 0) {
           payload.status = tabValue;
         }
-
+        console.log('payload', payload);
         try {
           const data = await historyServices.getHistory(payload);
           setHistoryData(data);
@@ -235,22 +260,28 @@ export default function HistoryScreen({ navigation }: any): JSX.Element {
       };
       fetchData();
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [debounceSearchValue, tabValue]),
+    }, [debounceSearchValue, tabValue, zone]),
   );
 
   useEffect(() => {
     const fetchDataStore = async () => {
       try {
         const payload: any = {
-          userStaffId: user?.userStaffId || '',
           endDate: dateRange.endDate,
           startDate: dateRange.startDate,
           status: tabValue.length > 0 ? tabValue : [],
-
           search: debounceSearchValue,
         };
         if (tabValue.length > 0) {
           payload.status = tabValue;
+        }
+
+        if (isSaleManager) {
+          payload.zone = zone
+            ? zone
+            : Array.isArray(user?.zone) && user?.zone[0];
+        } else {
+          payload.userStaffId = user?.userStaffId;
         }
         const data = await historyServices.getHistoryStore(payload);
         setHistoryDataStore(data);
@@ -268,6 +299,9 @@ export default function HistoryScreen({ navigation }: any): JSX.Element {
     debounceSearchValue,
     dateRange.endDate,
     dateRange.startDate,
+    zone,
+    isSaleManager,
+    user?.zone,
   ]);
   const fetchDataMore = async () => {
     if (historyData.data.length < historyData.count) {
@@ -280,11 +314,17 @@ export default function HistoryScreen({ navigation }: any): JSX.Element {
           page: page + 1,
           endDate: dateRange.endDate,
           startDate: dateRange.startDate,
-          zone: user?.zone,
-          userStaffId: user?.userStaffId,
         };
         if (isHasCustomerId) {
           payload.customerCompanyId = customerCompanyId;
+        }
+        if (isSaleManager) {
+          payload.zone = zone
+            ? zone
+            : Array.isArray(user?.zone) && user?.zone[0];
+        } else {
+          payload.zone = user?.zone;
+          payload.userStaffId = user?.userStaffId;
         }
         if (tabValue.length > 0) {
           payload.status = tabValue;
@@ -294,6 +334,7 @@ export default function HistoryScreen({ navigation }: any): JSX.Element {
           ...historyData,
           data: [...historyData.data, ...data.data],
         });
+
         setPage(page + 1);
       } catch (e) {
         console.log(e);
@@ -302,6 +343,7 @@ export default function HistoryScreen({ navigation }: any): JSX.Element {
       console.log('no more data');
     }
   };
+
   return (
     <Container edges={['left', 'right', 'top']}>
       <Header
@@ -330,7 +372,23 @@ export default function HistoryScreen({ navigation }: any): JSX.Element {
       <View style={styles().containerFilter}>
         <View style={styles().flexRow}>
           <TouchableOpacity
-            onPress={() => {
+            onPress={async () => {
+              if (isSaleManager) {
+                const result: string = await SheetManager.show(
+                  'select-area-only-once',
+                  {
+                    payload: {
+                      listArea: (user?.zone as string[]).map((el, index) => {
+                        return { title: el, id: index };
+                      }),
+                      currentVal: zone,
+                    },
+                  },
+                );
+                if (result) {
+                  setZone(result);
+                }
+              }
               setTypeSearch('area');
               setCustomerCompanyId(undefined);
               setTabValue([]);
@@ -346,11 +404,19 @@ export default function HistoryScreen({ navigation }: any): JSX.Element {
               style={styles().icon}
               resizeMode="contain"
             />
-            <Text
-              bold
-              color={typeSearch === 'area' ? 'primary' : 'text3'}
-              fontFamily="NotoSans"
-              fontSize={14}>{`รายเขต (${user?.zone})`}</Text>
+            {isSaleManager ? (
+              <Text
+                bold
+                color={typeSearch === 'area' ? 'primary' : 'text3'}
+                fontFamily="NotoSans"
+                fontSize={14}>{`รายเขต (${zone})`}</Text>
+            ) : (
+              <Text
+                bold
+                color={typeSearch === 'area' ? 'primary' : 'text3'}
+                fontFamily="NotoSans"
+                fontSize={14}>{`รายเขต (${user?.zone})`}</Text>
+            )}
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {

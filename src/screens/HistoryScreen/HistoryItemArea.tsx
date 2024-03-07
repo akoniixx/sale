@@ -233,7 +233,13 @@ export default function HistoryItemArea({
           />
           <Text
             color="text3"
+            style={{
+              marginRight: 4,
+            }}
             fontSize={12}>{`${orderProducts.length} รายการ`}</Text>
+          <Text
+            color="text3"
+            fontSize={12}>{`เขต ${props.customerZone} `}</Text>
         </View>
         <Text fontSize={12} color="text3">
           {dayjs(props.createAt).format('DD MMM BBBB , HH:mm น.')}
@@ -466,8 +472,8 @@ export default function HistoryItemArea({
                   สินค้าที่สั่งซื้อไม่ได้ ({inactiveProducts.length} รายการ)
                 </Text>
                 <View style={{ marginVertical: 10 }}>
-                  {inactiveProducts.map(item => (
-                    <View>
+                  {inactiveProducts.map((item, index) => (
+                    <View key={index}>
                       <View
                         style={{
                           flexDirection: 'row',

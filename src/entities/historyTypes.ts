@@ -9,6 +9,7 @@ export interface HistoryDataType {
   customerCompanyId: number;
   customerName: string;
   customerNo: string;
+  customerZone: string;
   userStaffName: string | null;
   userShopName: string | null;
   status: string;

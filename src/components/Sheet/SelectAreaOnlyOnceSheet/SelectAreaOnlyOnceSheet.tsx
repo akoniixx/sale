@@ -4,6 +4,7 @@ import {
   TouchableOpacity,
   Image,
   FlatList,
+  Dimensions,
 } from 'react-native';
 import React, { useEffect } from 'react';
 import ActionSheet, {
@@ -14,6 +15,7 @@ import { colors } from '../../../assets/colors/colors';
 import Text from '../../Text/Text';
 import icons from '../../../assets/icons';
 import RadioFake from '../../Radio/RadioFake';
+import Button from '../../Button/Button';
 
 export default function SelectAreaOnlyOnceSheet(props: SheetProps) {
   const payload: {
@@ -27,8 +29,15 @@ export default function SelectAreaOnlyOnceSheet(props: SheetProps) {
 
   const onPressRadio = async (value: string) => {
     setCurrentValueList(value);
+  };
+
+  const onClear = async () => {
+    const initialValue = payload.listArea[0].title;
+    setCurrentValueList(initialValue);
+  };
+  const onConfirmSelected = async () => {
     await SheetManager.hide(props.sheetId, {
-      payload: value,
+      payload: currentValueList,
     });
   };
 
@@ -90,7 +99,7 @@ export default function SelectAreaOnlyOnceSheet(props: SheetProps) {
           );
         }}
       />
-      {/* <View style={styles.footer}>
+      <View style={styles.footer}>
         <Button
           title="ล้างข้อมูล"
           transparent
@@ -107,7 +116,7 @@ export default function SelectAreaOnlyOnceSheet(props: SheetProps) {
             width: Dimensions.get('window').width / 2 - 24,
           }}
         />
-      </View> */}
+      </View>
     </ActionSheet>
   );
 }

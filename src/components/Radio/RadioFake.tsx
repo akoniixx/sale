@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import React from 'react';
 import { colors } from '../../assets/colors/colors';
 
@@ -26,8 +26,8 @@ const styles = ({
   return StyleSheet.create({
     radio: {
       borderColor: selected ? colors.primary : colors.border1,
-      backgroundColor: selected ? colors.white : colors.border1,
-      borderWidth: 5,
+      backgroundColor: selected ? colors.white : colors.white,
+      borderWidth: selected ? 5 : 1,
       width: 20,
       height: 20,
       borderRadius: 10,

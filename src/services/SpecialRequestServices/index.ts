@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { request } from '../../config/request';
 
-interface SpecialRequestGet {
+export interface SpecialRequestGet {
   page: number;
   take?: number;
   startDate?: string;

@@ -37,18 +37,17 @@ export const statusHistoryBGColor = {
   COMPANY_CANCEL_ORDER: 'rgba(255, 93, 93, 0.16)',
 };
 
-export const promotionTypeMap = (promotionType:string) => {
+export const promotionTypeMap = (promotionType: string) => {
   switch (promotionType) {
     case 'FREEBIES_MIX':
-        return 'ของแถมแบบคละ';
-      case 'FREEBIES_NOT_MIX':
-        return 'ของแถมแบบไม่คละ';
-      case 'DISCOUNT_MIX':
-        return 'ส่วนลดแบบคละ';
-      case 'DISCOUNT_NOT_MIX':
-        return 'ส่วนลดแบบไม่คละ'
-      case 'OTHER':
-        return 'อื่นๆ'
-   
+      return 'ของแถมแบบคละ';
+    case 'FREEBIES_NOT_MIX':
+      return 'ของแถมแบบไม่คละ';
+    case 'DISCOUNT_MIX':
+      return 'ส่วนลดแบบคละ';
+    case 'DISCOUNT_NOT_MIX':
+      return 'ส่วนลดแบบไม่คละ';
+    case 'OTHER':
+      return 'อื่นๆ';
   }
-}
+};

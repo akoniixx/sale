@@ -5,7 +5,7 @@ import {
   Platform,
   TouchableOpacity,
 } from 'react-native';
-import React, { useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import Container from '../../components/Container/Container';
 import Content from '../../components/Content/Content';
 import Header from '../../components/Header/Header';
@@ -19,52 +19,23 @@ import {
 import { colors } from '../../assets/colors/colors';
 import SearchInput from '../../components/SearchInput/SearchInput';
 import { useDebounce } from '../../hook';
-import AutoCompleteSearch from '../../components/AutoCompleteSearch/AutoCompleteSearch';
+import AutoCompleteSearch, {
+  SuggestionListType,
+} from '../../components/AutoCompleteSearch/AutoCompleteSearch';
 import { SheetManager } from 'react-native-actions-sheet';
 import { Image } from 'react-native';
 import icons from '../../assets/icons';
 import Text from '../../components/Text/Text';
 import dayjs from 'dayjs';
 import ListFlatList from './ListFlatList';
-import { SpecialRequestServices } from '../../services/SpecialRequestServices';
+import {
+  SpecialRequestGet,
+  SpecialRequestServices,
+} from '../../services/SpecialRequestServices';
 import { useAuth } from '../../contexts/AuthContext';
+import { orderServices } from '../../services/OrderServices';
 
 const initialPage = 1;
-const mockData = [
-  { id: 'd55b7c51-21c4-40e7-8832-edae0365b55f', title: 'Fashion Hub' },
-  { id: 'b6ccafd8-0988-427f-8f33-59ce4fccc860', title: 'Gadget World' },
-  { id: '9579637c-ee78-4727-9a9e-3f5fadfe1a5c', title: 'Furniture Gallery' },
-  { id: '84ea085e-2db7-4873-93cc-0e6126235e82', title: 'QuickMart' },
-  { id: 'c5ab17bf-80c3-45f6-85df-64fa0875879d', title: 'Pet Paradise' },
-  { id: 'aeb8f1f2-41aa-4612-9cc2-8a0df3721af1', title: 'Family Paradise' },
-  { id: 'bb6a0f29-2d6f-433d-b2a1-b4430c92a8e3', title: 'Garden Essentials' },
-  { id: '172ff4fd-c73e-4c08-9bcc-791028924724', title: 'Luxury Watches' },
-  { id: '8e83200b-744a-4aba-b6b6-7e2e78b7cb82', title: 'Golden World' },
-  { id: '7746ad1f-767f-4827-b39f-855f00c05939', title: 'Genit World' },
-];
-
-const mockArea = [
-  {
-    id: '1',
-    title: 'A01',
-  },
-  {
-    id: '2',
-    title: 'A02',
-  },
-  {
-    id: '3',
-    title: 'A03',
-  },
-  {
-    id: '4',
-    title: 'C01',
-  },
-  {
-    id: '5',
-    title: 'C02',
-  },
-];
 
 interface SearchState {
   searchText?: string;
@@ -81,20 +52,24 @@ const mappingTabStatus = {
   2: ['REJECT_ORDER'],
 };
 
+const initialSearch: SearchState = {
+  searchText: '',
+  area: [],
+  dateRange: { startDate: '', endDate: '' },
+};
 export default function SpecialRequestApproveScreen({
   navigation,
+  route,
 }: StackScreenProps<MainStackParamList, 'SpecialRequestApproveScreen'>) {
   const {
     state: { user },
   } = useAuth();
+
   const { countSpecialRequest } = useSpecialRequest();
   const [currentTab, setCurrentTab] = React.useState(0);
   const [page, setPage] = React.useState(initialPage);
-  const [searchValue, setSearchValue] = React.useState<SearchState>({
-    searchText: '',
-    area: [],
-    dateRange: { startDate: '', endDate: '' },
-  });
+  const [searchValue, setSearchValue] =
+    React.useState<SearchState>(initialSearch);
   const [dataList, setDataList] = React.useState<{
     count: number;
     data: SpecialRequestType[];
@@ -113,15 +88,23 @@ export default function SpecialRequestApproveScreen({
     } else {
       setSearchValue(prev => ({
         ...prev,
-        searchText: '',
+        searchText: undefined,
       }));
     }
   };
 
   const onSelectArea = async () => {
+    const listArea = Array.isArray(user?.zone)
+      ? user?.zone.map((el, index) => {
+          return {
+            id: index.toString() + 1,
+            title: el,
+          };
+        })
+      : [];
     const result: string[] = await SheetManager.show('select-area', {
       payload: {
-        listArea: mockArea,
+        listArea: listArea,
         currentVal: searchValue.area,
       },
     });
@@ -157,28 +140,67 @@ export default function SpecialRequestApproveScreen({
     setPage(1);
   };
 
+  const getSpecialRequest = useCallback(async () => {
+    try {
+      const payload = {
+        page,
+        startDate: searchValue.dateRange?.startDate,
+        endDate: searchValue.dateRange?.endDate,
+        company: user?.company as 'ICPL' | 'ICPI' | 'ICPF',
+        status: mappingTabStatus[currentTab as 0 | 1 | 2],
+        search: searchValue.searchText ? searchValue.searchText : '',
+        customerZones:
+          searchValue.area.length > 0
+            ? searchValue.area
+            : (user?.zone as string[]),
+      } as SpecialRequestGet;
+
+      const result = await SpecialRequestServices.getListSpecialRequest(
+        payload,
+      );
+      if (result) {
+        setDataList(result);
+      }
+    } catch (error) {
+      console.log('error', error);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchValue, page, currentTab, user?.company, user?.zone]);
   useEffect(() => {
-    const getSpecialRequest = async () => {
+    const getSpecialRequestInitial = async () => {
       try {
-        const result = await SpecialRequestServices.getListSpecialRequest({
-          page,
+        const payload = {
+          page: 1,
           startDate: searchValue.dateRange?.startDate,
           endDate: searchValue.dateRange?.endDate,
-          searchText: searchValue.searchText,
           company: user?.company as 'ICPL' | 'ICPI' | 'ICPF',
           status: mappingTabStatus[currentTab as 0 | 1 | 2],
-          search: searchValue.searchText,
-          customerZones: user?.zone as string[],
-        });
+          search: searchValue.searchText ? searchValue.searchText : '',
+          customerZones:
+            searchValue.area.length > 0
+              ? searchValue.area
+              : (user?.zone as string[]),
+        } as SpecialRequestGet;
+
+        const result = await SpecialRequestServices.getListSpecialRequest(
+          payload,
+        );
         if (result) {
           setDataList(result);
         }
       } catch (error) {
         console.log('error', error);
       }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     };
-    getSpecialRequest();
-  }, [searchValue, page, currentTab, user?.company, user?.zone]);
+    getSpecialRequestInitial();
+  }, [
+    route.params?.backTime,
+    searchValue,
+    currentTab,
+    user?.company,
+    user?.zone,
+  ]);
 
   const TAB_LIST = useMemo(() => {
     return [
@@ -196,10 +218,29 @@ export default function SpecialRequestApproveScreen({
     ];
   }, [countSpecialRequest]);
 
-  const getSuggestions = (value: string) => {
-    const suggestions = mockData.filter(item => item.title.includes(value));
-
-    return suggestions;
+  const getSuggestions = async (value: string) => {
+    try {
+      const result = await orderServices.getOrderSearchSuggestions({
+        searchText: value,
+        status: mappingTabStatus[currentTab as 0 | 1 | 2],
+      });
+      if (result) {
+        const newFormat = result.map(
+          (el: { customerNo: string; customerName: string }) => {
+            return {
+              id: el.customerNo,
+              title: el.customerName,
+            };
+          },
+        );
+        return newFormat as SuggestionListType[];
+      } else {
+        return [];
+      }
+    } catch (error) {
+      console.log('error', error);
+      return [];
+    }
   };
 
   const isHaveDateRange = useMemo(() => {
@@ -221,6 +262,28 @@ export default function SpecialRequestApproveScreen({
   const isFilteredArea = useMemo(() => {
     return searchValue.area?.length > 0;
   }, [searchValue.area]);
+
+  const onLoadMore = async () => {
+    if (dataList.data.length < dataList.count) {
+      const result = await SpecialRequestServices.getListSpecialRequest({
+        page: page + 1,
+        startDate: searchValue.dateRange?.startDate,
+        endDate: searchValue.dateRange?.endDate,
+        company: user?.company as 'ICPL' | 'ICPI' | 'ICPF',
+        status: mappingTabStatus[currentTab as 0 | 1 | 2],
+        search: searchValue.searchText ? searchValue.searchText : '',
+        customerZones:
+          searchValue.area.length > 0
+            ? searchValue.area
+            : (user?.zone as string[]),
+      });
+      setPage(prev => prev + 1);
+      setDataList(prev => ({
+        count: prev.count,
+        data: prev.data.concat(result.data),
+      }));
+    }
+  };
 
   return (
     <Container edges={['left', 'right', 'top']}>
@@ -302,13 +365,19 @@ export default function SpecialRequestApproveScreen({
             <HeaderFlatList
               tabList={TAB_LIST}
               currentTab={currentTab}
-              setCurrentTab={setCurrentTab}
+              setCurrentTab={(index: number) => {
+                setCurrentTab(index);
+                setPage(1);
+                setSearchValue(initialSearch);
+              }}
             />
           </View>
           <ListFlatList
             currentTab={currentTab}
             data={dataList}
             navigation={navigation}
+            getSpecialRequest={getSpecialRequest}
+            onLoadMore={onLoadMore}
           />
         </Content>
       </KeyboardAvoidingView>

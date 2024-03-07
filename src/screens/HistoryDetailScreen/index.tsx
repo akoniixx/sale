@@ -33,7 +33,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import FooterButton from './FooterButton';
 import { useFocusEffect } from '@react-navigation/native';
 
-const locationMapping = {
+export const locationMapping = {
   SHOP: 'จัดส่งที่ร้าน',
   FACTORY: 'รับที่โรงงาน',
   OTHER: 'ส่ง/รับ ที่อื่นๆ',
@@ -68,24 +68,6 @@ export default function HistoryDetailScreen({
     }, [params.orderId]),
   );
 
-
-  React.useEffect(() => {
-    const getOrderDetailById = async () => {
-      try {
-        setLoading(true);
-        const res = await orderServices.getOrderById(params.orderId);
-
-        setOrderDetail(res);
-
-      } catch (e) {
-        console.log(e);
-      } finally {
-        setLoading(false);
-      }
-    };
-    getOrderDetailById();
-  }, [params.orderId]);
-
   const BlockLine = () => {
     return (
       <>
@@ -118,8 +100,9 @@ export default function HistoryDetailScreen({
     orderDetail?.orderProducts.map((item: any) => {
       const dataPush = {
         label: item.productName,
-        valueLabel: `(฿${numberWithCommas(item.marketPrice)} x ${item.quantity
-          } ${item.saleUOMTH ? item.saleUOMTH : item.saleUOMTH})`,
+        valueLabel: `(฿${numberWithCommas(item.marketPrice)} x ${
+          item.quantity
+        } ${item.saleUOMTH ? item.saleUOMTH : item.saleUOMTH})`,
       };
       if (item.specialRequestDiscount > 0) {
         listDataDiscountSpecialRequest.push({
@@ -129,7 +112,10 @@ export default function HistoryDetailScreen({
       }
       if (item.orderProductPromotions.length > 0) {
         item.orderProductPromotions.map((el: any) => {
-          if (el.promotionType === 'DISCOUNT_NOT_MIX' || el.promotionType === 'DISCOUNT_MIX') {
+          if (
+            el.promotionType === 'DISCOUNT_NOT_MIX' ||
+            el.promotionType === 'DISCOUNT_MIX'
+          ) {
             listDataDiscount.push({
               ...dataPush,
               value: el.conditionDetail.conditionDiscount,
@@ -167,12 +153,12 @@ export default function HistoryDetailScreen({
       },
       totalPriceNoVat: {
         label: 'มูลค่ารวมหลังหักส่วนลด',
-        value: orderDetail?.price - orderDetail?.totalDiscount
+        value: orderDetail?.price - orderDetail?.totalDiscount,
       },
       vat: {
         label: `ภาษีมูลค่าเพิ่ม ${orderDetail?.vatPercentage} %`,
-        value: orderDetail?.vat
-      }
+        value: orderDetail?.vat,
+      },
     };
     const fbList: any = [];
     const spfbList: any = [];
@@ -202,8 +188,7 @@ export default function HistoryDetailScreen({
 
             fbList.push(newObj);
           }
-        }
-        else {
+        } else {
           const newObj = {
             productName: fr.productName,
             id: fr.productFreebiesId,
@@ -212,19 +197,17 @@ export default function HistoryDetailScreen({
             status: fr.productFreebiesStatus,
             productImage: fr.productFreebiesImage || fr.productImage,
           };
-          spfbList.push(newObj)
+          spfbList.push(newObj);
         }
-
       });
     return {
       dataObj,
       freebieList: fbList,
-      spFreebieList: spfbList
+      spFreebieList: spfbList,
     };
   }, [orderDetail]);
 
-
-  const getUniquePromotions = (orderProducts) => {
+  const getUniquePromotions = orderProducts => {
     const seenPromotions = new Set();
 
     // Use flatMap to flatten the promotions, and then filter based on unique values.
@@ -236,7 +219,7 @@ export default function HistoryDetailScreen({
           return true;
         }
         return false;
-      })
+      }),
     );
   };
   return (
@@ -255,78 +238,77 @@ export default function HistoryDetailScreen({
           {(orderDetail?.status === 'SHOPAPP_CANCEL_ORDER' ||
             orderDetail?.status === 'REJECT_ORDER' ||
             orderDetail?.status === 'COMPANY_CANCEL_ORDER') && (
-              <>
+            <>
+              <View
+                style={{
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '100%',
+                  paddingBottom: 16,
+                }}>
+                <Image
+                  source={images.CancelImage}
+                  style={{
+                    width: 120,
+                    height: 120,
+                  }}
+                />
+              </View>
+              <View
+                style={{
+                  backgroundColor: 'white',
+                  borderRadius: 10,
+                  shadowColor: '#000',
+                  shadowOffset: {
+                    width: 0,
+                    height: 2,
+                  },
+                  shadowOpacity: 0.25,
+                  shadowRadius: 2.84,
+                  elevation: 5,
+                  marginBottom: 18,
+                  zIndex: 0,
+                  paddingVertical: 16,
+                }}>
                 <View
                   style={{
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: '100%',
+                    paddingHorizontal: 16,
+                    borderBottomColor: colors.border1,
+                    borderBottomWidth: 1,
                     paddingBottom: 16,
                   }}>
-                  <Image
-                    source={images.CancelImage}
-                    style={{
-                      width: 120,
-                      height: 120,
-                    }}
-                  />
+                  <Text fontFamily="NotoSans" semiBold>
+                    รายละเอียดการยกเลิก
+                  </Text>
+                  <Text color="text2" lineHeight={34}>
+                    หมายเลขคำสั่งซื้อ : {orderDetail?.orderNo}
+                  </Text>
+                  <Text color="text2" lineHeight={34}>
+                    วันที่ยกเลิก :{' '}
+                    {dayjs(orderDetail?.updateAt)
+                      .locale('th')
+                      .format('DD MMM BBBB HH:mm น.')}
+                  </Text>
                 </View>
                 <View
                   style={{
-                    backgroundColor: 'white',
-                    borderRadius: 10,
-                    shadowColor: '#000',
-                    shadowOffset: {
-                      width: 0,
-                      height: 2,
-                    },
-                    shadowOpacity: 0.25,
-                    shadowRadius: 2.84,
-                    elevation: 5,
-                    marginBottom: 18,
-                    zIndex: 0,
-                    paddingVertical: 16,
+                    paddingHorizontal: 16,
+                    paddingTop: 16,
                   }}>
-                  <View
-                    style={{
-                      paddingHorizontal: 16,
-                      borderBottomColor: colors.border1,
-                      borderBottomWidth: 1,
-                      paddingBottom: 16,
-                    }}>
-                    <Text fontFamily="NotoSans" semiBold>
-                      รายละเอียดการยกเลิก
-                    </Text>
-                    <Text color="text2" lineHeight={34}>
-                      หมายเลขคำสั่งซื้อ : {orderDetail?.orderNo}
-                    </Text>
-                    <Text color="text2" lineHeight={34}>
-                      วันที่ยกเลิก :{' '}
-                      {dayjs(orderDetail?.updateAt)
-                        .locale('th')
-                        .format('DD MMM BBBB HH:mm น.')}
-                    </Text>
-                  </View>
-                  <View
-                    style={{
-                      paddingHorizontal: 16,
-                      paddingTop: 16,
-                    }}>
-                    <Text fontFamily="NotoSans" semiBold>
-                      
-                      เหตุผลที่ยกเลิก (
-                      {orderDetail?.status === 'SHOPAPP_CANCEL_ORDER'
-                        ? 'ลูกค้า'
-                        : orderDetail?.status === 'REJECT_ORDER'
-                          ? 'ผู้จัดการ'
-                          : 'พนักงานขาย'}
-                      )
-                    </Text>
-                    <Text color="text2">{orderDetail?.cancelRemark}</Text>
-                  </View>
+                  <Text fontFamily="NotoSans" semiBold>
+                    เหตุผลที่ยกเลิก (
+                    {orderDetail?.status === 'SHOPAPP_CANCEL_ORDER'
+                      ? 'ลูกค้า'
+                      : orderDetail?.status === 'REJECT_ORDER'
+                      ? 'ผู้จัดการ'
+                      : 'พนักงานขาย'}
+                    )
+                  </Text>
+                  <Text color="text2">{orderDetail?.cancelRemark}</Text>
                 </View>
-              </>
-            )}
+              </View>
+            </>
+          )}
           <View style={styles.slipShadow}>
             <View style={styles.card}>
               <View
@@ -443,7 +425,7 @@ export default function HistoryDetailScreen({
                 <Text fontSize={18} semiBold fontFamily="NotoSans">
                   {
                     locationMapping[
-                    orderDetail?.deliveryDest as keyof typeof locationMapping
+                      orderDetail?.deliveryDest as keyof typeof locationMapping
                     ]
                   }
                 </Text>
@@ -542,7 +524,6 @@ export default function HistoryDetailScreen({
                   รายละเอียดสินค้า
                 </Text>
 
-
                 {/*  {orderDetail?.specialRequestFreebies.map((item)=>(
                   <Text>
                     {item.productName}
@@ -602,10 +583,11 @@ export default function HistoryDetailScreen({
                                 {`฿${numberWithCommas(el.marketPrice)}`}
                               </Text>
                             </View>
-                            <View style={{
-                              marginTop: 8,
-                            }}>
-                              {el.price !== el.totalPrice ?
+                            <View
+                              style={{
+                                marginTop: 8,
+                              }}>
+                              {el.price !== el.totalPrice ? (
                                 <Text
                                   fontSize={12}
                                   fontFamily="NotoSans"
@@ -616,17 +598,12 @@ export default function HistoryDetailScreen({
                                   }}>
                                   {`฿${numberWithCommas(el.price, true)}`}
                                 </Text>
-                                : null}
+                              ) : null}
 
-                              <Text
-                                color="primary"
-                                fontSize={18}
-                                bold
-                              >
+                              <Text color="primary" fontSize={18} bold>
                                 {`฿${numberWithCommas(el.totalPrice)}`}
                               </Text>
                             </View>
-
                           </View>
                         </View>
                         <View
@@ -653,42 +630,94 @@ export default function HistoryDetailScreen({
                 }}
               />
 
-              {orderDetail?.orderProducts[0].orderProductPromotions.length > 0 ? (
-                <View style={{
-                  marginTop: 8,
-                  paddingHorizontal: 16,
-                }}>
+              {orderDetail?.orderProducts[0].orderProductPromotions.length >
+              0 ? (
+                <View
+                  style={{
+                    marginTop: 8,
+                    paddingHorizontal: 16,
+                  }}>
                   <View style={{ flexDirection: 'row' }}>
-                    <Image source={icons.promoDetail} style={{ width: 24, height: 24, marginRight: 8 }} />
-                    <Text fontSize={16} lineHeight={24} bold fontFamily='NotoSans' color='text3'>รายละเอียดโปรโมชัน</Text>
+                    <Image
+                      source={icons.promoDetail}
+                      style={{ width: 24, height: 24, marginRight: 8 }}
+                    />
+                    <Text
+                      fontSize={16}
+                      lineHeight={24}
+                      bold
+                      fontFamily="NotoSans"
+                      color="text3">
+                      รายละเอียดโปรโมชัน
+                    </Text>
                   </View>
 
-                  <View style={{ borderWidth: 0.5, padding: 20, backgroundColor: '#F8FAFF', borderColor: '#EAEAEA', marginVertical: 10 }}>
-                    {
-                      getUniquePromotions(orderDetail?.orderProducts || []).map(promo => (
+                  <View
+                    style={{
+                      borderWidth: 0.5,
+                      padding: 20,
+                      backgroundColor: '#F8FAFF',
+                      borderColor: '#EAEAEA',
+                      marginVertical: 10,
+                    }}>
+                    {getUniquePromotions(orderDetail?.orderProducts || []).map(
+                      promo => (
                         <Text fontFamily="Sarabun">
-                          {`• ${promotionTypeMap(promo.promotionType)} - ${promo.promotionName}`}
+                          {`• ${promotionTypeMap(promo.promotionType)} - ${
+                            promo.promotionName
+                          }`}
                         </Text>
-                      ))
-                    }
+                      ),
+                    )}
                   </View>
                 </View>
               ) : null}
               <View style={{ padding: 16, backgroundColor: 'white' }}>
                 <View style={{ flexDirection: 'row' }}>
-                  <Image source={icons.doc} style={{ width: 24, height: 24, marginRight: 8 }} />
-                  <Text fontSize={16} lineHeight={24} bold fontFamily='NotoSans' color='text3'>เอกสาร </Text>
+                  <Image
+                    source={icons.doc}
+                    style={{ width: 24, height: 24, marginRight: 8 }}
+                  />
+                  <Text
+                    fontSize={16}
+                    lineHeight={24}
+                    bold
+                    fontFamily="NotoSans"
+                    color="text3">
+                    เอกสาร{' '}
+                  </Text>
                 </View>
-                <TouchableOpacity style={{ borderWidth: 1, borderColor: colors.border1, padding: 15, borderRadius: 8, marginTop: 10 }}
-                  onPress={() => navigation.navigate('EditFileScreen', {
-                    orderId: orderDetail?.orderId ? orderDetail.orderId : ''
-                  })}>
-                  <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-
-                      <Text fontFamily="NotoSans">เอกสารที่เกี่ยวข้อง {orderDetail?.orderFiles?.length != 0 ? '(' + orderDetail?.orderFiles.length + ' ภาพ)' : ''}</Text>
+                <TouchableOpacity
+                  style={{
+                    borderWidth: 1,
+                    borderColor: colors.border1,
+                    padding: 15,
+                    borderRadius: 8,
+                    marginTop: 10,
+                  }}
+                  onPress={() =>
+                    navigation.navigate('EditFileScreen', {
+                      orderId: orderDetail?.orderId ? orderDetail.orderId : '',
+                    })
+                  }>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                    }}>
+                    <View
+                      style={{ flexDirection: 'row', alignItems: 'center' }}>
+                      <Text fontFamily="NotoSans">
+                        เอกสารที่เกี่ยวข้อง{' '}
+                        {orderDetail?.orderFiles?.length != 0
+                          ? '(' + orderDetail?.orderFiles.length + ' ภาพ)'
+                          : ''}
+                      </Text>
                     </View>
-                    <Image style={{ width: 24, height: 24 }} source={icons.iconNext} />
+                    <Image
+                      style={{ width: 24, height: 24 }}
+                      source={icons.iconNext}
+                    />
                   </View>
                 </TouchableOpacity>
               </View>
@@ -900,15 +929,21 @@ export default function HistoryDetailScreen({
                 })}
               </View>
             ) : null}
-            {user?.company !== 'ICPI' ? <>
-              {orderDetail?.status === 'DELIVERY_SUCCESS' || orderDetail?.status === 'SHOPAPP_CANCEL_ORDER' || orderDetail?.status === 'COMPANY_CANCEL_ORDER' || orderDetail?.status === 'REJECT_ORDER' ? (
-                <FooterReorder orderId={orderDetail.orderId} navigation={navigation} orderLength={orderDetail.orderProducts.length} {...orderDetail} />
-
-              ) : null}
-            </> : null}
-
-
-
+            {user?.company !== 'ICPI' ? (
+              <>
+                {orderDetail?.status === 'DELIVERY_SUCCESS' ||
+                orderDetail?.status === 'SHOPAPP_CANCEL_ORDER' ||
+                orderDetail?.status === 'COMPANY_CANCEL_ORDER' ||
+                orderDetail?.status === 'REJECT_ORDER' ? (
+                  <FooterReorder
+                    orderId={orderDetail.orderId}
+                    navigation={navigation}
+                    orderLength={orderDetail.orderProducts.length}
+                    {...orderDetail}
+                  />
+                ) : null}
+              </>
+            ) : null}
           </View>
           <Image
             style={{
@@ -921,16 +956,16 @@ export default function HistoryDetailScreen({
             source={images.bottomInvoice}
           />
 
-
-          {orderDetail?.status === 'WAIT_APPROVE_ORDER' || orderDetail?.status === 'WAIT_CONFIRM_ORDER' || orderDetail?.status === 'CONFIRM_ORDER'
-            ? <FooterButton orderDetail={orderDetail} navigation={navigation} /> : null
-          }
+          {orderDetail?.status === 'WAIT_APPROVE_ORDER' ||
+          orderDetail?.status === 'WAIT_CONFIRM_ORDER' ||
+          orderDetail?.status === 'CONFIRM_ORDER' ? (
+            <FooterButton orderDetail={orderDetail} navigation={navigation} />
+          ) : null}
           <View
             style={{
               height: 100,
             }}
           />
-
         </ScrollView>
       </Content>
       <LoadingSpinner visible={loading} />

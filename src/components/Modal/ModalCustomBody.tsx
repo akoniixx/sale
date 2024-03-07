@@ -14,27 +14,24 @@ type Props = {
   onConfirm?: () => void;
   visible: boolean;
   width?: string | number;
-  title: string;
-  titleCenter?: boolean;
   desc?: string;
-  minHeight?: number;
   textCancel?: string;
   textConfirm?: string;
   onlyCancel?: boolean;
+  children?: React.ReactNode;
+  disableConfirm?: boolean;
 };
 
-export default function ModalWarning({
+export default function ModalCustomBody({
   visible,
   onRequestClose,
   onConfirm,
   width,
-  title,
-  desc,
-  titleCenter,
   textCancel = 'ยกเลิก',
   textConfirm = 'ยืนยัน',
   onlyCancel = false,
-  minHeight = 50,
+  children,
+  disableConfirm,
 }: Props): JSX.Element {
   return (
     <ModalRN
@@ -52,28 +49,9 @@ export default function ModalWarning({
         <View
           style={[
             styles.modalView,
-            { width: width ? width : Dimensions.get('window').width * 0.6 },
+            { width: width ? width : Dimensions.get('window').width - 64 },
           ]}>
-          <View
-            style={{
-              paddingVertical: 16,
-              paddingHorizontal: 16,
-              minHeight,
-              alignItems: 'center',
-            }}>
-            <Text semiBold lineHeight={28} center={!titleCenter}>
-              {title}
-            </Text>
-            {desc && (
-              <Text
-                fontSize={14}
-                fontFamily="Sarabun"
-                color="text3"
-                lineHeight={26}>
-                {desc}
-              </Text>
-            )}
-          </View>
+          {children}
           <View
             style={{
               height: 40,
@@ -94,6 +72,7 @@ export default function ModalWarning({
             </TouchableOpacity>
             {!onlyCancel && (
               <TouchableOpacity
+                disabled={disableConfirm}
                 onPress={onConfirm}
                 style={{
                   flex: 1,
@@ -106,7 +85,7 @@ export default function ModalWarning({
                   center
                   fontSize={14}
                   fontFamily="NotoSans"
-                  color="primary">
+                  color={disableConfirm ? 'border2' : 'primary'}>
                   {textConfirm}
                 </Text>
               </TouchableOpacity>

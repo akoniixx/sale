@@ -1,4 +1,4 @@
-import { FlatList, StyleSheet, View } from 'react-native';
+import { FlatList, RefreshControl, StyleSheet, View } from 'react-native';
 import React from 'react';
 import Text from '../../components/Text/Text';
 import CardItem from './CardItem';
@@ -12,6 +12,8 @@ interface Props {
     count: number;
   };
   navigation: any;
+  getSpecialRequest: () => Promise<void>;
+  onLoadMore: () => void;
 }
 
 const mappingTab = {
@@ -20,7 +22,25 @@ const mappingTab = {
   2: 'รายการที่ไม่อนุมัติ',
 };
 
-export default function ListFlatList({ currentTab, data, navigation }: Props) {
+export default function ListFlatList({
+  currentTab,
+  data,
+  navigation,
+  getSpecialRequest,
+  onLoadMore,
+}: Props) {
+  const [refreshing, setRefreshing] = React.useState(false);
+  const onRefresh = async () => {
+    try {
+      setRefreshing(true);
+      await getSpecialRequest();
+      setRefreshing(false);
+    } catch (error) {
+      console.log('error', error);
+    } finally {
+      setRefreshing(false);
+    }
+  };
   return (
     <View style={styles.container}>
       <View style={styles.row}>
@@ -34,10 +54,15 @@ export default function ListFlatList({ currentTab, data, navigation }: Props) {
           semiBold>{`${data.count} รายการ`}</Text>
       </View>
       <FlatList
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
         scrollIndicatorInsets={{ right: 1 }}
         style={{ paddingTop: 4 }}
         data={data.data}
-        keyExtractor={(item, index) => index.toString()}
+        onEndReached={onLoadMore}
+        onEndReachedThreshold={0.05}
+        keyExtractor={(item, index) => item.orderId.toString() + index}
         contentContainerStyle={{
           paddingBottom: 16,
           paddingHorizontal: 16,

@@ -21,11 +21,11 @@ interface Props {
   navigation: any;
   item: SpecialRequestType;
 }
-export default function CardItem({ navigation, item, ...props }: Props) {
+export default function CardItem({ navigation, item }: Props) {
   const onPress = () => {
     navigation.navigate('SpecialRequestDetailScreen', {
       orderId: item.orderId,
-      date: dayjs(item.updateAt).toISOString(),
+      date: dayjs(item.createAt).toISOString(),
     });
   };
   const area = item.customerZone;
@@ -95,7 +95,9 @@ export default function CardItem({ navigation, item, ...props }: Props) {
                 }}
                 source={icons.package}
               />
-              <Text color="text3" fontSize={12}>{`${0} รายการ`}</Text>
+              <Text
+                color="text3"
+                fontSize={12}>{`${orderProducts.length} รายการ`}</Text>
             </View>
             <View
               style={{
@@ -125,10 +127,10 @@ export default function CardItem({ navigation, item, ...props }: Props) {
                   opacity: 0.5,
                   zIndex: 1,
                   position: 'absolute',
-                  width: 38,
-                  height: 38,
                   justifyContent: 'center',
                   alignItems: 'center',
+                  width: Dimensions.get('screen').width / 6 - 30,
+                  height: Dimensions.get('screen').width / 6 - 30,
                 }}>
                 <Text color="white" semiBold>{`+${
                   orderProducts.length - 6
@@ -140,7 +142,12 @@ export default function CardItem({ navigation, item, ...props }: Props) {
                   uri={getNewPath(item?.productImage)}
                 />
               ) : (
-                <Image source={images.emptyProduct} style={styles.images} />
+                <View
+                  style={{
+                    backgroundColor: colors.background2,
+                  }}>
+                  <Image source={images.emptyProduct} style={styles.images} />
+                </View>
               )}
             </View>
           ) : (
@@ -151,14 +158,16 @@ export default function CardItem({ navigation, item, ...props }: Props) {
               }}>
               {item.productImage ? (
                 <ImageCache
-                  style={{ width: 36, height: 36 }}
+                  style={styles.images}
                   uri={getNewPath(item?.productImage)}
                 />
               ) : (
-                <Image
-                  source={images.emptyProduct}
-                  style={{ width: 36, height: 36 }}
-                />
+                <View
+                  style={{
+                    backgroundColor: colors.background2,
+                  }}>
+                  <Image source={images.emptyProduct} style={styles.images} />
+                </View>
               )}
             </View>
           );
@@ -212,8 +221,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   images: {
-    width: Dimensions.get('window').width / 6 - 64,
-    height: Dimensions.get('window').width / 6 - 64,
+    width: Dimensions.get('screen').width / 6 - 32,
+    height: Dimensions.get('screen').width / 6 - 32,
     zIndex: -1,
   },
 });

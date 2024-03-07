@@ -19,12 +19,12 @@ interface Order {
   userStaffId: string;
 }
 
-export interface payloadUploadFile{
-  orderId:string
-  updateBy:string
-  action: 'CREATE'|'DELETE'
-  orderFileId?:string,
-  files:Asset
+export interface payloadUploadFile {
+  orderId: string;
+  updateBy: string;
+  action: 'CREATE' | 'DELETE';
+  orderFileId?: string;
+  files: Asset;
 }
 const createOrder = async (order: Order) => {
   const response = await request.post('/order-cart/order', order);
@@ -35,16 +35,18 @@ const getOrderById = async (orderId: string) => {
   return response.data;
 };
 
-const uploadFile =async (data: FormData) => {
-  
-  const response = await uploadFileInstance.post(`/order-cart/order/update-file`,data)
-  return response.data
-}
+const uploadFile = async (data: FormData) => {
+  const response = await uploadFileInstance.post(
+    `/order-cart/order/update-file`,
+    data,
+  );
+  return response.data;
+};
 const postStatusOrder = async (payload: {
   orderId: string;
   status: string;
-  paidStatus: string;
-  cancelRemark: string;
+  paidStatus?: string;
+  cancelRemark?: string;
   soNo: string | null;
   navNo: string | null;
   updateBy: string;
@@ -54,10 +56,23 @@ const postStatusOrder = async (payload: {
     .then(res => res.data)
     .catch(err => err);
 };
+const getOrderSearchSuggestions = async ({
+  searchText,
+  status,
+}: {
+  searchText: string;
+  status: string[];
+}) => {
+  const query = new URLSearchParams({ searchText, status } as any).toString();
+  return await request
+    .get(`/order-cart/order/search/search-name?${query}`)
+    .then(res => res.data);
+};
 
 export const orderServices = {
   createOrder,
   getOrderById,
   uploadFile,
-  postStatusOrder
+  postStatusOrder,
+  getOrderSearchSuggestions,
 };

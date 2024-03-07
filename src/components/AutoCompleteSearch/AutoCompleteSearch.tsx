@@ -3,15 +3,14 @@ import React, { useEffect } from 'react';
 import { colors } from '../../assets/colors/colors';
 import icons from '../../assets/icons';
 import { AutocompleteDropdown } from 'react-native-autocomplete-dropdown';
-import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 
-type SuggestionListType = {
+export type SuggestionListType = {
   id: string;
   title: string;
 };
 interface Props {
   onSearch: (value: string | undefined | null) => void;
-  getSuggestions: (value: string) => SuggestionListType[];
+  getSuggestions: (value: string) => Promise<SuggestionListType[]>;
   placeholder?: string;
   emptyText?: string;
 }
@@ -35,7 +34,8 @@ export default function AutoCompleteSearch({
       if (searchQuery !== null) {
         try {
           setLoading(true);
-          const suggestions = getSuggestions(searchQuery);
+          const suggestions = await getSuggestions(searchQuery);
+
           setSuggestionList(suggestions);
           setLoading(false);
         } catch (error) {
@@ -88,8 +88,10 @@ export default function AutoCompleteSearch({
           dataSet={suggestionList}
           suggestionsListTextStyle={{ borderBottomWidth: 0 }}
           onBlur={() => {
-            onSearch(searchQuery);
             setIsFocused(false);
+          }}
+          onClear={() => {
+            setSearchQuery('');
           }}
           emptyResultText={emptyText}
           LeftComponent={

@@ -17,12 +17,10 @@ interface Props {
   >;
 }
 export default function FooterButton({ orderDetail, navigation }: Props) {
- 
   const {
     state: { user },
   } = useAuth();
 
-  
   const onPressCancelOrder = async () => {
     if (!orderDetail) {
       return;
@@ -38,17 +36,15 @@ export default function FooterButton({ orderDetail, navigation }: Props) {
   };
   return (
     <>
-     
-        <View style={styles.container}>
-          <Button
-            danger
-            title="ยกเลิกคำสั่งซื้อ"
-            onPress={() => {
-              onPressCancelOrder();
-            }}
-          />
-        </View>
-     
+      <View style={styles.container}>
+        <Button
+          danger
+          title="ยกเลิกคำสั่งซื้อ"
+          onPress={() => {
+            onPressCancelOrder();
+          }}
+        />
+      </View>
     </>
   );
 }

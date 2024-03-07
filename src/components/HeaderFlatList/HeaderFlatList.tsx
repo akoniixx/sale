@@ -9,7 +9,7 @@ export const HeaderFlatList = ({
   tabList,
 }: {
   currentTab: number;
-  setCurrentTab: React.Dispatch<React.SetStateAction<number>>;
+  setCurrentTab: (index: number) => void;
   tabList: { label: string; value: any }[];
 }) => {
   const [fadeAnim] = useState(new Animated.Value(0)); // Initial value for opacity: 0

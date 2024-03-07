@@ -29,6 +29,7 @@ import CancelOrderScreen from '../../screens/CancelOrderScreen';
 import CancelOrderSuccessScreen from '../../screens/CancelOrderSuccessScreen';
 import SpecialRequestApproveScreen from '../../screens/SpecialRequestApproveScreen';
 import SpecialRequestDetailScreen from '../../screens/SpecialRequestDetailScreen';
+import dayjs from 'dayjs';
 
 export type MainStackParamList = {
   MainScreen: {
@@ -153,7 +154,9 @@ export type MainStackParamList = {
     navNo: string | null;
     orderNo: string;
   };
-  SpecialRequestApproveScreen: undefined;
+  SpecialRequestApproveScreen: {
+    backTime?: number;
+  };
   SpecialRequestDetailScreen: {
     date: string;
     orderId: string;
@@ -244,6 +247,7 @@ export default function MainNavigator() {
       <Stack.Screen
         name="SpecialRequestApproveScreen"
         component={SpecialRequestApproveScreen}
+        initialParams={{ backTime: dayjs().unix() }}
       />
       <Stack.Screen
         name="SpecialRequestDetailScreen"

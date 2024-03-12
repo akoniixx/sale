@@ -74,4 +74,11 @@ export default {
   circulProgress: require('./circulProgress.png'),
   uploadSucsess: require('./uploadSucsess.png'),
   iconSearchGrey: require('./iconSearchGrey.png'),
+  trailer_dolly: require('./trailer_dolly.png'),
+  trailer_head: require('./trailer_head.png'),
+  drag: require('./drag.png'),
+  warning: require('./warning.png'),
+  tooltip: require('./tooltip.png'),
+  box: require('./box.png'),
+  car: require('./car.png'),
 };

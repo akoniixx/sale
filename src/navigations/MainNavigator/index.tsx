@@ -1,8 +1,5 @@
 import React, { useEffect } from 'react';
-import {
-  createStackNavigator,
-  StackScreenProps,
-} from '@react-navigation/stack';
+import { createStackNavigator } from '@react-navigation/stack';
 import MainTabBottomNavigator from './MainTabBottomNavigator';
 import SelectStoreScreen from '../../screens/SelectStoreScreen';
 import StoreDetailScreen from '../../screens/StoreDetailScreen';
@@ -24,12 +21,13 @@ import NewsScreen from '../../screens/NewsScreen';
 import NewsDetailScreen from '../../screens/NewsScreen/NewsDetailScreen';
 import UploadFileScreen from '../../screens/UploadFileScreen/UploadFileScreen';
 import EditFileScreen from '../../screens/HistoryDetailScreen/EditFilescreen';
-import { HistoryDataType, orderFiles } from '../../entities/historyTypes';
+import { HistoryDataType } from '../../entities/historyTypes';
 import CancelOrderScreen from '../../screens/CancelOrderScreen';
 import CancelOrderSuccessScreen from '../../screens/CancelOrderSuccessScreen';
 import SpecialRequestApproveScreen from '../../screens/SpecialRequestApproveScreen';
 import SpecialRequestDetailScreen from '../../screens/SpecialRequestDetailScreen';
 import dayjs from 'dayjs';
+import EditOrderLoadsScreen from '../../screens/HistoryDetailScreen/EditOrderLoadScreen';
 
 export type MainStackParamList = {
   MainScreen: {
@@ -161,6 +159,9 @@ export type MainStackParamList = {
     date: string;
     orderId: string;
   };
+  EditOrderLoadsScreen: {
+    orderDetail: HistoryDataType;
+  };
 };
 const Stack = createStackNavigator<MainStackParamList>();
 export default function MainNavigator() {
@@ -243,6 +244,10 @@ export default function MainNavigator() {
       <Stack.Screen
         name="CancelOrderSuccessScreen"
         component={CancelOrderSuccessScreen}
+      />
+      <Stack.Screen
+        name="EditOrderLoadsScreen"
+        component={EditOrderLoadsScreen}
       />
       <Stack.Screen
         name="SpecialRequestApproveScreen"

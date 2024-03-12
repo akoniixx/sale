@@ -172,6 +172,7 @@ export default function HistoryItemArea({
 
   const getOnlySixLength = orderProducts
     .filter(el => !el.isFreebie)
+    .sort((a, b) => a.shipmentOrder - b.shipmentOrder)
     .slice(0, 6);
   const onPress = () => {
     const date = dayjs(props.createAt).format('DD MMM BBBB');

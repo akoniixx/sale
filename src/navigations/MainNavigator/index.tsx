@@ -27,6 +27,7 @@ import EditFileScreen from '../../screens/HistoryDetailScreen/EditFilescreen';
 import { HistoryDataType, orderFiles } from '../../entities/historyTypes';
 import CancelOrderScreen from '../../screens/CancelOrderScreen';
 import CancelOrderSuccessScreen from '../../screens/CancelOrderSuccessScreen';
+import EditOrderLoadsScreen from '../../screens/HistoryDetailScreen/EditOrderLoadScreen';
 
 export type MainStackParamList = {
   MainScreen: {
@@ -151,6 +152,9 @@ export type MainStackParamList = {
     navNo: string | null;
     orderNo: string;
   };
+  EditOrderLoadsScreen:{
+    orderDetail:HistoryDataType
+  }
   
 };
 const Stack = createStackNavigator<MainStackParamList>();
@@ -234,7 +238,7 @@ export default function MainNavigator() {
       <Stack.Screen name='EditFileScreen' component={EditFileScreen} />
       <Stack.Screen name='CancelOrderScreen' component={CancelOrderScreen} />
       <Stack.Screen name='CancelOrderSuccessScreen' component={CancelOrderSuccessScreen} />      
-      
+      <Stack.Screen name="EditOrderLoadsScreen" component={EditOrderLoadsScreen} />
     </Stack.Navigator>
   );
 }

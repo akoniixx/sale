@@ -32,6 +32,7 @@ import { promotionTypeMap } from '../../utils/mappingObj';
 import { useAuth } from '../../contexts/AuthContext';
 import FooterButton from './FooterButton';
 import { useFocusEffect } from '@react-navigation/native';
+import { navigationRef } from '../../navigations/RootNavigator';
 
 const locationMapping = {
   SHOP: 'จัดส่งที่ร้าน',
@@ -188,6 +189,7 @@ export default function HistoryDetailScreen({
               baseUnit: fr.baseUnitOfMeaTh || fr.baseUnitOfMeaEn,
               status: fr.productFreebiesStatus,
               productImage: fr.productFreebiesImage,
+              shipmentOrder:fr.shipmentOrder
             };
             fbList.push(newObj);
           } else {
@@ -198,6 +200,7 @@ export default function HistoryDetailScreen({
               baseUnit: fr.baseUnitOfMeaTh || fr.saleUOMTH || fr.saleUOM || '',
               status: fr.productStatus,
               productImage: fr.productImage,
+              shipmentOrder:fr.shipmentOrder
             };
 
             fbList.push(newObj);
@@ -211,6 +214,7 @@ export default function HistoryDetailScreen({
             baseUnit: fr.baseUnitOfMeaTh || fr.baseUnitOfMeaEn || fr.saleUOMTH,
             status: fr.productFreebiesStatus,
             productImage: fr.productFreebiesImage || fr.productImage,
+            shipmentOrder:fr.shipmentOrder
           };
           spfbList.push(newObj)
         }
@@ -550,7 +554,7 @@ export default function HistoryDetailScreen({
                 ))} */}
 
                 {orderDetail?.orderProducts
-                  .filter(el => !el.isFreebie)
+                  .filter(el => !el.isFreebie).sort((a, b) => a.shipmentOrder - b.shipmentOrder)
                   .map((el, idx) => {
                     return (
                       <View
@@ -674,6 +678,43 @@ export default function HistoryDetailScreen({
                   </View>
                 </View>
               ) : null}
+
+{user?.company ==='ICPI'&&
+ <View  style={{
+  marginTop: 8,
+  paddingHorizontal: 16,
+}}>
+<View>
+<View style={{ flexDirection: 'row' }}>
+  <Image source={icons.car} style={{ width: 24, height: 24, marginRight: 8 }} />
+  <Text fontSize={16} lineHeight={24} bold fontFamily='NotoSans' color='text3'>ลำดับการขนสินค้า</Text>
+</View>
+<TouchableOpacity onPress={() => navigationRef.navigate('EditOrderLoadsScreen',orderDetail)} style={{ paddingVertical: 15, paddingHorizontal: 10, borderWidth: 0.5, borderRadius: 8, marginTop: 10, borderColor: '#E1E7F6' }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+              <View style={{ flexDirection: 'row' }}>
+              
+                <View>
+                  <Text fontFamily='NotoSans' lineHeight={21} fontSize={14}>รายการการขนสินค้าขึ้นรถ</Text>
+                {/*   {!currentList.every(Item => Item.quantity === 0) && dataForLoad.length > 0 &&
+                    <Text fontSize={14} lineHeight={18} color='secondary'>กรุณาตรวจสอบลำดับสินค้าอีกครั้ง</Text>
+                  } */}
+                </View>
+              </View>
+              <View style={{ flexDirection: 'row' }}>
+               {/*  {currentList.every(Item => Item.quantity === 0) && dataForLoad.length > 0 &&
+                  <Image source={icons.uploadSucsess} style={{ width: 20, height: 20, marginRight: 10 }} />
+                }
+                {!currentList.every(Item => Item.quantity === 0) && dataForLoad.length > 0 &&
+                  <Image source={icons.warning} style={{ width: 25, height: 25, marginRight: 10 }} />
+                } */}
+                <Image source={icons.iconNext} style={{ width: 20, height: 20 }} />
+              </View>
+            </View>
+          </TouchableOpacity>
+</View>
+</View>
+}
+
               <View style={{ padding: 16, backgroundColor: 'white' }}>
                 <View style={{ flexDirection: 'row' }}>
                   <Image source={icons.doc} style={{ width: 24, height: 24, marginRight: 8 }} />
@@ -757,7 +798,7 @@ export default function HistoryDetailScreen({
               </View>
               {freebieList.length > 0 ? (
                 <>
-                  {freebieList.map((el: any, idx: number) => {
+                  {freebieList.sort((a, b) => a.shipmentOrder - b.shipmentOrder).map((el: any, idx: number) => {
                     return (
                       <View
                         key={idx}
@@ -851,7 +892,7 @@ export default function HistoryDetailScreen({
                     {`ทั้งหมด ${spFreebieList.length} รายการ`}
                   </Text>
                 </View>
-                {spFreebieList.map((el: any, idx: number) => {
+                {spFreebieList.sort((a, b) => a.shipmentOrder - b.shipmentOrder).map((el: any, idx: number) => {
                   return (
                     <View
                       key={idx}

@@ -16,7 +16,7 @@ interface Props {
 
 export default function Body({ navigation }: Props) {
   const {
-    state: { user },
+    state: { user, companyDetail },
   } = useAuth();
 
   const onClickTC = () => {
@@ -33,8 +33,7 @@ export default function Body({ navigation }: Props) {
           {user?.firstname} {user?.lastname}
         </Text>
         <Text color="text2">
-          {user?.role} , (
-          {mappingCompany[user?.company as keyof typeof mappingCompany]})
+          {user?.role} , ({companyDetail?.companyNameTh})
         </Text>
         <Text color="text2">เบอร์โทรศัพท์ : {user?.telephone}</Text>
 

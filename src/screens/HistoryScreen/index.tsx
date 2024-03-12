@@ -259,6 +259,7 @@ export default function HistoryScreen({ navigation }: any): JSX.Element {
         }
       };
       fetchData();
+
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [debounceSearchValue, tabValue, zone]),
   );
@@ -303,6 +304,28 @@ export default function HistoryScreen({ navigation }: any): JSX.Element {
     isSaleManager,
     user?.zone,
   ]);
+
+  useEffect(() => {
+    const unsubscribeFocus = navigation.addListener('focus', () => {
+      setPage(1);
+      setDateRange({
+        startDate: undefined,
+        endDate: undefined,
+      });
+      setTabValue([]);
+      setCustomerCompanyId(undefined);
+      setTypeSearch('area');
+      setCustomerName('');
+      if (isSaleManager) {
+        setZone(user?.zone?.[0]);
+      }
+    });
+
+    return () => {
+      unsubscribeFocus();
+    };
+  }, [navigation, user?.zone, isSaleManager]);
+
   const fetchDataMore = async () => {
     if (historyData.data.length < historyData.count) {
       try {

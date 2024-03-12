@@ -147,7 +147,7 @@ export default function SelectAreaSheet(props: SheetProps) {
       />
       <View style={styles.footer}>
         <Button
-          title="ล้างข้อมูล"
+          title="คืนค่าทั้งหมด"
           transparent
           onPress={onClear}
           style={{

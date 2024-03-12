@@ -29,11 +29,27 @@ interface State {
   isLoading: boolean;
 
   user?: null | UserType;
+  companyDetail?: {
+    companyId: string;
+    companyCode: string;
+    companyNameEn: string;
+    companyNameTh: string;
+    companyLogo: string;
+    companyType: string;
+  };
 }
 
 interface Action {
   type: string;
   user?: UserType | null;
+  companyDetail?: {
+    companyId: string;
+    companyCode: string;
+    companyNameEn: string;
+    companyNameTh: string;
+    companyLogo: string;
+    companyType: string;
+  };
 }
 
 interface Context {
@@ -49,6 +65,14 @@ interface Context {
 const initialState = {
   user: null,
   isLoading: true,
+  companyDetail: {
+    companyId: '',
+    companyCode: '',
+    companyNameEn: '',
+    companyNameTh: '',
+    companyLogo: '',
+    companyType: '',
+  },
 };
 
 const AuthContext = React.createContext<Context>({
@@ -68,6 +92,7 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
         return {
           ...prevState,
           user: action.user,
+          companyDetail: action.companyDetail,
         };
       case 'LOGOUT':
         return {
@@ -79,6 +104,7 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
         return {
           ...prevState,
           user: action.user,
+          companyDetail: action.companyDetail,
         };
 
       case 'SET_PROFILE_IMAGE':
@@ -112,12 +138,14 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
           }
 
           const user = await userServices.getUserProfile(id ? id : userStaffId);
+          const companyDetail = await AsyncStorage.getItem('companyDetail');
           if (user) {
             dispatch({
               type: 'GET_ME',
               user: {
                 ...user,
               },
+              companyDetail: JSON.parse(companyDetail || '{}'),
             });
           }
         } catch (e: any) {
@@ -134,6 +162,10 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
             await AsyncStorage.setItem('userStaffId', data.data.userStaffId);
             await AsyncStorage.setItem('company', data.data.company);
             await AsyncStorage.setItem('zone', data.data.zone);
+            await AsyncStorage.setItem(
+              'companyDetail',
+              JSON.stringify(data.company || {}),
+            );
             const fcmtoken = await AsyncStorage.getItem('fcmtoken');
             if (fcmtoken) {
               try {
@@ -146,7 +178,11 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
                 console.log('e, :>>', e);
               }
             }
-            dispatch({ type: 'LOGIN', user: data.data });
+            dispatch({
+              type: 'LOGIN',
+              user: data.data,
+              companyDetail: data.company,
+            });
             return data;
           }
         } catch (e: any) {

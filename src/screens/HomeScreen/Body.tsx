@@ -67,7 +67,7 @@ export default function Body({ navigation }: Props): JSX.Element {
       );
 
       if (res?.length == 0 || res == undefined) {
-        setNewsList(resNews);
+        setNewsList(resNews as any);
       } else {
         setNewsList(filterData);
       }
@@ -241,7 +241,9 @@ export default function Body({ navigation }: Props): JSX.Element {
                     />
                     {countSpecialRequest > 0 && (
                       <View style={styles.badge}>
-                        <Text color="white">{countSpecialRequest}</Text>
+                        <Text color="white" lineHeight={18} fontSize={14}>
+                          {countSpecialRequest}
+                        </Text>
                       </View>
                     )}
                   </>
@@ -338,9 +340,9 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 16,
     top: 0,
-    borderRadius: 20,
-    width: 28,
-    height: 22,
+    borderRadius: 15,
+    width: 26,
+    height: 26,
     justifyContent: 'center',
     alignItems: 'center',
   },

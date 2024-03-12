@@ -62,7 +62,9 @@ export default function ListFlatList({
         data={data.data}
         onEndReached={onLoadMore}
         onEndReachedThreshold={0.05}
-        keyExtractor={(item, index) => item.orderId.toString() + index}
+        keyExtractor={(item, index) =>
+          item.orderId.toString() + index + Math.random()
+        }
         contentContainerStyle={{
           paddingBottom: 16,
           paddingHorizontal: 16,

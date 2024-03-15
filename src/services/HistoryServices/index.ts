@@ -12,18 +12,49 @@ interface PayloadHistory {
   startDate?: Date;
   endDate?: Date;
   isSpecialRequest?: boolean;
+  zone?: string;
 }
 const getHistory = async (payload: PayloadHistory) => {
-  const { status, ...rest } = payload;
+  const {
+    status,
+    company,
+    page,
+    take,
+    customerCompanyId,
+    endDate,
+    isSpecialRequest,
+    search,
+    startDate,
+    zone,
+  } = payload;
   const queryStatus = status?.reduce((acc, value) => {
     return `${acc}&status=${value}`;
   }, '');
-  const query = Object.entries(rest).reduce((acc, [key, value]) => {
-    if (value !== undefined) {
-      return `${acc}&${key}=${value}`;
-    }
-    return acc;
-  }, '');
+
+  const payloadQuery = {
+    page,
+    take,
+    company,
+    isSpecialRequest: !!isSpecialRequest,
+    zone,
+  } as any;
+  if (customerCompanyId) {
+    payloadQuery.customerCompanyId = customerCompanyId;
+  }
+  if (search) {
+    payloadQuery.search = search;
+  }
+  if (startDate) {
+    payloadQuery.startDate = startDate;
+  }
+  if (endDate) {
+    payloadQuery.endDate = endDate;
+  }
+  if (zone) {
+    payloadQuery.customerZones = zone;
+  }
+
+  const query = new URLSearchParams(payloadQuery as any).toString();
 
   return await request
     .get(`/order-cart/order?${query}${queryStatus}`)
@@ -38,12 +69,14 @@ const getHistoryStore = async ({
   endDate,
   status,
   search,
+  zone,
 }: {
   userStaffId: string;
   startDate?: Date;
   endDate?: Date;
   status?: string[];
   search?: string;
+  zone?: string[];
 }) => {
   const queryStatus = status?.reduce((acc, value) => {
     return `${acc}&status=${value}`;
@@ -52,16 +85,28 @@ const getHistoryStore = async ({
     startDate,
     endDate,
     search,
+    userStaffId,
   }).reduce((acc, [key, value]) => {
-    if (value !== undefined) {
+    if (value) {
       return `${acc}&${key}=${value}`;
     }
     return acc;
   }, '');
 
+  let queryZone = '';
+  if (zone) {
+    zone.forEach((value, index) => {
+      if (index === 0) {
+        queryZone = `zones=${value}`;
+      } else {
+        queryZone = `${queryZone}&zones=${value}`;
+      }
+    });
+  }
+
   return await request
     .post(
-      `/order-cart/order/get-customer-company?userStaffId=${userStaffId}${query}${queryStatus}`,
+      `/order-cart/order/get-customer-company?${query}${queryStatus}${queryZone}`,
     )
     .then(res => {
       return res.data;

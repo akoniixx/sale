@@ -6,14 +6,10 @@ import DashedLine from 'react-native-dashed-line';
 import { colors } from '../../assets/colors/colors';
 import dayjs from 'dayjs';
 import icons from '../../assets/icons';
+import { HistoryDataType } from '../../entities/historyTypes';
 
 interface Props {
-  orderDetail: {
-    orderNo: string;
-    status: string;
-    customerName: string;
-    createAt: string;
-  } | null;
+  orderDetail: HistoryDataType;
 }
 export default function HeaderSlip({ orderDetail }: Props) {
   return (
@@ -82,6 +78,24 @@ export default function HeaderSlip({ orderDetail }: Props) {
         </Text>
         <Text fontSize={18} semiBold fontFamily="NotoSans">
           {orderDetail?.customerName}
+        </Text>
+      </View>
+      <View
+        style={{
+          marginTop: 16,
+        }}>
+        <Text
+          fontSize={14}
+          color="text3"
+          semiBold
+          fontFamily="NotoSans"
+          style={{
+            marginBottom: 8,
+          }}>
+          เขต
+        </Text>
+        <Text fontSize={18} semiBold fontFamily="NotoSans">
+          {orderDetail?.customerZone}
         </Text>
       </View>
       <View

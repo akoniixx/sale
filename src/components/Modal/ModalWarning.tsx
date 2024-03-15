@@ -7,7 +7,7 @@ import {
   Dimensions,
 } from 'react-native';
 import { colors } from '../../assets/colors/colors';
-import Text from '../Text/Text';
+import Text, { TextStyled } from '../Text/Text';
 
 type Props = {
   onRequestClose?: () => void;
@@ -21,6 +21,10 @@ type Props = {
   textCancel?: string;
   textConfirm?: string;
   onlyCancel?: boolean;
+  descError?: boolean;
+  descCenter?: boolean;
+  titleFontSize: TextStyled['fontSize'];
+  descFontSize?: TextStyled['fontSize'];
 };
 
 export default function ModalWarning({
@@ -35,6 +39,10 @@ export default function ModalWarning({
   textConfirm = 'ยืนยัน',
   onlyCancel = false,
   minHeight = 50,
+  descCenter = false,
+  descError,
+  titleFontSize,
+  descFontSize,
 }: Props): JSX.Element {
   return (
     <ModalRN
@@ -61,14 +69,19 @@ export default function ModalWarning({
               minHeight,
               alignItems: 'center',
             }}>
-            <Text semiBold lineHeight={28} center={!titleCenter}>
+            <Text
+              semiBold
+              lineHeight={28}
+              center={!titleCenter}
+              fontSize={titleFontSize}>
               {title}
             </Text>
             {desc && (
               <Text
-                fontSize={14}
+                fontSize={descFontSize || 14}
                 fontFamily="Sarabun"
-                color="text3"
+                color={descError ? 'error' : 'text3'}
+                center={descCenter}
                 lineHeight={26}>
                 {desc}
               </Text>

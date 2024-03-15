@@ -23,11 +23,10 @@ export default function SelectDateRangeSelect(props: SheetProps) {
   const [isOpenDateEnd, setIsOpenDateEnd] = React.useState<boolean>(false);
 
   useEffect(() => {
-    if (props.payload) {
+    if (props.payload?.dateRange) {
       setDateRange(props.payload.dateRange);
     }
   }, [props.payload]);
-
   return (
     <ActionSheet
       useBottomSafeAreaPadding={false}

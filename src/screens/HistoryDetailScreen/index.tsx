@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { StackScreenProps } from '@react-navigation/stack';
 import { MainStackParamList } from '../../navigations/MainNavigator';
 import Container from '../../components/Container/Container';
@@ -52,21 +52,21 @@ export default function HistoryDetailScreen({
   } = useAuth();
   const [loading, setLoading] = React.useState<boolean>(false);
 
+  const getOrderDetailById = useCallback(async () => {
+    try {
+      setLoading(true);
+      const res = await orderServices.getOrderById(params.orderId);
+      setOrderDetail(res);
+    } catch (e) {
+      console.log(e);
+    } finally {
+      setLoading(false);
+    }
+  }, [params.orderId]);
   useFocusEffect(
     React.useCallback(() => {
-      const getOrderDetailById = async () => {
-        try {
-          setLoading(true);
-          const res = await orderServices.getOrderById(params.orderId);
-          setOrderDetail(res);
-        } catch (e) {
-          console.log(e);
-        } finally {
-          setLoading(false);
-        }
-      };
       getOrderDetailById();
-    }, [params.orderId]),
+    }, [getOrderDetailById]),
   );
 
   const BlockLine = () => {
@@ -175,7 +175,7 @@ export default function HistoryDetailScreen({
               baseUnit: fr.baseUnitOfMeaTh || fr.baseUnitOfMeaEn,
               status: fr.productFreebiesStatus,
               productImage: fr.productFreebiesImage,
-              shipmentOrder:fr.shipmentOrder
+              shipmentOrder: fr.shipmentOrder,
             };
             fbList.push(newObj);
           } else {
@@ -186,7 +186,7 @@ export default function HistoryDetailScreen({
               baseUnit: fr.baseUnitOfMeaTh || fr.saleUOMTH || fr.saleUOM || '',
               status: fr.productStatus,
               productImage: fr.productImage,
-              shipmentOrder:fr.shipmentOrder
+              shipmentOrder: fr.shipmentOrder,
             };
 
             fbList.push(newObj);
@@ -199,7 +199,7 @@ export default function HistoryDetailScreen({
             baseUnit: fr.baseUnitOfMeaTh || fr.baseUnitOfMeaEn || fr.saleUOMTH,
             status: fr.productFreebiesStatus,
             productImage: fr.productFreebiesImage || fr.productImage,
-            shipmentOrder:fr.shipmentOrder
+            shipmentOrder: fr.shipmentOrder,
           };
           spfbList.push(newObj);
         }
@@ -393,6 +393,24 @@ export default function HistoryDetailScreen({
                   style={{
                     marginBottom: 8,
                   }}>
+                  เขต
+                </Text>
+                <Text fontSize={18} semiBold fontFamily="NotoSans">
+                  {orderDetail?.customerZone}
+                </Text>
+              </View>
+              <View
+                style={{
+                  marginTop: 16,
+                }}>
+                <Text
+                  fontSize={14}
+                  color="text3"
+                  semiBold
+                  fontFamily="NotoSans"
+                  style={{
+                    marginBottom: 8,
+                  }}>
                   เวลาที่เปิดออเดอร์
                 </Text>
                 <Text fontSize={18} semiBold fontFamily="NotoSans">
@@ -535,7 +553,8 @@ export default function HistoryDetailScreen({
                 ))} */}
 
                 {orderDetail?.orderProducts
-                  .filter(el => !el.isFreebie).sort((a, b) => a.shipmentOrder - b.shipmentOrder)
+                  .filter(el => !el.isFreebie)
+                  .sort((a, b) => a.shipmentOrder - b.shipmentOrder)
                   .map((el, idx) => {
                     return (
                       <View
@@ -677,41 +696,77 @@ export default function HistoryDetailScreen({
                 </View>
               ) : null}
 
-{user?.company ==='ICPI'&&
- <View  style={{
-  marginTop: 8,
-  paddingHorizontal: 16,
-}}>
-<View>
-<View style={{ flexDirection: 'row' }}>
-  <Image source={icons.car} style={{ width: 24, height: 24, marginRight: 8 }} />
-  <Text fontSize={16} lineHeight={24} bold fontFamily='NotoSans' color='text3'>ลำดับการขนสินค้า</Text>
-</View>
-<TouchableOpacity onPress={() => navigationRef.navigate('EditOrderLoadsScreen',orderDetail)} style={{ paddingVertical: 15, paddingHorizontal: 10, borderWidth: 0.5, borderRadius: 8, marginTop: 10, borderColor: '#E1E7F6' }}>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-              <View style={{ flexDirection: 'row' }}>
-              
-                <View>
-                  <Text fontFamily='NotoSans' lineHeight={21} fontSize={14}>รายการการขนสินค้าขึ้นรถ</Text>
-                {/*   {!currentList.every(Item => Item.quantity === 0) && dataForLoad.length > 0 &&
+              {user?.company === 'ICPI' && (
+                <View
+                  style={{
+                    marginTop: 8,
+                    paddingHorizontal: 16,
+                  }}>
+                  <View>
+                    <View style={{ flexDirection: 'row' }}>
+                      <Image
+                        source={icons.car}
+                        style={{ width: 24, height: 24, marginRight: 8 }}
+                      />
+                      <Text
+                        fontSize={16}
+                        lineHeight={24}
+                        bold
+                        fontFamily="NotoSans"
+                        color="text3">
+                        ลำดับการขนสินค้า
+                      </Text>
+                    </View>
+                    <TouchableOpacity
+                      onPress={() =>
+                        navigationRef.navigate(
+                          'EditOrderLoadsScreen',
+                          orderDetail,
+                        )
+                      }
+                      style={{
+                        paddingVertical: 15,
+                        paddingHorizontal: 10,
+                        borderWidth: 0.5,
+                        borderRadius: 8,
+                        marginTop: 10,
+                        borderColor: '#E1E7F6',
+                      }}>
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          justifyContent: 'space-between',
+                        }}>
+                        <View style={{ flexDirection: 'row' }}>
+                          <View>
+                            <Text
+                              fontFamily="NotoSans"
+                              lineHeight={21}
+                              fontSize={14}>
+                              รายการการขนสินค้าขึ้นรถ
+                            </Text>
+                            {/*   {!currentList.every(Item => Item.quantity === 0) && dataForLoad.length > 0 &&
                     <Text fontSize={14} lineHeight={18} color='secondary'>กรุณาตรวจสอบลำดับสินค้าอีกครั้ง</Text>
                   } */}
-                </View>
-              </View>
-              <View style={{ flexDirection: 'row' }}>
-               {/*  {currentList.every(Item => Item.quantity === 0) && dataForLoad.length > 0 &&
+                          </View>
+                        </View>
+                        <View style={{ flexDirection: 'row' }}>
+                          {/*  {currentList.every(Item => Item.quantity === 0) && dataForLoad.length > 0 &&
                   <Image source={icons.uploadSucsess} style={{ width: 20, height: 20, marginRight: 10 }} />
                 }
                 {!currentList.every(Item => Item.quantity === 0) && dataForLoad.length > 0 &&
                   <Image source={icons.warning} style={{ width: 25, height: 25, marginRight: 10 }} />
                 } */}
-                <Image source={icons.iconNext} style={{ width: 20, height: 20 }} />
-              </View>
-            </View>
-          </TouchableOpacity>
-</View>
-</View>
-}
+                          <Image
+                            source={icons.iconNext}
+                            style={{ width: 20, height: 20 }}
+                          />
+                        </View>
+                      </View>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              )}
 
               <View style={{ padding: 16, backgroundColor: 'white' }}>
                 <View style={{ flexDirection: 'row' }}>
@@ -827,53 +882,55 @@ export default function HistoryDetailScreen({
               </View>
               {freebieList.length > 0 ? (
                 <>
-                  {freebieList.sort((a, b) => a.shipmentOrder - b.shipmentOrder).map((el: any, idx: number) => {
-                    return (
-                      <View
-                        key={idx}
-                        style={{
-                          flexDirection: 'row',
-                          marginBottom: 10,
-                          alignItems: 'center',
-                        }}>
-                        {el.productImage ? (
-                          <Image
-                            resizeMode="contain"
-                            source={{ uri: getNewPath(el.productImage) }}
-                            style={{
-                              width: 56,
-                              height: 56,
-                            }}
-                          />
-                        ) : (
-                          <Image
-                            source={images.emptyProduct}
-                            style={{
-                              width: 56,
-                              height: 56,
-                            }}
-                          />
-                        )}
+                  {freebieList
+                    .sort((a, b) => a.shipmentOrder - b.shipmentOrder)
+                    .map((el: any, idx: number) => {
+                      return (
                         <View
+                          key={idx}
                           style={{
-                            marginLeft: 8,
+                            flexDirection: 'row',
+                            marginBottom: 10,
+                            alignItems: 'center',
                           }}>
-                          <Text
-                            fontSize={14}
-                            color="text3"
-                            lineHeight={24}
+                          {el.productImage ? (
+                            <Image
+                              resizeMode="contain"
+                              source={{ uri: getNewPath(el.productImage) }}
+                              style={{
+                                width: 56,
+                                height: 56,
+                              }}
+                            />
+                          ) : (
+                            <Image
+                              source={images.emptyProduct}
+                              style={{
+                                width: 56,
+                                height: 56,
+                              }}
+                            />
+                          )}
+                          <View
                             style={{
-                              width: Dimensions.get('window').width / 2,
+                              marginLeft: 8,
                             }}>
-                            {el.productName}
-                          </Text>
-                          <Text fontSize={14}>
-                            {el.quantity} {el.baseUnit}
-                          </Text>
+                            <Text
+                              fontSize={14}
+                              color="text3"
+                              lineHeight={24}
+                              style={{
+                                width: Dimensions.get('window').width / 2,
+                              }}>
+                              {el.productName}
+                            </Text>
+                            <Text fontSize={14}>
+                              {el.quantity} {el.baseUnit}
+                            </Text>
+                          </View>
                         </View>
-                      </View>
-                    );
-                  })}
+                      );
+                    })}
                 </>
               ) : (
                 <View
@@ -921,53 +978,55 @@ export default function HistoryDetailScreen({
                     {`ทั้งหมด ${spFreebieList.length} รายการ`}
                   </Text>
                 </View>
-                {spFreebieList.sort((a, b) => a.shipmentOrder - b.shipmentOrder).map((el: any, idx: number) => {
-                  return (
-                    <View
-                      key={idx}
-                      style={{
-                        flexDirection: 'row',
-                        marginBottom: 10,
-                        alignItems: 'center',
-                      }}>
-                      {el.productImage ? (
-                        <Image
-                          resizeMode="contain"
-                          source={{ uri: getNewPath(el.productImage) }}
-                          style={{
-                            width: 56,
-                            height: 56,
-                          }}
-                        />
-                      ) : (
-                        <Image
-                          source={images.emptyProduct}
-                          style={{
-                            width: 56,
-                            height: 56,
-                          }}
-                        />
-                      )}
+                {spFreebieList
+                  .sort((a, b) => a.shipmentOrder - b.shipmentOrder)
+                  .map((el: any, idx: number) => {
+                    return (
                       <View
+                        key={idx}
                         style={{
-                          marginLeft: 8,
+                          flexDirection: 'row',
+                          marginBottom: 10,
+                          alignItems: 'center',
                         }}>
-                        <Text
-                          fontSize={14}
-                          color="text3"
-                          lineHeight={24}
+                        {el.productImage ? (
+                          <Image
+                            resizeMode="contain"
+                            source={{ uri: getNewPath(el.productImage) }}
+                            style={{
+                              width: 56,
+                              height: 56,
+                            }}
+                          />
+                        ) : (
+                          <Image
+                            source={images.emptyProduct}
+                            style={{
+                              width: 56,
+                              height: 56,
+                            }}
+                          />
+                        )}
+                        <View
                           style={{
-                            width: Dimensions.get('window').width / 2,
+                            marginLeft: 8,
                           }}>
-                          {el.productName}
-                        </Text>
-                        <Text fontSize={14}>
-                          {el.quantity} {el.baseUnit}
-                        </Text>
+                          <Text
+                            fontSize={14}
+                            color="text3"
+                            lineHeight={24}
+                            style={{
+                              width: Dimensions.get('window').width / 2,
+                            }}>
+                            {el.productName}
+                          </Text>
+                          <Text fontSize={14}>
+                            {el.quantity} {el.baseUnit}
+                          </Text>
+                        </View>
                       </View>
-                    </View>
-                  );
-                })}
+                    );
+                  })}
               </View>
             ) : null}
             {user?.company !== 'ICPI' ? (
@@ -977,10 +1036,10 @@ export default function HistoryDetailScreen({
                 orderDetail?.status === 'COMPANY_CANCEL_ORDER' ||
                 orderDetail?.status === 'REJECT_ORDER' ? (
                   <FooterReorder
-                    orderId={orderDetail.orderId}
                     navigation={navigation}
                     orderLength={orderDetail.orderProducts.length}
                     {...orderDetail}
+                    orderId={orderDetail?.orderId || ''}
                   />
                 ) : null}
               </>
@@ -1000,7 +1059,11 @@ export default function HistoryDetailScreen({
           {orderDetail?.status === 'WAIT_APPROVE_ORDER' ||
           orderDetail?.status === 'WAIT_CONFIRM_ORDER' ||
           orderDetail?.status === 'CONFIRM_ORDER' ? (
-            <FooterButton orderDetail={orderDetail} navigation={navigation} />
+            <FooterButton
+              orderDetail={orderDetail}
+              navigation={navigation}
+              refetch={getOrderDetailById}
+            />
           ) : null}
           <View
             style={{

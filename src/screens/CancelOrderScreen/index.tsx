@@ -54,14 +54,14 @@ export default function CancelOrderScreen({
       const payload: PayloadCancelOrder = {
         orderId,
         cancelRemark: reason,
-        status: 'COMPANY_CANCEL_ORDER',
+        status: 'SALE_CANCEL_ORDER',
         paidStatus,
         soNo,
         navNo,
         updateBy: `${user?.firstname} ${user?.lastname}`,
       };
 
-     /*  console.log(JSON.stringify(payload)) */
+      /*  console.log(JSON.stringify(payload)) */
       const res = await orderServices.postStatusOrder(payload);
       if (res) {
         setModalConfirm(false);

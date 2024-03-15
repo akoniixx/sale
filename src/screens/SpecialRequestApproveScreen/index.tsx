@@ -92,7 +92,6 @@ export default function SpecialRequestApproveScreen({
       }));
     }
   };
-
   const onSelectArea = async () => {
     const listArea = Array.isArray(user?.zone)
       ? user?.zone.map((el, index) => {
@@ -116,15 +115,27 @@ export default function SpecialRequestApproveScreen({
     }
   };
   const onSelectDateLength = async () => {
+    const dateRange = {
+      startDate: searchValue.dateRange?.startDate
+        ? new Date(searchValue.dateRange?.startDate)
+        : undefined,
+      endDate: searchValue.dateRange?.endDate
+        ? new Date(searchValue.dateRange?.endDate)
+        : undefined,
+    };
     const currentDate: {
       startDate: Date | undefined;
       endDate: Date | undefined;
     } = await SheetManager.show('select-date-range', {
       payload: {
-        dateRange: searchValue.dateRange,
+        dateRange: dateRange,
       },
     });
-    if (!currentDate) {
+    if (!currentDate.endDate && !currentDate.startDate) {
+      setSearchValue(prev => ({
+        ...prev,
+        dateRange: initialSearch.dateRange,
+      }));
       return;
     }
     const { startDate, endDate } = currentDate;
@@ -266,7 +277,7 @@ export default function SpecialRequestApproveScreen({
   };
 
   const isHaveDateRange = useMemo(() => {
-    if (searchValue?.dateRange) {
+    if (searchValue?.dateRange?.endDate && searchValue?.dateRange?.startDate) {
       return searchValue.dateRange?.startDate && searchValue.dateRange?.endDate;
     }
     return false;
@@ -306,7 +317,6 @@ export default function SpecialRequestApproveScreen({
       }));
     }
   };
-
   return (
     <Container edges={['left', 'right', 'top']}>
       <Header title="อนุมัติคำสั่งซื้อ" />
@@ -390,11 +400,6 @@ export default function SpecialRequestApproveScreen({
               setCurrentTab={(index: number) => {
                 setCurrentTab(index);
                 setPage(1);
-                setSearchValue(prev => ({
-                  ...prev,
-                  dateRange: initialSearch.dateRange,
-                  area: initialSearch.area,
-                }));
               }}
             />
           </View>

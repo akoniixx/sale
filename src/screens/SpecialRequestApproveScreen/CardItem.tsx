@@ -29,7 +29,7 @@ export default function CardItem({ navigation, item }: Props) {
     });
   };
   const area = item.customerZone;
-  const orderNo = item.spNo;
+  const orderNo = item.orderNo;
   const shopName = item.customerName;
   const status = item.status;
   const price = item.price;

@@ -247,7 +247,6 @@ export default function HistoryScreen({ navigation }: any): JSX.Element {
         if (tabValue.length > 0) {
           payload.status = tabValue;
         }
-        console.log('payload', payload);
         try {
           const data = await historyServices.getHistory(payload);
           setHistoryData(data);
@@ -278,9 +277,7 @@ export default function HistoryScreen({ navigation }: any): JSX.Element {
         }
 
         if (isSaleManager) {
-          payload.zone = zone
-            ? zone
-            : Array.isArray(user?.zone) && user?.zone[0];
+          payload.zone = user?.zone;
         } else {
           payload.userStaffId = user?.userStaffId;
         }

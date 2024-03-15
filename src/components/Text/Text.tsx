@@ -1,14 +1,8 @@
-import {
-  Text as TextRN,
-  TextProps,
-  StyleSheet,
-  TextStyle,
-  Appearance,
-} from 'react-native';
+import { Text as TextRN, TextProps, StyleSheet, TextStyle } from 'react-native';
 import React from 'react';
 import { colors } from '../../assets/colors/colors';
 
-interface TextStyled {
+export interface TextStyled {
   bold?: boolean;
   light?: boolean;
   semiBold?: boolean;

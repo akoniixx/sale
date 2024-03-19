@@ -95,7 +95,7 @@ export default function Summary({ setLoading }: Props): JSX.Element {
             if (el.promotionType === 'DISCOUNT_NOT_MIX' || el.promotionType === 'DISCOUNT_MIX' && isFind) {
               listDataDiscount.push({
                 ...dataPush,
-                value: el.conditionDetail.conditionDiscount,
+                value: el.conditionDetail?.conditionDiscount,
               });
             }
           });

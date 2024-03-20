@@ -39,7 +39,7 @@ export default function FooterButton({ orderDetail, navigation }: Props) {
   return (
     <>
      
-        <View style={styles.container}>
+       {/*  <View style={styles.container}>
           <Button
             danger
             title="ยกเลิกคำสั่งซื้อ"
@@ -47,7 +47,7 @@ export default function FooterButton({ orderDetail, navigation }: Props) {
               onPressCancelOrder();
             }}
           />
-        </View>
+        </View> */}
      
     </>
   );

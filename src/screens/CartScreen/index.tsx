@@ -19,7 +19,11 @@ import Button from '../../components/Button/Button';
 import StepOne from './StepOne';
 import FooterShadow from '../../components/FooterShadow/FooterShadow';
 import ModalWarning from '../../components/Modal/ModalWarning';
-import { CartDetailType, newProductType, useCart } from '../../contexts/CartContext';
+import {
+  CartDetailType,
+  newProductType,
+  useCart,
+} from '../../contexts/CartContext';
 import StepTwo from './StepTwo';
 import icons from '../../assets/icons';
 import Text from '../../components/Text/Text';
@@ -89,19 +93,17 @@ export default function CartScreen({
     });
   };
 
-
   useEffect(() => {
-    params?.isReorder && setModalReorder(true)
-  }, [])
+    params?.isReorder && setModalReorder(true);
+  }, []);
 
   const reArrangeReorder = async () => {
     const currentCL = reArrangeShipment(cartList);
     const { cartList: cl, cartDetail: cD } = await postCartItem(currentCL);
     await getSelectPromotion(cD.allPromotions);
     setCartList(cl);
-    setModalReorder(false)
-
-  }
+    setModalReorder(false);
+  };
 
   const onCreateOrder = async () => {
     try {
@@ -160,59 +162,58 @@ export default function CartScreen({
       if (dataStepTwo.numberPlate) {
         payload.numberPlate = dataStepTwo.numberPlate;
       }
-    /*   console.log('payload', JSON.stringify(payload, null, 2)); */
+      /*   console.log('payload', JSON.stringify(payload, null, 2)); */
       const result = await orderServices.createOrder(payload);
-     /*  console.log(result) */
-        
-     
+      /*  console.log(result) */
+
       if (result) {
         // console.log('result', JSON.stringify(result, null, 2));
-        setCartDetail({} as CartDetailType)
+        setCartDetail({} as CartDetailType);
         setCartList([]);
         setFreebieListItem([]);
         setPromotionList([]);
         setPromotionListValue([]);
         setVisibleConfirm(false);
         setLoading(false);
-        await AsyncStorage.removeItem('specialRequestRemark')
+        await AsyncStorage.removeItem('specialRequestRemark');
         const storedUrisJson = await AsyncStorage.getItem('imageUris');
-        if(storedUrisJson){
+        if (storedUrisJson) {
           try {
             setLoading(true);
             const storedUrisJson = await AsyncStorage.getItem('imageUris');
-            let storedUris:object[] = storedUrisJson ? JSON.parse(storedUrisJson) : [];
-            const data = new FormData()
+            let storedUris: object[] = storedUrisJson
+              ? JSON.parse(storedUrisJson)
+              : [];
+            const data = new FormData();
             storedUris.forEach((e, index) => {
               data.append('files', {
                 name: `image${index}.jpg`,
                 type: e.type,
-                uri: e.uri
+                uri: e.uri,
               });
             });
-        
-            data.append('orderId', result.orderId)
-            data.append('updateBy', result.userStaffId)
-            data.append('action', 'CREATE')
-          
-           const res =  await orderServices.uploadFile(data)
-           if(res){
-            await AsyncStorage.removeItem('imageUris')
-            navigation.navigate('OrderSuccessScreen', {
-              orderId: result.orderId,
-            });
-           }
-          
+
+            data.append('orderId', result.orderId);
+            data.append('updateBy', result.userStaffId);
+            data.append('action', 'CREATE');
+
+            const res = await orderServices.uploadFile(data);
+            if (res) {
+              await AsyncStorage.removeItem('imageUris');
+              navigation.navigate('OrderSuccessScreen', {
+                orderId: result.orderId,
+              });
+            }
           } catch (e) {
-           console.log(e)
+            console.log(e);
           } finally {
             setLoading(false);
           }
-        }else{
+        } else {
           navigation.navigate('OrderSuccessScreen', {
             orderId: result.orderId,
           });
         }
-        
       }
     } catch (e: any) {
       console.log(JSON.stringify(e.response.data, null, 2));
@@ -248,11 +249,10 @@ export default function CartScreen({
     React.useCallback(() => {
       const getInitData = async () => {
         const getFactory = async () => {
-         
           const factoryData = await factoryServices.getFactory(
             user?.company || '',
           );
-         
+
           setAddressDelivery(prev => ({
             ...prev,
             name: factoryData.name,
@@ -279,10 +279,9 @@ export default function CartScreen({
         };
         if (user?.company && user?.company === 'ICPL') {
           getShopLocation();
-        }
-       else if (user?.company && user?.company === 'ICPF') {
+        } else if (user?.company && user?.company === 'ICPF') {
           getFactory();
-        }else{
+        } else {
           getShopLocation();
         }
         if (params?.step) {
@@ -317,7 +316,6 @@ export default function CartScreen({
   }, [params?.specialRequestRemark]);
 
   return (
-
     <Container>
       <Header
         onBackCustom={() => {
@@ -346,11 +344,7 @@ export default function CartScreen({
               }
             }}
             currentStep={currentStep}
-            labelList={[
-              'รายการคำสั่งซื้อ',
-              'สรุปคำสั่งซื้อ',
-              'สั่งซื้อสำเร็จ',
-            ]}
+            labelList={['รายการคำสั่งซื้อ', 'สรุปคำสั่งซื้อ', 'สั่งซื้อสำเร็จ']}
           />
         </View>
         <ScrollView ref={ref => (scrollRef.current = ref)}>
@@ -446,11 +440,10 @@ export default function CartScreen({
         title={`สินค้าในรายการ \nมีการเรียงลำดับการขนสินค้าใหม่ \nกรุณาตรวจสอบลำดับสินค้าอีกครั้ง \nก่อนสรุปคำสั่งซื้อ`}
         width={'80%'}
         onConfirm={async () => {
-          await reArrangeReorder()
+          await reArrangeReorder();
         }}
-        textConfirm='ตกลง'
+        textConfirm="ตกลง"
       />
     </Container>
-
   );
 }

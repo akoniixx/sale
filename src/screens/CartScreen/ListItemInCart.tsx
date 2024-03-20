@@ -49,7 +49,6 @@ export default function ListItemInCart({
     freebieListItem,
     cartApi: { postCartItem, getSelectPromotion },
   } = useCart();
-  
 
   const [visibleDel, setVisibleDel] = React.useState(false);
   const [delId, setDelId] = React.useState<string | number>('');
@@ -199,8 +198,6 @@ export default function ListItemInCart({
     });
   }, [cartList]);
 
-
-
   const RenderList = (load: boolean) => {
     return (
       <>
@@ -208,22 +205,29 @@ export default function ListItemInCart({
           const isUsePromotion = cartDetail?.allPromotions?.find(el => {
             const isFindPromotionId = item.orderProductPromotions.find(
               el2 =>
-                el2.promotionId === el.promotionId &&
-                el2.promotionType === 'DISCOUNT_NOT_MIX'|| el.promotionType === 'DISCOUNT_MIX',
+                (el2.promotionId === el.promotionId &&
+                  el2.promotionType === 'DISCOUNT_NOT_MIX') ||
+                el.promotionType === 'DISCOUNT_MIX',
             );
             return el.isUse && !!isFindPromotionId;
           });
-         
-          const currentDiscount: any = item.orderProductPromotions.find(
+
+          const currentDiscount = item.orderProductPromotions.find(
             el =>
-              el.promotionId === isUsePromotion?.promotionId &&
-              el.promotionType === 'DISCOUNT_NOT_MIX'|| el.promotionType === 'DISCOUNT_MIX',
+              (el.promotionId === isUsePromotion?.promotionId &&
+                el.promotionType === 'DISCOUNT_NOT_MIX') ||
+              el.promotionType === 'DISCOUNT_MIX',
           );
 
-          const sumDiscount =
-            isUsePromotion && currentDiscount
-              ? currentDiscount?.conditionDetail?.conditionDiscount
-              : 0;
+          const findSumDiscount = (currentDiscount?.conditionDetail || []).find(
+            el => {
+              return isUsePromotion && el.conditionDiscount > 0;
+            },
+          );
+
+          const sumDiscount = findSumDiscount
+            ? findSumDiscount.conditionDiscount
+            : 0;
 
           return (
             <View
@@ -384,7 +388,6 @@ export default function ListItemInCart({
                   {sumDiscount > 0 && !load ? (
                     <>
                       <Text bold fontFamily="NotoSans">
-                        
                         {`฿${numberWithCommas(
                           sumDiscount > 0
                             ? Number(item?.totalPrice || 0)

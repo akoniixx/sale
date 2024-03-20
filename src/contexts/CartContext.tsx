@@ -122,6 +122,9 @@ export interface newProductType extends ProductType {
         saleUnitDiscountTH: string | null;
         saleUnitTH: string | null;
       }[];
+      products: {
+        productId: string;
+      }[];
       conditionDiscount: number;
     }[];
   }[];

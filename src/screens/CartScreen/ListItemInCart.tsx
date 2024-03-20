@@ -205,36 +205,37 @@ export default function ListItemInCart({
           const isUsePromotion = cartDetail?.allPromotions?.find(el => {
             const isFindPromotionId = item?.orderProductPromotions.find(
               el2 =>
-                (el2.promotionId === el.promotionId &&
-                  el2.promotionType === 'DISCOUNT_NOT_MIX') ||
-                el.promotionType === 'DISCOUNT_MIX',
+                el2.promotionId === el.promotionId &&
+                (el2.promotionType === 'DISCOUNT_NOT_MIX' ||
+                  el.promotionType === 'DISCOUNT_MIX'),
             );
             return el.isUse && !!isFindPromotionId;
           });
 
-          const currentDiscount = item?.orderProductPromotions.find(
-            el =>
-              (el.promotionId === isUsePromotion?.promotionId &&
-                el.promotionType === 'DISCOUNT_NOT_MIX') ||
-              el.promotionType === 'DISCOUNT_MIX',
-          );
+          const currentDiscount = item?.orderProductPromotions.find(el => {
+            return (
+              el.promotionId === isUsePromotion?.promotionId &&
+              (el.promotionType === 'DISCOUNT_NOT_MIX' ||
+                el.promotionType === 'DISCOUNT_MIX')
+            );
+          });
           let sumDiscount = 0;
-
           const isArray = Array.isArray(currentDiscount?.conditionDetail);
-          if (!isArray && isUsePromotion) {
+          if (!isArray && isUsePromotion && currentDiscount?.conditionDetail) {
             // why not the same type
             sumDiscount = currentDiscount?.conditionDetail?.conditionDiscount;
           }
-
-          if (
-            currentDiscount &&
-            Array.isArray(currentDiscount?.conditionDetail) &&
-            isUsePromotion
-          ) {
+          if (currentDiscount && isArray && isUsePromotion) {
             const findSumDiscount = (
               currentDiscount?.conditionDetail || []
             ).find(el => {
-              return el.conditionDiscount;
+              const isHaveProducts = el?.products && el.products.length > 0;
+              if (isHaveProducts) {
+                return el.products.find(
+                  el2 => el2.productId === item.productId,
+                );
+              }
+              return el.conditionDiscount && el.productId === item.productId;
             });
             sumDiscount =
               (findSumDiscount && findSumDiscount?.conditionDiscount) || 0;

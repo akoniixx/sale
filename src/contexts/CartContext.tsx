@@ -166,6 +166,7 @@ interface ContextCart {
   setPromotionList: React.Dispatch<React.SetStateAction<any>>;
   setFreebieListItem: React.Dispatch<React.SetStateAction<any>>;
   setPromotionListValue: React.Dispatch<React.SetStateAction<string[]>>;
+  onMutateFreebie: (orderProducts: any) => void;
 }
 const CartContext = React.createContext<ContextCart>({
   cartList: [],
@@ -174,7 +175,9 @@ const CartContext = React.createContext<ContextCart>({
   promotionListValue: [],
   promotionList: [],
   freebieListItem: [],
-  setCartDetail: () => {},
+  setCartDetail: () => {
+    return;
+  },
   setPromotionListValue: () => [],
   setPromotionList: () => [],
   setFreebieListItem: () => [],
@@ -205,6 +208,9 @@ const CartContext = React.createContext<ContextCart>({
     getSelectPromotion: async () => Promise.resolve(),
     postEditIsUseCod: async () => Promise.resolve(),
     postEditPaymentMethod: async () => Promise.resolve(),
+  },
+  onMutateFreebie: () => {
+    return;
   },
 });
 
@@ -402,9 +408,42 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
       return {
         ...result,
         orderProducts: newFormat,
+        originProducts: result?.orderProducts,
       };
     };
   }, [user?.userStaffId]);
+
+  const onMutateFreebie = (orderProducts: any) => {
+    const freebieList = orderProducts
+      .filter(
+        (item: any) =>
+          item?.isFreebie === true && item?.isSpecialRequestFreebie === false,
+      )
+      .map((el: any) => {
+        if (el.productFreebiesId) {
+          const newObj = {
+            productName: el.productName,
+            id: el.productFreebiesId,
+            quantity: el.quantity,
+            baseUnit: el.baseUnitOfMeaTh || el.baseUnitOfMeaEn,
+            status: el.productFreebiesStatus,
+            productImage: el.productFreebiesImage,
+          };
+          return newObj;
+        } else {
+          const newObj = {
+            productName: el.productName,
+            id: el.productId,
+            quantity: el.quantity,
+            baseUnit: el.baseUnitOfMeaTh || el.saleUOMTH || el.saleUOM || '',
+            status: el.productStatus,
+            productImage: el.productImage,
+          };
+          return newObj;
+        }
+      });
+    setFreebieListItem(freebieList);
+  };
   const postCartItem = React.useMemo(() => {
     return async (
       cl: newProductType[],
@@ -462,39 +501,7 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
             };
           })
           .filter((item: any) => !item.isFreebie);
-
-        const freebieList = result?.orderProducts
-          .filter(
-            (item: any) =>
-              item?.isFreebie === true &&
-              item?.isSpecialRequestFreebie === false,
-          )
-          .map((el: any) => {
-            if (el.productFreebiesId) {
-              const newObj = {
-                productName: el.productName,
-                id: el.productFreebiesId,
-                quantity: el.quantity,
-                baseUnit: el.baseUnitOfMeaTh || el.baseUnitOfMeaEn,
-                status: el.productFreebiesStatus,
-                productImage: el.productFreebiesImage,
-              };
-              return newObj;
-            } else {
-              const newObj = {
-                productName: el.productName,
-                id: el.productId,
-                quantity: el.quantity,
-                baseUnit:
-                  el.baseUnitOfMeaTh || el.saleUOMTH || el.saleUOM || '',
-                status: el.productStatus,
-                productImage: el.productImage,
-              };
-              return newObj;
-            }
-          });
-        setFreebieListItem(freebieList);
-
+        onMutateFreebie(result?.orderProducts);
         return {
           cartList: newFormat || [],
           cartDetail: result || {},
@@ -532,6 +539,7 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
           postEditIsUseCod: cartApi.postEditIsUseCod,
           postEditPaymentMethod: cartApi.postEditPaymentMethod,
         },
+        onMutateFreebie,
       }}>
       {children}
     </CartContext.Provider>

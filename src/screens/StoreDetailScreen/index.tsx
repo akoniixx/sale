@@ -33,9 +33,9 @@ const StoreDetailScreen = ({
         setLoadingApi(true);
         const { orderProducts } = await getCartList();
 
-        if (orderProducts && orderProducts.length > 0) {
-          await postCartItem(orderProducts);
-        }
+        // if (orderProducts && orderProducts.length > 0) {
+        //   await postCartItem(orderProducts);
+        // }
         setLoadingApi(false);
       } catch (e) {
         console.log(e);

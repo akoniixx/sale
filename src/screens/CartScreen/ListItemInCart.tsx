@@ -201,9 +201,9 @@ export default function ListItemInCart({
   const RenderList = (load: boolean) => {
     return (
       <>
-        {cartList.map(item => {
+        {(cartList || []).map(item => {
           const isUsePromotion = cartDetail?.allPromotions?.find(el => {
-            const isFindPromotionId = item.orderProductPromotions.find(
+            const isFindPromotionId = item?.orderProductPromotions.find(
               el2 =>
                 (el2.promotionId === el.promotionId &&
                   el2.promotionType === 'DISCOUNT_NOT_MIX') ||
@@ -212,22 +212,33 @@ export default function ListItemInCart({
             return el.isUse && !!isFindPromotionId;
           });
 
-          const currentDiscount = item.orderProductPromotions.find(
+          const currentDiscount = item?.orderProductPromotions.find(
             el =>
               (el.promotionId === isUsePromotion?.promotionId &&
                 el.promotionType === 'DISCOUNT_NOT_MIX') ||
               el.promotionType === 'DISCOUNT_MIX',
           );
+          let sumDiscount = 0;
 
-          const findSumDiscount = (currentDiscount?.conditionDetail || []).find(
-            el => {
-              return isUsePromotion && el.conditionDiscount > 0;
-            },
-          );
+          const isArray = Array.isArray(currentDiscount?.conditionDetail);
+          if (!isArray && isUsePromotion) {
+            // why not the same type
+            sumDiscount = currentDiscount?.conditionDetail?.conditionDiscount;
+          }
 
-          const sumDiscount = findSumDiscount
-            ? findSumDiscount.conditionDiscount
-            : 0;
+          if (
+            currentDiscount &&
+            Array.isArray(currentDiscount?.conditionDetail) &&
+            isUsePromotion
+          ) {
+            const findSumDiscount = (
+              currentDiscount?.conditionDetail || []
+            ).find(el => {
+              return el.conditionDiscount;
+            });
+            sumDiscount =
+              (findSumDiscount && findSumDiscount?.conditionDiscount) || 0;
+          }
 
           return (
             <View

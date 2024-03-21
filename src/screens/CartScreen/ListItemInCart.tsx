@@ -222,7 +222,7 @@ export default function ListItemInCart({
           let sumDiscount = 0;
           const isArray = Array.isArray(currentDiscount?.conditionDetail);
           if (!isArray && isUsePromotion && currentDiscount?.conditionDetail) {
-            // why not the same type
+            // why not the same type object?
             sumDiscount = currentDiscount?.conditionDetail?.conditionDiscount;
           }
           if (currentDiscount && isArray && isUsePromotion) {

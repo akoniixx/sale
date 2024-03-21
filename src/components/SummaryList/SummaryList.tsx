@@ -48,35 +48,34 @@ interface DataObj {
     label: string;
     value: number | string;
   };
-  totalPriceNoVat:{
-    label:string,
-    value:  number | string;
-  }
-  vat:{
-    label: string
-    value:  number | string;
-  }
+  totalPriceNoVat: {
+    label: string;
+    value: number | string;
+  };
+  vat: {
+    label: string;
+    value: number | string;
+  };
 }
 
 interface Props {
   dataObj: DataObj;
 }
-export default  function SummaryList({ dataObj }: Props) {
-
+export default function SummaryList({ dataObj }: Props) {
   const [isCollapsed, setIsCollapsed] = React.useState({
     discountList: true,
     specialListDiscount: true,
   });
-  const [company,setCompany] = useState<string|null>('')
+  const [company, setCompany] = useState<string | null>('');
 
-const getCompany = async()=>{
-  const company = await AsyncStorage.getItem('company')
- setCompany(company)
-}
+  const getCompany = async () => {
+    const company = await AsyncStorage.getItem('company');
+    setCompany(company);
+  };
 
-useEffect(()=>{
-  getCompany()
-},[])
+  useEffect(() => {
+    getCompany();
+  }, []);
 
   const renderDiscountList = () => {
     return dataObj.discountList.listData?.map((el, idx) => {
@@ -91,7 +90,7 @@ useEffect(()=>{
               marginHorizontal: 8,
               borderRadius: 8,
               paddingVertical: 8,
-              marginBottom:5,
+              marginBottom: 5,
               alignItems: 'flex-start',
             },
           ]}
@@ -232,19 +231,19 @@ useEffect(()=>{
             )}`}</Text>
           </View>
           {!isCollapsed.specialListDiscount && <>{renderSpecialRequest()}</>}
-          { company==='ICPL'?(
+          {company === 'ICPL' ? (
             <View style={styles.row}>
-            <Text color="text2">ส่วนลดเงินสด</Text>
-            <Text
-              color="waiting"
-              fontFamily="NotoSans"
-              semiBold>{`-฿${numberWithCommas(
-              +dataObj.discountCash.value,
-              true,
-            )}`}</Text>
-          </View>
-          ):null}
-          
+              <Text color="text2">ส่วนลดเงินสด</Text>
+              <Text
+                color="waiting"
+                fontFamily="NotoSans"
+                semiBold>{`-฿${numberWithCommas(
+                +dataObj.discountCash.value,
+                true,
+              )}`}</Text>
+            </View>
+          ) : null}
+
           <View style={styles.row}>
             <Text color="text2">ส่วนลดดูแลราคา</Text>
             <Text
@@ -272,37 +271,38 @@ useEffect(()=>{
           {`-฿${numberWithCommas(+dataObj.totalDiscount.value, true)}`}
         </Text>
       </View>
-      {dataObj?.vat?.value!==0&&<>
-        <View
-        style={[
-          styles.row,
-          {
-            marginBottom: 4,
-          },
-        ]}>
-        <Text color="text2" semiBold>
-          {dataObj?.totalPriceNoVat?.label}
-        </Text>
-        <Text color="text2" semiBold fontFamily="NotoSans" fontSize={20}>
-          {`฿${numberWithCommas(+dataObj?.totalPriceNoVat?.value, true)}`}
-        </Text>
-      </View>
-      <View
-        style={[
-          styles.row,
-          {
-            marginBottom: 4,
-          },
-        ]}>
-        <Text color="text2" semiBold>
-          {dataObj?.vat?.label}
-        </Text>
-        <Text color="text2" semiBold fontFamily="NotoSans" fontSize={20}>
-          {`฿${numberWithCommas(+dataObj?.vat?.value, true)}`}
-        </Text>
-      </View>
-      </>}
-     
+      {dataObj?.vat?.value !== 0 && (
+        <>
+          <View
+            style={[
+              styles.row,
+              {
+                marginBottom: 4,
+              },
+            ]}>
+            <Text color="text2" semiBold>
+              {dataObj?.totalPriceNoVat?.label}
+            </Text>
+            <Text color="text2" semiBold fontFamily="NotoSans" fontSize={20}>
+              {`฿${numberWithCommas(+dataObj?.totalPriceNoVat?.value, true)}`}
+            </Text>
+          </View>
+          <View
+            style={[
+              styles.row,
+              {
+                marginBottom: 4,
+              },
+            ]}>
+            <Text color="text2" semiBold>
+              {dataObj?.vat?.label}
+            </Text>
+            <Text color="text2" semiBold fontFamily="NotoSans" fontSize={20}>
+              {`฿${numberWithCommas(+dataObj?.vat?.value, true)}`}
+            </Text>
+          </View>
+        </>
+      )}
     </View>
   );
 }

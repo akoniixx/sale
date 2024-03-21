@@ -1,6 +1,12 @@
+/* eslint-disable no-useless-catch */
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as React from 'react';
-import { ProductFreebies, ProductType, PromotionTypeCart, SpFreebies } from '../entities/productType';
+import {
+  ProductFreebies,
+  ProductType,
+  PromotionTypeCart,
+  SpFreebies,
+} from '../entities/productType';
 import { cartServices } from '../services/CartServices';
 import { useAuth } from './AuthContext';
 import { promotionTypeMap } from '../utils/mappingObj';
@@ -116,8 +122,11 @@ export interface newProductType extends ProductType {
         saleUnitDiscountTH: string | null;
         saleUnitTH: string | null;
       }[];
+      products: {
+        productId: string;
+      }[];
+      conditionDiscount: number;
     }[];
-    [key: string]: any;
   }[];
 }
 export interface CartDetailType {
@@ -142,11 +151,14 @@ interface ContextCart {
     getSelectPromotion: (cl: PromotionTypeCart[]) => Promise<any>;
     postCartItem: (
       cl: newProductType[],
-      specialRequestFreebies?:SpFreebies[],
+      specialRequestFreebies?: SpFreebies[],
       newAllPromotion?: PromotionTypeCart[],
     ) => Promise<any>;
     postEditIsUseCod: ({ isUseCOD }: { isUseCOD: boolean }) => Promise<any>;
-    postEditPaymentMethod: (paymentMethod: string,useCashDiscount: boolean) => Promise<any>;
+    postEditPaymentMethod: (
+      paymentMethod: string,
+      useCashDiscount: boolean,
+    ) => Promise<any>;
   };
   setCartList: React.Dispatch<React.SetStateAction<newProductType[]>>;
   setCartDetail: React.Dispatch<React.SetStateAction<CartDetailType>>;
@@ -157,6 +169,7 @@ interface ContextCart {
   setPromotionList: React.Dispatch<React.SetStateAction<any>>;
   setFreebieListItem: React.Dispatch<React.SetStateAction<any>>;
   setPromotionListValue: React.Dispatch<React.SetStateAction<string[]>>;
+  onMutateFreebie: (orderProducts: any) => void;
 }
 const CartContext = React.createContext<ContextCart>({
   cartList: [],
@@ -165,7 +178,9 @@ const CartContext = React.createContext<ContextCart>({
   promotionListValue: [],
   promotionList: [],
   freebieListItem: [],
-  setCartDetail: () =>{},
+  setCartDetail: () => {
+    return;
+  },
   setPromotionListValue: () => [],
   setPromotionList: () => [],
   setFreebieListItem: () => [],
@@ -181,8 +196,8 @@ const CartContext = React.createContext<ContextCart>({
     cashDiscount: 0,
     paymentMethod: 'CASH',
     allPromotions: [],
-    specialRequestFreebies:[],
-    useCashDiscount:false,
+    specialRequestFreebies: [],
+    useCashDiscount: false,
   },
 
   cartApi: {
@@ -196,6 +211,9 @@ const CartContext = React.createContext<ContextCart>({
     getSelectPromotion: async () => Promise.resolve(),
     postEditIsUseCod: async () => Promise.resolve(),
     postEditPaymentMethod: async () => Promise.resolve(),
+  },
+  onMutateFreebie: () => {
+    return;
   },
 });
 
@@ -220,7 +238,7 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
     coAmount: '0',
     isUseCOD: false,
     specialRequestFreebies: [],
-    useCashDiscount: false
+    useCashDiscount: false,
   });
 
   const [promotionList, setPromotionList] = React.useState<any>([]);
@@ -254,7 +272,9 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
           initialValue.push(promotion?.promotionId || '');
         }
         const promotionType = isFreebie ? 'ของแถมขั้นบันได' : 'ส่วนลดขั้นบันได';
-        const title = `${promotionTypeMap(promotion.promotionType)} - ${promotion.promotionName}`;
+        const title = `${promotionTypeMap(promotion.promotionType)} - ${
+          promotion.promotionName
+        }`;
         formatPromotion.push({
           value: promotion.promotionId || '',
           key: promotion.promotionId || '',
@@ -263,7 +283,7 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
           isUse: promotion.isUse,
         });
       }
-     
+
       setPromotionListValue(initialValue);
       setPromotionList(formatPromotion);
 
@@ -299,10 +319,9 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
           customerCompanyId: customerCompanyId ? +customerCompanyId : 0,
           allPromotions: cartDetail?.allPromotions || [],
           specialRequestFreebies: cartDetail?.specialRequestFreebies || [],
-          useCashDiscount: cartDetail?.useCashDiscount || false
-          
+          useCashDiscount: cartDetail?.useCashDiscount || false,
         };
-        
+
         const newData = await cartServices.postCart(payload);
         setCartDetail(prev => ({
           ...prev,
@@ -313,7 +332,10 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
         console.log(error);
       }
     };
-    const postEditPaymentMethod = async (paymentMethod: string,useCashDiscount:boolean) => {
+    const postEditPaymentMethod = async (
+      paymentMethod: string,
+      useCashDiscount: boolean,
+    ) => {
       const orderProducts = cartList.map(item => {
         return {
           productId: +item.productId,
@@ -333,9 +355,9 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
         customerCompanyId: customerCompanyId ? +customerCompanyId : 0,
         allPromotions: cartDetail?.allPromotions || [],
         specialRequestFreebies: cartDetail?.specialRequestFreebies || [],
-        useCashDiscount
+        useCashDiscount,
       };
-      
+
       const data = await cartServices.postCart(payload);
 
       setCartDetail(prev => ({
@@ -366,7 +388,7 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
       });
 
       setCartDetail(result);
-    
+
       const newFormat = (result?.orderProducts || [])
         .map((item: any): newProductType => {
           return {
@@ -380,7 +402,7 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
             totalPrice: item.totalPrice,
             unitPrice: item.qtySaleUnit,
             baseUOM: item.baseUom,
-            specialRequestFreebies: item.specialRequestFreebies
+            specialRequestFreebies: item.specialRequestFreebies,
           };
         })
         .filter((item: any) => !item.isFreebie);
@@ -389,9 +411,42 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
       return {
         ...result,
         orderProducts: newFormat,
+        originProducts: result?.orderProducts,
       };
     };
   }, [user?.userStaffId]);
+
+  const onMutateFreebie = (orderProducts: any) => {
+    const freebieList = orderProducts
+      .filter(
+        (item: any) =>
+          item?.isFreebie === true && item?.isSpecialRequestFreebie === false,
+      )
+      .map((el: any) => {
+        if (el.productFreebiesId) {
+          const newObj = {
+            productName: el.productName,
+            id: el.productFreebiesId,
+            quantity: el.quantity,
+            baseUnit: el.baseUnitOfMeaTh || el.baseUnitOfMeaEn,
+            status: el.productFreebiesStatus,
+            productImage: el.productFreebiesImage,
+          };
+          return newObj;
+        } else {
+          const newObj = {
+            productName: el.productName,
+            id: el.productId,
+            quantity: el.quantity,
+            baseUnit: el.baseUnitOfMeaTh || el.saleUOMTH || el.saleUOM || '',
+            status: el.productStatus,
+            productImage: el.productImage,
+          };
+          return newObj;
+        }
+      });
+    setFreebieListItem(freebieList);
+  };
   const postCartItem = React.useMemo(() => {
     return async (
       cl: newProductType[],
@@ -420,22 +475,19 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
           paymentMethod: cartDetail?.paymentMethod || 'CASH',
           allPromotions: cartDetail?.allPromotions || [],
           specialRequestFreebies: cartDetail?.specialRequestFreebies || [],
-          useCashDiscount: cartDetail?.useCashDiscount || false
+          useCashDiscount: cartDetail?.useCashDiscount || false,
         };
 
-        if (specialRequestFreebies){
+        if (specialRequestFreebies) {
           payload.specialRequestFreebies = specialRequestFreebies;
         }
 
         if (allPromotions) {
           payload.allPromotions = allPromotions;
         }
-        
-        // console.log('payload', JSON.stringify(payload.allPromotions, null, 2));
-      /*  console.log('payload', JSON.stringify(payload)) */
+
         const result = await cartServices.postCart(payload);
-       /*  console.log('payload', JSON.stringify(result)) */
-        // console.log('result', JSON.stringify(result.allPromotions, null, 2));
+
         setCartDetail(result);
         const newFormat = (result?.orderProducts || [])
           .map((item: any): newProductType => {
@@ -452,43 +504,13 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
             };
           })
           .filter((item: any) => !item.isFreebie);
-
-        const freebieList = result?.orderProducts
-          .filter((item: any) => item?.isFreebie===true&&item?.isSpecialRequestFreebie===false)
-          .map((el: any) => {
-          
-            if (el.productFreebiesId) {
-              
-              const newObj = {
-                productName: el.productName,
-                id: el.productFreebiesId,
-                quantity: el.quantity,
-                baseUnit: el.baseUnitOfMeaTh || el.baseUnitOfMeaEn,
-                status: el.productFreebiesStatus,
-                productImage: el.productFreebiesImage,
-              };
-              return newObj;
-            } else {
-              const newObj = {
-                productName: el.productName,
-                id: el.productId,
-                quantity: el.quantity,
-                baseUnit: el.baseUnitOfMeaTh|| el.saleUOMTH || el.saleUOM || '',
-                status: el.productStatus,
-                productImage: el.productImage,
-              };
-              return newObj;
-            }
-          }
-          )
-        setFreebieListItem(freebieList);
-
+        onMutateFreebie(result?.orderProducts);
         return {
           cartList: newFormat || [],
           cartDetail: result || {},
         };
       } catch (e) {
-       throw(e)
+        throw e;
       }
     };
   }, [
@@ -497,7 +519,8 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
     cartDetail?.paymentMethod,
     cartDetail?.isUseCOD,
     cartDetail?.allPromotions,
-    cartDetail?.useCashDiscount
+    cartDetail?.useCashDiscount,
+    cartDetail?.specialRequestFreebies,
   ]);
   return (
     <CartContext.Provider
@@ -519,6 +542,7 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
           postEditIsUseCod: cartApi.postEditIsUseCod,
           postEditPaymentMethod: cartApi.postEditPaymentMethod,
         },
+        onMutateFreebie,
       }}>
       {children}
     </CartContext.Provider>

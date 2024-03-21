@@ -53,30 +53,27 @@ export default function StepTwo({
   setAddressDelivery,
   setLoading,
   loading,
-  isShowError,
   refInput,
   setIsShowError,
 }: Props) {
-  const {
-    cartDetail,
-  } = useCart();
+  const { cartDetail } = useCart();
   const {
     state: { user },
   } = useAuth();
 
-  const [isCollapsed, setIsCollapsed] = useState<boolean>(true)
-  const [file, setFile] = useState([])
-const getFile =async () => {
-  const storedUrisJson = await AsyncStorage.getItem('imageUris');
-  let storedUris = storedUrisJson ? JSON.parse(storedUrisJson) : [];
-  setFile(storedUris)
-}
+  const [isCollapsed, setIsCollapsed] = useState<boolean>(true);
+  const [file, setFile] = useState([]);
+  const getFile = async () => {
+    const storedUrisJson = await AsyncStorage.getItem('imageUris');
+    let storedUris = storedUrisJson ? JSON.parse(storedUrisJson) : [];
+    setFile(storedUris);
+  };
 
-useFocusEffect(
-  React.useCallback(() => {
-    getFile()
-  },[]))
-
+  useFocusEffect(
+    React.useCallback(() => {
+      getFile();
+    }, []),
+  );
 
   return (
     <>
@@ -109,7 +106,7 @@ useFocusEffect(
           styles.container,
           {
             marginTop: 8,
-            paddingBottom: 30
+            paddingBottom: 30,
           },
         ]}>
         <Button
@@ -135,65 +132,105 @@ useFocusEffect(
           title="Special Request"
         />
       </View>
-      {cartDetail?.specialRequestFreebies?.length > 0 ?
-        <View style={{ paddingHorizontal: 16 }} >
-          <View style={{ flexDirection: 'row', backgroundColor: 'white', paddingBottom: 20 }}>
-            <TouchableOpacity onPress={() => (setIsCollapsed(!isCollapsed))} style={{ flexDirection: 'row' }} >
-
-              <Text fontFamily='Sarabun' fontSize={16}>ของแถม (Special Req.)</Text>
+      {cartDetail?.specialRequestFreebies?.length > 0 ? (
+        <View style={{ paddingHorizontal: 16 }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              backgroundColor: 'white',
+              paddingBottom: 20,
+            }}>
+            <TouchableOpacity
+              onPress={() => setIsCollapsed(!isCollapsed)}
+              style={{ flexDirection: 'row' }}>
+              <Text fontFamily="Sarabun" fontSize={16}>
+                ของแถม (Special Req.)
+              </Text>
               <Image
                 source={icons.iconCollapse}
-                style={
-                  stylesIcon({ isCollapsed: isCollapsed }).icon
-                }
+                style={stylesIcon({ isCollapsed: isCollapsed }).icon}
               />
             </TouchableOpacity>
           </View>
 
           <View style={{ marginTop: 20 }}>
-            {isCollapsed && cartDetail.specialRequestFreebies.map((item) => (
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginVertical: 10 }}>
-                <View style={{ flexDirection: 'row' }}>
-                  {item?.productFreebiesImage || item?.productImage ? (
-                    <ImageCache
-                      uri={getNewPath(item?.productFreebiesImage || item?.productImage)}
-                      style={{
-                        width: 44,
-                        height: 44,
-                      }}
-                    />
-                  ) : (
-                    <Image
-                      source={images.emptyProduct}
-                      style={{
-                        width: 44,
-                        height: 44,
-                      }}
-                    />
-                  )}
-                  <Text fontSize={14} color='text3' style={{ marginLeft: 10 }}>{item?.productName}</Text>
+            {isCollapsed &&
+              cartDetail.specialRequestFreebies.map((item, idx) => (
+                <View
+                  key={idx}
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    marginVertical: 10,
+                  }}>
+                  <View style={{ flexDirection: 'row' }}>
+                    {item?.productFreebiesImage || item?.productImage ? (
+                      <ImageCache
+                        uri={getNewPath(
+                          item?.productFreebiesImage || item?.productImage,
+                        )}
+                        style={{
+                          width: 44,
+                          height: 44,
+                        }}
+                      />
+                    ) : (
+                      <Image
+                        source={images.emptyProduct}
+                        style={{
+                          width: 44,
+                          height: 44,
+                        }}
+                      />
+                    )}
+                    <Text
+                      fontSize={14}
+                      color="text3"
+                      style={{ marginLeft: 10 }}>
+                      {item?.productName}
+                    </Text>
+                  </View>
+
+                  <View style={{ flexDirection: 'row' }}>
+                    <Text
+                      fontSize={14}
+                      color="text3"
+                      style={{ marginRight: 10 }}>
+                      {item?.quantity}
+                    </Text>
+                    <Text fontSize={14} color="text3">
+                      {item?.saleUOMTH || item?.baseUnitOfMeaTh}
+                    </Text>
+                  </View>
                 </View>
-
-
-                <View style={{ flexDirection: 'row' }}>
-                  <Text fontSize={14} color='text3' style={{ marginRight: 10 }}>{item?.quantity}</Text>
-                  <Text fontSize={14} color='text3' >{item?.saleUOMTH || item?.baseUnitOfMeaTh}</Text>
-                </View>
-
-              </View>
-            ))}
+              ))}
           </View>
         </View>
-        : null}
+      ) : null}
       <View style={{ padding: 16, backgroundColor: 'white' }}>
-        <Text bold fontSize={18} fontFamily="NotoSans">เพิ่มเอกสาร</Text>
-        <TouchableOpacity style={{ borderWidth: 1, borderColor: colors.border1, padding: 15, borderRadius: 8, marginTop: 10 }}
-          onPress={() => navigation.navigate('UploadFileScreen', {
-            orderId: cartDetail.orderId
-          })}>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+        <Text bold fontSize={18} fontFamily="NotoSans">
+          เพิ่มเอกสาร
+        </Text>
+        <TouchableOpacity
+          style={{
+            borderWidth: 1,
+            borderColor: colors.border1,
+            padding: 15,
+            borderRadius: 8,
+            marginTop: 10,
+          }}
+          onPress={() =>
+            navigation.navigate('UploadFileScreen', {
+              orderId: cartDetail.orderId,
+            })
+          }>
+          <View
+            style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Image style={{ width: 24, height: 24, marginRight: 10 }} source={icons.doc} />
+              <Image
+                style={{ width: 24, height: 24, marginRight: 10 }}
+                source={icons.doc}
+              />
               <Text fontFamily="NotoSans">{`เพิ่มเอกสารที่เกี่ยวข้อง(${file.length} ภาพ)`}</Text>
             </View>
             <Image style={{ width: 24, height: 24 }} source={icons.iconNext} />
@@ -281,8 +318,8 @@ useFocusEffect(
                 {dataStepTwo.deliveryDest === 'SHOP'
                   ? 'จัดส่งที่ร้าน'
                   : dataStepTwo.deliveryDest === 'OTHER'
-                    ? 'จัดส่งที่อื่นๆ'
-                    : 'จัดส่งที่โรงงาน'}
+                  ? 'จัดส่งที่อื่นๆ'
+                  : 'จัดส่งที่โรงงาน'}
               </Text>
               <Text color="text3" fontSize={14} lineHeight={26}>
                 {addressDelivery.name}
@@ -300,14 +337,13 @@ useFocusEffect(
           </View>
         </View>
         <View style={styles.inputContainer}>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          <View
+            style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
             <Text fontFamily="NotoSans" semiBold fontSize={16}>
               {/*  {user?.company === 'ICPF' && <Text color="error">{`*  `}</Text>} */}
               ข้อมูลทะเบียนรถ
             </Text>
-            <Text>
-              {dataStepTwo.numberPlate?.length||0}/50
-            </Text>
+            <Text>{dataStepTwo.numberPlate?.length || 0}/50</Text>
           </View>
 
           <InputText

@@ -421,15 +421,15 @@ export default function ListItem({
         message={t('modalMessage.addCart')}
         onRequestClose={() => setIsAddCart(false)}
       />
-       <ModalWarning
+      <ModalWarning
         visible={isError}
         onlyCancel
         onRequestClose={() => setIsError(false)}
         textCancel={'ตกลง'}
-        title={`${errorMessege?errorMessege:''}`}
+        title={`${errorMessege ? errorMessege : ''}`}
         desc="กรุณาสร้างคำสั่งซื้อใหม่แยกประเภทสินค้า"
       />
-     {/*  <ModalMessage
+      {/*  <ModalMessage
         visible={isError}
         message={errorMessege?errorMessege:''}
         onRequestClose={() => setIsError(false)}

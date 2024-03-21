@@ -15,7 +15,6 @@ import { useCart } from '../../contexts/CartContext';
 
 import AutoSearch from './AutoSearch';
 
-
 const StoreDetailScreen = ({
   navigation,
   route,
@@ -23,22 +22,21 @@ const StoreDetailScreen = ({
   const { name } = route.params;
   const [page, setPage] = React.useState(1);
   const {
-    cartApi: { getCartList, postCartItem },
+    cartApi: { getCartList },
     setCartList,
+    onMutateFreebie,
   } = useCart();
   const [loadingApi, setLoadingApi] = React.useState<boolean>(false);
 
-
-  
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoadingApi(true);
-        const { orderProducts } = await getCartList();
-       
-       /*  if (orderProducts && orderProducts.length > 0) {
-          await postCartItem(orderProducts);
-        } */
+        const { originProducts } = await getCartList();
+        onMutateFreebie(originProducts);
+        // if (orderProducts && orderProducts.length > 0) {
+        //   await postCartItem(orderProducts);
+        // }
         setLoadingApi(false);
       } catch (e) {
         console.log(e);
@@ -47,6 +45,7 @@ const StoreDetailScreen = ({
       }
     };
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const { t } = useLocalization();
   const [searchValue, setSearchValue] = React.useState<string | undefined>(
@@ -77,11 +76,11 @@ const StoreDetailScreen = ({
       />
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-          {/*  <AutoSearch onSearch={onSearch} onChange={v => {
+        {/*  <AutoSearch onSearch={onSearch} onChange={v => {
                 setPage(1);
                 setSearchValue(v);
               }} /> */}
-             
+
         <Content
           style={{
             padding: 0,
@@ -92,10 +91,8 @@ const StoreDetailScreen = ({
             style={{
               paddingHorizontal: 16,
             }}>
-              <AutoSearch
-               onSearch={onSearch}
-              />
-          {/*   <SearchInput
+            <AutoSearch onSearch={onSearch} />
+            {/*   <SearchInput
               onSearch={onSearch}
               placeholder={t('screens.StoreDetailScreen.searchPlaceholder')}
               value={searchValue}
@@ -105,18 +102,17 @@ const StoreDetailScreen = ({
               }}
             /> */}
           </View>
-<View >
-<ListItem
-            page={page}
-            setPage={setPage}
-            loadingApi={loadingApi}
-            nameDealer={name}
-            navigation={navigation}
-            debounceSearchValue={debounceSearchValue}
-            setLoadingApi={setLoadingApi}
-          />
-</View>
-         
+          <View>
+            <ListItem
+              page={page}
+              setPage={setPage}
+              loadingApi={loadingApi}
+              nameDealer={name}
+              navigation={navigation}
+              debounceSearchValue={debounceSearchValue}
+              setLoadingApi={setLoadingApi}
+            />
+          </View>
         </Content>
       </KeyboardAvoidingView>
       <LoadingSpinner visible={loadingApi} />

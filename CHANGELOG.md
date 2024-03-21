@@ -1,5 +1,8 @@
 ## [Version - 2]
 
+## Fix [2.10.2] - 2024-03-20
+- fix bug promotion not initial
+
 ## Feature [2.10.1] - 2024-01-15
 - upload file
 

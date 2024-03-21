@@ -150,8 +150,6 @@ export default function HistoryScreen({ navigation }: any): JSX.Element {
     setDebounceSearchValue(v);
   };
 
-
-
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -202,8 +200,8 @@ export default function HistoryScreen({ navigation }: any): JSX.Element {
     useCallback(() => {
       firebaseInitialize();
       analytics().logScreenView({
-        screen_name: 'HistoryScreen'
-      })
+        screen_name: 'HistoryScreen',
+      });
       const fetchData = async () => {
         setLoading(true);
         const payload: any = {

@@ -22,8 +22,8 @@ export default function Summary({ setLoading }: Props): JSX.Element {
   } = useAuth();
 
   const [termPayment, setTermPayment] = React.useState<string>('');
-  const [company,setCompany] = useState<string>('')
-  const [idkey,setIdkey] = useState<string>('')
+  const [company, setCompany] = useState<string>('');
+  const [idkey, setIdkey] = useState<string>('');
 
   const {
     cartDetail,
@@ -33,29 +33,26 @@ export default function Summary({ setLoading }: Props): JSX.Element {
   } = useCart();
   useEffect(() => {
     const getTerm = async () => {
-      const company = await AsyncStorage.getItem('company')
-      setCompany(company||'')
+      const company = await AsyncStorage.getItem('company');
+      setCompany(company || '');
       const termPayment = await AsyncStorage.getItem('termPayment');
       if (termPayment) {
         setTermPayment(termPayment);
 
-        if (termPayment && termPayment.toUpperCase().startsWith('N') && termPayment != 'N0') {
-          await postEditPaymentMethod('CREDIT', false);
-          setIdkey('credit')
-        } else if (
-          termPayment && termPayment == 'N0'
+        if (
+          termPayment &&
+          termPayment.toUpperCase().startsWith('N') &&
+          termPayment != 'N0'
         ) {
+          await postEditPaymentMethod('CREDIT', false);
+          setIdkey('credit');
+        } else if (termPayment && termPayment == 'N0') {
           await postEditPaymentMethod('CASH', false);
-          setIdkey('credit')
+          setIdkey('credit');
+        } else {
+          await postEditPaymentMethod('CASH', company == 'ICPL');
+          setIdkey('cash');
         }
-
-        else {
-          await postEditPaymentMethod('CASH',company=="ICPL")
-          setIdkey('cash')
-        }
-
-
-
       }
     };
     getTerm();
@@ -76,8 +73,9 @@ export default function Summary({ setLoading }: Props): JSX.Element {
       .map((item: any) => {
         const dataPush = {
           label: item.productName,
-          valueLabel: `(฿${numberWithCommas(item.marketPrice)} x ${item.quantity
-            } ${item.saleUOMTH ? item.saleUOMTH : item.saleUOM || 'Unit'})`,
+          valueLabel: `(฿${numberWithCommas(item.marketPrice)} x ${
+            item.quantity
+          } ${item.saleUOMTH ? item.saleUOMTH : item.saleUOM || 'Unit'})`,
         };
         if (item.specialRequestDiscount > 0) {
           listDataDiscountSpecialRequest.push({
@@ -92,11 +90,26 @@ export default function Summary({ setLoading }: Props): JSX.Element {
               el2 => el2 === el.promotionId,
             );
 
-            if (el.promotionType === 'DISCOUNT_NOT_MIX' || el.promotionType === 'DISCOUNT_MIX' && isFind) {
-              listDataDiscount.push({
-                ...dataPush,
-                value: el.conditionDetail.conditionDiscount,
-              });
+            if (
+              (el.promotionType === 'DISCOUNT_NOT_MIX' ||
+                el.promotionType === 'DISCOUNT_MIX') &&
+              isFind
+            ) {
+              const isArray = Array.isArray(el.conditionDetail);
+
+              if (isArray) {
+                listDataDiscount.push({
+                  ...dataPush,
+                  value: (el.conditionDetail || []).find((el: any) => {
+                    return el.conditionDiscount > 0;
+                  }).conditionDiscount,
+                });
+              } else {
+                listDataDiscount.push({
+                  ...dataPush,
+                  value: el.conditionDetail?.conditionDiscount || 0,
+                });
+              }
             }
           });
         }
@@ -130,29 +143,32 @@ export default function Summary({ setLoading }: Props): JSX.Element {
       },
       totalPriceNoVat: {
         label: 'มูลค่ารวมหลังหักส่วนลด',
-        value: cartDetail?.totalPriceNoVat
+        value: cartDetail?.totalPriceNoVat,
       },
       vat: {
         label: `ภาษีมูลค่าเพิ่ม ${cartDetail?.vatPercentage} %`,
-        value: cartDetail?.vat
-      }
+        value: cartDetail?.vat,
+      },
     };
     return {
       dataObj,
     };
   }, [cartDetail, promotionListValue]);
+  console.log(JSON.stringify(dataObj.discountList, null, 2));
 
   const radioList = useMemo(() => {
-
-    const isCredit = termPayment && termPayment.toUpperCase().startsWith('N') && termPayment !=='N0'
-    const isN0 = termPayment  && termPayment ==='N0'
+    const isCredit =
+      termPayment &&
+      termPayment.toUpperCase().startsWith('N') &&
+      termPayment !== 'N0';
+    const isN0 = termPayment && termPayment === 'N0';
     const list = [
       {
         title: 'เงินสด ',
         value: {
           value: 'CASH',
           useCashDiscount: false,
-          idKey:'cash'
+          idKey: 'cash',
         },
         key: 'cash',
       },
@@ -161,7 +177,7 @@ export default function Summary({ setLoading }: Props): JSX.Element {
         value: {
           value: 'CREDIT',
           useCashDiscount: false,
-          idKey:'credit'
+          idKey: 'credit',
         },
         key: 'credit',
       },
@@ -173,7 +189,7 @@ export default function Summary({ setLoading }: Props): JSX.Element {
         value: {
           value: 'CASH',
           useCashDiscount: true,
-          idKey:'cash'
+          idKey: 'cash',
         },
         key: 'cash',
       },
@@ -182,42 +198,39 @@ export default function Summary({ setLoading }: Props): JSX.Element {
         value: {
           value: 'CREDIT',
           useCashDiscount: false,
-          idKey:'credit',
+          idKey: 'credit',
         },
         key: 'credit',
       },
     ];
 
-   
-if(company==='ICPL'){
-  if (isCredit) {
-    const split = termPayment.toUpperCase().split('N');
-    const numberDayCredit = Number(split[1]);
-    listLadda[1].title = `เครดิต (${numberDayCredit} วัน)`;
-    return numberDayCredit > 0 ? listLadda : listLadda.slice(1);
-  } else if(isN0){
-    const split = termPayment.toUpperCase().split('N');
-    const numberDayCredit = Number(split[1]);
-    listLadda[1].value.value = 'CASH'
-    listLadda[1].title = `เครดิต (${numberDayCredit} วัน)`;
-    return listLadda.slice(1)
-  }else{
-    listLadda[1].value.value = 'CASH'
-    listLadda[1].title = `เครดิต (0 วัน)`;
-    return listLadda;
-  }
-}else{
-  if(isCredit){
-    const split = termPayment.toUpperCase().split('N');
-    const numberDayCredit = Number(split[1]);
-    list[1].title = `เครดิต (${numberDayCredit} วัน)`;
-    return list.slice(1)
-  }else{
-    return list.slice(0,1)
-  }
-  
-}
-     
+    if (company === 'ICPL') {
+      if (isCredit) {
+        const split = termPayment.toUpperCase().split('N');
+        const numberDayCredit = Number(split[1]);
+        listLadda[1].title = `เครดิต (${numberDayCredit} วัน)`;
+        return numberDayCredit > 0 ? listLadda : listLadda.slice(1);
+      } else if (isN0) {
+        const split = termPayment.toUpperCase().split('N');
+        const numberDayCredit = Number(split[1]);
+        listLadda[1].value.value = 'CASH';
+        listLadda[1].title = `เครดิต (${numberDayCredit} วัน)`;
+        return listLadda.slice(1);
+      } else {
+        listLadda[1].value.value = 'CASH';
+        listLadda[1].title = `เครดิต (0 วัน)`;
+        return listLadda;
+      }
+    } else {
+      if (isCredit) {
+        const split = termPayment.toUpperCase().split('N');
+        const numberDayCredit = Number(split[1]);
+        list[1].title = `เครดิต (${numberDayCredit} วัน)`;
+        return list.slice(1);
+      } else {
+        return list.slice(0, 1);
+      }
+    }
   }, [termPayment, user?.company]);
 
   return (
@@ -251,24 +264,25 @@ if(company==='ICPL'){
               borderBottomColor: colors.border1,
               borderBottomWidth: 1,
             }}>
-
             <Radio
               value={cartDetail?.paymentMethod}
-              idkey={idkey}     
-              onChange={async (value) => {
+              idkey={idkey}
+              onChange={async value => {
                 try {
                   setLoading(true);
-                  await postEditPaymentMethod(value.value, value.useCashDiscount);
-                  setIdkey(value.idKey)
+                  await postEditPaymentMethod(
+                    value.value,
+                    value.useCashDiscount,
+                  );
+                  setIdkey(value.idKey);
                   setLoading(false);
                 } catch (error) {
                   console.log(error);
                 } finally {
                   setLoading(false);
                 }
-              } }
-              radioLists={radioList} 
-                       
+              }}
+              radioLists={radioList}
             />
           </View>
           <View

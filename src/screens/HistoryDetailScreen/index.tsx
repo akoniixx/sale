@@ -111,7 +111,7 @@ export default function HistoryDetailScreen({
           value: item.specialRequestDiscount,
         });
       }
-      if (item.orderProductPromotions.length > 0) {
+      if (item.orderProductPromotions?.length > 0) {
         item.orderProductPromotions.map((el: any) => {
           if (
             el.promotionType === 'DISCOUNT_NOT_MIX' ||
@@ -119,7 +119,7 @@ export default function HistoryDetailScreen({
           ) {
             listDataDiscount.push({
               ...dataPush,
-              value: el.conditionDetail.conditionDiscount,
+              value: el.conditionDetail?.conditionDiscount,
             });
           }
         });

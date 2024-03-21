@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 
-import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Image, Modal, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 import DashedLine from 'react-native-dashed-line';
 

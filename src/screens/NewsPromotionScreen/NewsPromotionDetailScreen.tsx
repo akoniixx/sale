@@ -146,7 +146,7 @@ export default function NewsPromotionDetailScreen({
                                                                 `${p.productName} ${p.packSize}${idx + 1 === condition.products.length ? '' : ','} `
                                                             ))}</Text>
                                                         <View key={index}>
-                                                            {condition.conditionDiscount.map((discount, dIndex) => (
+                                                            {condition?.conditionDiscount.map((discount, dIndex) => (
                                                                 <View key={dIndex}>
                                                                     <Text color="white"
                                                                         style={{

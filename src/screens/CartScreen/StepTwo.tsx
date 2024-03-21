@@ -53,7 +53,6 @@ export default function StepTwo({
   setAddressDelivery,
   setLoading,
   loading,
-  isShowError,
   refInput,
   setIsShowError,
 }: Props) {
@@ -156,8 +155,9 @@ export default function StepTwo({
 
           <View style={{ marginTop: 20 }}>
             {isCollapsed &&
-              cartDetail.specialRequestFreebies.map(item => (
+              cartDetail.specialRequestFreebies.map((item, idx) => (
                 <View
+                  key={idx}
                   style={{
                     flexDirection: 'row',
                     justifyContent: 'space-between',

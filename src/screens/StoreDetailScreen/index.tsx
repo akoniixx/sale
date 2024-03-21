@@ -22,8 +22,9 @@ const StoreDetailScreen = ({
   const { name } = route.params;
   const [page, setPage] = React.useState(1);
   const {
-    cartApi: { getCartList, postCartItem },
+    cartApi: { getCartList },
     setCartList,
+    onMutateFreebie,
   } = useCart();
   const [loadingApi, setLoadingApi] = React.useState<boolean>(false);
 
@@ -31,11 +32,11 @@ const StoreDetailScreen = ({
     const fetchData = async () => {
       try {
         setLoadingApi(true);
-        const { orderProducts } = await getCartList();
-
-        /*  if (orderProducts && orderProducts.length > 0) {
-          await postCartItem(orderProducts);
-        } */
+        const { originProducts } = await getCartList();
+        onMutateFreebie(originProducts);
+        // if (orderProducts && orderProducts.length > 0) {
+        //   await postCartItem(orderProducts);
+        // }
         setLoadingApi(false);
       } catch (e) {
         console.log(e);
@@ -44,6 +45,7 @@ const StoreDetailScreen = ({
       }
     };
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const { t } = useLocalization();
   const [searchValue, setSearchValue] = React.useState<string | undefined>(

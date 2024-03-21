@@ -19,12 +19,12 @@ interface Order {
   userStaffId: string;
 }
 
-export interface payloadUploadFile{
-  orderId:string
-  updateBy:string
-  action: 'CREATE'|'DELETE'
-  orderFileId?:string,
-  files:Asset
+export interface payloadUploadFile {
+  orderId: string;
+  updateBy: string;
+  action: 'CREATE' | 'DELETE';
+  orderFileId?: string;
+  files: Asset;
 }
 const createOrder = async (order: Order) => {
   const response = await request.post('/order-cart/order', order);
@@ -35,11 +35,13 @@ const getOrderById = async (orderId: string) => {
   return response.data;
 };
 
-const uploadFile =async (data: FormData) => {
-  
-  const response = await uploadFileInstance.post(`/order-cart/order/update-file`,data)
-  return response.data
-}
+const uploadFile = async (data: FormData) => {
+  const response = await uploadFileInstance.post(
+    `/order-cart/order/update-file`,
+    data,
+  );
+  return response.data;
+};
 const postStatusOrder = async (payload: {
   orderId: string;
   status: string;
@@ -59,5 +61,5 @@ export const orderServices = {
   createOrder,
   getOrderById,
   uploadFile,
-  postStatusOrder
+  postStatusOrder,
 };

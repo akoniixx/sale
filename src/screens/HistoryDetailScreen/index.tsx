@@ -226,8 +226,6 @@ export default function HistoryDetailScreen({
     };
   }, [orderDetail]);
 
-  console.log('orderP', JSON.stringify(orderDetail?.orderProducts, null, 2));
-
   const getUniquePromotions = orderProducts => {
     const seenPromotions = new Set();
 

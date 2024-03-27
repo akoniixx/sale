@@ -319,7 +319,14 @@ export default function SpecialRequestApproveScreen({
   };
   return (
     <Container edges={['left', 'right', 'top']}>
-      <Header title="อนุมัติคำสั่งซื้อ" />
+      <Header
+        title="อนุมัติคำสั่งซื้อ"
+        onBackCustom={() =>
+          navigation.navigate('MainScreen', {
+            screen: 'home',
+          })
+        }
+      />
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={{ flex: 1 }}>

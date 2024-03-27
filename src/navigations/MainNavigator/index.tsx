@@ -158,6 +158,7 @@ export type MainStackParamList = {
   SpecialRequestDetailScreen: {
     date: string;
     orderId: string;
+    navigationFrom?: 'NotificationScreen' | 'SpecialRequestScreen';
   };
   EditOrderLoadsScreen: {
     orderDetail: HistoryDataType;
@@ -257,6 +258,9 @@ export default function MainNavigator() {
       <Stack.Screen
         name="SpecialRequestDetailScreen"
         component={SpecialRequestDetailScreen}
+        initialParams={{
+          navigationFrom: 'SpecialRequestScreen',
+        }}
       />
     </Stack.Navigator>
   );

@@ -12,6 +12,8 @@ import { statusHistory } from '../../utils/mappingObj';
 import { useAuth } from '../../contexts/AuthContext';
 import images from '../../assets/images';
 import { ROLES_USER } from '../../enum';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { MainStackParamList } from '../../navigations/MainNavigator';
 
 interface Props {
   data: Notification;
@@ -35,7 +37,13 @@ export default function ItemNotification({
     ];
     return title;
   };
+  const isSaleManager = useMemo(() => {
+    if (user) {
+      return user?.role === ROLES_USER.SALE_MANAGER;
+    }
 
+    return false;
+  }, [user]);
   const onPress = async (
     orderId: string,
     notiId: string,
@@ -45,21 +53,21 @@ export default function ItemNotification({
     await notiListServices
       .readNoti(notiId)
       .then(() => {
-        navigation.navigate('HistoryDetailScreen', {
-          orderId: orderId,
-          headerTitle: date,
-        });
+        if (isSaleManager) {
+          navigation.navigate('SpecialRequestDetailScreen', {
+            orderId: orderId,
+            date: createdAt,
+            navigationFrom: 'NotificationScreen',
+          });
+        } else {
+          navigation.navigate('HistoryDetailScreen', {
+            orderId: orderId,
+            headerTitle: date,
+          });
+        }
       })
       .catch(err => console.log(err));
   };
-
-  const isSaleManager = useMemo(() => {
-    if (user) {
-      return user?.role === ROLES_USER.SALE_MANAGER;
-    }
-
-    return false;
-  }, [user]);
 
   const wordingPrefix = isSaleManager ? 'คำสั่งซื้อใหม่!' : 'คำสั่งซื้อ';
   const wordingSuffix = isSaleManager ? 'รอให้คุณอนุมัติ' : 'จากร้าน บริษัท';

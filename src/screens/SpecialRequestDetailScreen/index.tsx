@@ -36,12 +36,14 @@ export default function SpecialRequestDetailScreen({
   navigation,
   route,
 }: Props) {
-  const { orderId, date } = route.params;
+  const { orderId, date, navigationFrom } = route.params;
   const headerText = dayjs(date).format('DD MMM BBBB');
   const [orderDetail, setOrderDetail] = React.useState<HistoryDataType | null>(
     null,
   );
   const refScrollView = React.useRef<ScrollView>(null);
+
+  const isFromNotification = navigationFrom === 'NotificationScreen';
 
   const getOrderDetailById = useCallback(async () => {
     try {
@@ -95,7 +97,7 @@ export default function SpecialRequestDetailScreen({
           ) {
             listDataDiscount.push({
               ...dataPush,
-              value: el.conditionDetail.conditionDiscount,
+              value: el.totalDiscount || 0,
             });
           }
         });
@@ -211,9 +213,13 @@ export default function SpecialRequestDetailScreen({
       <Header
         title={headerText}
         onBackCustom={() => {
-          navigation.navigate('SpecialRequestApproveScreen', {
-            backTime: dayjs().unix(),
-          });
+          if (isFromNotification) {
+            navigation.goBack();
+          } else {
+            navigation.navigate('SpecialRequestApproveScreen', {
+              backTime: dayjs().unix(),
+            });
+          }
         }}
       />
       {orderDetail && (

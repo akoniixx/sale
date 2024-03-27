@@ -211,11 +211,6 @@ export default function HistoryDetailScreen({
     };
   }, [orderDetail]);
 
-<<<<<<< HEAD
-=======
-  console.log('orderP', JSON.stringify(orderDetail?.orderProducts, null, 2));
-
->>>>>>> 6922185196b5b1cfcdbb5befadde76df775329e6
   const getUniquePromotions = orderProducts => {
     const seenPromotions = new Set();
 
@@ -1041,17 +1036,10 @@ export default function HistoryDetailScreen({
                 orderDetail?.status === 'COMPANY_CANCEL_ORDER' ||
                 orderDetail?.status === 'REJECT_ORDER' ? (
                   <FooterReorder
-<<<<<<< HEAD
                     navigation={navigation}
                     orderLength={orderDetail.orderProducts.length}
                     {...orderDetail}
                     orderId={orderDetail?.orderId || ''}
-=======
-                    orderId={orderDetail.orderId}
-                    navigation={navigation}
-                    orderLength={orderDetail.orderProducts.length}
-                    {...orderDetail}
->>>>>>> 6922185196b5b1cfcdbb5befadde76df775329e6
                   />
                 ) : null}
               </>
@@ -1071,15 +1059,11 @@ export default function HistoryDetailScreen({
           {orderDetail?.status === 'WAIT_APPROVE_ORDER' ||
           orderDetail?.status === 'WAIT_CONFIRM_ORDER' ||
           orderDetail?.status === 'CONFIRM_ORDER' ? (
-<<<<<<< HEAD
             <FooterButton
               orderDetail={orderDetail}
               navigation={navigation}
               refetch={getOrderDetailById}
             />
-=======
-            <FooterButton orderDetail={orderDetail} navigation={navigation} />
->>>>>>> 6922185196b5b1cfcdbb5befadde76df775329e6
           ) : null}
           <View
             style={{

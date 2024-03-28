@@ -1,36 +1,69 @@
 import {
   View,
   StyleSheet,
-  TouchableOpacity,
+  ScrollView,
   Image,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
   KeyboardAvoidingView,
   Platform,
-  ScrollView,
-  TouchableWithoutFeedback,
-  Keyboard,
-  SafeAreaView,
 } from 'react-native';
-import React, { useEffect, useState } from 'react';
-import ActionSheet, { SheetProps } from 'react-native-actions-sheet';
-import Text from '../../Text/Text';
-import icons from '../../../assets/icons';
-import { SheetManager } from 'react-native-actions-sheet';
-import { colors } from '../../../assets/colors/colors';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import FooterShadow from '../../FooterShadow/FooterShadow';
-import { Form } from '../../Form/Form';
-import InputTextForm from '../../Form/InputTextForm';
+import React, { useEffect } from 'react';
+import icons from '../../assets/icons';
+import { Form } from '../../components/Form/Form';
+import Text from '../../components/Text/Text';
+import InputTextForm from '../../components/Form/InputTextForm';
+import FooterShadow from '../../components/FooterShadow/FooterShadow';
+import { SubmitButton } from '../../components/Form/SubmitButton';
 import * as Yup from 'yup';
-import { SubmitButton } from '../../Form/SubmitButton';
-import { factoryServices } from '../../../services/FactorySevices';
-import { useAuth } from '../../../contexts/AuthContext';
-import InputText from '../../InputText/InputText';
-export default function SelectLocationSheet(props: SheetProps) {
+import { colors } from '../../assets/colors/colors';
+import InputText from '../../components/InputText/InputText';
+import { MainStackParamList } from '../../navigations/MainNavigator';
+import { factoryServices } from '../../services/FactorySevices';
+import { StackNavigationProp, StackScreenProps } from '@react-navigation/stack';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useAuth } from '../../contexts/AuthContext';
+import Container from '../../components/Container/Container';
+import Content from '../../components/Content/Content';
+import Header from '../../components/Header/Header';
+const shipmentList = [
+  {
+    id: 'SHOP',
+    title: 'จัดส่งที่ร้าน',
+    icon: icons.store,
+    iconActive: icons.storeActive,
+  },
+  {
+    id: 'FACTORY',
+    title: 'รับที่โรงงาน',
+    icon: icons.factory,
+    iconActive: icons.factoryActive,
+  },
+  {
+    id: 'OTHER',
+    title: 'ส่ง/รับ ที่อื่นๆ',
+    icon: icons.other,
+    iconActive: icons.otherActive,
+  },
+];
+const schema = Yup.object().shape({
+  comment: Yup.string(),
+});
+const schemaWithAddress = Yup.object().shape({
+  comment: Yup.string(),
+  address: Yup.string().required('กรุณากรอกที่อยู่'),
+});
+
+const maxLength = 150;
+type Props = StackScreenProps<MainStackParamList, 'SelectLocationScreen'>;
+
+export default function SelectLocationScreen({ navigation, route }: Props) {
+  const { comment, name } = route.params;
   const {
     state: { user },
   } = useAuth();
   const [selected, setSelected] = React.useState('SHOP');
-  const [remark, setRemark] = useState('');
+  const [remark, setRemark] = React.useState('');
   const [storeAddress, setStoreAddress] = React.useState({
     name: '',
     addressText: '',
@@ -39,38 +72,10 @@ export default function SelectLocationSheet(props: SheetProps) {
     name: '',
     addressText: '',
   });
-  const [isShowKeyboard, setIsShowKeyboard] = React.useState(false);
-  const schema = Yup.object().shape({
-    comment: Yup.string(),
-  });
-  const schemaWithAddress = Yup.object().shape({
-    comment: Yup.string(),
-    address: Yup.string().required('กรุณากรอกที่อยู่'),
-  });
 
-  const shipmentList = [
-    {
-      id: 'SHOP',
-      title: 'จัดส่งที่ร้าน',
-      icon: icons.store,
-      iconActive: icons.storeActive,
-    },
-    {
-      id: 'FACTORY',
-      title: 'รับที่โรงงาน',
-      icon: icons.factory,
-      iconActive: icons.factoryActive,
-    },
-    {
-      id: 'OTHER',
-      title: 'ส่ง/รับ ที่อื่นๆ',
-      icon: icons.other,
-      iconActive: icons.otherActive,
-    },
-  ];
   useEffect(() => {
     const getFactory = async () => {
-      setRemark(props.payload.comment || '');
+      setRemark(comment || '');
       const factoryData = await factoryServices.getFactory(user?.company || '');
       setFactoryAddress({
         name: factoryData.factoryName,
@@ -85,78 +90,68 @@ export default function SelectLocationSheet(props: SheetProps) {
     getAddressBySelect();
     getFactory();
 
-    setSelected(props.payload.selected || 'SHOP');
-  }, []);
-  useEffect(() => {
-    const keyboardDidShowListener = Keyboard.addListener(
-      'keyboardDidShow',
-      () => {
-        setIsShowKeyboard(true);
-      },
-    );
-    const keyboardDidHideListener = Keyboard.addListener(
-      'keyboardDidHide',
-      () => {
-        setIsShowKeyboard(false);
-      },
-    );
-    return () => {
-      keyboardDidHideListener.remove();
-      keyboardDidShowListener.remove();
-    };
-  }, []);
+    setSelected(route.params.selected || 'SHOP');
+  }, [
+    comment,
+    user?.company,
+    route.params.selected,
+    route.params.name,
+    route.params.address,
+  ]);
+
+  const onSubmitLocation = async (data: any) => {
+    const payload =
+      selected === 'OTHER'
+        ? {
+            name: data.address,
+            comment: remark,
+          }
+        : selected === 'SHOP'
+        ? {
+            name: storeAddress.name,
+            address: storeAddress.addressText,
+            comment: remark,
+          }
+        : {
+            name: factoryAddress.name,
+            address: factoryAddress.addressText,
+            comment: remark,
+          };
+    console.log('payload', JSON.stringify(payload, null, 2));
+    navigation.navigate('CartScreen', {
+      step: 1,
+      locationData: payload,
+    });
+  };
   return (
-    <ActionSheet
-      safeAreaInsets={{ bottom: 0, top: 16, left: 0, right: 0 }}
-      useBottomSafeAreaPadding={false}
-      containerStyle={{
-        height: '100%',
-      }}
-      id={props.sheetId}>
-      <ScrollView
-        contentContainerStyle={{
-          flexGrow: 1,
-          height: '100%',
-        }}
-        style={{
-          flex: 1,
-        }}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+      <Container>
+        <Header
+          onBackCustom={() => {
+            navigation.navigate('CartScreen', {
+              step: 1,
+              locationData: {
+                selected: route.params.selected,
+                name: route.params.name,
+                address: route.params.address,
+                comment: route.params.comment,
+              },
+            });
+          }}
+          title="เลือกการจัดส่ง"
+          iconLeft={icons.closeBlack}
+        />
         <Form
           schema={selected === 'OTHER' ? schemaWithAddress : schema}
           defaultValues={{}}>
-          <TouchableWithoutFeedback
-            onPress={() => {
-              Keyboard.dismiss();
+          <ScrollView
+            style={{
+              flex: 1,
+              width: '100%',
             }}>
-            <KeyboardAvoidingView
-              style={styles.container}
-              behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}>
-                <TouchableOpacity
-                  onPress={() => {
-                    SheetManager.hide(props.sheetId);
-                  }}
-                  style={{
-                    position: 'absolute',
-                    left: 0,
-                  }}>
-                  <Image
-                    source={icons.closeBlack}
-                    style={{
-                      width: 24,
-                      height: 24,
-                    }}
-                  />
-                </TouchableOpacity>
-                <Text fontSize={20} bold fontFamily="NotoSans">
-                  เลือกการจัดส่ง
-                </Text>
-              </View>
+            <Content>
               <View style={styles.row}>
                 {shipmentList.map(item => {
                   return (
@@ -205,12 +200,9 @@ export default function SelectLocationSheet(props: SheetProps) {
                     <InputTextForm
                       name="address"
                       multiline
-                      defaultValue={props.payload.name || ''}
+                      defaultValue={name || ''}
                       blurOnSubmit={true}
                       returnKeyType="done"
-                      onSubmitEditing={() => {
-                        Keyboard.dismiss();
-                      }}
                       style={{
                         minHeight: Platform.OS === 'ios' ? 140 : 80,
                       }}
@@ -311,13 +303,13 @@ export default function SelectLocationSheet(props: SheetProps) {
                       fontSize={16}
                       fontFamily="NotoSans"
                       style={{ marginBottom: 8 }}>
-                      {remark.length || 0}/150
+                      {remark.length || 0}/{maxLength}
                     </Text>
                   </View>
 
                   <InputText
                     onChangeText={text => setRemark(text)}
-                    defaultValue={props.payload.comment || ''}
+                    defaultValue={comment || ''}
                     multiline={true}
                     maxLength={150}
                     scrollEnabled={false}
@@ -328,57 +320,28 @@ export default function SelectLocationSheet(props: SheetProps) {
                     placeholder="ใส่หมายเหตุ..."
                   />
                 </View>
-                <FooterShadow
-                  style={{
-                    marginBottom: 16,
-                  }}>
-                  <SubmitButton
-                    title="ยืนยัน"
-                    onSubmit={async data => {
-                      const payload =
-                        selected === 'OTHER'
-                          ? {
-                              name: data.address,
-                              comment: remark,
-                            }
-                          : selected === 'SHOP'
-                          ? {
-                              name: storeAddress.name,
-                              address: storeAddress.addressText,
-                              comment: remark,
-                            }
-                          : {
-                              name: factoryAddress.name,
-                              address: factoryAddress.addressText,
-                              comment: remark,
-                            };
-                      SheetManager.hide(props.sheetId, {
-                        payload: {
-                          ...payload,
-                          selected,
-                        },
-                      });
-                    }}
-                  />
-                </FooterShadow>
               </View>
-            </KeyboardAvoidingView>
-          </TouchableWithoutFeedback>
+            </Content>
+          </ScrollView>
+          <FooterShadow style={{}}>
+            <SubmitButton title="ยืนยัน" onSubmit={onSubmitLocation} />
+          </FooterShadow>
         </Form>
-      </ScrollView>
-    </ActionSheet>
+      </Container>
+    </KeyboardAvoidingView>
   );
 }
 const styles = StyleSheet.create({
   container: {
-    height: '100%',
-    paddingVertical: 32,
-    paddingHorizontal: 16,
+    flex: 1,
   },
   row: {
     marginTop: 32,
     marginBottom: 24,
     flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
   },
   backgroundAddress: {
     backgroundColor: colors.background1,

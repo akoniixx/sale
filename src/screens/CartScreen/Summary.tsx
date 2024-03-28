@@ -154,7 +154,6 @@ export default function Summary({ setLoading }: Props): JSX.Element {
       dataObj,
     };
   }, [cartDetail, promotionListValue]);
-  console.log(JSON.stringify(dataObj.discountList, null, 2));
 
   const radioList = useMemo(() => {
     const isCredit =

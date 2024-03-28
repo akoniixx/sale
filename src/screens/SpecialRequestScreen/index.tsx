@@ -40,30 +40,28 @@ export default function SpecialRequestScreen({
     discountList: true,
     specialRequestList: true,
   });
-  const [company,setCompany] = useState<string|null>('')
+  const [company, setCompany] = useState<string | null>('');
   const [specialRequestRemark, setSpecialRequestRemark] = React.useState('');
   const { cartList, cartDetail, promotionListValue } = useCart();
   useEffect(() => {
-    getSpecialRequestRemark()
+    getSpecialRequestRemark();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const getSpecialRequestRemark = async() => {
-    const remark = await AsyncStorage.getItem('specialRequestRemark')
-    setSpecialRequestRemark(remark||'')
-    
-  }
+  const getSpecialRequestRemark = async () => {
+    const remark = await AsyncStorage.getItem('specialRequestRemark');
+    setSpecialRequestRemark(remark || '');
+  };
 
+  const getCompany = async () => {
+    const company = await AsyncStorage.getItem('company');
+    setCompany(company);
+  };
 
-  const getCompany = async()=>{
-    const company = await AsyncStorage.getItem('company')
-   setCompany(company)
-  }
-  
-  useEffect(()=>{
-    getCompany()
-  },[])
+  useEffect(() => {
+    getCompany();
+  }, []);
 
   const { dataObj } = useMemo(() => {
     const listDataDiscount: {
@@ -81,8 +79,9 @@ export default function SpecialRequestScreen({
       .map((item: any) => {
         const dataPush = {
           label: item.productName,
-          valueLabel: `(฿${numberWithCommas(item.marketPrice)} x ${item.quantity
-            } ${item.saleUOMTH ? item.saleUOMTH : item.saleUOM})`,
+          valueLabel: `(฿${numberWithCommas(item.marketPrice)} x ${
+            item.quantity
+          } ${item.saleUOMTH ? item.saleUOMTH : item.saleUOM})`,
         };
         if (item.specialRequestDiscount > 0) {
           listDataDiscountSpecialRequest.push({
@@ -95,7 +94,10 @@ export default function SpecialRequestScreen({
             const isFind = promotionListValue.find(
               el2 => el2 === el.promotionId,
             );
-            if (el.promotionType === 'DISCOUNT_NOT_MIX' || el.promotionType === 'DISCOUNT_MIX' && isFind) {
+            if (
+              el.promotionType === 'DISCOUNT_NOT_MIX' ||
+              (el.promotionType === 'DISCOUNT_MIX' && isFind)
+            ) {
               listDataDiscount.push({
                 ...dataPush,
                 value: el.conditionDetail.conditionDiscount,
@@ -175,18 +177,15 @@ export default function SpecialRequestScreen({
               );
             })}
 
-
             <View style={styles.commentCard}>
               <View>
-                <Text semiBold color="text2" 
-                fontFamily="NotoSans">ของแถม (Special Request)</Text>
+                <Text semiBold color="text2" fontFamily="NotoSans">
+                  ของแถม (Special Request)
+                </Text>
               </View>
 
+              <ListItemFreebies />
 
-
-
-            <ListItemFreebies/>
-            
               <Button
                 onPress={() => navigation.navigate('FreeSpeciaRequestScreen')}
                 secondary
@@ -207,7 +206,6 @@ export default function SpecialRequestScreen({
                 }}
               />
             </View>
-
 
             <View style={styles.commentCard}>
               <View>
@@ -362,34 +360,36 @@ export default function SpecialRequestScreen({
                     data={dataObj.discountSpecialRequest.listData}
                   />
                 )}
-                {company==='ICPL'? <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    minHeight: 48,
+                {company === 'ICPL' ? (
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      minHeight: 48,
 
-                    paddingHorizontal: 16,
-                  }}>
-                  <Text
-                    color="text2"
-                    style={{
-                      flex: 0.7,
+                      paddingHorizontal: 16,
                     }}>
-                    {dataObj.discountCash.label}
-                  </Text>
-                  <Text
-                    style={{
-                      flex: 0.3,
-                    }}
-                    right
-                    semiBold
-                    color="waiting">{`-฿${numberWithCommas(
+                    <Text
+                      color="text2"
+                      style={{
+                        flex: 0.7,
+                      }}>
+                      {dataObj.discountCash.label}
+                    </Text>
+                    <Text
+                      style={{
+                        flex: 0.3,
+                      }}
+                      right
+                      semiBold
+                      color="waiting">{`-฿${numberWithCommas(
                       dataObj.discountCash.value,
                       true,
                     )}`}</Text>
-                </View> :null}
-               
+                  </View>
+                ) : null}
+
                 <View
                   style={{
                     flexDirection: 'row',
@@ -413,9 +413,9 @@ export default function SpecialRequestScreen({
                     semiBold
                     right
                     color="error">{`-฿${numberWithCommas(
-                      dataObj.discountCo.value,
-                      true,
-                    )}`}</Text>
+                    dataObj.discountCo.value,
+                    true,
+                  )}`}</Text>
                 </View>
 
                 <View
@@ -440,9 +440,9 @@ export default function SpecialRequestScreen({
                     }}
                     right
                     semiBold>{`-฿${numberWithCommas(
-                      dataObj.totalDiscount.value,
-                      true,
-                    )}`}</Text>
+                    dataObj.totalDiscount.value,
+                    true,
+                  )}`}</Text>
                 </View>
                 <View
                   style={{
@@ -473,17 +473,20 @@ export default function SpecialRequestScreen({
                   fontFamily="NotoSans"
                   color="primary"
                   bold>{`฿${numberWithCommas(
-                    cartDetail?.totalPrice,
-                    true,
-                  )}`}</Text>
+                  cartDetail?.totalPrice,
+                  true,
+                )}`}</Text>
               </View>
               <Button
                 style={{
                   height: 50,
                   marginBottom: 16,
                 }}
-                onPress={async() => {
-                 await AsyncStorage.setItem('specialRequestRemark',specialRequestRemark)
+                onPress={async () => {
+                  await AsyncStorage.setItem(
+                    'specialRequestRemark',
+                    specialRequestRemark,
+                  );
                   navigation.navigate('CartScreen', {
                     step: 1,
                     specialRequestRemark,

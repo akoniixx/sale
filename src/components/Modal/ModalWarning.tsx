@@ -23,7 +23,7 @@ type Props = {
   onlyCancel?: boolean;
   descError?: boolean;
   descCenter?: boolean;
-  titleFontSize: TextStyled['fontSize'];
+  titleFontSize?: TextStyled['fontSize'];
   descFontSize?: TextStyled['fontSize'];
 };
 

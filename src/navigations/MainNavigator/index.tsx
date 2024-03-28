@@ -28,6 +28,14 @@ import SpecialRequestApproveScreen from '../../screens/SpecialRequestApproveScre
 import SpecialRequestDetailScreen from '../../screens/SpecialRequestDetailScreen';
 import dayjs from 'dayjs';
 import EditOrderLoadsScreen from '../../screens/HistoryDetailScreen/EditOrderLoadScreen';
+import SelectLocationScreen from '../../screens/SelectLocationScreen';
+
+export type LocationDataType = {
+  comment?: string;
+  selected?: string;
+  name?: string;
+  address?: string;
+};
 
 export type MainStackParamList = {
   MainScreen: {
@@ -63,6 +71,7 @@ export type MainStackParamList = {
     step?: number;
     specialRequestRemark?: string | undefined;
     isReorder?: boolean;
+    locationData?: LocationDataType;
   };
   OrderSuccessScreen: {
     orderId: string;
@@ -163,6 +172,7 @@ export type MainStackParamList = {
   EditOrderLoadsScreen: {
     orderDetail: HistoryDataType;
   };
+  SelectLocationScreen: LocationDataType;
 };
 const Stack = createStackNavigator<MainStackParamList>();
 export default function MainNavigator() {
@@ -260,6 +270,15 @@ export default function MainNavigator() {
         component={SpecialRequestDetailScreen}
         initialParams={{
           navigationFrom: 'SpecialRequestScreen',
+        }}
+      />
+      <Stack.Screen
+        name="SelectLocationScreen"
+        component={SelectLocationScreen}
+        initialParams={{
+          comment: '',
+          selected: 'SHOP',
+          name: '',
         }}
       />
     </Stack.Navigator>

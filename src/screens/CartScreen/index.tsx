@@ -281,7 +281,7 @@ export default function CartScreen({
           }));
         };
 
-        if (params.locationData) {
+        if (params?.locationData) {
           // select location
           const isHaveLocationData = Object.keys(params.locationData).some(
             el => params.locationData?.[el as keyof LocationDataType],
@@ -329,7 +329,7 @@ export default function CartScreen({
         });
       };
       initData();
-    }, [params?.step, user?.company, params.locationData]),
+    }, [params?.step, user?.company, params?.locationData]),
   );
   // useEffect(() => {}, []);
   useEffect(() => {

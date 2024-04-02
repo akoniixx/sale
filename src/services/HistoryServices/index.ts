@@ -22,7 +22,7 @@ const getHistory = async (payload: PayloadHistory) => {
     take,
     customerCompanyId,
     endDate,
-    isSpecialRequest,
+
     search,
     startDate,
     zone,
@@ -30,12 +30,10 @@ const getHistory = async (payload: PayloadHistory) => {
   const queryStatus = status?.reduce((acc, value) => {
     return `${acc}&status=${value}`;
   }, '');
-
   const payloadQuery = {
     page,
     take,
     company,
-    isSpecialRequest: !!isSpecialRequest,
     zone,
   } as any;
   if (customerCompanyId) {

@@ -301,6 +301,42 @@ export default function StepTwo({
             </TouchableOpacity>
           )}
         </View>
+        <View style={styles.inputContainer}>
+          <View
+            style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+            <Text fontFamily="NotoSans" semiBold fontSize={16}>
+              {/*  {user?.company === 'ICPF' && <Text color="error">{`*  `}</Text>} */}
+              ข้อมูลทะเบียนรถ
+            </Text>
+            <Text>{dataStepTwo.numberPlate?.length || 0}/50</Text>
+          </View>
+
+          <InputText
+            maxLength={50}
+            value={dataStepTwo?.numberPlate || ''}
+            multiline
+            blurOnSubmit
+            returnKeyType="done"
+            /*  isError={isShowError} */
+            scrollEnabled={false}
+            style={{
+              paddingTop: 16,
+            }}
+            onChangeText={(text: string) => {
+              setIsShowError(false);
+              setDataStepTwo(prev => ({ ...prev, numberPlate: text }));
+            }}
+            placeholder="ระบุทะเบียนรถ"
+          />
+          <Text color="text3" fontSize={14} lineHeight={26}>
+            กรุณาระบุทะเบียนรถ 1 คำสั่งซื้อต่อ 1 คัน
+          </Text>
+          {/* {isShowError && (
+            <Text color="error" fontFamily="NotoSans">
+              กรุณากรอกทะเบียนรถ
+            </Text>
+          )} */}
+        </View>
         <View
           style={{
             marginTop: 16,
@@ -344,42 +380,6 @@ export default function StepTwo({
             </View>
           </View>
         </View>
-        <View style={styles.inputContainer}>
-          <View
-            style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <Text fontFamily="NotoSans" semiBold fontSize={16}>
-              {/*  {user?.company === 'ICPF' && <Text color="error">{`*  `}</Text>} */}
-              ข้อมูลทะเบียนรถ
-            </Text>
-            <Text>{dataStepTwo.numberPlate?.length || 0}/50</Text>
-          </View>
-
-          <InputText
-            maxLength={50}
-            value={dataStepTwo?.numberPlate || ''}
-            multiline
-            blurOnSubmit
-            returnKeyType="done"
-            /*  isError={isShowError} */
-            scrollEnabled={false}
-            style={{
-              paddingTop: 16,
-            }}
-            onChangeText={(text: string) => {
-              setIsShowError(false);
-              setDataStepTwo(prev => ({ ...prev, numberPlate: text }));
-            }}
-            placeholder="ระบุทะเบียนรถ"
-          />
-          <Text color="text3" fontSize={14} lineHeight={26}>
-            กรุณาระบุทะเบียนรถ 1 คำสั่งซื้อต่อ 1 คัน
-          </Text>
-          {/* {isShowError && (
-            <Text color="error" fontFamily="NotoSans">
-              กรุณากรอกทะเบียนรถ
-            </Text>
-          )} */}
-        </View>
       </View>
       <Summary setLoading={setLoading} />
       <LoadingSpinner visible={loading} />
@@ -403,7 +403,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   inputContainer: {
-    marginTop: 8,
+    marginTop: 16,
   },
   containerItem: {
     flexDirection: 'row',

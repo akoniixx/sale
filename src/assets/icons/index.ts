@@ -81,4 +81,8 @@ export default {
   tooltip: require('./tooltip.png'),
   box: require('./box.png'),
   car: require('./car.png'),
+  remarkIcon: require('./remarkIcon.png'),
+  locationIcon: require('./locationIcon.png'),
+  editPrimary: require('./editPrimary.png'),
+  receiverIcon: require('./receiverIcon.png'),
 };

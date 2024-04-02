@@ -34,6 +34,7 @@ const StoreDetailScreen = ({
         setLoadingApi(true);
         const { originProducts } = await getCartList();
         onMutateFreebie(originProducts);
+
         // if (orderProducts && orderProducts.length > 0) {
         //   await postCartItem(orderProducts);
         // }

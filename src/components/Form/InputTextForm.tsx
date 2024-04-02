@@ -10,6 +10,8 @@ interface Props extends TextInputProps {
   extra?: JSX.Element;
   placeholder?: string;
   value?: string;
+  required?: boolean;
+  disabled?: boolean;
 }
 export default function InputTextForm({ name, ...props }: Props): JSX.Element {
   const {
@@ -24,7 +26,10 @@ export default function InputTextForm({ name, ...props }: Props): JSX.Element {
   }, [name]);
 
   return (
-    <View>
+    <View
+      style={{
+        marginBottom: 16,
+      }}>
       <Controller
         control={control}
         name={name}

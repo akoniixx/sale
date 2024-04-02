@@ -29,6 +29,8 @@ import SpecialRequestDetailScreen from '../../screens/SpecialRequestDetailScreen
 import dayjs from 'dayjs';
 import EditOrderLoadsScreen from '../../screens/HistoryDetailScreen/EditOrderLoadScreen';
 import SelectLocationScreen from '../../screens/SelectLocationScreen';
+import AddLocationScreen from '../../screens/AddLocationScreen';
+import EditLocationScreen from '../../screens/EditLocationScreen';
 
 export type LocationDataType = {
   comment?: string;
@@ -173,6 +175,10 @@ export type MainStackParamList = {
     orderDetail: HistoryDataType;
   };
   SelectLocationScreen: LocationDataType;
+  AddLocationScreen: undefined;
+  EditLocationScreen: {
+    customerOtherId: string;
+  };
 };
 const Stack = createStackNavigator<MainStackParamList>();
 export default function MainNavigator() {
@@ -281,6 +287,8 @@ export default function MainNavigator() {
           name: '',
         }}
       />
+      <Stack.Screen name="AddLocationScreen" component={AddLocationScreen} />
+      <Stack.Screen name="EditLocationScreen" component={EditLocationScreen} />
     </Stack.Navigator>
   );
 }

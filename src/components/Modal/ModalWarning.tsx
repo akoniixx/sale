@@ -25,6 +25,8 @@ type Props = {
   descCenter?: boolean;
   titleFontSize?: TextStyled['fontSize'];
   descFontSize?: TextStyled['fontSize'];
+  colorPrimaryButton?: TextStyled['color'];
+  contentAlign?: 'center' | 'flex-start' | 'flex-end';
 };
 
 export default function ModalWarning({
@@ -43,6 +45,8 @@ export default function ModalWarning({
   descError,
   titleFontSize,
   descFontSize,
+  colorPrimaryButton = 'primary',
+  contentAlign = 'center',
 }: Props): JSX.Element {
   return (
     <ModalRN
@@ -67,7 +71,7 @@ export default function ModalWarning({
               paddingVertical: 16,
               paddingHorizontal: 16,
               minHeight,
-              alignItems: 'center',
+              alignItems: contentAlign,
             }}>
             <Text
               semiBold
@@ -119,7 +123,7 @@ export default function ModalWarning({
                   center
                   fontSize={14}
                   fontFamily="NotoSans"
-                  color="primary">
+                  color={colorPrimaryButton}>
                   {textConfirm}
                 </Text>
               </TouchableOpacity>

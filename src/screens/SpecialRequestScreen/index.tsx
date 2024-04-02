@@ -161,7 +161,7 @@ export default function SpecialRequestScreen({
           style={{
             backgroundColor: colors.background1,
           }}>
-          <ScrollView>
+          <ScrollView keyboardShouldPersistTaps="handled">
             <View style={styles.title}>
               <Text fontSize={18} fontFamily="NotoSans" bold>
                 สินค้าที่ขอลดราคา

@@ -443,26 +443,14 @@ export default function EditOrderLoadsScreen({
                     : item.productName}
                 </Text>
                 <Text fontSize={14} color="text2">
-                  {item.isFreebie
-                    ? `${item.amountFreebie} ${
-                        item?.saleUOMTH || item?.baseUnitOfMeaTh
-                      }`
-                    : item.amountFreebie > 0
-                    ? `${item.amount} + ${item.amountFreebie} ${
-                        item?.saleUOMTH || item?.baseUnitOfMeaTh
-                      }`
-                    : `${item.amount} ${
-                        item?.saleUOMTH || item?.baseUnitOfMeaTh
-                      }`}
+                {item.isFreebie ? `${parseFloat(item?.amountFreebie).toFixed(2)} ${item?.saleUOMTH || item?.baseUnitOfMeaTh} (ของแถม)`: item.amountFreebie>0? `${parseFloat(item.amount).toFixed(2)} ${item?.saleUOMTH || item?.baseUnitOfMeaTh} + ${parseFloat(item.amountFreebie).toFixed(2)} ${item?.saleUOMTH || item?.baseUnitOfMeaTh}  (ของแถม)`:`${parseFloat(item.amount).toFixed(2)} ${item?.saleUOMTH || item?.baseUnitOfMeaTh}`}
                 </Text>
                 <View
                   style={{
                     flexDirection: 'row',
                     justifyContent: 'space-between',
                   }}>
-                  <Text>{`${item?.quantity} ${
-                    item?.saleUOMTH || item?.baseUnitOfMeaTh
-                  }`}</Text>
+                  <Text>{`${parseFloat(item?.quantity).toFixed(2)} ${item?.saleUOMTH || item?.baseUnitOfMeaTh}`}</Text>
                   <TouchableOpacity
                     onPress={() => {
                       setDelId({ key: item?.key, type: item?.type });

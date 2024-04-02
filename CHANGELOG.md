@@ -1,4 +1,6 @@
 ## [Version - 2]
+## Fix [2.10.3] - 2024-04-02
+- fix order load detail
 
 ## Fix [2.10.2] - 2024-03-20
 - fix bug promotion not initial

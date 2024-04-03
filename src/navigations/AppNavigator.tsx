@@ -97,6 +97,7 @@ const AppNavigator: React.FC = () => {
     );
     messaging().onMessage(async remoteMessage => {
       const typeNotification = remoteMessage?.data?.type;
+
       switch (typeNotification) {
         case 'ORDER':
           {
@@ -108,6 +109,11 @@ const AppNavigator: React.FC = () => {
                 const isWaitApprove =
                   remoteMessage?.data &&
                   remoteMessage?.data?.status === 'WAIT_APPROVE_ORDER';
+                console.log(
+                  'remoteMessage',
+                  JSON.stringify(remoteMessage, null, 2),
+                  isSaleManager,
+                );
                 if (isSaleManager && isWaitApprove) {
                   navigationRef.current?.navigate(
                     'SpecialRequestDetailScreen',

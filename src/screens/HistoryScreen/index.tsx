@@ -190,8 +190,6 @@ export default function HistoryScreen({ navigation }: any): JSX.Element {
       try {
         const data = await historyServices.getHistory(payload);
 
-        // console.log(JSON.stringify(data, null, 2));
-
         setHistoryData(data);
         setLoading(false);
       } catch (e) {

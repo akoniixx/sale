@@ -1,5 +1,5 @@
-import { StyleSheet, View } from 'react-native';
-import React, { useState } from 'react';
+import { Dimensions, StyleSheet, View } from 'react-native';
+import React, { useMemo, useState } from 'react';
 import Button from '../../components/Button/Button';
 import ModalWarning from '../../components/Modal/ModalWarning';
 import { StackScreenProps } from '@react-navigation/stack';
@@ -11,6 +11,7 @@ import { useSpecialRequest } from '../../contexts/SpecialRequestContext';
 import { orderServices } from '../../services/OrderServices';
 import { useAuth } from '../../contexts/AuthContext';
 import { HistoryDataType } from '../../entities/historyTypes';
+import ModalOnlyConfirm from '../../components/Modal/ModalOnlyConfirm';
 
 interface Props {
   orderId: string;
@@ -24,7 +25,6 @@ interface Props {
 }
 export default function Footer({
   orderId,
-  navigation,
   refetch,
   orderDetail,
   scrollToTop,
@@ -35,6 +35,12 @@ export default function Footer({
   } = useAuth();
   const [visibleConfirm, setVisibleConfirm] = useState(false);
   const [visibleReject, setVisibleReject] = useState(false);
+  const [showAlreadyReject, setShowAlreadyReject] = useState<
+    string | undefined
+  >(undefined);
+
+  const [showIsUpdate, setShowIsUpdate] = useState<boolean>(false);
+
   const [rejectRemark, setRejectRemark] = useState('');
   const onApproveOrder = async () => {
     try {
@@ -76,11 +82,50 @@ export default function Footer({
       scrollToTop();
     }
   };
+  const onShowModalReject = async () => {
+    try {
+      const res = await orderServices.getOrderById(orderId);
+      if (res) {
+        const currentStatus = res?.status;
+        switch (currentStatus) {
+          case 'WAIT_APPROVE_ORDER':
+            setVisibleConfirm(true);
+            break;
+          default: {
+            setShowIsUpdate(true);
+          }
+        }
+      }
+    } catch (error) {
+      console.log('error', error);
+    }
+  };
+  const onShowModalApprove = async () => {
+    try {
+      const res = await orderServices.getOrderById(orderId);
+      if (res) {
+        const currentStatus = res?.status;
+        switch (currentStatus) {
+          case 'WAIT_APPROVE_ORDER':
+            setVisibleConfirm(true);
+            break;
+          default: {
+            setShowIsUpdate(true);
+          }
+        }
+      }
+    } catch (error) {
+      console.log('error', error);
+    }
+  };
+
   return (
     <>
       <View style={styles.row}>
         <Button
-          onPress={() => setVisibleReject(true)}
+          onPress={() => {
+            onShowModalReject();
+          }}
           title="ปฎิเสธ"
           danger
           style={{
@@ -88,7 +133,7 @@ export default function Footer({
           }}
         />
         <Button
-          onPress={() => setVisibleConfirm(true)}
+          onPress={onShowModalApprove}
           title="อนุมัติ"
           style={{
             width: '48%',
@@ -132,7 +177,20 @@ export default function Footer({
         title="ยืนยันอนุมัติคำสั่งซื้อ"
         desc="ต้องการยืนยันอนุมัติคำสั่งซื้อใช่หรือไม่?"
         onConfirm={onApproveOrder}
-        onRequestClose={() => setVisibleConfirm(false)}
+        onRequestClose={() => {
+          setVisibleConfirm(false);
+        }}
+      />
+      <ModalOnlyConfirm
+        visible={showIsUpdate}
+        width={Dimensions.get('window').width - 124}
+        textConfirm="ดูรายละเอียด"
+        title={`คำสั่งซื้อ ${orderDetail?.orderNo} \n คำสั่งซื้อนี้ ได้มีการเปลี่ยนแปลงข้อมูล\nกรุณาตรวจสอบอีกครั้ง`}
+        onConfirm={() => {
+          setShowIsUpdate(false);
+          refetch && refetch();
+          scrollToTop();
+        }}
       />
     </>
   );
@@ -144,6 +202,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginTop: 16,
+    marginBottom: 16,
   },
   modalContent: {
     padding: 14,

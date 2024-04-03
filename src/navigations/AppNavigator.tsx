@@ -15,14 +15,6 @@ import { useAuth } from '../contexts/AuthContext';
 const Stack = createStackNavigator();
 
 const AppNavigator: React.FC = () => {
-  const {
-    state: { user },
-  } = useAuth();
-  const isSaleManager = React.useMemo(() => {
-    if (user) {
-      return user?.role === 'SALE MANAGER';
-    }
-  }, [user]);
   React.useEffect(() => {
     messaging()
       .getInitialNotification()
@@ -32,22 +24,30 @@ const AppNavigator: React.FC = () => {
         switch (typeNotification) {
           case 'ORDER':
             {
-              const isWaitApprove =
-                remoteMessage?.data &&
-                remoteMessage?.data?.status === 'WAIT_APPROVE_ORDER';
               const NavigationToHistoryDetail = async () => {
                 await AsyncStorage.setItem('isFromNotification', 'true');
                 navigationRef.current?.navigate('HistoryDetailScreen', {
                   orderId: remoteMessage?.data?.orderId,
                 });
               };
-              if (isSaleManager && isWaitApprove) {
-                navigationRef.current?.navigate('SpecialRequestDetailScreen', {
-                  orderId: remoteMessage?.data?.orderId,
-                });
-              } else {
-                NavigationToHistoryDetail();
-              }
+              const checkConditionNavigate = async () => {
+                const role = await AsyncStorage.getItem('role');
+                const isSaleManager = role && role === 'SALE MANAGER';
+                const isWaitApprove =
+                  remoteMessage?.data &&
+                  remoteMessage?.data?.status === 'WAIT_APPROVE_ORDER';
+                if (isSaleManager && isWaitApprove) {
+                  navigationRef.current?.navigate(
+                    'SpecialRequestDetailScreen',
+                    {
+                      orderId: remoteMessage?.data?.orderId,
+                    },
+                  );
+                } else {
+                  NavigationToHistoryDetail();
+                }
+              };
+              checkConditionNavigate();
             }
             break;
           case 'PROMOTION':
@@ -66,22 +66,30 @@ const AppNavigator: React.FC = () => {
         switch (typeNotification) {
           case 'ORDER':
             {
-              const isWaitApprove =
-                remoteMessage?.data &&
-                remoteMessage?.data?.status === 'WAIT_APPROVE_ORDER';
               const NavigationToHistoryDetail = async () => {
                 await AsyncStorage.setItem('isFromNotification', 'true');
                 navigationRef.current?.navigate('HistoryDetailScreen', {
                   orderId: remoteMessage?.data?.orderId,
                 });
               };
-              if (isSaleManager && isWaitApprove) {
-                navigationRef.current?.navigate('SpecialRequestDetailScreen', {
-                  orderId: remoteMessage?.data?.orderId,
-                });
-              } else {
-                NavigationToHistoryDetail();
-              }
+              const checkConditionNavigate = async () => {
+                const role = await AsyncStorage.getItem('role');
+                const isSaleManager = role && role === 'SALE MANAGER';
+                const isWaitApprove =
+                  remoteMessage?.data &&
+                  remoteMessage?.data?.status === 'WAIT_APPROVE_ORDER';
+                if (isSaleManager && isWaitApprove) {
+                  navigationRef.current?.navigate(
+                    'SpecialRequestDetailScreen',
+                    {
+                      orderId: remoteMessage?.data?.orderId,
+                    },
+                  );
+                } else {
+                  NavigationToHistoryDetail();
+                }
+              };
+              checkConditionNavigate();
             }
             break;
           case 'PROMOTION':
@@ -105,15 +113,13 @@ const AppNavigator: React.FC = () => {
               type: 'orderToast',
               text1: remoteMessage?.notification?.title,
               text2: remoteMessage?.notification?.body,
-              onPress: () => {
+              onPress: async () => {
                 const isWaitApprove =
                   remoteMessage?.data &&
                   remoteMessage?.data?.status === 'WAIT_APPROVE_ORDER';
-                console.log(
-                  'remoteMessage',
-                  JSON.stringify(remoteMessage, null, 2),
-                  isSaleManager,
-                );
+                const role = await AsyncStorage.getItem('role');
+                const isSaleManager = role && role === 'SALE MANAGER';
+
                 if (isSaleManager && isWaitApprove) {
                   navigationRef.current?.navigate(
                     'SpecialRequestDetailScreen',
@@ -150,7 +156,8 @@ const AppNavigator: React.FC = () => {
           break;
       }
     });
-  }, [isSaleManager]);
+  }, []);
+
   return (
     <Stack.Navigator
       screenOptions={{ headerShown: false, gestureEnabled: false }}>

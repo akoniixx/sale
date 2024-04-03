@@ -139,7 +139,9 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
 
           const user = await userServices.getUserProfile(id ? id : userStaffId);
           const companyDetail = await AsyncStorage.getItem('companyDetail');
+
           if (user) {
+            await AsyncStorage.setItem('role', user?.role || 'SALE');
             dispatch({
               type: 'GET_ME',
               user: {
@@ -162,6 +164,8 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
             await AsyncStorage.setItem('userStaffId', data.data.userStaffId);
             await AsyncStorage.setItem('company', data.data.company);
             await AsyncStorage.setItem('zone', data.data.zone);
+            await AsyncStorage.setItem('role', data.data?.role || 'SALE');
+
             await AsyncStorage.setItem(
               'companyDetail',
               JSON.stringify(data.company || {}),

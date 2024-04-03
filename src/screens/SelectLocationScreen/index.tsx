@@ -20,7 +20,7 @@ import { colors } from '../../assets/colors/colors';
 import InputText from '../../components/InputText/InputText';
 import { MainStackParamList } from '../../navigations/MainNavigator';
 import { factoryServices } from '../../services/FactorySevices';
-import { StackNavigationProp, StackScreenProps } from '@react-navigation/stack';
+import { StackScreenProps } from '@react-navigation/stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuth } from '../../contexts/AuthContext';
 import Container from '../../components/Container/Container';
@@ -52,7 +52,7 @@ const schema = Yup.object().shape({
 });
 const schemaWithAddress = Yup.object().shape({
   comment: Yup.string(),
-  address: Yup.string().required('กรุณากรอกที่อยู่'),
+  // address: Yup.string().required('กรุณากรอกที่อยู่'),
 });
 
 const maxLength = 150;
@@ -105,11 +105,12 @@ export default function SelectLocationScreen({ navigation, route }: Props) {
       const index = shipmentList.findIndex(
         item => item.id === (route.params.selected || 'SHOP'),
       );
-      const widthDimensions =
-        Dimensions.get('window').width / (shipmentList.length + 1);
+      const screenWidth = Dimensions.get('window').width;
+      const numTabs = shipmentList.length;
+      const tabWidthIncludingPadding = screenWidth / numTabs + md[index];
 
       Animated.spring(underlinePosition, {
-        toValue: index * (underlineWidth + widthDimensions),
+        toValue: index * tabWidthIncludingPadding,
         useNativeDriver: false,
       }).start();
 
@@ -131,8 +132,9 @@ export default function SelectLocationScreen({ navigation, route }: Props) {
     const payload =
       selected === 'OTHER'
         ? {
-            name: data.address,
+            name: otherAddress.name,
             comment: remark,
+            address: otherAddress.addressText,
           }
         : selected === 'SHOP'
         ? {

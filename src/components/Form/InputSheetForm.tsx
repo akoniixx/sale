@@ -1,5 +1,5 @@
 import { StyleSheet, View } from 'react-native';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import InputActionSheet from './InputActionSheet';
 
@@ -27,12 +27,10 @@ export default function InputSheetForm({
   required,
   placeholder,
   label,
-  defaultValue,
 }: Props) {
   const {
     control,
     formState: { errors },
-    setValue,
   } = useFormContext();
   // useEffect(() => {
   //   if (defaultValue) {
@@ -53,7 +51,9 @@ export default function InputSheetForm({
               label={label}
               disabled={disabled}
               required={required}
-              onChange={onChange}
+              onChange={v => {
+                onChange(v);
+              }}
               value={value}
               placeholder={placeholder}
             />

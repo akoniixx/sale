@@ -9,7 +9,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Text from '../Text/Text';
 import icons from '../../assets/icons';
 import { Form } from './Form';
@@ -69,24 +69,34 @@ interface CustomerAddress {
   updateBy: string;
   fileOtherAddress: CustomerOtherAddressFile[];
 }
-interface AssetDeleteType extends Asset {
+export interface AssetType extends Asset {
   isInitial: boolean;
+  id?: string;
 }
 
 export default function FormLocation({ addressId, onSubmit }: Props) {
   const schemaYup = yup.object().shape({
-    province: yup.object().shape({
-      id: yup.string().required('กรุณาระบุจังหวัด'),
-      title: yup.string().required('กรุณาระบุจังหวัด'),
-    }),
-    district: yup.object().shape({
-      id: yup.string().required('กรุณาระบุอำเภอ'),
-      title: yup.string().required('กรุณาระบุอำเภอ'),
-    }),
-    subDistrict: yup.object().shape({
-      id: yup.string().required('กรุณาระบุตำบล'),
-      title: yup.string().required('กรุณาระบุตำบล'),
-    }),
+    province: yup
+      .object()
+      .shape({
+        id: yup.string().required('กรุณาระบุจังหวัด'),
+        title: yup.string().required('กรุณาระบุจังหวัด'),
+      })
+      .required('กรุณาระบุจังหวัด'),
+    district: yup
+      .object()
+      .shape({
+        id: yup.string().required('กรุณาระบุอำเภอ'),
+        title: yup.string().required('กรุณาระบุอำเภอ'),
+      })
+      .required('กรุณาระบุอำเภอ'),
+    subDistrict: yup
+      .object()
+      .shape({
+        id: yup.string().required('กรุณาระบุตำบล'),
+        title: yup.string().required('กรุณาระบุตำบล'),
+      })
+      .required('กรุณาระบุตำบล'),
     postcode: yup.string().required('กรุณาระบุรหัสไปรษณีย์'),
     address: yup.string().required('กรุณาระบุรายละเอียดที่อยู่'),
     receiver: yup.string().required('กรุณาระบุชื่อผู้รับ'),
@@ -133,6 +143,7 @@ const FormDetail = ({ addressId, onSubmit }: FormDetailType) => {
     setValue,
     reset,
     formState: { isValid },
+    trigger,
   } = useFormContext();
   const [provinceList, setProvinceList] = useState<
     { id: string; title: string }[]
@@ -143,7 +154,7 @@ const FormDetail = ({ addressId, onSubmit }: FormDetailType) => {
   const [subDistrictList, setSubDistrictList] = useState<
     { id: string; title: string }[]
   >([]);
-  const [fileDocumentDel, setFileDocumentDel] = useState<AssetDeleteType[]>([]);
+  const [fileDocumentDel, setFileDocumentDel] = useState<AssetType[]>([]);
   const [fileDocument, setFileDocument] = useState<Asset[]>([]);
   const [viewUrl, setViewUrl] = useState<string>('');
   const [isInitial, setIsInitial] = useState<boolean>(true);
@@ -190,52 +201,57 @@ const FormDetail = ({ addressId, onSubmit }: FormDetailType) => {
     };
 
     const getAddressById = async () => {
-      const result = await otherAddressServices.getById(addressId as string);
-      if (result && result.success) {
-        const data = result.responseData as CustomerAddress;
-        reset({
-          address: data.address,
-          receiver: data.receiver,
-          telephone: data.telephone,
-          province: {
-            title: data.province,
-            id: data.provinceId.toString(),
-          },
-          district: {
-            title: data.district,
-            id: data.districtId.toString(),
-          },
-          subDistrict: {
-            title: data.subdistrict,
-            id: data.subdistrictId.toString(),
-          },
-          postcode: data.postcode,
-        });
+      try {
+        const result = await otherAddressServices.getById(addressId as string);
+        if (result && result?.success) {
+          const data = result.responseData as CustomerAddress;
+          reset({
+            address: data.address,
+            receiver: data.receiver,
+            telephone: data.telephone,
+            province: {
+              title: data.province,
+              id: data.provinceId.toString(),
+            },
+            district: {
+              title: data.district,
+              id: data.districtId.toString(),
+            },
+            subDistrict: {
+              title: data.subdistrict,
+              id: data.subdistrictId.toString(),
+            },
+            postcode: data.postcode,
+          });
 
-        setIsInitial(false);
-        if (data.provinceId) {
-          getDistrictList(data.provinceId.toString());
-        }
-        if (data.districtId) {
-          getSubDistrictList(data.districtId.toString());
-        }
-        const newFile: Asset[] = data.fileOtherAddress.map(el => {
-          const threeLast = el.pathFile.split('.').pop();
+          if (data.provinceId) {
+            getDistrictList(data.provinceId.toString());
+          }
+          if (data.districtId) {
+            getSubDistrictList(data.districtId.toString());
+          }
+          const newFile: Asset[] = (data.fileOtherAddress || []).map(el => {
+            const threeLast = el.pathFile.split('.').pop();
 
-          return {
-            uri: el.pathFile,
-            type: 'image/' + threeLast,
-            fileName: el.fileName,
-            isInitial: true,
-            id: el.id,
-          };
-        });
-        setFileDocument(newFile);
+            return {
+              uri: el.pathFile,
+              type: 'image/' + threeLast,
+              fileName: el.fileName,
+              isInitial: true,
+              id: el.id,
+            };
+          });
+          setFileDocument(newFile);
+        }
+      } catch (error) {
+        console.log(error);
       }
     };
 
     if (addressId) {
-      getAddressById();
+      getAddressById().finally(() => {
+        setIsInitial(false);
+      });
     } else {
       setIsInitial(false);
     }
@@ -265,7 +281,7 @@ const FormDetail = ({ addressId, onSubmit }: FormDetailType) => {
 
   useEffect(() => {
     const getDistrictList = async (provinceId: string) => {
-      if (isInitial) {
+      if (isInitial && addressId) {
         return;
       }
 
@@ -280,20 +296,43 @@ const FormDetail = ({ addressId, onSubmit }: FormDetailType) => {
           })
           .sort((a: any, b: any) => a.title.localeCompare(b.title));
         setDistrictList(newFormat);
-        setValue('district', '');
-        setValue('subDistrict', '');
-        setValue('postcode', '');
+        setValue(
+          'district',
+          {
+            id: '',
+            title: '',
+          },
+          { shouldValidate: true },
+        );
+        setValue(
+          'subDistrict',
+          {
+            id: '',
+            title: '',
+          },
+          { shouldValidate: true },
+        );
+        setValue(
+          'postcode',
+          {
+            id: '',
+            title: '',
+          },
+          { shouldValidate: true },
+        );
       }
     };
     if (provinceWatch?.id) {
       getDistrictList(provinceWatch.id);
+      trigger('district');
     }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [provinceWatch, setValue]);
 
   useEffect(() => {
     const getSubDistrictList = async (districtId: string) => {
-      if (isInitial) {
+      if (isInitial && addressId) {
         return;
       }
 
@@ -315,7 +354,15 @@ const FormDetail = ({ addressId, onSubmit }: FormDetailType) => {
           )
           .sort((a: any, b: any) => a.title.localeCompare(b.title));
         setSubDistrictList(newFormat);
-        setValue('subDistrict', '');
+        setValue(
+          'subDistrict',
+          {
+            id: '',
+            title: '',
+          },
+          { shouldValidate: true },
+        );
+        setValue('postcode', '', { shouldValidate: true });
       }
     };
     if (districtWatch?.id) {
@@ -326,10 +373,10 @@ const FormDetail = ({ addressId, onSubmit }: FormDetailType) => {
 
   useEffect(() => {
     if (subDistrictWatch && subDistrictWatch.postcode) {
-      if (isInitial) {
+      if (isInitial && addressId) {
         return;
       }
-      setValue('postcode', subDistrictWatch.postcode);
+      setValue('postcode', subDistrictWatch.postcode, { shouldValidate: true });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [subDistrictWatch, setValue]);
@@ -365,7 +412,7 @@ const FormDetail = ({ addressId, onSubmit }: FormDetailType) => {
     setViewUrl(uri);
   };
   const onDeleteImage = (index: number) => {
-    const fileDou = [...fileDocument] as AssetDeleteType[];
+    const fileDou = [...fileDocument] as AssetType[];
     const newFile = fileDou.filter((_: any, idx: number) => idx !== index);
     setFileDocument(newFile);
     if (fileDou[index].isInitial) {
@@ -568,7 +615,7 @@ const FormDetail = ({ addressId, onSubmit }: FormDetailType) => {
         disabled={!isValid}
         title="บันทึก"
         onSubmit={data => {
-          onSubmit(data, fileDocument);
+          onSubmit(data, fileDocument, fileDocumentDel);
         }}
       />
       <View

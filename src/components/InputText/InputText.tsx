@@ -52,6 +52,7 @@ const styles = ({ isError = false }: InputStyledProps) => {
       fontSize: 16,
       fontFamily: 'Sarabun-Regular',
       color: colors.text1,
+
       minHeight: 48,
     },
     disableInput: {
@@ -61,6 +62,7 @@ const styles = ({ isError = false }: InputStyledProps) => {
       backgroundColor: colors.background1,
       paddingHorizontal: 16,
       fontFamily: 'Sarabun-Regular',
+
       color: colors.text1,
       fontSize: 16,
       minHeight: 48,

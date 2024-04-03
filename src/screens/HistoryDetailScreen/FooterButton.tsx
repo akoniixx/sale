@@ -84,6 +84,11 @@ export default function FooterButton({
       warningTitle: '',
     };
   }, [orderDetail?.orderNo]);
+
+  if (user?.role === 'SALE MANAGER') {
+    return null;
+  }
+
   return (
     <>
       <View style={styles.container}>

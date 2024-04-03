@@ -43,8 +43,8 @@ export default function SelectOnlyOneSheet(props: Props) {
     });
   };
   useEffect(() => {
-    if (props.payload?.value) {
-      setCurrentValue(props.payload.value);
+    if (props?.payload?.value) {
+      setCurrentValue(props?.payload?.value);
     }
   }, [props.payload?.value]);
   return (
@@ -87,7 +87,7 @@ export default function SelectOnlyOneSheet(props: Props) {
       <FlatList
         data={listData}
         renderItem={({ item }) => {
-          const isSelected = item.id === currentValue?.id;
+          const isSelected = item.id.toString() === currentValue?.id.toString();
           return (
             <TouchableOpacity
               style={styles.item}

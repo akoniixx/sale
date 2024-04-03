@@ -90,10 +90,30 @@ const deleteOtherAddressById = async (id: string) => {
       throw err;
     });
 };
+const updateOtherAddress = async (data: OtherAddressType, id: string) => {
+  return await request
+    .patch(`/auth/customer-other-address/update-customer-other-address/${id}`, {
+      ...data,
+    })
+    .then(res => res.data)
+    .catch(err => {
+      throw err;
+    });
+};
+const deleteFile = async (id: string) => {
+  return await request
+    .delete(`/auth/file-other-address/delete-other-address-file/${id}`)
+    .then(res => res.data)
+    .catch(err => {
+      throw err;
+    });
+};
 export const otherAddressServices = {
   createOtherAddress,
   uploadFile,
   getOtherAddressList,
   getById,
   deleteOtherAddressById,
+  updateOtherAddress,
+  deleteFile,
 };

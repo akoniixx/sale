@@ -75,11 +75,10 @@ const AddLocationScreen = ({ navigation }: { navigation: any }) => {
             throw err;
           });
           setLoading(false);
-
-          setTimeout(() => {
-            navigation.goBack();
-          }, 1000);
         }
+        setTimeout(() => {
+          navigation.goBack();
+        }, 1000);
       }
     } catch (error) {
       console.log('error', error);

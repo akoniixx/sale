@@ -5,10 +5,146 @@ import { createStackNavigator } from '@react-navigation/stack';
 import LoadingNavigator from './LoadingNavigator';
 import AuthNavigator from './AuthNavigator';
 import MainNavigator from './MainNavigator';
-
+import messaging, {
+  FirebaseMessagingTypes,
+} from '@react-native-firebase/messaging';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { navigationRef } from './RootNavigator';
+import Toast from 'react-native-toast-message';
+import { useAuth } from '../contexts/AuthContext';
 const Stack = createStackNavigator();
 
 const AppNavigator: React.FC = () => {
+  const {
+    state: { user },
+  } = useAuth();
+  const isSaleManager = React.useMemo(() => {
+    if (user) {
+      return user?.role === 'SALE MANAGER';
+    }
+  }, [user]);
+  React.useEffect(() => {
+    messaging()
+      .getInitialNotification()
+      .then(remoteMessage => {
+        const typeNotification = remoteMessage?.data?.type;
+
+        switch (typeNotification) {
+          case 'ORDER':
+            {
+              const isWaitApprove =
+                remoteMessage?.data &&
+                remoteMessage?.data?.status === 'WAIT_APPROVE_ORDER';
+              const NavigationToHistoryDetail = async () => {
+                await AsyncStorage.setItem('isFromNotification', 'true');
+                navigationRef.current?.navigate('HistoryDetailScreen', {
+                  orderId: remoteMessage?.data?.orderId,
+                });
+              };
+              if (isSaleManager && isWaitApprove) {
+                navigationRef.current?.navigate('SpecialRequestDetailScreen', {
+                  orderId: remoteMessage?.data?.orderId,
+                });
+              } else {
+                NavigationToHistoryDetail();
+              }
+            }
+            break;
+          case 'PROMOTION':
+            {
+              navigationRef.current?.navigate('NewsPromotionDetailScreen', {
+                fromNoti: true,
+                promotionId: remoteMessage?.data?.promotionId,
+              });
+            }
+            break;
+        }
+      });
+    messaging().onNotificationOpenedApp(
+      (remoteMessage: FirebaseMessagingTypes.RemoteMessage) => {
+        const typeNotification = remoteMessage?.data?.type;
+        switch (typeNotification) {
+          case 'ORDER':
+            {
+              const isWaitApprove =
+                remoteMessage?.data &&
+                remoteMessage?.data?.status === 'WAIT_APPROVE_ORDER';
+              const NavigationToHistoryDetail = async () => {
+                await AsyncStorage.setItem('isFromNotification', 'true');
+                navigationRef.current?.navigate('HistoryDetailScreen', {
+                  orderId: remoteMessage?.data?.orderId,
+                });
+              };
+              if (isSaleManager && isWaitApprove) {
+                navigationRef.current?.navigate('SpecialRequestDetailScreen', {
+                  orderId: remoteMessage?.data?.orderId,
+                });
+              } else {
+                NavigationToHistoryDetail();
+              }
+            }
+            break;
+          case 'PROMOTION':
+            {
+              navigationRef.current?.navigate('NewsPromotionDetailScreen', {
+                fromNoti: true,
+                promotionId: remoteMessage?.data?.promotionId,
+              });
+            }
+            break;
+        }
+      },
+    );
+    messaging().onMessage(async remoteMessage => {
+      const typeNotification = remoteMessage?.data?.type;
+      switch (typeNotification) {
+        case 'ORDER':
+          {
+            Toast.show({
+              type: 'orderToast',
+              text1: remoteMessage?.notification?.title,
+              text2: remoteMessage?.notification?.body,
+              onPress: () => {
+                const isWaitApprove =
+                  remoteMessage?.data &&
+                  remoteMessage?.data?.status === 'WAIT_APPROVE_ORDER';
+                if (isSaleManager && isWaitApprove) {
+                  navigationRef.current?.navigate(
+                    'SpecialRequestDetailScreen',
+                    {
+                      orderId: remoteMessage?.data?.orderId,
+                    },
+                  );
+                } else {
+                  navigationRef.current?.navigate('HistoryDetailScreen', {
+                    orderId: remoteMessage?.data?.orderId,
+                    isFromNotification: true,
+                  });
+                }
+                Toast.hide();
+              },
+            });
+          }
+          break;
+        case 'PROMOTION':
+          {
+            Toast.show({
+              type: 'promotionToast',
+              text1: remoteMessage?.notification?.title,
+              text2: remoteMessage?.notification?.body,
+              onPress: () => {
+                navigationRef.current?.navigate('NewsPromotionDetailScreen', {
+                  fromNoti: true,
+                  promotionId: remoteMessage?.data?.promotionId,
+                });
+                Toast.hide();
+              },
+            });
+          }
+          break;
+      }
+    });
+  }, [isSaleManager]);
   return (
     <Stack.Navigator
       screenOptions={{ headerShown: false, gestureEnabled: false }}>

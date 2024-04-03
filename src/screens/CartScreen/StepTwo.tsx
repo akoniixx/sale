@@ -317,11 +317,10 @@ export default function StepTwo({
             multiline
             blurOnSubmit
             returnKeyType="done"
-            /*  isError={isShowError} */
-            scrollEnabled={false}
             style={{
-              paddingTop: 16,
+              paddingTop: 12,
             }}
+            scrollEnabled={false}
             onChangeText={(text: string) => {
               setIsShowError(false);
               setDataStepTwo(prev => ({ ...prev, numberPlate: text }));

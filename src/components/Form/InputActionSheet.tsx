@@ -41,13 +41,18 @@ export default function InputActionSheet({
         value: value,
       },
     });
+
     if (result && result?.id) {
-      if (result.id === value.id) {
+      if (result?.id?.toString() === value?.id?.toString()) {
         return;
       }
       onChange && onChange(result);
     } else {
-      onChange && onChange('');
+      onChange &&
+        onChange({
+          id: '',
+          title: '',
+        });
     }
   };
   return (
@@ -64,7 +69,7 @@ export default function InputActionSheet({
         onPress={onPressInput}
         style={disabled ? styles.disableInput : styles.fakeInput}
         disabled={disabled}>
-        {value ? (
+        {value?.title ? (
           <Text color="text2">{value.title}</Text>
         ) : (
           <Text color={'text3'}>{placeholder}</Text>

@@ -35,9 +35,6 @@ export default function Footer({
   } = useAuth();
   const [visibleConfirm, setVisibleConfirm] = useState(false);
   const [visibleReject, setVisibleReject] = useState(false);
-  const [showAlreadyReject, setShowAlreadyReject] = useState<
-    string | undefined
-  >(undefined);
 
   const [showIsUpdate, setShowIsUpdate] = useState<boolean>(false);
 
@@ -189,7 +186,9 @@ export default function Footer({
         onConfirm={() => {
           setShowIsUpdate(false);
           refetch && refetch();
-          scrollToTop();
+          setTimeout(() => {
+            scrollToTop();
+          }, 500);
         }}
       />
     </>

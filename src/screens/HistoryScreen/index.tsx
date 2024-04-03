@@ -55,6 +55,7 @@ export default function HistoryScreen({ navigation }: any): JSX.Element {
   const {
     state: { user },
   } = useAuth();
+  // console.log('userStaffId', user?.userStaffId);
   const { tabData } = useMemo(() => {
     const tabData = [
       {
@@ -188,6 +189,9 @@ export default function HistoryScreen({ navigation }: any): JSX.Element {
 
       try {
         const data = await historyServices.getHistory(payload);
+
+        // console.log(JSON.stringify(data, null, 2));
+
         setHistoryData(data);
         setLoading(false);
       } catch (e) {
@@ -577,6 +581,7 @@ export default function HistoryScreen({ navigation }: any): JSX.Element {
                   'COMPANY_CANCEL_ORDER',
                   'SHOPAPP_CANCEL_ORDER',
                   'REJECT_ORDER',
+                  'SALE_CANCEL_ORDER',
                 ]);
               } else {
                 setTabValue([tab]);

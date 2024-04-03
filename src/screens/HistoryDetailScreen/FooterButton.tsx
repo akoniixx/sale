@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import { View, StyleSheet, Dimensions } from 'react-native';
 import React, { useMemo } from 'react';
 import Button from '../../components/Button/Button';
 import { HistoryDataType } from '../../entities/historyTypes';

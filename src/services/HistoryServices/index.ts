@@ -13,6 +13,7 @@ interface PayloadHistory {
   endDate?: Date;
   isSpecialRequest?: boolean;
   zone?: string;
+  userStaffId?: string;
 }
 const getHistory = async (payload: PayloadHistory) => {
   const {
@@ -22,20 +23,25 @@ const getHistory = async (payload: PayloadHistory) => {
     take,
     customerCompanyId,
     endDate,
-
     search,
     startDate,
     zone,
+    userStaffId,
   } = payload;
+
   const queryStatus = status?.reduce((acc, value) => {
     return `${acc}&status=${value}`;
   }, '');
+
   const payloadQuery = {
     page,
     take,
     company,
-    zone,
   } as any;
+  if (userStaffId) {
+    payloadQuery.userStaffId = userStaffId;
+  }
+
   if (customerCompanyId) {
     payloadQuery.customerCompanyId = customerCompanyId;
   }
@@ -53,7 +59,6 @@ const getHistory = async (payload: PayloadHistory) => {
   }
 
   const query = new URLSearchParams(payloadQuery as any).toString();
-
   return await request
     .get(`/order-cart/order?${query}${queryStatus}`)
     .then(res => res.data)

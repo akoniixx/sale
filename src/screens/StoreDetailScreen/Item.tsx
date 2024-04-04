@@ -32,7 +32,7 @@ interface Props extends ProductType {
   setIsAddCart: (v: boolean) => void;
   setIsDelCart: (v: boolean) => void;
   setIsError: (v: boolean) => void;
-  setErrorMessege: (v:any) => void
+  setErrorMessege: (v: any) => void;
   navigation: any;
   idItem: string;
   promotion?: any;
@@ -310,20 +310,17 @@ export default function Item({
                   orderProductPromotions,
                 },
               ];
-             
+
               try {
-                const res =  await postCartItem(newCartList);
+                const res = await postCartItem(newCartList);
                 setCartList(newCartList);
                 setIsAddCart(true);
-              } catch (error:any) {
-                setIsError(true)
-                setErrorMessege(error.message)
-                console.log(error)
+              } catch (error: any) {
+                setIsError(true);
+                setErrorMessege(error.message);
+                console.log(error);
               }
-           
-           
-            
-              
+
               props.onPressCart && props.onPressCart();
             }}
             style={{

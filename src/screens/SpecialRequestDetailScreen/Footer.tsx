@@ -86,7 +86,7 @@ export default function Footer({
         const currentStatus = res?.status;
         switch (currentStatus) {
           case 'WAIT_APPROVE_ORDER':
-            setVisibleConfirm(true);
+            setVisibleReject(true);
             break;
           default: {
             setShowIsUpdate(true);
@@ -180,9 +180,9 @@ export default function Footer({
       />
       <ModalOnlyConfirm
         visible={showIsUpdate}
-        width={Dimensions.get('window').width - 124}
+        width={Dimensions.get('window').width - 100}
         textConfirm="ดูรายละเอียด"
-        title={`คำสั่งซื้อ ${orderDetail?.orderNo} \n คำสั่งซื้อนี้ ได้มีการเปลี่ยนแปลงข้อมูล\nกรุณาตรวจสอบอีกครั้ง`}
+        title={`คำสั่งซื้อ ${orderDetail?.orderNo} \n คำสั่งซื้อนี้ ได้มีการเปลี่ยนแปลงข้อมูล กรุณาตรวจสอบอีกครั้ง`}
         onConfirm={() => {
           setShowIsUpdate(false);
           refetch && refetch();

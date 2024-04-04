@@ -36,7 +36,7 @@ export default function FooterButton({
     string | undefined
   >('');
   const [showAlreadyOpen, setShowAlreadyOpen] = React.useState<boolean>(false);
-
+  const [showIsUpdate, setShowIsUpdate] = React.useState<boolean>(false);
   const onPressCancelOrder = async () => {
     if (!orderDetail) {
       return;
@@ -46,6 +46,7 @@ export default function FooterButton({
 
     if (result) {
       const currentStatus = result?.status;
+      console.log('currentStatus', currentStatus);
       switch (currentStatus) {
         case 'REJECT_ORDER' ||
           'COMPANY_CANCEL_ORDER' ||
@@ -55,9 +56,13 @@ export default function FooterButton({
             mappingTitle[currentStatus as keyof typeof mappingTitle],
           );
           break;
-        case 'OPEN_ORDER':
+        case 'OPEN_ORDER' || 'IN_DELIVERY' || 'DELIVERY_SUCCESS':
+          setShowIsUpdate(true);
+          break;
+        case 'WAIT_CONFIRM_ORDER' || 'CONFIRM_ORDER': {
           setShowAlreadyOpen(true);
           break;
+        }
         default: {
           navigation.navigate('CancelOrderScreen', {
             orderId: orderDetail?.orderId,
@@ -66,6 +71,10 @@ export default function FooterButton({
             paidStatus: orderDetail?.paidStatus,
             orderNo: orderDetail?.orderNo,
             orderProducts: orderDetail?.orderProducts,
+            status: orderDetail?.status as
+              | 'WAIT_APPROVE_ORDER'
+              | 'WAIT_CONFIRM_ORDER'
+              | 'CONFIRM_ORDER',
           });
           break;
         }
@@ -111,7 +120,6 @@ export default function FooterButton({
         desc={`ต้องการยืนยันการยกเลิกคำสั่งซื้อนี้\nใช่หรือไม่?`}
         onConfirm={() => {
           setShowAlreadyOpen(false);
-          refetch && refetch();
           if (!orderDetail) {
             return;
           }
@@ -122,10 +130,13 @@ export default function FooterButton({
             paidStatus: orderDetail?.paidStatus,
             orderNo: orderDetail?.orderNo,
             orderProducts: orderDetail?.orderProducts,
+            status: orderDetail?.status as
+              | 'WAIT_APPROVE_ORDER'
+              | 'WAIT_CONFIRM_ORDER'
+              | 'CONFIRM_ORDER',
           });
         }}
         onRequestClose={() => {
-          refetch && refetch();
           setShowAlreadyOpen(false);
         }}
       />
@@ -136,6 +147,16 @@ export default function FooterButton({
         title={`คำสั่งซื้อ ${orderDetail?.orderNo} \n ${showAlreadyReject}`}
         onConfirm={() => {
           setShowAlreadyReject(undefined);
+          refetch && refetch();
+        }}
+      />
+      <ModalOnlyConfirm
+        visible={showIsUpdate}
+        width={Dimensions.get('window').width - 124}
+        textConfirm="ดูรายละเอียด"
+        title={`คำสั่งซื้อ ${orderDetail?.orderNo} \n คำสั่งซื้อนี้ ได้มีการเปลี่ยนแปลงข้อมูล กรุณาตรวจสอบอีกครั้ง`}
+        onConfirm={() => {
+          setShowIsUpdate(false);
           refetch && refetch();
         }}
       />

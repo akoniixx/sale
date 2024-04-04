@@ -45,9 +45,9 @@ export default function ListSearchResult({
   const { setItem: setCustomerName } = useAsyncStorage('customerName');
   const { setItem: setProductBrand } = useAsyncStorage('productBrand');
   const { setItem: setAddress } = useAsyncStorage('address');
-
   const { setItem: setUserShopId } = useAsyncStorage('userShopId');
-  
+  const { setItem: setCustomerId } = useAsyncStorage('customerId');
+
   return (
     <FlatList
       data={data}
@@ -82,6 +82,7 @@ export default function ListSearchResult({
               setTermPayment(item.termPayment);
               setCustomerNo(item.customerNo);
               setCustomerName(item.name);
+              setCustomerId(item.id);
               setProductBrand(JSON.stringify(item.productBrand));
               setAddress(JSON.stringify(item.address));
               if (item.userShopId) {

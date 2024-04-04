@@ -59,7 +59,7 @@ interface DataObj {
 }
 
 interface Props {
-  dataObj: DataObj;
+  dataObj: DataObj | null;
 }
 export default function SummaryList({ dataObj }: Props) {
   const [isCollapsed, setIsCollapsed] = React.useState({
@@ -77,6 +77,9 @@ export default function SummaryList({ dataObj }: Props) {
     getCompany();
   }, []);
 
+  if (!dataObj) {
+    return null;
+  }
   const renderDiscountList = () => {
     return dataObj.discountList.listData?.map((el, idx) => {
       return (
@@ -144,6 +147,7 @@ export default function SummaryList({ dataObj }: Props) {
       );
     });
   };
+
   return (
     <View>
       <View style={[styles.row]}>

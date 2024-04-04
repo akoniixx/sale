@@ -21,7 +21,7 @@ interface UserType {
   status?: string;
   telephone?: string;
   userStaffId?: string;
-  zone?: string;
+  zone?: string | string[];
   profileImage?: string;
 }
 
@@ -29,11 +29,27 @@ interface State {
   isLoading: boolean;
 
   user?: null | UserType;
+  companyDetail?: {
+    companyId: string;
+    companyCode: string;
+    companyNameEn: string;
+    companyNameTh: string;
+    companyLogo: string;
+    companyType: string;
+  };
 }
 
 interface Action {
   type: string;
   user?: UserType | null;
+  companyDetail?: {
+    companyId: string;
+    companyCode: string;
+    companyNameEn: string;
+    companyNameTh: string;
+    companyLogo: string;
+    companyType: string;
+  };
 }
 
 interface Context {
@@ -49,6 +65,14 @@ interface Context {
 const initialState = {
   user: null,
   isLoading: true,
+  companyDetail: {
+    companyId: '',
+    companyCode: '',
+    companyNameEn: '',
+    companyNameTh: '',
+    companyLogo: '',
+    companyType: '',
+  },
 };
 
 const AuthContext = React.createContext<Context>({
@@ -68,6 +92,7 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
         return {
           ...prevState,
           user: action.user,
+          companyDetail: action.companyDetail,
         };
       case 'LOGOUT':
         return {
@@ -79,6 +104,7 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
         return {
           ...prevState,
           user: action.user,
+          companyDetail: action.companyDetail,
         };
 
       case 'SET_PROFILE_IMAGE':
@@ -112,12 +138,16 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
           }
 
           const user = await userServices.getUserProfile(id ? id : userStaffId);
+          const companyDetail = await AsyncStorage.getItem('companyDetail');
+
           if (user) {
+            await AsyncStorage.setItem('role', user?.role || 'SALE');
             dispatch({
               type: 'GET_ME',
               user: {
                 ...user,
               },
+              companyDetail: JSON.parse(companyDetail || '{}'),
             });
           }
         } catch (e: any) {
@@ -126,15 +156,20 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
       },
       login: async (payload: any) => {
         try {
-        
           const { data } = await AuthServices.verifyOtp(payload);
           if (data) {
             const token = await messaging().getToken();
             await AsyncStorage.setItem('fcmtoken', token);
             await AsyncStorage.setItem('token', data.accessToken);
             await AsyncStorage.setItem('userStaffId', data.data.userStaffId);
-            await AsyncStorage.setItem('company',data.data.company)
-            await AsyncStorage.setItem('zone',data.data.zone)
+            await AsyncStorage.setItem('company', data.data.company);
+            await AsyncStorage.setItem('zone', data.data.zone);
+            await AsyncStorage.setItem('role', data.data?.role || 'SALE');
+
+            await AsyncStorage.setItem(
+              'companyDetail',
+              JSON.stringify(data.company || {}),
+            );
             const fcmtoken = await AsyncStorage.getItem('fcmtoken');
             if (fcmtoken) {
               try {
@@ -147,7 +182,11 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
                 console.log('e, :>>', e);
               }
             }
-            dispatch({ type: 'LOGIN', user: data.data });
+            dispatch({
+              type: 'LOGIN',
+              user: data.data,
+              companyDetail: data.company,
+            });
             return data;
           }
         } catch (e: any) {
@@ -156,19 +195,16 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
       },
       logout: async () => {
         const fmctoken = await AsyncStorage.getItem('fcmtoken');
-        await userServices.removeDeviceToken(fmctoken)
-        .then(async res=>{
+        await userServices.removeDeviceToken(fmctoken).then(async res => {
           await AsyncStorage.removeItem('token');
           await AsyncStorage.removeItem('user');
           await AsyncStorage.removeItem('fcmtoken');
           await AsyncStorage.removeItem('company');
           await AsyncStorage.removeItem('zone');
           dispatch({ type: 'LOGOUT' });
-        })
-        
-        
-         /*  navigate('LoginScreen'); */
-        
+        });
+
+        /*  navigate('LoginScreen'); */
       },
     }),
     [],

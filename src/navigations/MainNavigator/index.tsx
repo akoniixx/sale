@@ -1,8 +1,5 @@
 import React, { useEffect } from 'react';
-import {
-  createStackNavigator,
-  StackScreenProps,
-} from '@react-navigation/stack';
+import { createStackNavigator } from '@react-navigation/stack';
 import MainTabBottomNavigator from './MainTabBottomNavigator';
 import SelectStoreScreen from '../../screens/SelectStoreScreen';
 import StoreDetailScreen from '../../screens/StoreDetailScreen';
@@ -24,10 +21,23 @@ import NewsScreen from '../../screens/NewsScreen';
 import NewsDetailScreen from '../../screens/NewsScreen/NewsDetailScreen';
 import UploadFileScreen from '../../screens/UploadFileScreen/UploadFileScreen';
 import EditFileScreen from '../../screens/HistoryDetailScreen/EditFilescreen';
-import { HistoryDataType, orderFiles } from '../../entities/historyTypes';
+import { HistoryDataType } from '../../entities/historyTypes';
 import CancelOrderScreen from '../../screens/CancelOrderScreen';
 import CancelOrderSuccessScreen from '../../screens/CancelOrderSuccessScreen';
+import SpecialRequestApproveScreen from '../../screens/SpecialRequestApproveScreen';
+import SpecialRequestDetailScreen from '../../screens/SpecialRequestDetailScreen';
+import dayjs from 'dayjs';
 import EditOrderLoadsScreen from '../../screens/HistoryDetailScreen/EditOrderLoadScreen';
+import SelectLocationScreen from '../../screens/SelectLocationScreen';
+import AddLocationScreen from '../../screens/AddLocationScreen';
+import EditLocationScreen from '../../screens/EditLocationScreen';
+
+export type LocationDataType = {
+  comment?: string;
+  selected?: string;
+  name?: string;
+  address?: string;
+};
 
 export type MainStackParamList = {
   MainScreen: {
@@ -62,7 +72,8 @@ export type MainStackParamList = {
   CartScreen: {
     step?: number;
     specialRequestRemark?: string | undefined;
-    isReorder?:boolean
+    isReorder?: boolean;
+    locationData?: LocationDataType;
   };
   OrderSuccessScreen: {
     orderId: string;
@@ -79,22 +90,22 @@ export type MainStackParamList = {
   };
   TCReadOnlyScreen: undefined;
   SettingNotificationScreen: undefined;
-  FreeSpeciaRequestScreen: undefined
+  FreeSpeciaRequestScreen: undefined;
   NewsPromotionDetailScreen: {
-    data?:NewsPromotion[]
-    fromNoti?:boolean
-    promotionId?:string
-  }
+    data?: NewsPromotion[];
+    fromNoti?: boolean;
+    promotionId?: string;
+  };
   NewsScreen: undefined;
-  NewsDetailScreen:{
-    newsId:string
-  }
-  UploadFileScreen:{
-    orderId:string
-  }
-  EditFileScreen:{
-    orderId:string
-  }
+  NewsDetailScreen: {
+    newsId: string;
+  };
+  UploadFileScreen: {
+    orderId: string;
+  };
+  EditFileScreen: {
+    orderId: string;
+  };
   CancelOrderScreen: {
     orderId: string;
     orderProducts: {
@@ -152,25 +163,35 @@ export type MainStackParamList = {
     navNo: string | null;
     orderNo: string;
   };
-  EditOrderLoadsScreen:{
-    orderDetail:HistoryDataType
-  }
-  
+  SpecialRequestApproveScreen: {
+    backTime?: number;
+  };
+  SpecialRequestDetailScreen: {
+    date: string;
+    orderId: string;
+    navigationFrom?: 'NotificationScreen' | 'SpecialRequestScreen';
+  };
+  EditOrderLoadsScreen: {
+    orderDetail: HistoryDataType;
+  };
+  SelectLocationScreen: LocationDataType;
+  AddLocationScreen: undefined;
+  EditLocationScreen: {
+    customerOtherId: string;
+  };
 };
 const Stack = createStackNavigator<MainStackParamList>();
 export default function MainNavigator() {
   useEffect(() => {
     const getAlreadyAcceptTerm = async () => {
-     
       const isFromNotification = await AsyncStorage.getItem(
         'isFromNotification',
       );
-     
-        if (isFromNotification === 'true') {
-          return await AsyncStorage.removeItem('isFromNotification');
-        }
-        navigate('MainScreen');
-      
+
+      if (isFromNotification === 'true') {
+        return await AsyncStorage.removeItem('isFromNotification');
+      }
+      navigate('MainScreen');
     };
     getAlreadyAcceptTerm();
   }, []);
@@ -214,7 +235,7 @@ export default function MainNavigator() {
           name="SpecialRequestScreen"
           component={SpecialRequestScreen}
         />
-         <Stack.Screen
+        <Stack.Screen
           name="FreeSpeciaRequestScreen"
           component={FreeSpeciaRequestScreen}
         />
@@ -227,18 +248,47 @@ export default function MainNavigator() {
         name="SettingNotificationScreen"
         component={SettingNotificationScreen}
       />
-      <Stack.Screen
-        name="NewsScreen"
-        component={NewsScreen}
-      />
+      <Stack.Screen name="NewsScreen" component={NewsScreen} />
       <Stack.Screen name="TCReadOnlyScreen" component={TCReadOnlyScreen} />
-      <Stack.Screen name="NewsPromotionDetailScreen" component={NewsPromotionDetailScreen} />
+      <Stack.Screen
+        name="NewsPromotionDetailScreen"
+        component={NewsPromotionDetailScreen}
+      />
       <Stack.Screen name="NewsDetailScreen" component={NewsDetailScreen} />
-      <Stack.Screen name='UploadFileScreen' component={UploadFileScreen} />
-      <Stack.Screen name='EditFileScreen' component={EditFileScreen} />
-      <Stack.Screen name='CancelOrderScreen' component={CancelOrderScreen} />
-      <Stack.Screen name='CancelOrderSuccessScreen' component={CancelOrderSuccessScreen} />      
-      <Stack.Screen name="EditOrderLoadsScreen" component={EditOrderLoadsScreen} />
+      <Stack.Screen name="UploadFileScreen" component={UploadFileScreen} />
+      <Stack.Screen name="EditFileScreen" component={EditFileScreen} />
+      <Stack.Screen name="CancelOrderScreen" component={CancelOrderScreen} />
+      <Stack.Screen
+        name="CancelOrderSuccessScreen"
+        component={CancelOrderSuccessScreen}
+      />
+      <Stack.Screen
+        name="EditOrderLoadsScreen"
+        component={EditOrderLoadsScreen}
+      />
+      <Stack.Screen
+        name="SpecialRequestApproveScreen"
+        component={SpecialRequestApproveScreen}
+        initialParams={{ backTime: dayjs().unix() }}
+      />
+      <Stack.Screen
+        name="SpecialRequestDetailScreen"
+        component={SpecialRequestDetailScreen}
+        initialParams={{
+          navigationFrom: 'SpecialRequestScreen',
+        }}
+      />
+      <Stack.Screen
+        name="SelectLocationScreen"
+        component={SelectLocationScreen}
+        initialParams={{
+          comment: '',
+          selected: 'SHOP',
+          name: '',
+        }}
+      />
+      <Stack.Screen name="AddLocationScreen" component={AddLocationScreen} />
+      <Stack.Screen name="EditLocationScreen" component={EditLocationScreen} />
     </Stack.Navigator>
   );
 }

@@ -30,7 +30,7 @@ export default function SelectLocationSheet(props: SheetProps) {
     state: { user },
   } = useAuth();
   const [selected, setSelected] = React.useState('SHOP');
-  const [remark,setRemark] = useState('')
+  const [remark, setRemark] = useState('');
   const [storeAddress, setStoreAddress] = React.useState({
     name: '',
     addressText: '',
@@ -70,7 +70,7 @@ export default function SelectLocationSheet(props: SheetProps) {
   ];
   useEffect(() => {
     const getFactory = async () => {
-      setRemark(props.payload.comment || '')
+      setRemark(props.payload.comment || '');
       const factoryData = await factoryServices.getFactory(user?.company || '');
       setFactoryAddress({
         name: factoryData.factoryName,
@@ -107,12 +107,13 @@ export default function SelectLocationSheet(props: SheetProps) {
   }, []);
   return (
     <ActionSheet
+      safeAreaInsets={{ bottom: 0, top: 16, left: 0, right: 0 }}
+      useBottomSafeAreaPadding={false}
       containerStyle={{
         height: '100%',
       }}
       id={props.sheetId}>
-        <SafeAreaView style={{flex:1}}  >
-        <ScrollView
+      <ScrollView
         contentContainerStyle={{
           flexGrow: 1,
           height: '100%',
@@ -129,8 +130,7 @@ export default function SelectLocationSheet(props: SheetProps) {
             }}>
             <KeyboardAvoidingView
               style={styles.container}
-              keyboardVerticalOffset={-100}
-              behavior={Platform.OS === 'ios' ? 'position' : 'height'}>
+              behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
               <View
                 style={{
                   flexDirection: 'row',
@@ -174,6 +174,7 @@ export default function SelectLocationSheet(props: SheetProps) {
                           width: 40,
                           height: 40,
                         }}
+                        resizeMode="contain"
                         source={
                           selected === item.id ? item.iconActive : item.icon
                         }
@@ -243,7 +244,6 @@ export default function SelectLocationSheet(props: SheetProps) {
                           {storeAddress.name}
                         </Text>
                         <Text
-                          
                           fontSize={16}
                           lineHeight={24}
                           style={{
@@ -296,81 +296,76 @@ export default function SelectLocationSheet(props: SheetProps) {
                   style={{
                     marginVertical: 8,
                   }}>
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                    <Text fontSize={16} fontFamily="NotoSans" style={{marginBottom:8}}>
-                    หมายเหตุ (ลูกค้า)
-                  </Text>
-                  <Text fontSize={16} fontFamily="NotoSans" style={{marginBottom:8}}>
-                    {remark.length||0}/150
-                  </Text>
-                    </View>
-                  
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                    }}>
+                    <Text
+                      fontSize={16}
+                      fontFamily="NotoSans"
+                      style={{ marginBottom: 8 }}>
+                      หมายเหตุ (ลูกค้า)
+                    </Text>
+                    <Text
+                      fontSize={16}
+                      fontFamily="NotoSans"
+                      style={{ marginBottom: 8 }}>
+                      {remark.length || 0}/150
+                    </Text>
+                  </View>
+
                   <InputText
-                  onChangeText={(text)=>setRemark(text)}
-                    blurOnSubmit={true}
+                    onChangeText={text => setRemark(text)}
                     defaultValue={props.payload.comment || ''}
-                   
-                    multiline
+                    multiline={true}
                     maxLength={150}
-                    returnKeyType="done"
-                    onSubmitEditing={() => {
-                      Keyboard.dismiss();
-                    }}
+                    scrollEnabled={false}
                     style={{
                       minHeight: Platform.OS === 'ios' ? 140 : 80,
-                      
                     }}
                     numberOfLines={4}
                     placeholder="ใส่หมายเหตุ..."
-                    scrollEnabled={false}
                   />
                 </View>
+                <FooterShadow
+                  style={{
+                    marginBottom: 16,
+                  }}>
+                  <SubmitButton
+                    title="ยืนยัน"
+                    onSubmit={async data => {
+                      const payload =
+                        selected === 'OTHER'
+                          ? {
+                              name: data.address,
+                              comment: remark,
+                            }
+                          : selected === 'SHOP'
+                          ? {
+                              name: storeAddress.name,
+                              address: storeAddress.addressText,
+                              comment: remark,
+                            }
+                          : {
+                              name: factoryAddress.name,
+                              address: factoryAddress.addressText,
+                              comment: remark,
+                            };
+                      SheetManager.hide(props.sheetId, {
+                        payload: {
+                          ...payload,
+                          selected,
+                        },
+                      });
+                    }}
+                  />
+                </FooterShadow>
               </View>
             </KeyboardAvoidingView>
           </TouchableWithoutFeedback>
-          {!isShowKeyboard ? (
-            <FooterShadow
-              style={{
-                position: 'absolute',
-                bottom: 0,
-                marginBottom: 16,
-              }}>
-              <SubmitButton
-                title="ยืนยัน"
-                onSubmit={async data => {
-                  const payload =
-                    selected === 'OTHER'
-                      ? {
-                          name: data.address,
-                          comment: remark,
-                        }
-                      : selected === 'SHOP'
-                      ? {
-                          name: storeAddress.name,
-                          address: storeAddress.addressText,
-                          comment:remark,
-                        }
-                      : {
-                          name: factoryAddress.name,
-                          address: factoryAddress.addressText,
-                          comment: remark,
-                        };
-                  SheetManager.hide(props.sheetId, {
-                    payload: {
-                      ...payload,
-                      selected,
-                    },
-                  });
-                }}
-              />
-            </FooterShadow>
-          ) : (
-            <></>
-          )}
         </Form>
       </ScrollView>
-        </SafeAreaView>
-     
     </ActionSheet>
   );
 }

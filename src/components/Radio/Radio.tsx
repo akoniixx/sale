@@ -7,17 +7,17 @@ interface Props {
   radioLists: {
     title: string;
     value: {
-      value: string,
-      useCashDiscount:boolean,
-      idKey:string
+      value: string;
+      useCashDiscount: boolean;
+      idKey: string;
     };
     key: string;
   }[];
-  idkey:string
+  idkey: string;
   onChange?: (value: {
-    value: string,
-    useCashDiscount:boolean
-    idKey:string
+    value: string;
+    useCashDiscount: boolean;
+    idKey: string;
   }) => void;
   value?: string;
   label?: string;

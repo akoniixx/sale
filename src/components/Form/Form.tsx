@@ -2,7 +2,7 @@
 import React, { useEffect } from 'react';
 import { ViewStyle } from 'react-native';
 import { AnyObjectSchema } from 'yup';
-import { FormProvider, useForm } from 'react-hook-form';
+import { FormProps, FormProvider, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 interface Props {
@@ -12,6 +12,7 @@ interface Props {
   children: JSX.Element | JSX.Element[];
   schema: AnyObjectSchema;
   style?: ViewStyle;
+  reValidateMode?: 'onSubmit' | 'onChange' | 'onBlur' | undefined;
 }
 
 export const Form = ({
@@ -23,6 +24,7 @@ export const Form = ({
   const methods = useForm({
     defaultValues,
     resolver: yupResolver(schema),
+    mode: 'onChange',
   });
 
   useEffect(() => {

@@ -14,7 +14,7 @@ type Props = {
   visible: boolean;
   width?: string | number;
   title: string;
-  titleCenter?:boolean
+  titleCenter?: boolean;
   desc?: string;
   minHeight?: number;
   textCancel?: string;
@@ -32,7 +32,7 @@ export default function ModalOnlyConfirm({
   titleCenter,
   textCancel = 'ยกเลิก',
   textConfirm = 'ยืนยัน',
- 
+
   minHeight = 100,
 }: Props): JSX.Element {
   return (
@@ -79,26 +79,23 @@ export default function ModalOnlyConfirm({
               borderTopWidth: 1,
               borderTopColor: colors.border1,
             }}>
-           
-          
-              <TouchableOpacity
-                onPress={onConfirm}
-                style={{
-                  flex: 1,
-                  justifyContent: 'center',
-                 
-                  borderLeftColor: colors.border1,
-                }}>
-                <Text
-                  semiBold
-                  center
-                  fontSize={14}
-                  fontFamily="NotoSans"
-                  color="primary">
-                  {textConfirm}
-                </Text>
-              </TouchableOpacity>
-            
+            <TouchableOpacity
+              onPress={onConfirm}
+              style={{
+                flex: 1,
+                justifyContent: 'center',
+
+                borderLeftColor: colors.border1,
+              }}>
+              <Text
+                semiBold
+                center
+                fontSize={14}
+                fontFamily="NotoSans"
+                color="primary">
+                {textConfirm}
+              </Text>
+            </TouchableOpacity>
           </View>
         </View>
       </View>

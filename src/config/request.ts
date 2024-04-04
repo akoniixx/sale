@@ -1,11 +1,17 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { navigate } from '../navigations/RootNavigator';
-import { useAuth } from '../contexts/AuthContext';
 
 export const API_URL = 'https://sellcoda-api-dev.iconkaset.com';
 // export const API_URL = 'https://api-sellcoda.iconkaset.com';
 export const NAV_API_URL = 'https://api-dev-sellcoda.iconkaset.com';
+
+export const API_DISTANCE = 'https://api-dnds-dev.iconkaset.com/distance';
+// export const API_DISTANCE = 'https://api-dnds.iconkaset.com/distance';
+
+export const distanceRequest = axios.create({
+  baseURL: API_DISTANCE,
+});
 
 const request = axios.create({
   baseURL: API_URL,

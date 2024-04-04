@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { StackScreenProps } from '@react-navigation/stack';
 import { MainStackParamList } from '../../navigations/MainNavigator';
 import Container from '../../components/Container/Container';
@@ -34,7 +34,7 @@ import FooterButton from './FooterButton';
 import { useFocusEffect } from '@react-navigation/native';
 import { navigationRef } from '../../navigations/RootNavigator';
 
-const locationMapping = {
+export const locationMapping = {
   SHOP: 'จัดส่งที่ร้าน',
   FACTORY: 'รับที่โรงงาน',
   OTHER: 'ส่ง/รับ ที่อื่นๆ',
@@ -51,38 +51,23 @@ export default function HistoryDetailScreen({
     state: { user },
   } = useAuth();
   const [loading, setLoading] = React.useState<boolean>(false);
+
+  const getOrderDetailById = useCallback(async () => {
+    try {
+      setLoading(true);
+      const res = await orderServices.getOrderById(params.orderId);
+      setOrderDetail(res);
+    } catch (e) {
+      console.log(e);
+    } finally {
+      setLoading(false);
+    }
+  }, [params.orderId]);
   useFocusEffect(
     React.useCallback(() => {
-      const getOrderDetailById = async () => {
-        try {
-          setLoading(true);
-          const res = await orderServices.getOrderById(params.orderId);
-          setOrderDetail(res);
-        } catch (e) {
-          console.log(e);
-        } finally {
-          setLoading(false);
-        }
-      };
       getOrderDetailById();
-    }, [params.orderId]),
+    }, [getOrderDetailById]),
   );
-
-  React.useEffect(() => {
-    const getOrderDetailById = async () => {
-      try {
-        setLoading(true);
-        const res = await orderServices.getOrderById(params.orderId);
-
-        setOrderDetail(res);
-      } catch (e) {
-        console.log(e);
-      } finally {
-        setLoading(false);
-      }
-    };
-    getOrderDetailById();
-  }, [params.orderId]);
 
   const BlockLine = () => {
     return (
@@ -225,8 +210,6 @@ export default function HistoryDetailScreen({
       spFreebieList: spfbList,
     };
   }, [orderDetail]);
-
-  console.log('orderP', JSON.stringify(orderDetail?.orderProducts, null, 2));
 
   const getUniquePromotions = orderProducts => {
     const seenPromotions = new Set();
@@ -396,6 +379,24 @@ export default function HistoryDetailScreen({
                 </Text>
                 <Text fontSize={18} semiBold fontFamily="NotoSans">
                   {orderDetail?.customerName}
+                </Text>
+              </View>
+              <View
+                style={{
+                  marginTop: 16,
+                }}>
+                <Text
+                  fontSize={14}
+                  color="text3"
+                  semiBold
+                  fontFamily="NotoSans"
+                  style={{
+                    marginBottom: 8,
+                  }}>
+                  เขต
+                </Text>
+                <Text fontSize={18} semiBold fontFamily="NotoSans">
+                  {orderDetail?.customerZone}
                 </Text>
               </View>
               <View
@@ -1035,10 +1036,10 @@ export default function HistoryDetailScreen({
                 orderDetail?.status === 'COMPANY_CANCEL_ORDER' ||
                 orderDetail?.status === 'REJECT_ORDER' ? (
                   <FooterReorder
-                    orderId={orderDetail.orderId}
                     navigation={navigation}
                     orderLength={orderDetail.orderProducts.length}
                     {...orderDetail}
+                    orderId={orderDetail?.orderId || ''}
                   />
                 ) : null}
               </>
@@ -1058,7 +1059,11 @@ export default function HistoryDetailScreen({
           {orderDetail?.status === 'WAIT_APPROVE_ORDER' ||
           orderDetail?.status === 'WAIT_CONFIRM_ORDER' ||
           orderDetail?.status === 'CONFIRM_ORDER' ? (
-            <FooterButton orderDetail={orderDetail} navigation={navigation} />
+            <FooterButton
+              orderDetail={orderDetail}
+              navigation={navigation}
+              refetch={getOrderDetailById}
+            />
           ) : null}
           <View
             style={{

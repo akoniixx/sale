@@ -28,7 +28,10 @@ import StepTwo from './StepTwo';
 import icons from '../../assets/icons';
 import Text from '../../components/Text/Text';
 import { StackScreenProps } from '@react-navigation/stack';
-import { MainStackParamList } from '../../navigations/MainNavigator';
+import {
+  LocationDataType,
+  MainStackParamList,
+} from '../../navigations/MainNavigator';
 import { useFocusEffect } from '@react-navigation/native';
 import { orderServices, payloadUploadFile } from '../../services/OrderServices';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -277,7 +280,30 @@ export default function CartScreen({
             deliveryDest: 'SHOP',
           }));
         };
-        if (user?.company && user?.company === 'ICPL') {
+
+        if (params?.locationData) {
+          // select location
+          const isHaveLocationData = Object.keys(params.locationData).some(
+            el => params.locationData?.[el as keyof LocationDataType],
+          );
+          const locationData = params.locationData ? params.locationData : null;
+          if (!isHaveLocationData || !locationData) {
+            return;
+          }
+          setAddressDelivery(prev => ({
+            ...prev,
+            address: locationData.address || '',
+            name: locationData.name || '',
+          }));
+          setDataStepTwo(prev => ({
+            ...prev,
+            deliveryAddress: `${locationData.name || ''} ${
+              locationData.address
+            }`,
+            deliveryRemark: locationData.comment || '',
+            deliveryDest: locationData.selected || '',
+          }));
+        } else if (user?.company && user?.company === 'ICPL') {
           getShopLocation();
         } else if (user?.company && user?.company === 'ICPF') {
           getFactory();
@@ -303,7 +329,7 @@ export default function CartScreen({
         });
       };
       initData();
-    }, [params?.step, user?.company]),
+    }, [params?.step, user?.company, params?.locationData]),
   );
   // useEffect(() => {}, []);
   useEffect(() => {

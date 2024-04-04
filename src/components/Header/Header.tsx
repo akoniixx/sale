@@ -4,6 +4,7 @@ import {
   TouchableOpacity,
   Image,
   ViewStyle,
+  ImageSourcePropType,
 } from 'react-native';
 import React from 'react';
 import Text from '../Text/Text';
@@ -29,6 +30,7 @@ interface Props {
     | 'specialRequest'
     | 'waiting'
     | 'border2';
+  iconLeft?: ImageSourcePropType | undefined;
 }
 export default function Header({
   title,
@@ -37,6 +39,7 @@ export default function Header({
   titleColor = 'text1',
   style,
   onBackCustom,
+  iconLeft,
 }: Props) {
   const navigation = useNavigation();
   return (
@@ -47,7 +50,7 @@ export default function Header({
         <TouchableOpacity
           onPress={() => (onBackCustom ? onBackCustom() : navigation.goBack())}>
           <Image
-            source={icons.backIcon}
+            source={iconLeft ? iconLeft : icons.backIcon}
             style={{
               width: 24,
               height: 24,

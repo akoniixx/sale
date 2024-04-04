@@ -4,9 +4,10 @@ import {
   Modal as ModalRN,
   StyleSheet,
   TouchableOpacity,
+  Dimensions,
 } from 'react-native';
 import { colors } from '../../assets/colors/colors';
-import Text from '../Text/Text';
+import Text, { TextStyled } from '../Text/Text';
 
 type Props = {
   onRequestClose?: () => void;
@@ -14,12 +15,18 @@ type Props = {
   visible: boolean;
   width?: string | number;
   title: string;
-  titleCenter?:boolean
+  titleCenter?: boolean;
   desc?: string;
   minHeight?: number;
   textCancel?: string;
   textConfirm?: string;
   onlyCancel?: boolean;
+  descError?: boolean;
+  descCenter?: boolean;
+  titleFontSize?: TextStyled['fontSize'];
+  descFontSize?: TextStyled['fontSize'];
+  colorPrimaryButton?: TextStyled['color'];
+  contentAlign?: 'center' | 'flex-start' | 'flex-end';
 };
 
 export default function ModalWarning({
@@ -33,7 +40,13 @@ export default function ModalWarning({
   textCancel = 'ยกเลิก',
   textConfirm = 'ยืนยัน',
   onlyCancel = false,
-  minHeight = 100,
+  minHeight = 50,
+  descCenter = false,
+  descError,
+  titleFontSize,
+  descFontSize,
+  colorPrimaryButton = 'primary',
+  contentAlign = 'center',
 }: Props): JSX.Element {
   return (
     <ModalRN
@@ -48,22 +61,31 @@ export default function ModalWarning({
           justifyContent: 'center',
           backgroundColor: 'rgba(0,0,0,0.4)',
         }}>
-        <View style={[styles.modalView, { width }]}>
+        <View
+          style={[
+            styles.modalView,
+            { width: width ? width : Dimensions.get('window').width * 0.6 },
+          ]}>
           <View
             style={{
               paddingVertical: 16,
               paddingHorizontal: 16,
               minHeight,
-              alignItems:'center'
+              alignItems: contentAlign,
             }}>
-            <Text semiBold lineHeight={28} center={!titleCenter}>
+            <Text
+              semiBold
+              lineHeight={28}
+              center={!titleCenter}
+              fontSize={titleFontSize}>
               {title}
             </Text>
             {desc && (
               <Text
-                fontSize={14}
+                fontSize={descFontSize || 14}
                 fontFamily="Sarabun"
-                color="text3"
+                color={descError ? 'error' : 'text3'}
+                center={descCenter}
                 lineHeight={26}>
                 {desc}
               </Text>
@@ -73,8 +95,7 @@ export default function ModalWarning({
             style={{
               height: 40,
               flexDirection: 'row',
-              width:'100%',
-              maxWidth:250,
+              width: '100%',
               borderTopWidth: 1,
               borderTopColor: colors.border1,
             }}>
@@ -102,7 +123,7 @@ export default function ModalWarning({
                   center
                   fontSize={14}
                   fontFamily="NotoSans"
-                  color="primary">
+                  color={colorPrimaryButton}>
                   {textConfirm}
                 </Text>
               </TouchableOpacity>

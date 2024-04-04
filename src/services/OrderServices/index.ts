@@ -45,8 +45,8 @@ const uploadFile = async (data: FormData) => {
 const postStatusOrder = async (payload: {
   orderId: string;
   status: string;
-  paidStatus: string;
-  cancelRemark: string;
+  paidStatus?: string;
+  cancelRemark?: string;
   soNo: string | null;
   navNo: string | null;
   updateBy: string;
@@ -56,10 +56,23 @@ const postStatusOrder = async (payload: {
     .then(res => res.data)
     .catch(err => err);
 };
+const getOrderSearchSuggestions = async ({
+  searchText,
+  status,
+}: {
+  searchText: string;
+  status: string[];
+}) => {
+  const query = new URLSearchParams({ searchText, status } as any).toString();
+  return await request
+    .get(`/order-cart/order/search/search-name?${query}`)
+    .then(res => res.data);
+};
 
 export const orderServices = {
   createOrder,
   getOrderById,
   uploadFile,
   postStatusOrder,
+  getOrderSearchSuggestions,
 };

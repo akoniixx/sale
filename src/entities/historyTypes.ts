@@ -1,4 +1,5 @@
 export interface HistoryDataType {
+  flatMap(arg0: (el: any) => any): unknown;
   orderId: string;
   company: string;
   orderNo: string;
@@ -8,6 +9,7 @@ export interface HistoryDataType {
   customerCompanyId: number;
   customerName: string;
   customerNo: string;
+  customerZone: string;
   userStaffName: string | null;
   userShopName: string | null;
   status: string;
@@ -33,6 +35,8 @@ export interface HistoryDataType {
   updateAt: string;
   updateBy: string;
   numberPlate: string;
+  vat: number;
+  vatPercentage: number;
   orderProducts: {
     baseUom: string;
     commonName: string;
@@ -52,15 +56,16 @@ export interface HistoryDataType {
     shipmentOrder: number;
     totalPrice: number;
     isFreebie: boolean;
-    price: number
+    price: number;
+    orderProductPromotions: any[];
   }[];
-  orderFiles:orderFiles[]
+  orderFiles: orderFiles[];
 }
- export interface orderFiles{
-  createAt:string
-  filePath:string
-  isDeleted:boolean
-  orderFileId:string
-  orderId:string
-  updateAt:string
- }
+export interface orderFiles {
+  createAt: string;
+  filePath: string;
+  isDeleted: boolean;
+  orderFileId: string;
+  orderId: string;
+  updateAt: string;
+}

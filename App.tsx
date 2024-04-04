@@ -8,14 +8,11 @@ import Toast from 'react-native-toast-message';
 import { LocalizationProvider } from './src/contexts/LocalizationContext';
 import { toastConfig } from './src/Toast/ToastConfig';
 import { CartProvider } from './src/contexts/CartContext';
-import messaging, {
-  FirebaseMessagingTypes,
-} from '@react-native-firebase/messaging';
 
 import buddhaEra from 'dayjs/plugin/buddhistEra';
 import dayjs from 'dayjs';
 import SplashScreen from 'react-native-splash-screen';
-import { Alert, Linking, PermissionsAndroid, Platform } from 'react-native';
+import { Alert, Linking, Platform } from 'react-native';
 import {
   firebaseInitialize,
   requestUserPermission,
@@ -25,7 +22,6 @@ import VersionCheck from 'react-native-version-check';
 import './src/components/Sheet/sheets.tsx';
 import storeVersion from 'react-native-store-version';
 import RNExitApp from 'react-native-kill-app';
-import analytics from '@react-native-firebase/analytics';
 import {
   PERMISSIONS,
   checkNotifications,
@@ -34,6 +30,7 @@ import {
 import { NetworkProvider } from './src/contexts/NetworkContext';
 
 import { AutocompleteDropdownContextProvider } from 'react-native-autocomplete-dropdown';
+import { SpecialRequestProvider } from './src/contexts/SpecialRequestContext';
 
 dayjs.extend(buddhaEra);
 const App = () => {
@@ -105,110 +102,19 @@ const App = () => {
     checkPermission();
   }, []);
 
-  React.useEffect(() => {
-    messaging()
-      .getInitialNotification()
-      .then(remoteMessage => {
-        const typeNotification = remoteMessage?.data?.type;
-
-        switch (typeNotification) {
-          case 'ORDER':
-            {
-              const NavigationToHistoryDetail = async () => {
-                await AsyncStorage.setItem('isFromNotification', 'true');
-                navigationRef.current?.navigate('HistoryDetailScreen', {
-                  orderId: remoteMessage?.data?.orderId,
-                });
-              };
-              NavigationToHistoryDetail();
-            }
-            break;
-          case 'PROMOTION':
-            {
-              navigationRef.current?.navigate('NewsPromotionDetailScreen', {
-                fromNoti: true,
-                promotionId: remoteMessage?.data?.promotionId,
-              });
-            }
-            break;
-        }
-      });
-    messaging().onNotificationOpenedApp(
-      (remoteMessage: FirebaseMessagingTypes.RemoteMessage) => {
-        const typeNotification = remoteMessage?.data?.type;
-        switch (typeNotification) {
-          case 'ORDER':
-            {
-              const NavigationToHistoryDetail = async () => {
-                await AsyncStorage.setItem('isFromNotification', 'true');
-                navigationRef.current?.navigate('HistoryDetailScreen', {
-                  orderId: remoteMessage?.data?.orderId,
-                });
-              };
-              NavigationToHistoryDetail();
-            }
-            break;
-          case 'PROMOTION':
-            {
-              navigationRef.current?.navigate('NewsPromotionDetailScreen', {
-                fromNoti: true,
-                promotionId: remoteMessage?.data?.promotionId,
-              });
-            }
-            break;
-        }
-      },
-    );
-    messaging().onMessage(async remoteMessage => {
-      const typeNotification = remoteMessage?.data?.type;
-      switch (typeNotification) {
-        case 'ORDER':
-          {
-            Toast.show({
-              type: 'orderToast',
-              text1: remoteMessage?.notification?.title,
-              text2: remoteMessage?.notification?.body,
-              onPress: () => {
-                navigationRef.current?.navigate('HistoryDetailScreen', {
-                  orderId: remoteMessage?.data?.orderId,
-                  isFromNotification: true,
-                });
-                Toast.hide();
-              },
-            });
-          }
-          break;
-        case 'PROMOTION':
-          {
-            Toast.show({
-              type: 'promotionToast',
-              text1: remoteMessage?.notification?.title,
-              text2: remoteMessage?.notification?.body,
-              onPress: () => {
-                navigationRef.current?.navigate('NewsPromotionDetailScreen', {
-                  fromNoti: true,
-                  promotionId: remoteMessage?.data?.promotionId,
-                });
-                Toast.hide();
-              },
-            });
-          }
-          break;
-      }
-    });
-  }, []);
-
   return (
     <NavigationContainer ref={navigationRef}>
       <NetworkProvider>
         <AutocompleteDropdownContextProvider>
           <LocalizationProvider>
             <AuthProvider>
-              <CartProvider>
-                <SheetProvider>
-                  <AppNavigator />
-                </SheetProvider>
-              </CartProvider>
+              <SpecialRequestProvider>
+                <CartProvider>
+                  <SheetProvider>
+                    <AppNavigator />
+                  </SheetProvider>
+                </CartProvider>
+              </SpecialRequestProvider>
             </AuthProvider>
           </LocalizationProvider>
           <Toast config={toastConfig} />

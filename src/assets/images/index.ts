@@ -18,4 +18,6 @@ export default {
   emptyGift: require('./emptyGift.png'),
   bottomInvoice: require('./bottomInvoice.png'),
   CancelImage: require('./CancelImage.png'),
+  iconSpecialRequest: require('./iconSpecialRequest.png'),
+  emptyList: require('./emptyList.png'),
 };

@@ -1,5 +1,5 @@
 import { View, StyleSheet, Image, TouchableOpacity } from 'react-native';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { colors } from '../../assets/colors/colors';
 import Text from '../../components/Text/Text';
 import dayjs from 'dayjs';
@@ -11,6 +11,9 @@ import { notiListServices } from '../../services/NotiListServices';
 import { statusHistory } from '../../utils/mappingObj';
 import { useAuth } from '../../contexts/AuthContext';
 import images from '../../assets/images';
+import { ROLES_USER } from '../../enum';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { MainStackParamList } from '../../navigations/MainNavigator';
 
 interface Props {
   data: Notification;
@@ -34,7 +37,13 @@ export default function ItemNotification({
     ];
     return title;
   };
+  const isSaleManager = useMemo(() => {
+    if (user) {
+      return user?.role === ROLES_USER.SALE_MANAGER;
+    }
 
+    return false;
+  }, [user]);
   const onPress = async (
     orderId: string,
     notiId: string,
@@ -44,13 +53,25 @@ export default function ItemNotification({
     await notiListServices
       .readNoti(notiId)
       .then(() => {
-        navigation.navigate('HistoryDetailScreen', {
-          orderId: orderId,
-          headerTitle: date,
-        });
+        if (isSaleManager) {
+          navigation.navigate('SpecialRequestDetailScreen', {
+            orderId: orderId,
+            date: createdAt,
+            navigationFrom: 'NotificationScreen',
+          });
+        } else {
+          navigation.navigate('HistoryDetailScreen', {
+            orderId: orderId,
+            headerTitle: date,
+          });
+        }
       })
       .catch(err => console.log(err));
   };
+
+  const wordingPrefix = isSaleManager ? 'คำสั่งซื้อใหม่!' : 'คำสั่งซื้อ';
+  const wordingSuffix = isSaleManager ? 'รอให้คุณอนุมัติ' : 'จากร้าน บริษัท';
+
   return (
     <View
       style={[styles.card, { backgroundColor: isRead ? 'white' : '#F8FAFF' }]}>
@@ -75,33 +96,55 @@ export default function ItemNotification({
           />
           <View>
             <Text lineHeight={30} semiBold>
-              คำสั่งซื้อ{' '}
+              {wordingPrefix}{' '}
               <Text lineHeight={30} color="primary" semiBold>
                 {data.orderNo}
               </Text>{' '}
-              จากร้าน บริษัท
+              {wordingSuffix}
             </Text>
-            <Text lineHeight={30} semiBold>
-              {data.customerName}
-            </Text>
-            <Text
-              color="text3"
-              fontSize={12}
-              lineHeight={30}
-              style={{
-                marginTop: 5,
-              }}>
-              อยู่ในสถานะ{' '}
-              <Text
-                fontSize={12}
-                lineHeight={30}
-                style={{
-                  marginLeft: 5,
-                }}
-                color="primary">
-                “{statusText(data.orderStatus)}”
-              </Text>
-            </Text>
+            {isSaleManager ? (
+              <>
+                <Text color="text3" fontSize={12} lineHeight={20}>
+                  คำสั่งซื้อ {data.orderNo} จาก {data.customerName}
+                </Text>
+                <Text
+                  fontSize={16}
+                  lineHeight={30}
+                  medium
+                  style={{
+                    marginBottom: 16,
+                  }}
+                  color="primary">
+                  “{statusText(data.orderStatus)}”
+                </Text>
+              </>
+            ) : (
+              <>
+                <Text lineHeight={30} semiBold>
+                  {data.customerName}
+                </Text>
+
+                <Text
+                  color="text3"
+                  fontSize={12}
+                  lineHeight={30}
+                  style={{
+                    marginTop: 5,
+                  }}>
+                  อยู่ในสถานะ{' '}
+                  <Text
+                    fontSize={12}
+                    lineHeight={30}
+                    style={{
+                      marginLeft: 5,
+                    }}
+                    color="primary">
+                    “{statusText(data.orderStatus)}”
+                  </Text>
+                </Text>
+              </>
+            )}
+
             <View style={styles.flexRow}>
               <Image
                 style={{

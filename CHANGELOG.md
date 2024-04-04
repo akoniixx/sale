@@ -1,4 +1,6 @@
 ## [Version - 2]
+## Feature [2.11.0] - 2024-03-07
+- add new feature approve special request 
 ## Fix [2.10.3] - 2024-04-02
 - fix order load detail
 

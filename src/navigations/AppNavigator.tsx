@@ -11,7 +11,7 @@ import messaging, {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { navigationRef } from './RootNavigator';
 import Toast from 'react-native-toast-message';
-import { useAuth } from '../contexts/AuthContext';
+import dayjs from 'dayjs';
 const Stack = createStackNavigator();
 
 const AppNavigator: React.FC = () => {
@@ -36,11 +36,14 @@ const AppNavigator: React.FC = () => {
                 const isWaitApprove =
                   remoteMessage?.data &&
                   remoteMessage?.data?.status === 'WAIT_APPROVE_ORDER';
+                const date =
+                  (remoteMessage?.data?.createAt as string) || new Date();
                 if (isSaleManager && isWaitApprove) {
                   navigationRef.current?.navigate(
                     'SpecialRequestDetailScreen',
                     {
                       orderId: remoteMessage?.data?.orderId,
+                      date: dayjs(date).toISOString(),
                     },
                   );
                 } else {
@@ -78,11 +81,14 @@ const AppNavigator: React.FC = () => {
                 const isWaitApprove =
                   remoteMessage?.data &&
                   remoteMessage?.data?.status === 'WAIT_APPROVE_ORDER';
+                const date =
+                  (remoteMessage?.data?.createAt as string) || new Date();
                 if (isSaleManager && isWaitApprove) {
                   navigationRef.current?.navigate(
                     'SpecialRequestDetailScreen',
                     {
                       orderId: remoteMessage?.data?.orderId,
+                      date: dayjs(date).toISOString(),
                     },
                   );
                 } else {
@@ -119,12 +125,14 @@ const AppNavigator: React.FC = () => {
                   remoteMessage?.data?.status === 'WAIT_APPROVE_ORDER';
                 const role = await AsyncStorage.getItem('role');
                 const isSaleManager = role && role === 'SALE MANAGER';
-
+                const date =
+                  (remoteMessage?.data?.createAt as string) || new Date();
                 if (isSaleManager && isWaitApprove) {
                   navigationRef.current?.navigate(
                     'SpecialRequestDetailScreen',
                     {
                       orderId: remoteMessage?.data?.orderId,
+                      date: dayjs(date).toISOString(),
                     },
                   );
                 } else {

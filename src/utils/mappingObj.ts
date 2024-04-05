@@ -12,11 +12,12 @@ export const statusHistory = (company: string) => ({
       ? 'ขึ้นสินค้าเรียบร้อยแล้ว'
       : 'ลูกค้ารับสินค้าแล้ว',
   COMPANY_CANCEL_ORDER: 'ยกเลิกคำสั่งซื้อโดยบริษัท',
+  SALE_CANCEL_ORDER: 'ยกเลิกคำสั่งซื้อโดยเซลล์',
 });
 export const statusHistoryColor = {
   WAIT_APPROVE_ORDER: 'waiting',
   REJECT_ORDER: 'error',
-
+  SALE_CANCEL_ORDER: 'error',
   WAIT_CONFIRM_ORDER: 'warning',
   CONFIRM_ORDER: 'primary',
   SHOPAPP_CANCEL_ORDER: 'error',
@@ -31,6 +32,7 @@ export const statusHistoryBGColor = {
   WAIT_CONFIRM_ORDER: 'rgba(244, 191, 0, 0.16)',
   CONFIRM_ORDER: 'rgba(76, 149, 255, 0.16)',
   SHOPAPP_CANCEL_ORDER: 'rgba(255, 93, 93, 0.16)',
+  SALE_CANCEL_ORDER: 'rgba(255, 93, 93, 0.16)',
   OPEN_ORDER: 'rgba(244, 191, 0, 0.16)',
   IN_DELIVERY: 'rgba(244, 191, 0, 0.16)',
   DELIVERY_SUCCESS: 'rgba(58, 174, 73, 0.16)',

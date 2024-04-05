@@ -133,6 +133,7 @@ export type MainStackParamList = {
     soNo: string | null;
     navNo: string | null;
     orderNo: string;
+    status: 'WAIT_APPROVE_ORDER' | 'WAIT_CONFIRM_ORDER' | 'CONFIRM_ORDER';
   };
   CancelOrderSuccessScreen: {
     updateAt: string;

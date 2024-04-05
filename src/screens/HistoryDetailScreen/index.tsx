@@ -44,6 +44,7 @@ export default function HistoryDetailScreen({
   navigation,
 }: StackScreenProps<MainStackParamList, 'HistoryDetailScreen'>) {
   const params = route.params;
+  const refScrollView = React.useRef<ScrollView>(null);
   const [orderDetail, setOrderDetail] = React.useState<HistoryDataType | null>(
     null,
   );
@@ -211,6 +212,13 @@ export default function HistoryDetailScreen({
     };
   }, [orderDetail]);
 
+  const scrollToTop = () => {
+    refScrollView.current?.scrollTo({
+      y: 0,
+      animated: true,
+    });
+  };
+
   const getUniquePromotions = orderProducts => {
     const seenPromotions = new Set();
 
@@ -235,12 +243,14 @@ export default function HistoryDetailScreen({
           backgroundColor: colors.background1,
         }}>
         <ScrollView
+          ref={refScrollView}
           showsVerticalScrollIndicator={false}
           style={{
             margin: 16,
           }}>
           {(orderDetail?.status === 'SHOPAPP_CANCEL_ORDER' ||
             orderDetail?.status === 'REJECT_ORDER' ||
+            orderDetail?.status === 'SALE_CANCEL_ORDER' ||
             orderDetail?.status === 'COMPANY_CANCEL_ORDER') && (
             <>
               <View
@@ -1063,6 +1073,7 @@ export default function HistoryDetailScreen({
               orderDetail={orderDetail}
               navigation={navigation}
               refetch={getOrderDetailById}
+              scrollToTop={scrollToTop}
             />
           ) : null}
           <View

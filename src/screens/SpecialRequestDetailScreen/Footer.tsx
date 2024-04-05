@@ -37,6 +37,7 @@ export default function Footer({
   const [visibleConfirm, setVisibleConfirm] = useState(false);
   const [visibleReject, setVisibleReject] = useState(false);
   const [alreadyReject, setAlreadyReject] = useState(false);
+  const [alreadyRejectButConfirm, setAlreadyRejectButConfirm] = useState(false);
   const [alreadyConfirmButReject, setAlreadyConfirmButReject] = useState(false);
   const [showIsUpdate, setShowIsUpdate] = useState<boolean>(false);
   const [rejectRemark, setRejectRemark] = useState('');
@@ -112,6 +113,10 @@ export default function Footer({
       const res = await orderServices.getOrderById(orderId);
       if (res) {
         const currentStatus = res?.status;
+        if (REJECT_STATUS.includes(currentStatus)) {
+          setAlreadyReject(true);
+          return;
+        }
         switch (currentStatus) {
           case 'WAIT_APPROVE_ORDER':
             setVisibleConfirm(true);
@@ -125,14 +130,14 @@ export default function Footer({
       console.log('error', error);
     }
   };
-  const { warningTitle } = useMemo(() => {
+  const { warningTitleAlreadyApproved } = useMemo(() => {
     if (orderDetail?.orderNo) {
       return {
-        warningTitle: `คำสั่งซื้อ ${orderDetail?.orderNo} \n ได้รับการอนุมัติคำสั่งซื้อไปแล้ว \n จากผู้จัดการฝ่ายขาย`,
+        warningTitleAlreadyApproved: `คำสั่งซื้อ ${orderDetail?.orderNo} \n ได้รับการอนุมัติคำสั่งซื้อไปแล้ว \n จากผู้จัดการฝ่ายขาย`,
       };
     }
     return {
-      warningTitle: '',
+      warningTitleAlreadyApproved: '',
     };
   }, [orderDetail?.orderNo]);
   return (
@@ -226,8 +231,22 @@ export default function Footer({
         }}
       />
 
+      <ModalOnlyConfirm
+        visible={alreadyRejectButConfirm}
+        width={Dimensions.get('window').width - 100}
+        textConfirm="ดูรายละเอียด"
+        title={`คำสั่งซื้อ ${orderDetail?.orderNo} \n ไม่สามารถอนุมัติได้ เนื่องจาก ผู้จัดการฝ่ายขายยื่นไม่อนุมัติคำสั่งซื้อ ในระบบไปก่อนหน้า`}
+        onConfirm={async () => {
+          setAlreadyRejectButConfirm(false);
+          await setTimeout(() => {
+            refetch && refetch();
+          }, 800);
+          scrollToTop();
+        }}
+      />
+
       <ModalWarning
-        title={warningTitle}
+        title={warningTitleAlreadyApproved}
         visible={alreadyConfirmButReject}
         descCenter
         descError

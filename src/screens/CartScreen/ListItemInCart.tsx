@@ -5,7 +5,7 @@ import {
   TouchableOpacity,
   Dimensions,
 } from 'react-native';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Text from '../../components/Text/Text';
 import { useLocalization } from '../../contexts/LocalizationContext';
 import { newProductType, useCart } from '../../contexts/CartContext';
@@ -22,6 +22,11 @@ import ModalMessage from '../../components/Modal/ModalMessage';
 import ImageCache from '../../components/ImageCache/ImageCache';
 import GiftFromPromotion from './GiftFromPromotion';
 import SkeletonLoading from '../../components/SkeletonLoading/SkeletonLoading';
+import { navigationRef } from '../../navigations/RootNavigator';
+import { useOrderLoads } from '../../contexts/OrdersLoadContext';
+import DashedLine from 'react-native-dashed-line';
+import { useAuth } from '../../contexts/AuthContext';
+import { DataForOrderLoad } from '../../entities/orderLoadTypes';
 // import SkeletonContent from 'react-native-skeleton-content';
 
 const reArrangeShipment = (dataList: newProductType[]) => {
@@ -41,17 +46,108 @@ export default function ListItemInCart({
   const [loading, setLoading] = React.useState(false);
   const [loadingAnotherPromotion, setLoadingAnotherPromotion] =
     React.useState(false);
+    const [totalQuantities, setTotalQuantities] = useState<[{ unit: string, quantity: number }]>([{
+      unit: '',
+      quantity: 0
+    }])
   const {
     cartList,
     cartDetail,
     setCartList,
     promotionList,
     freebieListItem,
+    cartOrderLoad,
     cartApi: { postCartItem, getSelectPromotion },
   } = useCart();
+  const {
+    state: { user },
+  } = useAuth();
+  const {
+    currentList,
+    dataForLoad,
+    setCurrentList,
+    headData,
+    setHeadData,
+    dollyData,
+    setDollyData,
+    setDataForLoad,
+    dataReadyLoad,
+    setDataReadyLoad
+  } = useOrderLoads();
 
   const [visibleDel, setVisibleDel] = React.useState(false);
   const [delId, setDelId] = React.useState<string | number>('');
+  const [decreaseId, setDecreaseId] = React.useState<string | number>('');
+  const [modalWarningDelete, setModalWarningDelete] = useState<boolean>(false)
+  const [modalDelete, setModalDelete] = useState<boolean>(false)
+  useEffect(() => {
+    const quantitiesRecord: Record<string, number> = cartList.reduce((acc, product) => {
+      const key = product.saleUOMTH || product.baseUnitOfMeaTh;
+      if (key) {
+        acc[key] = (acc[key] || 0) + product.quantity;
+      }
+      return acc;
+    }, {});
+
+    const totalQuantities = Object.entries(quantitiesRecord).map(([unit, quantity]) => ({ unit, quantity }));
+    setTotalQuantities(totalQuantities)
+  }, [cartList])
+
+  useEffect(() => {
+    const mergedProducts = dataForLoad.reduce((acc: { [key: string]: DataForOrderLoad }, item) => {
+      const key = item.productId || `freebie_${item.productFreebiesId}` || 'undefined';
+      if (acc[key]) {
+        acc[key].quantity += item.quantity;
+        if (item.isFreebie) {
+          acc[key].freebieQuantity = (acc[key].freebieQuantity || 0) + item.quantity;
+        }
+      } else {
+        acc[key] = { ...item };
+        acc[key].freebieQuantity = item.isFreebie ? item.quantity : 0;
+      }
+      return acc;
+    }, {});
+
+    const mergedProductsArray = Object.values(mergedProducts);
+
+
+    const updatedData = cartOrderLoad.map((item1) => {
+
+      const item2 = mergedProductsArray.find((item) => {
+        if (item.productFreebiesId) {
+
+          return item.productFreebiesId === item1.productFreebiesId
+        } else {
+          return item.productId === item1.productId
+        }
+      }
+      );
+      if (item2) {
+        return {
+          ...item1,
+          quantity: item1.quantity - item2.quantity,
+          isSelected: false,
+          maxQuantity: item1.quantity,
+          freebieQuantity: item2.freebieQuantity - item1.freebieQuantity,
+          amount: item1.quantity - item1.freebieQuantity,
+          amountFreebie: item1.freebieQuantity
+        };
+      }
+      return {
+        ...item1,
+        quantity: item1.quantity,
+        isSelected: false,
+        maxQuantity: item1.quantity,
+        freebieQuantity: item1.freebieQuantity,
+        amount: item1.quantity - item1.freebieQuantity,
+        amountFreebie: item1.freebieQuantity
+      }
+    });
+    setCurrentList(updatedData);
+  }, [cartOrderLoad, dataForLoad])
+  
+
+
   const onChangeOrder = async (value: any, id: string) => {
     const findIndex = cartList?.findIndex(item => item?.productId === id);
     const findOrder = cartList?.findIndex(item => +item?.order === +value);
@@ -82,10 +178,14 @@ export default function ListItemInCart({
       if (findIndex !== -1) {
         const newCartList = [...cartList];
 
-        newCartList[findIndex].amount += 5;
-
+        newCartList[findIndex].amount += 1;
+        const newDataReadyLoad = [...dataReadyLoad]
         const { cartList: cl, cartDetail: cD } = await postCartItem(
           newCartList,
+          [],
+          [],
+          newDataReadyLoad
+
         );
         await getSelectPromotion(cD.allPromotions);
         setCartList(cl);
@@ -96,7 +196,95 @@ export default function ListItemInCart({
       setLoading(false);
     }
   };
-  const onDecrease = async (id: string | number) => {
+
+  const onDecrease = async (id: string) => {
+    if (dataForLoad.length > 0) {
+      setDecreaseId(id)
+      setModalWarningDelete(true)
+    } else {
+      setLoading(true);
+
+      const findIndex = cartList?.findIndex(
+        item => item?.productId.toString() === id.toString(),
+      );
+      if (findIndex !== -1) {
+        const newCartList = [...cartList];
+        const amount = newCartList[findIndex].amount;
+        if (amount > 1) {
+          newCartList[findIndex].amount -= 1;
+          const newDataReadyLoad = [...dataReadyLoad]
+          const { cartList: cl, cartDetail: cD } = await postCartItem(
+            newCartList,
+            [],
+            [],          
+            newDataReadyLoad
+          );
+          await getSelectPromotion(cD.allPromotions);
+          setCartList(newCartList);
+        } else {
+          newCartList.splice(findIndex, 1);
+        
+         
+          const newDataReadyLoad = [...dataReadyLoad]
+          const { cartList: cl, cartDetail: cD } = await postCartItem(
+            newCartList,
+            [],
+            [],          
+            newDataReadyLoad
+          );
+          await getSelectPromotion(cD.allPromotions);
+          setCartList(newCartList);
+        }
+        setLoading(false);
+      }
+    }
+  };
+
+  const onConfirmDecrease = async () => {
+    setModalWarningDelete(false)
+    setLoading(true);
+
+    const findIndex = cartList?.findIndex(
+      item => item?.productId.toString() === decreaseId.toString(),
+    );
+    if (findIndex !== -1) {
+      const newCartList = [...cartList];
+      const amount = newCartList[findIndex].amount;
+      if (amount > 1) {
+      
+        newCartList[findIndex].amount -= 1;
+      
+        const newDataReadyLoad = [...dataReadyLoad]
+       
+
+        const { cartList: cl, cartDetail: cD } = await postCartItem(
+          newCartList,
+          [],
+          [],          
+          newDataReadyLoad
+        );
+        await getSelectPromotion(cD.allPromotions);
+        setCartList(newCartList);
+
+      } else {
+        newCartList.splice(findIndex, 1);
+        setHeadData([])
+        setDollyData([])
+        setDataForLoad([])
+        setDataReadyLoad([])
+        const { cartList: cl, cartDetail: cD } = await postCartItem(
+          newCartList,
+        );
+        await getSelectPromotion(cD.allPromotions);
+        setCartList(newCartList);
+      }
+      setLoading(false);
+    }
+
+  }
+
+
+ /*  const onDecrease = async (id: string | number) => {
     try {
       setLoading(true);
       const findIndex = cartList?.findIndex(
@@ -106,7 +294,7 @@ export default function ListItemInCart({
         const newCartList = [...cartList];
         const amount = newCartList[findIndex].amount;
         if (amount > 5) {
-          newCartList[findIndex].amount -= 5;
+          newCartList[findIndex].amount -= 1;
           const { cartList: cl, cartDetail: cD } = await postCartItem(
             newCartList,
           );
@@ -119,9 +307,12 @@ export default function ListItemInCart({
           const currentCL = reArrangeShipment(
             newCartList.filter(el => el.productId !== id),
           );
-
+          const newDataReadyLoad = [...dataReadyLoad]
           const { cartList: cl, cartDetail: cD } = await postCartItem(
             currentCL,
+            [],
+            [],
+            newDataReadyLoad
           );
 
           await getSelectPromotion(cD.allPromotions);
@@ -133,7 +324,7 @@ export default function ListItemInCart({
     } finally {
       setLoading(false);
     }
-  };
+  }; */
   const onChangeText = async ({
     quantity,
     id,
@@ -322,7 +513,7 @@ export default function ListItemInCart({
                         </View>
                       )}
                     </Text>
-                    <Dropdown
+                    { user?.company == 'ICPL' &&<Dropdown
                       style={{
                         width: 70,
                         height: 24,
@@ -337,7 +528,8 @@ export default function ListItemInCart({
                       onChangeValue={value =>
                         onChangeOrder(value, item.productId)
                       }
-                    />
+                    /> }
+                    
                   </View>
                 </View>
                 <View
@@ -440,7 +632,26 @@ export default function ListItemInCart({
           </Text>
         </Text>
         {cartList.length > 0 ? (
+          <View>
           <View>{RenderList(loadingAnotherPromotion || loading)}</View>
+          <View style={{ marginTop: 10 }}>
+          <DashedLine
+            dashGap={0}
+            dashThickness={0.5}
+            dashColor={colors.border2}
+            style={{ marginBottom: 20 }}
+          />
+          <View style={{ flexDirection: 'row', alignItems: 'baseline' }}>
+            <Text fontFamily='NotoSans' color='text3' fontSize={16} bold>จำนวนรวม :    </Text>
+            <View>
+              {totalQuantities.map(i => (<Text fontFamily='NotoSans' fontSize={18} bold>
+                {i.quantity%1===0? i.quantity : i.quantity.toFixed(2)} {i.unit}
+              </Text>))}
+            </View>
+          </View>
+
+        </View>
+        </View>
         ) : (
           <View
             style={{
@@ -482,6 +693,38 @@ export default function ListItemInCart({
           setLoading={setLoadingAnotherPromotion}
         />
       )}
+
+<View style={{
+          marginTop: 8,
+          backgroundColor: 'white',
+          padding: 16,
+        }}>
+          <Text fontSize={18} bold fontFamily="NotoSans">ลำดับการจัดเรียงสินค้า</Text>
+          <TouchableOpacity onPress={() => navigationRef.navigate('OrderLoadsScreen')} style={{ paddingVertical: 15, paddingHorizontal: 10, borderWidth: 0.5, borderRadius: 8, marginTop: 10, borderColor: '#E1E7F6' }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+              <View style={{ flexDirection: 'row' }}>
+                <Image source={icons.car} style={{ width: 24, height: 24, marginRight: 10 }} />
+                <View>
+                  <Text fontFamily='NotoSans' lineHeight={21} fontSize={14}>รายการจัดเรียงสินค้าขึ้นรถ</Text>
+                  {!currentList.every(Item => Item.quantity === 0) && dataForLoad.length > 0 &&
+                    <Text fontSize={14} lineHeight={18} color='secondary'>กรุณาตรวจสอบลำดับสินค้าอีกครั้ง</Text>
+                  }
+                </View>
+              </View>
+              <View style={{ flexDirection: 'row' }}>
+                {currentList.every(Item => Item.quantity === 0) && dataForLoad.length > 0 &&
+                  <Image source={icons.uploadSucsess} style={{ width: 20, height: 20, marginRight: 10 }} />
+                }
+                {!currentList.every(Item => Item.quantity === 0) && dataForLoad.length > 0 &&
+                  <Image source={icons.warning} style={{ width: 25, height: 25, marginRight: 10 }} />
+                }
+                <Image source={icons.iconNext} style={{ width: 20, height: 20 }} />
+              </View>
+            </View>
+          </TouchableOpacity>
+        </View>
+
+
       <GiftFromPromotion
         freebieListItem={freebieListItem}
         loadingPromo={loadingPromo || loading || loadingAnotherPromotion}
@@ -491,6 +734,15 @@ export default function ListItemInCart({
         message={t('modalMessage.deleteCart')}
         onRequestClose={() => setIsDelCart(false)}
       />
+        <ModalWarning
+          visible={modalWarningDelete}
+          width={'70%'}
+          title='ยืนยันการลดจำนวนสินค้าในตะกร้า'
+          desc={`การลดสินค้าในตะกร้า ส่งผลต่อลำดับ\nการขนสินค้าขึ้นรถที่กำหนดไว้\nหากกดยืนยันการลดสินค้า`}
+       
+          onConfirm={onConfirmDecrease}
+          onRequestClose={() => setModalWarningDelete(false)}
+        />
       {/* <LoadingSpinner visible={loading} /> */}
     </>
   );

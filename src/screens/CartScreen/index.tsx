@@ -38,6 +38,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuth } from '../../contexts/AuthContext';
 import { factoryServices } from '../../services/FactorySevices';
 import ModalOnlyConfirm from '../../components/Modal/ModalOnlyConfirm';
+import { useOrderLoads } from '../../contexts/OrdersLoadContext';
 
 export interface TypeDataStepTwo {
   specialRequestRemark?: string | null;
@@ -71,6 +72,15 @@ export default function CartScreen({
     setCartDetail,
     cartApi: { getCartList, getSelectPromotion, postCartItem },
   } = useCart();
+  const {
+    dataReadyLoad,
+    setDataReadyLoad,
+    setHeadData,
+    setCurrentList,
+    setDollyData,
+    setDataForLoad,
+    dataForLoad,
+  } = useOrderLoads()
   const refInput = React.useRef<any>(null);
   const scrollRef = React.useRef<ScrollView | null>(null);
   const [modalReorder, setModalReorder] = useState(false);
@@ -155,6 +165,7 @@ export default function CartScreen({
         orderProducts,
         allPromotions: cartDetail.allPromotions,
         specialRequestFreebies: cartDetail.specialRequestFreebies || [],
+        orderLoads: dataReadyLoad
       };
       if (dataStepTwo.specialRequestRemark) {
         payload.specialRequestRemark = dataStepTwo.specialRequestRemark;

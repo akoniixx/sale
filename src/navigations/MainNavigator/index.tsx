@@ -31,6 +31,7 @@ import EditOrderLoadsScreen from '../../screens/HistoryDetailScreen/EditOrderLoa
 import SelectLocationScreen from '../../screens/SelectLocationScreen';
 import AddLocationScreen from '../../screens/AddLocationScreen';
 import EditLocationScreen from '../../screens/EditLocationScreen';
+import OrderLoadsScreen from '../../screens/CartScreen/OrderLoadsScreen';
 
 export type LocationDataType = {
   comment?: string;
@@ -179,6 +180,7 @@ export type MainStackParamList = {
   EditLocationScreen: {
     customerOtherId: string;
   };
+  OrderLoadsScreen:undefined
 };
 const Stack = createStackNavigator<MainStackParamList>();
 export default function MainNavigator() {
@@ -289,6 +291,7 @@ export default function MainNavigator() {
       />
       <Stack.Screen name="AddLocationScreen" component={AddLocationScreen} />
       <Stack.Screen name="EditLocationScreen" component={EditLocationScreen} />
+      <Stack.Screen name="OrderLoadsScreen" component={OrderLoadsScreen} />
     </Stack.Navigator>
   );
 }

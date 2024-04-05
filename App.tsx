@@ -31,6 +31,7 @@ import { NetworkProvider } from './src/contexts/NetworkContext';
 
 import { AutocompleteDropdownContextProvider } from 'react-native-autocomplete-dropdown';
 import { SpecialRequestProvider } from './src/contexts/SpecialRequestContext';
+import { OrderLoadsProvider } from './src/contexts/OrdersLoadContext';
 
 dayjs.extend(buddhaEra);
 const App = () => {
@@ -108,6 +109,7 @@ const App = () => {
         <AutocompleteDropdownContextProvider>
           <LocalizationProvider>
             <AuthProvider>
+            <OrderLoadsProvider>
               <SpecialRequestProvider>
                 <CartProvider>
                   <SheetProvider>
@@ -115,6 +117,7 @@ const App = () => {
                   </SheetProvider>
                 </CartProvider>
               </SpecialRequestProvider>
+            </OrderLoadsProvider>
             </AuthProvider>
           </LocalizationProvider>
           <Toast config={toastConfig} />

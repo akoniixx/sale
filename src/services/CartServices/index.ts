@@ -1,22 +1,22 @@
 import { request } from '../../config/request';
+import { DataForReadyLoad } from '../../entities/orderLoadTypes';
 
-interface CartItemType {
+export interface CartItemType {
   company: string;
   customerCompanyId: string | number;
   isUseCod?: boolean;
   orderProducts: {
-    productId: number;
+    productId: number | string;
     quantity: number;
     shipmentOrder: number;
-    orderProductPromotions?: {
-      promotionId: string;
-      isUse: boolean;
-    }[];
+    specialRequest: number;
   }[];
   paymentMethod?: string;
-  saleCoRemark?: string;
-  specialRequestRemark?: string;
-  userStaffId: string;
+  customerName?: string;
+  customerNo?: string;
+  userShopId: string;
+  orderLoads?:DataForReadyLoad[]
+  userStaffId: string
 }
 interface GetCartType {
   userStaffId?: string;

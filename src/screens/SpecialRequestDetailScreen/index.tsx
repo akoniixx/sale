@@ -238,6 +238,7 @@ export default function SpecialRequestDetailScreen({
             ref={refScrollView}>
             {(orderDetail?.status === 'SHOPAPP_CANCEL_ORDER' ||
               orderDetail?.status === 'REJECT_ORDER' ||
+              orderDetail?.status === 'SALE_CANCEL_ORDER' ||
               orderDetail?.status === 'COMPANY_CANCEL_ORDER') && (
               <>
                 <View

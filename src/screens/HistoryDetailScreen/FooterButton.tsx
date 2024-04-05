@@ -8,6 +8,11 @@ import ModalWarning from '../../components/Modal/ModalWarning';
 import { orderServices } from '../../services/OrderServices';
 import { useAuth } from '../../contexts/AuthContext';
 import ModalOnlyConfirm from '../../components/Modal/ModalOnlyConfirm';
+import {
+  OPEN_STATUS,
+  REJECT_STATUS,
+  WAIT_CONFIRM_STATUS,
+} from '../../constant/statusOrder';
 
 interface Props {
   orderDetail: HistoryDataType | null;
@@ -17,17 +22,20 @@ interface Props {
     undefined
   >;
   refetch?: () => void;
+  scrollToTop: () => void;
 }
 const mappingTitle = {
   COMPANY_CANCEL_ORDER: `ไม่สามารถยกเลิกได้ เนื่องจาก\nบริษัทได้ทำการยกเลิกคำสั่งซื้อไปแล้ว\nในระบบไปก่อนหน้า`,
   SALE_CANCEL_ORDER: `ไม่สามารถยกเลิกได้ เนื่องจาก\n พนักงานขายอื่นได้ทำการยกเลิกคำสั่งซื้อไปแล้ว\nในระบบไปก่อนหน้า`,
   SHOPAPP_CANCEL_ORDER: `ไม่สามารถยกเลิกได้ เนื่องจาก\nร้านค้าได้ทำการยกเลิกคำสั่งซื้อไปแล้ว\nในระบบไปก่อนหน้า`,
-  REJECT_ORDER: `ไม่สามารถยกเลิกได้ เนื่องจาก\nคผู้จัดการฝ่ายขายยื่นไม่อนุมัติคำสั่งซื้อ\nในระบบไปก่อนหน้า`,
+  REJECT_ORDER: `ไม่สามารถยกเลิกได้ เนื่องจาก\n ผู้จัดการฝ่ายขายยื่นไม่อนุมัติคำสั่งซื้อ\nในระบบไปก่อนหน้า`,
 };
+
 export default function FooterButton({
   orderDetail,
   navigation,
   refetch,
+  scrollToTop,
 }: Props) {
   const {
     state: { user },
@@ -35,7 +43,8 @@ export default function FooterButton({
   const [showAlreadyReject, setShowAlreadyReject] = React.useState<
     string | undefined
   >('');
-  const [showAlreadyOpen, setShowAlreadyOpen] = React.useState<boolean>(false);
+  const [showAlreadyConfirm, setShowAlreadyConfirm] =
+    React.useState<boolean>(false);
   const [showIsUpdate, setShowIsUpdate] = React.useState<boolean>(false);
   const onPressCancelOrder = async () => {
     if (!orderDetail) {
@@ -46,39 +55,33 @@ export default function FooterButton({
 
     if (result) {
       const currentStatus = result?.status;
-      console.log('currentStatus', currentStatus);
-      switch (currentStatus) {
-        case 'REJECT_ORDER' ||
-          'COMPANY_CANCEL_ORDER' ||
-          'SALE_CANCEL_ORDER' ||
-          'SHOPAPP_CANCEL_ORDER':
-          setShowAlreadyReject(
-            mappingTitle[currentStatus as keyof typeof mappingTitle],
-          );
-          break;
-        case 'OPEN_ORDER' || 'IN_DELIVERY' || 'DELIVERY_SUCCESS':
-          setShowIsUpdate(true);
-          break;
-        case 'WAIT_CONFIRM_ORDER' || 'CONFIRM_ORDER': {
-          setShowAlreadyOpen(true);
-          break;
-        }
-        default: {
-          navigation.navigate('CancelOrderScreen', {
-            orderId: orderDetail?.orderId,
-            soNo: orderDetail?.soNo || null,
-            navNo: orderDetail?.navNo || null,
-            paidStatus: orderDetail?.paidStatus,
-            orderNo: orderDetail?.orderNo,
-            orderProducts: orderDetail?.orderProducts,
-            status: orderDetail?.status as
-              | 'WAIT_APPROVE_ORDER'
-              | 'WAIT_CONFIRM_ORDER'
-              | 'CONFIRM_ORDER',
-          });
-          break;
-        }
+      if (REJECT_STATUS.includes(currentStatus)) {
+        setShowAlreadyReject(
+          mappingTitle[currentStatus as keyof typeof mappingTitle],
+        );
+        return;
       }
+      if (OPEN_STATUS.includes(currentStatus)) {
+        setShowIsUpdate(true);
+        return;
+      }
+      if (WAIT_CONFIRM_STATUS.includes(currentStatus)) {
+        setShowAlreadyConfirm(true);
+        return;
+      }
+
+      navigation.navigate('CancelOrderScreen', {
+        orderId: orderDetail?.orderId,
+        soNo: orderDetail?.soNo || null,
+        navNo: orderDetail?.navNo || null,
+        paidStatus: orderDetail?.paidStatus,
+        orderNo: orderDetail?.orderNo,
+        orderProducts: orderDetail?.orderProducts,
+        status: orderDetail?.status as
+          | 'WAIT_APPROVE_ORDER'
+          | 'WAIT_CONFIRM_ORDER'
+          | 'CONFIRM_ORDER',
+      });
     } else {
       return;
     }
@@ -111,7 +114,7 @@ export default function FooterButton({
       </View>
       <ModalWarning
         title={warningTitle}
-        visible={showAlreadyOpen}
+        visible={showAlreadyConfirm}
         descCenter
         descError
         titleFontSize={18}
@@ -119,7 +122,7 @@ export default function FooterButton({
         width={Dimensions.get('window').width - 124}
         desc={`ต้องการยืนยันการยกเลิกคำสั่งซื้อนี้\nใช่หรือไม่?`}
         onConfirm={() => {
-          setShowAlreadyOpen(false);
+          setShowAlreadyConfirm(false);
           if (!orderDetail) {
             return;
           }
@@ -137,7 +140,7 @@ export default function FooterButton({
           });
         }}
         onRequestClose={() => {
-          setShowAlreadyOpen(false);
+          setShowAlreadyConfirm(false);
         }}
       />
       <ModalOnlyConfirm
@@ -145,9 +148,12 @@ export default function FooterButton({
         width={Dimensions.get('window').width - 124}
         textConfirm="ดูรายละเอียด"
         title={`คำสั่งซื้อ ${orderDetail?.orderNo} \n ${showAlreadyReject}`}
-        onConfirm={() => {
+        onConfirm={async () => {
           setShowAlreadyReject(undefined);
-          refetch && refetch();
+          await setTimeout(() => {
+            refetch && refetch();
+          }, 1000);
+          scrollToTop();
         }}
       />
       <ModalOnlyConfirm
@@ -155,9 +161,12 @@ export default function FooterButton({
         width={Dimensions.get('window').width - 124}
         textConfirm="ดูรายละเอียด"
         title={`คำสั่งซื้อ ${orderDetail?.orderNo} \n คำสั่งซื้อนี้ ได้มีการเปลี่ยนแปลงข้อมูล กรุณาตรวจสอบอีกครั้ง`}
-        onConfirm={() => {
+        onConfirm={async () => {
           setShowIsUpdate(false);
-          refetch && refetch();
+          await setTimeout(() => {
+            refetch && refetch();
+          }, 1000);
+          scrollToTop();
         }}
       />
     </>

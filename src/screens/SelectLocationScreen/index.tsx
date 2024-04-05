@@ -119,22 +119,36 @@ export default function SelectLocationScreen({ navigation, route }: Props) {
       }
       return 'SHOP';
     });
+    setOtherAddress(prev => {
+      if (route.params.selected === 'OTHER') {
+        return {
+          ...prev,
+          name: route.params.name || '',
+          addressText: route.params.address || '',
+          id: route.params.id || '',
+        };
+      } else {
+        return prev;
+      }
+    });
   }, [
     comment,
     user?.company,
     route.params.selected,
     route.params.name,
     route.params.address,
+    route.params.id,
     underlinePosition,
   ]);
 
-  const onSubmitLocation = async (data: any) => {
+  const onSubmitLocation = async () => {
     const payload =
       selected === 'OTHER'
         ? {
             name: otherAddress.name,
             comment: remark,
             address: otherAddress.addressText,
+            id: otherAddress.id,
           }
         : selected === 'SHOP'
         ? {
@@ -169,6 +183,7 @@ export default function SelectLocationScreen({ navigation, route }: Props) {
                 name: route.params.name,
                 address: route.params.address,
                 comment: route.params.comment,
+                id: route.params.id,
               },
             });
           }}

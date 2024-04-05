@@ -1,4 +1,3 @@
-import { AxiosRequestConfig } from 'axios';
 import { request, uploadFileInstance } from '../../config/request';
 import { Asset } from 'react-native-image-picker';
 

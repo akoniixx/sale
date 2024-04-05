@@ -1039,7 +1039,7 @@ export default function HistoryDetailScreen({
                   })}
               </View>
             ) : null}
-            {user?.company !== 'ICPI' ? (
+            {user?.company !== 'ICPI' && user?.role === 'SALE MANAGER' ? (
               <>
                 {orderDetail?.status === 'DELIVERY_SUCCESS' ||
                 orderDetail?.status === 'SHOPAPP_CANCEL_ORDER' ||

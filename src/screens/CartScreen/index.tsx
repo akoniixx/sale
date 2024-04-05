@@ -1,12 +1,4 @@
-import {
-  View,
-  ScrollView,
-  Image,
-  TouchableOpacity,
-  KeyboardAvoidingView,
-  Platform,
-  Keyboard,
-} from 'react-native';
+import { View, ScrollView, Image, TouchableOpacity } from 'react-native';
 import React, { useEffect, useMemo, useState } from 'react';
 import Container from '../../components/Container/Container';
 import Content from '../../components/Content/Content';
@@ -33,7 +25,7 @@ import {
   MainStackParamList,
 } from '../../navigations/MainNavigator';
 import { useFocusEffect } from '@react-navigation/native';
-import { orderServices, payloadUploadFile } from '../../services/OrderServices';
+import { orderServices } from '../../services/OrderServices';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuth } from '../../contexts/AuthContext';
 import { factoryServices } from '../../services/FactorySevices';
@@ -43,8 +35,10 @@ export interface TypeDataStepTwo {
   specialRequestRemark?: string | null;
   saleCoRemark?: string | null;
   deliveryAddress?: string | null;
+  deliveryAddressId?: string | null;
   deliveryRemark?: string | null;
   deliveryDest: string;
+
   numberPlate?: string | null;
 }
 export default function CartScreen({
@@ -156,6 +150,9 @@ export default function CartScreen({
         allPromotions: cartDetail.allPromotions,
         specialRequestFreebies: cartDetail.specialRequestFreebies || [],
       };
+      if (dataStepTwo.deliveryAddressId) {
+        payload.deliveryAddressId = dataStepTwo.deliveryAddressId;
+      }
       if (dataStepTwo.specialRequestRemark) {
         payload.specialRequestRemark = dataStepTwo.specialRequestRemark;
       }
@@ -170,7 +167,6 @@ export default function CartScreen({
       /*  console.log(result) */
 
       if (result) {
-        // console.log('result', JSON.stringify(result, null, 2));
         setCartDetail({} as CartDetailType);
         setCartList([]);
         setFreebieListItem([]);
@@ -294,6 +290,7 @@ export default function CartScreen({
             ...prev,
             address: locationData.address || '',
             name: locationData.name || '',
+            id: locationData.id || '',
           }));
           setDataStepTwo(prev => ({
             ...prev,
@@ -302,6 +299,7 @@ export default function CartScreen({
             }`,
             deliveryRemark: locationData.comment || '',
             deliveryDest: locationData.selected || '',
+            deliveryAddressId: locationData.id || undefined,
           }));
         } else if (user?.company && user?.company === 'ICPL') {
           getShopLocation();

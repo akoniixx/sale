@@ -227,11 +227,11 @@ export default function StepTwo({
           <InputText
             ref={refInput}
             multiline
-           
+          
             value={dataStepTwo?.saleCoRemark || ''}
             placeholder="ใส่หมายเหตุ..."
             numberOfLines={5}
-            blurOnSubmit
+          
             onChangeText={text =>
               setDataStepTwo(prev => ({ ...prev, saleCoRemark: text }))
             }

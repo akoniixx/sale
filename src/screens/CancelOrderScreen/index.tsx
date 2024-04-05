@@ -43,7 +43,7 @@ export default function CancelOrderScreen({
     state: { user },
   } = useAuth();
   const [loading, setLoading] = React.useState<boolean>(false);
-  const { orderNo, orderProducts, orderId, paidStatus, soNo, navNo } =
+  const { orderNo, orderProducts, orderId, paidStatus, soNo, navNo, status } =
     route.params;
   const noFreebies = orderProducts.filter(item => item.isFreebie === false);
   const [reason, setReason] = React.useState<string>('');
@@ -51,10 +51,13 @@ export default function CancelOrderScreen({
   const onCancelOrder = async () => {
     try {
       setLoading(true);
+      const isStatusWaitApprove = status === 'WAIT_APPROVE_ORDER';
       const payload: PayloadCancelOrder = {
         orderId,
         cancelRemark: reason,
-        status: 'SALE_CANCEL_ORDER',
+        status: isStatusWaitApprove
+          ? 'SALE_CANCEL_ORDER'
+          : 'COMPANY_CANCEL_ORDER',
         paidStatus,
         soNo,
         navNo,

@@ -12,6 +12,7 @@ import { orderServices } from '../../services/OrderServices';
 import { useAuth } from '../../contexts/AuthContext';
 import { HistoryDataType } from '../../entities/historyTypes';
 import ModalOnlyConfirm from '../../components/Modal/ModalOnlyConfirm';
+import { REJECT_STATUS, WAIT_CONFIRM_STATUS } from '../../constant/statusOrder';
 
 interface Props {
   orderId: string;
@@ -35,9 +36,10 @@ export default function Footer({
   } = useAuth();
   const [visibleConfirm, setVisibleConfirm] = useState(false);
   const [visibleReject, setVisibleReject] = useState(false);
-
+  const [alreadyReject, setAlreadyReject] = useState(false);
+  const [alreadyRejectButConfirm, setAlreadyRejectButConfirm] = useState(false);
+  const [alreadyConfirmButReject, setAlreadyConfirmButReject] = useState(false);
   const [showIsUpdate, setShowIsUpdate] = useState<boolean>(false);
-
   const [rejectRemark, setRejectRemark] = useState('');
   const onApproveOrder = async () => {
     try {
@@ -82,11 +84,20 @@ export default function Footer({
   const onShowModalReject = async () => {
     try {
       const res = await orderServices.getOrderById(orderId);
+
       if (res) {
         const currentStatus = res?.status;
+        if (REJECT_STATUS.includes(currentStatus)) {
+          setAlreadyReject(true);
+          return;
+        }
+        if (WAIT_CONFIRM_STATUS.includes(currentStatus)) {
+          setAlreadyConfirmButReject(true);
+          return;
+        }
         switch (currentStatus) {
           case 'WAIT_APPROVE_ORDER':
-            setVisibleConfirm(true);
+            setVisibleReject(true);
             break;
           default: {
             setShowIsUpdate(true);
@@ -102,6 +113,10 @@ export default function Footer({
       const res = await orderServices.getOrderById(orderId);
       if (res) {
         const currentStatus = res?.status;
+        if (REJECT_STATUS.includes(currentStatus)) {
+          setAlreadyReject(true);
+          return;
+        }
         switch (currentStatus) {
           case 'WAIT_APPROVE_ORDER':
             setVisibleConfirm(true);
@@ -115,7 +130,16 @@ export default function Footer({
       console.log('error', error);
     }
   };
-
+  const { warningTitleAlreadyApproved } = useMemo(() => {
+    if (orderDetail?.orderNo) {
+      return {
+        warningTitleAlreadyApproved: `คำสั่งซื้อ ${orderDetail?.orderNo} \n ได้รับการอนุมัติคำสั่งซื้อไปแล้ว \n จากผู้จัดการฝ่ายขาย`,
+      };
+    }
+    return {
+      warningTitleAlreadyApproved: '',
+    };
+  }, [orderDetail?.orderNo]);
   return (
     <>
       <View style={styles.row}>
@@ -161,10 +185,12 @@ export default function Footer({
             placeholder="ระบุเหตุผลที่ยกเลิก"
             multiline
             numberOfLines={8}
+            textAlignVertical="top"
             style={{
               minHeight: 100,
               marginVertical: 8,
               maxHeight: 100,
+              textAlignVertical: 'top',
             }}
           />
         </View>
@@ -180,15 +206,62 @@ export default function Footer({
       />
       <ModalOnlyConfirm
         visible={showIsUpdate}
-        width={Dimensions.get('window').width - 124}
+        width={Dimensions.get('window').width - 100}
         textConfirm="ดูรายละเอียด"
-        title={`คำสั่งซื้อ ${orderDetail?.orderNo} \n คำสั่งซื้อนี้ ได้มีการเปลี่ยนแปลงข้อมูล\nกรุณาตรวจสอบอีกครั้ง`}
+        title={`คำสั่งซื้อ ${orderDetail?.orderNo} \n คำสั่งซื้อนี้ ได้มีการเปลี่ยนแปลงข้อมูล กรุณาตรวจสอบอีกครั้ง`}
         onConfirm={() => {
           setShowIsUpdate(false);
           refetch && refetch();
           setTimeout(() => {
             scrollToTop();
           }, 500);
+        }}
+      />
+      <ModalOnlyConfirm
+        visible={alreadyReject}
+        width={Dimensions.get('window').width - 100}
+        textConfirm="ดูรายละเอียด"
+        title={`คำสั่งซื้อ ${orderDetail?.orderNo} \n ไม่สามารถยกเลิกได้ เนื่องจาก ผู้จัดการฝ่ายขายยื่นไม่อนุมัติคำสั่งซื้อ ในระบบไปก่อนหน้า`}
+        onConfirm={async () => {
+          setAlreadyReject(false);
+          await setTimeout(() => {
+            refetch && refetch();
+          }, 1000);
+          scrollToTop();
+        }}
+      />
+
+      <ModalOnlyConfirm
+        visible={alreadyRejectButConfirm}
+        width={Dimensions.get('window').width - 100}
+        textConfirm="ดูรายละเอียด"
+        title={`คำสั่งซื้อ ${orderDetail?.orderNo} \n ไม่สามารถอนุมัติได้ เนื่องจาก ผู้จัดการฝ่ายขายยื่นไม่อนุมัติคำสั่งซื้อ ในระบบไปก่อนหน้า`}
+        onConfirm={async () => {
+          setAlreadyRejectButConfirm(false);
+          await setTimeout(() => {
+            refetch && refetch();
+          }, 800);
+          scrollToTop();
+        }}
+      />
+
+      <ModalWarning
+        title={warningTitleAlreadyApproved}
+        visible={alreadyConfirmButReject}
+        descCenter
+        descError
+        titleFontSize={18}
+        descFontSize={16}
+        width={Dimensions.get('window').width - 100}
+        desc={`ต้องการยืนยันการยกเลิกคำสั่งซื้อนี้\nใช่หรือไม่?`}
+        onConfirm={() => {
+          setAlreadyConfirmButReject(false);
+          if (!orderDetail) {
+            return;
+          }
+        }}
+        onRequestClose={() => {
+          setAlreadyConfirmButReject(false);
         }}
       />
     </>

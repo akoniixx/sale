@@ -55,7 +55,7 @@ export default function ModalOnlyConfirm({
               paddingHorizontal: 16,
               minHeight,
             }}>
-            <Text semiBold lineHeight={28} center={!titleCenter}>
+            <Text semiBold lineHeight={30} center={!titleCenter}>
               {title}
             </Text>
             {desc && (

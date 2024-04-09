@@ -63,10 +63,23 @@ const getOrderSearchSuggestions = async ({
   searchText: string;
   status: string[];
 }) => {
-  const query = new URLSearchParams({ searchText, status } as any).toString();
+  const payload = {} as any;
+  if (status) {
+    payload['status'] = status;
+  }
+  if (searchText) {
+    payload['search'] = searchText;
+  }
+  const query = new URLSearchParams(payload).toString();
   return await request
     .get(`/order-cart/order/search/search-name?${query}`)
-    .then(res => res.data);
+    .then(res => {
+      console.log(res.data);
+      return res.data;
+    })
+    .catch(err => {
+      throw err;
+    });
 };
 
 export const orderServices = {

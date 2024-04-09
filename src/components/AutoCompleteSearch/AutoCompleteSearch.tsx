@@ -35,7 +35,6 @@ export default function AutoCompleteSearch({
         try {
           setLoading(true);
           const suggestions = await getSuggestions(searchQuery);
-
           setSuggestionList(suggestions);
           setLoading(false);
         } catch (error) {
@@ -61,6 +60,7 @@ export default function AutoCompleteSearch({
           onFocus={() => {
             setIsFocused(true);
           }}
+          useFilter={false}
           inputContainerStyle={{ backgroundColor: 'transparent' }}
           showChevron={false}
           clearOnFocus={false}
@@ -128,5 +128,3 @@ export default function AutoCompleteSearch({
     </View>
   );
 }
-
-const styles = StyleSheet.create({});

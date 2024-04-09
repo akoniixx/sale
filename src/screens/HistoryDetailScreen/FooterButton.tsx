@@ -45,6 +45,8 @@ export default function FooterButton({
   >('');
   const [showAlreadyConfirm, setShowAlreadyConfirm] =
     React.useState<boolean>(false);
+
+  const [currentS, setCurrentS] = React.useState<string | undefined>('');
   const [showIsUpdate, setShowIsUpdate] = React.useState<boolean>(false);
   const onPressCancelOrder = async () => {
     if (!orderDetail) {
@@ -65,8 +67,12 @@ export default function FooterButton({
         setShowIsUpdate(true);
         return;
       }
-      if (WAIT_CONFIRM_STATUS.includes(currentStatus)) {
+      if (
+        WAIT_CONFIRM_STATUS.includes(currentStatus) &&
+        orderDetail?.hasSpecialRequest
+      ) {
         setShowAlreadyConfirm(true);
+        setCurrentS(currentStatus);
         return;
       }
 
@@ -77,7 +83,7 @@ export default function FooterButton({
         paidStatus: orderDetail?.paidStatus,
         orderNo: orderDetail?.orderNo,
         orderProducts: orderDetail?.orderProducts,
-        status: orderDetail?.status as
+        status: currentStatus as
           | 'WAIT_APPROVE_ORDER'
           | 'WAIT_CONFIRM_ORDER'
           | 'CONFIRM_ORDER',
@@ -123,7 +129,7 @@ export default function FooterButton({
         desc={`ต้องการยืนยันการยกเลิกคำสั่งซื้อนี้\nใช่หรือไม่?`}
         onConfirm={() => {
           setShowAlreadyConfirm(false);
-          if (!orderDetail) {
+          if (!orderDetail || !currentS) {
             return;
           }
           navigation.navigate('CancelOrderScreen', {
@@ -133,7 +139,7 @@ export default function FooterButton({
             paidStatus: orderDetail?.paidStatus,
             orderNo: orderDetail?.orderNo,
             orderProducts: orderDetail?.orderProducts,
-            status: orderDetail?.status as
+            status: currentS as
               | 'WAIT_APPROVE_ORDER'
               | 'WAIT_CONFIRM_ORDER'
               | 'CONFIRM_ORDER',

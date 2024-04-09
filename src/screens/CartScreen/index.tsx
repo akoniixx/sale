@@ -1,12 +1,4 @@
-import {
-  View,
-  ScrollView,
-  Image,
-  TouchableOpacity,
-  KeyboardAvoidingView,
-  Platform,
-  Keyboard,
-} from 'react-native';
+import { View, ScrollView, Image, TouchableOpacity } from 'react-native';
 import React, { useEffect, useMemo, useState } from 'react';
 import Container from '../../components/Container/Container';
 import Content from '../../components/Content/Content';
@@ -33,7 +25,7 @@ import {
   MainStackParamList,
 } from '../../navigations/MainNavigator';
 import { useFocusEffect } from '@react-navigation/native';
-import { orderServices, payloadUploadFile } from '../../services/OrderServices';
+import { orderServices } from '../../services/OrderServices';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuth } from '../../contexts/AuthContext';
 import { factoryServices } from '../../services/FactorySevices';
@@ -43,8 +35,10 @@ export interface TypeDataStepTwo {
   specialRequestRemark?: string | null;
   saleCoRemark?: string | null;
   deliveryAddress?: string | null;
+  deliveryAddressId?: string | null;
   deliveryRemark?: string | null;
   deliveryDest: string;
+
   numberPlate?: string | null;
 }
 export default function CartScreen({
@@ -110,7 +104,7 @@ export default function CartScreen({
 
   const onCreateOrder = async () => {
     try {
-      const currentCompany = user?.company;
+      // const currentCompany = user?.company;
       /*  if (currentCompany !== 'ICPL' && !dataStepTwo.numberPlate) {
          setShowError(true);
          setVisibleConfirm(false);
@@ -156,6 +150,9 @@ export default function CartScreen({
         allPromotions: cartDetail.allPromotions,
         specialRequestFreebies: cartDetail.specialRequestFreebies || [],
       };
+      if (dataStepTwo.deliveryAddressId) {
+        payload.deliveryAddressId = dataStepTwo.deliveryAddressId;
+      }
       if (dataStepTwo.specialRequestRemark) {
         payload.specialRequestRemark = dataStepTwo.specialRequestRemark;
       }
@@ -165,12 +162,11 @@ export default function CartScreen({
       if (dataStepTwo.numberPlate) {
         payload.numberPlate = dataStepTwo.numberPlate;
       }
-      /*   console.log('payload', JSON.stringify(payload, null, 2)); */
+      // console.log('payload', JSON.stringify(payload, null, 2));
       const result = await orderServices.createOrder(payload);
       /*  console.log(result) */
 
       if (result) {
-        // console.log('result', JSON.stringify(result, null, 2));
         setCartDetail({} as CartDetailType);
         setCartList([]);
         setFreebieListItem([]);
@@ -183,11 +179,11 @@ export default function CartScreen({
         if (storedUrisJson) {
           try {
             setLoading(true);
-            const storedUrisJson = await AsyncStorage.getItem('imageUris');
             let storedUris: object[] = storedUrisJson
               ? JSON.parse(storedUrisJson)
               : [];
             const data = new FormData();
+
             storedUris.forEach((e, index) => {
               data.append('files', {
                 name: `image${index}.jpg`,
@@ -197,18 +193,23 @@ export default function CartScreen({
             });
 
             data.append('orderId', result.orderId);
-            data.append('updateBy', result.userStaffId);
+            data.append('updateBy', `${user?.firstname} ${user?.lastname}`);
             data.append('action', 'CREATE');
 
             const res = await orderServices.uploadFile(data);
+
             if (res) {
+              setLoading(false);
               await AsyncStorage.removeItem('imageUris');
-              navigation.navigate('OrderSuccessScreen', {
-                orderId: result.orderId,
-              });
+              setTimeout(() => {
+                navigation.navigate('OrderSuccessScreen', {
+                  orderId: result.orderId,
+                });
+              }, 800);
             }
           } catch (e) {
             console.log(e);
+            setLoading(false);
           } finally {
             setLoading(false);
           }
@@ -294,6 +295,7 @@ export default function CartScreen({
             ...prev,
             address: locationData.address || '',
             name: locationData.name || '',
+            id: locationData.id || '',
           }));
           setDataStepTwo(prev => ({
             ...prev,
@@ -302,6 +304,7 @@ export default function CartScreen({
             }`,
             deliveryRemark: locationData.comment || '',
             deliveryDest: locationData.selected || '',
+            deliveryAddressId: locationData.id || undefined,
           }));
         } else if (user?.company && user?.company === 'ICPL') {
           getShopLocation();

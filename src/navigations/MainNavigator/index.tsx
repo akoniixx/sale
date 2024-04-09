@@ -37,6 +37,7 @@ export type LocationDataType = {
   selected?: string;
   name?: string;
   address?: string;
+  id?: string;
 };
 
 export type MainStackParamList = {

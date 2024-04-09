@@ -41,6 +41,7 @@ interface Props {
   addressDelivery: {
     address: string;
     name: string;
+    id?: string;
   };
   navigation: StackNavigationProp<MainStackParamList, 'CartScreen'>;
   refInput: React.MutableRefObject<any>;
@@ -293,6 +294,7 @@ export default function StepTwo({
                   name: addressDelivery.name,
                   comment: dataStepTwo?.deliveryRemark || '',
                   selected: dataStepTwo.deliveryDest,
+                  id: addressDelivery?.id,
                 });
               }}>
               <Text fontSize={14} color="primary">

@@ -20,6 +20,7 @@ export interface HistoryDataType {
   paidStatus: string;
   saleCoRemark: string | null;
   specialRequestRemark: string | null;
+  hasSpecialRequest: boolean;
   cancelRemark: string;
   deliveryDest: string | null;
   deliveryAddress: string | null;

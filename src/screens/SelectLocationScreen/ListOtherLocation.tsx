@@ -11,7 +11,7 @@ import { colors } from '../../assets/colors/colors';
 import icons from '../../assets/icons';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { MainStackParamList } from '../../navigations/MainNavigator';
-import { useFocusEffect } from '@react-navigation/native';
+import { RouteProp, useFocusEffect } from '@react-navigation/native';
 import { otherAddressServices } from '../../services/OtherAddressServices/OtherAddressServices';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -21,6 +21,7 @@ interface Props {
     'SelectLocationScreen',
     undefined
   >;
+  route: RouteProp<MainStackParamList, 'SelectLocationScreen'>;
   setOtherAddress: React.Dispatch<
     React.SetStateAction<{
       name: string;
@@ -69,6 +70,7 @@ export default function ListOtherLocation({
   navigation,
   setOtherAddress,
   otherAddress,
+  route,
 }: Props) {
   const [listOtherAddress, setListOtherAddress] = React.useState<
     CustomerAddress[]
@@ -102,16 +104,32 @@ export default function ListOtherLocation({
           });
           if (result && result.success) {
             setListOtherAddress(result.responseData);
-            setOtherAddress({
-              name: result.responseData[0].receiver,
-              addressText: `${result.responseData[0].address} ${result.responseData[0].subdistrict} ${result.responseData[0].district} ${result.responseData[0].province} ${result.responseData[0].postcode}`,
-              id: result.responseData[0].id,
-            });
+            if (route?.params?.id) {
+              setOtherAddress(prev => {
+                return {
+                  ...prev,
+                  name: route.params.name || '',
+                  addressText: route.params.address || '',
+                  id: route.params.id || '',
+                };
+              });
+            } else {
+              setOtherAddress({
+                name: result.responseData[0].receiver,
+                addressText: `${result.responseData[0].address} ${result.responseData[0].subdistrict} ${result.responseData[0].district} ${result.responseData[0].province} ${result.responseData[0].postcode}`,
+                id: result.responseData[0].id,
+              });
+            }
           }
         }
       };
       getOtherAddressList();
-    }, [setOtherAddress]),
+    }, [
+      setOtherAddress,
+      route?.params?.id,
+      route?.params?.name,
+      route?.params?.address,
+    ]),
   );
 
   return (

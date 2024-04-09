@@ -139,7 +139,6 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
 
           const user = await userServices.getUserProfile(id ? id : userStaffId);
           const companyDetail = await AsyncStorage.getItem('companyDetail');
-
           if (user) {
             await AsyncStorage.setItem('role', user?.role || 'SALE');
             dispatch({
@@ -179,12 +178,18 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
                   token: data.accessToken,
                 });
               } catch (e) {
-                console.log('e, :>>', e);
+                console.log('e firebase, :>>', e);
               }
             }
             dispatch({
               type: 'LOGIN',
-              user: data.data,
+              user: {
+                ...data.data,
+                zone:
+                  data.data.role === 'SALE MANAGER'
+                    ? data.data.zone.split(',')
+                    : data.data.zone,
+              },
               companyDetail: data.company,
             });
             return data;

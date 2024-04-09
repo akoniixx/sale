@@ -1,4 +1,3 @@
-import { AxiosRequestConfig } from 'axios';
 import { request, uploadFileInstance } from '../../config/request';
 import { Asset } from 'react-native-image-picker';
 
@@ -36,10 +35,11 @@ const getOrderById = async (orderId: string) => {
 };
 
 const uploadFile = async (data: FormData) => {
-  const response = await uploadFileInstance.post(
-    `/order-cart/order/update-file`,
-    data,
-  );
+  const response = await uploadFileInstance
+    .post(`/order-cart/order/update-file`, data)
+    .catch(err => {
+      throw err;
+    });
   return response.data;
 };
 const postStatusOrder = async (payload: {

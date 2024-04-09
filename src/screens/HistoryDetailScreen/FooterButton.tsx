@@ -57,6 +57,7 @@ export default function FooterButton({
 
     if (result) {
       const currentStatus = result?.status;
+      console.log('currentStatus', currentStatus);
       if (REJECT_STATUS.includes(currentStatus)) {
         setShowAlreadyReject(
           mappingTitle[currentStatus as keyof typeof mappingTitle],

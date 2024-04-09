@@ -45,6 +45,7 @@ export default function FooterButton({
   >('');
   const [showAlreadyConfirm, setShowAlreadyConfirm] =
     React.useState<boolean>(false);
+
   const [currentS, setCurrentS] = React.useState<string | undefined>('');
   const [showIsUpdate, setShowIsUpdate] = React.useState<boolean>(false);
   const onPressCancelOrder = async () => {

@@ -245,24 +245,18 @@ export default function Footer({
         }}
       />
 
-      <ModalWarning
+      <ModalOnlyConfirm
         title={warningTitleAlreadyApproved}
         visible={alreadyConfirmButReject}
-        descCenter
-        descError
-        titleFontSize={18}
-        descFontSize={16}
         width={Dimensions.get('window').width - 100}
-        desc={`ต้องการยืนยันการยกเลิกคำสั่งซื้อนี้\nใช่หรือไม่?`}
-        onConfirm={() => {
+        onConfirm={async () => {
           setAlreadyConfirmButReject(false);
-          if (!orderDetail) {
-            return;
-          }
+          await setTimeout(() => {
+            refetch && refetch();
+          }, 1000);
+          scrollToTop();
         }}
-        onRequestClose={() => {
-          setAlreadyConfirmButReject(false);
-        }}
+        textConfirm="ดูรายละเอียด"
       />
     </>
   );

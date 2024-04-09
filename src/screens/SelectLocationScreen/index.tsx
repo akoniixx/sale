@@ -119,18 +119,6 @@ export default function SelectLocationScreen({ navigation, route }: Props) {
       }
       return 'SHOP';
     });
-    setOtherAddress(prev => {
-      if (route.params.selected === 'OTHER') {
-        return {
-          ...prev,
-          name: route.params.name || '',
-          addressText: route.params.address || '',
-          id: route.params.id || '',
-        };
-      } else {
-        return prev;
-      }
-    });
   }, [
     comment,
     user?.company,
@@ -312,6 +300,7 @@ export default function SelectLocationScreen({ navigation, route }: Props) {
                       navigation={navigation}
                       setOtherAddress={setOtherAddress}
                       otherAddress={otherAddress}
+                      route={route}
                     />
                   </View>
                 ) : (

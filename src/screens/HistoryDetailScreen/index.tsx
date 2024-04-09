@@ -1039,11 +1039,12 @@ export default function HistoryDetailScreen({
                   })}
               </View>
             ) : null}
-            {user?.company !== 'ICPI' && user?.role === 'SALE MANAGER' ? (
+            {user?.company !== 'ICPI' && user?.role !== 'SALE MANAGER' ? (
               <>
                 {orderDetail?.status === 'DELIVERY_SUCCESS' ||
                 orderDetail?.status === 'SHOPAPP_CANCEL_ORDER' ||
                 orderDetail?.status === 'COMPANY_CANCEL_ORDER' ||
+                orderDetail?.status === 'SALE_CANCEL_ORDER' ||
                 orderDetail?.status === 'REJECT_ORDER' ? (
                   <FooterReorder
                     navigation={navigation}

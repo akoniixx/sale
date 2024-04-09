@@ -366,11 +366,12 @@ export default function HistoryItemArea({
           justifyContent: 'space-between',
         }}>
         <BadgeStatus status={props.status} />
-        {user?.company !== 'ICPI' ? (
+        {user?.company !== 'ICPI' && user?.role !== 'SALE MANAGER' ? (
           <>
             {props?.status === 'DELIVERY_SUCCESS' ||
             props?.status === 'SHOPAPP_CANCEL_ORDER' ||
             props?.status === 'COMPANY_CANCEL_ORDER' ||
+            props?.status === 'SALE_CANCEL_ORDER' ||
             props?.status === 'REJECT_ORDER' ? (
               <View>
                 <TouchableOpacity

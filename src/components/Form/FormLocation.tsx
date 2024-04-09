@@ -435,7 +435,7 @@ const FormDetail = ({ addressId, onSubmit }: FormDetailType) => {
         listData={districtList}
         label="อำเภอ"
         placeholder="ระบุอำเภอ"
-        disabled={!provinceWatch}
+        disabled={!provinceWatch?.id}
       />
       <InputSheetForm
         name="subDistrict"
@@ -443,7 +443,7 @@ const FormDetail = ({ addressId, onSubmit }: FormDetailType) => {
         listData={subDistrictList}
         label="ตำบล"
         placeholder="ระบุตำบล"
-        disabled={!districtWatch}
+        disabled={!districtWatch?.id}
       />
       <InputTextForm
         name="postcode"

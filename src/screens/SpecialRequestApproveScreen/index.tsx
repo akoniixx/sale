@@ -257,7 +257,7 @@ export default function SpecialRequestApproveScreen({
         searchText: value,
         status: mappingTabStatus[currentTab as 0 | 1 | 2],
       });
-      if (result) {
+      if (result && result.length > 0) {
         const newFormat = result.map(
           (el: { customerNo: string; customerName: string }) => {
             return {

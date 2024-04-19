@@ -119,10 +119,16 @@ export default function HistoryDetailScreen({
             el.promotionType === 'DISCOUNT_NOT_MIX' ||
             el.promotionType === 'DISCOUNT_MIX'
           ) {
+
+
             listDataDiscount.push({
-              ...dataPush,
+              label: item.productName,
+              valueLabel: `(฿${numberWithCommas(el.discountPrice)} x ${
+                item.quantity
+              } ${item.saleUOMTH ? item.saleUOMTH : item.saleUOM || 'Unit'})`,
               value: el?.totalDiscount,
             });
+          
           }
         });
       }

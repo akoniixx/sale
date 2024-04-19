@@ -79,7 +79,7 @@ export default function SpecialRequestDetailScreen({
     orderDetail?.orderProducts.map((item: any) => {
       const dataPush = {
         label: item.productName,
-        valueLabel: `(฿${numberWithCommas(item.marketPrice)} x ${
+        valueLabel: `(฿${numberWithCommas(item.specialRequest)} x ${
           item.quantity
         } ${item.saleUOMTH ? item.saleUOMTH : item.saleUOMTH})`,
       };

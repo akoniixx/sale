@@ -103,7 +103,7 @@ export default function HistoryDetailScreen({
     orderDetail?.orderProducts.map((item: any) => {
       const dataPush = {
         label: item.productName,
-        valueLabel: `(฿${numberWithCommas(item.marketPrice)} x ${
+        valueLabel: `(฿${numberWithCommas(item.specialRequest)} x ${
           item.quantity
         } ${item.saleUOMTH ? item.saleUOMTH : item.saleUOMTH})`,
       };
@@ -119,8 +119,6 @@ export default function HistoryDetailScreen({
             el.promotionType === 'DISCOUNT_NOT_MIX' ||
             el.promotionType === 'DISCOUNT_MIX'
           ) {
-
-
             listDataDiscount.push({
               label: item.productName,
               valueLabel: `(฿${numberWithCommas(el.discountPrice)} x ${
@@ -128,7 +126,6 @@ export default function HistoryDetailScreen({
               } ${item.saleUOMTH ? item.saleUOMTH : item.saleUOM || 'Unit'})`,
               value: el?.totalDiscount,
             });
-          
           }
         });
       }

@@ -73,7 +73,7 @@ export default function Summary({ setLoading }: Props): JSX.Element {
       .map((item: any) => {
         const dataPush = {
           label: item.productName,
-          valueLabel: `(฿${numberWithCommas(item.marketPrice)} x ${
+          valueLabel: `(฿${numberWithCommas(item.specialRequest)} x ${
             item.quantity
           } ${item.saleUOMTH ? item.saleUOMTH : item.saleUOM || 'Unit'})`,
         };
@@ -97,15 +97,13 @@ export default function Summary({ setLoading }: Props): JSX.Element {
             ) {
               const isArray = Array.isArray(el.conditionDetail);
 
-            
-                listDataDiscount.push({
-                  label: item.productName,
-                  valueLabel: `(฿${numberWithCommas(el.discountPrice)} x ${
-                    item.quantity
-                  } ${item.saleUOMTH ? item.saleUOMTH : item.saleUOM || 'Unit'})`,
-                  value: el?.totalDiscount,
-                });
-              
+              listDataDiscount.push({
+                label: item.productName,
+                valueLabel: `(฿${numberWithCommas(el.discountPrice)} x ${
+                  item.quantity
+                } ${item.saleUOMTH ? item.saleUOMTH : item.saleUOM || 'Unit'})`,
+                value: el?.totalDiscount,
+              });
             }
           });
         }

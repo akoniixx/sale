@@ -348,7 +348,7 @@ export default function SpecialRequestApproveScreen({
               <AutoCompleteSearch
                 onSearch={onSearchWithAutoComplete}
                 getSuggestions={getSuggestions}
-                placeholder="ค้นหาเลขใบสั่งซื้อ, ร้านค้า"
+                placeholder="ค้นหาร้านค้า"
               />
               <View style={styles.row}>
                 <TouchableOpacity onPress={onSelectArea} style={styles.flexRow}>

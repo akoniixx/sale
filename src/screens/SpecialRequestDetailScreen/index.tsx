@@ -79,13 +79,16 @@ export default function SpecialRequestDetailScreen({
     orderDetail?.orderProducts.map((item: any) => {
       const dataPush = {
         label: item.productName,
-        valueLabel: `(฿${numberWithCommas(item.specialRequest)} x ${
+        valueLabel: `(฿${numberWithCommas(item.marketPrice)} x ${
           item.quantity
         } ${item.saleUOMTH ? item.saleUOMTH : item.saleUOMTH})`,
       };
       if (item.specialRequestDiscount > 0) {
         listDataDiscountSpecialRequest.push({
           ...dataPush,
+          valueLabel: `(฿${numberWithCommas(item.specialRequest)} x ${
+            item.quantity
+          } ${item.saleUOMTH ? item.saleUOMTH : item.saleUOMTH})`,
           value: item.specialRequestDiscount,
         });
       }
@@ -97,6 +100,9 @@ export default function SpecialRequestDetailScreen({
           ) {
             listDataDiscount.push({
               ...dataPush,
+              valueLabel: `(฿${numberWithCommas(el.discountPrice)} x ${
+                item.quantity
+              } ${item.saleUOMTH ? item.saleUOMTH : item.saleUOM || 'Unit'})`,
               value: el.totalDiscount || 0,
             });
           }

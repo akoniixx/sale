@@ -51,7 +51,7 @@ export default function StepTwo({
   dataStepTwo,
   navigation,
   addressDelivery,
-  // setAddressDelivery,
+  setAddressDelivery,
   setLoading,
   loading,
   refInput,
@@ -260,43 +260,46 @@ export default function StepTwo({
           </Text>
           {user?.company !== 'ICPF' && (
             <TouchableOpacity
-              // onPress={async () => {
-              //   const result: {
-              //     name?: string;
-              //     address: string;
-              //     comment?: string;
-              //     selected: string;
-              //   } = await SheetManager.show('select-location', {
-              //     payload: {
-              //       address: addressDelivery.address,
-              //       name: addressDelivery.name,
-              //       comment: dataStepTwo?.deliveryRemark || '',
-              //       selected: dataStepTwo.deliveryDest,
-              //     },
-              //   });
-              //   if (result) {
-              //     setAddressDelivery(prev => ({
-              //       ...prev,
-              //       address: result.address,
-              //       name: result.name || '',
-              //     }));
-              //     setDataStepTwo(prev => ({
-              //       ...prev,
-              //       deliveryAddress: `${result.name || ''} ${result.address}`,
-              //       deliveryRemark: result.comment || '',
-              //       deliveryDest: result.selected || '',
-              //     }));
-              //   }
-              // }}
-              onPress={() => {
-                navigation.navigate('SelectLocationScreen', {
-                  address: addressDelivery.address,
-                  name: addressDelivery.name,
-                  comment: dataStepTwo?.deliveryRemark || '',
-                  selected: dataStepTwo.deliveryDest,
-                  id: addressDelivery?.id,
+              onPress={async () => {
+                const result: {
+                  name?: string;
+                  address: string;
+                  comment?: string;
+                  selected: string;
+                } = await SheetManager.show('select-location', {
+                  payload: {
+                    address: addressDelivery.address,
+                    name: addressDelivery.name,
+                    comment: dataStepTwo?.deliveryRemark || '',
+                    selected: dataStepTwo.deliveryDest,
+                  },
                 });
-              }}>
+                if (result) {
+                  setAddressDelivery(prev => ({
+                    ...prev,
+                    address: result.address,
+                    name: result.name || '',
+                  }));
+                  setDataStepTwo(prev => ({
+                    ...prev,
+                    deliveryAddress: `${result.name || ''} ${
+                      result.address || ''
+                    }`,
+                    deliveryRemark: result.comment || '',
+                    deliveryDest: result.selected || '',
+                  }));
+                }
+              }}
+              // onPress={() => {
+              //   navigation.navigate('SelectLocationScreen', {
+              //     address: addressDelivery.address,
+              //     name: addressDelivery.name,
+              //     comment: dataStepTwo?.deliveryRemark || '',
+              //     selected: dataStepTwo.deliveryDest,
+              //     id: addressDelivery?.id,
+              //   });
+              // }}
+            >
               <Text fontSize={14} color="primary">
                 เปลี่ยน
               </Text>

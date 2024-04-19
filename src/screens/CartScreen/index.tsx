@@ -30,6 +30,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuth } from '../../contexts/AuthContext';
 import { factoryServices } from '../../services/FactorySevices';
 import ModalOnlyConfirm from '../../components/Modal/ModalOnlyConfirm';
+import { otherAddressServices } from '../../services/OtherAddressServices/OtherAddressServices';
 
 export interface TypeDataStepTwo {
   specialRequestRemark?: string | null;
@@ -152,6 +153,17 @@ export default function CartScreen({
       };
       if (dataStepTwo.deliveryAddressId) {
         payload.deliveryAddressId = dataStepTwo.deliveryAddressId;
+        const result = await otherAddressServices.getById(
+          dataStepTwo.deliveryAddressId,
+        );
+        if (result && result?.success) {
+          const files = (result.responseData.fileOtherAddress || []).map(
+            (el: { fileName: string }) => {
+              return el.fileName;
+            },
+          );
+          payload.deliveryFiles = files;
+        }
       }
       if (dataStepTwo.specialRequestRemark) {
         payload.specialRequestRemark = dataStepTwo.specialRequestRemark;
@@ -210,8 +222,6 @@ export default function CartScreen({
           } catch (e) {
             console.log(e);
             setLoading(false);
-          } finally {
-            setLoading(false);
           }
         } else {
           navigation.navigate('OrderSuccessScreen', {
@@ -221,8 +231,11 @@ export default function CartScreen({
       }
     } catch (e: any) {
       console.log(JSON.stringify(e.response.data, null, 2));
-    } finally {
       setLoading(false);
+    } finally {
+      setTimeout(() => {
+        setLoading(false);
+      }, 800);
     }
   };
 

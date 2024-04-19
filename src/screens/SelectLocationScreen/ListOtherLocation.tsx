@@ -75,6 +75,7 @@ export default function ListOtherLocation({
   const [listOtherAddress, setListOtherAddress] = React.useState<
     CustomerAddress[]
   >([]);
+
   const onPressEdit = (id: string) => {
     navigation.navigate('EditLocationScreen', { customerOtherId: id });
   };

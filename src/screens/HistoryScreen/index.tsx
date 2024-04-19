@@ -17,6 +17,7 @@ import { HistoryDataType } from '../../entities/historyTypes';
 import { useFocusEffect } from '@react-navigation/native';
 import analytics from '@react-native-firebase/analytics';
 import { firebaseInitialize } from '../../firebase/notification';
+import { ROLES_USER } from '../../enum';
 
 interface TypeHistory {
   data: HistoryDataType[];
@@ -170,6 +171,7 @@ export default function HistoryScreen({ navigation }: any): JSX.Element {
         page: 1,
         endDate: dateRange.endDate,
         startDate: dateRange.startDate,
+        role: user?.role ? user?.role : ROLES_USER.SALE,
       };
       if (isHasCustomerId) {
         payload.customerCompanyId = customerCompanyId;
@@ -214,6 +216,7 @@ export default function HistoryScreen({ navigation }: any): JSX.Element {
     user?.zone,
     isSaleManager,
     zone,
+    user?.role,
   ]);
   useFocusEffect(
     useCallback(() => {
@@ -232,6 +235,7 @@ export default function HistoryScreen({ navigation }: any): JSX.Element {
           endDate: dateRange.endDate,
           startDate: dateRange.startDate,
           customerCompanyId: customerCompanyId,
+          role: user?.role ? user?.role : ROLES_USER.SALE,
         };
 
         if (isSaleManager) {
@@ -273,6 +277,7 @@ export default function HistoryScreen({ navigation }: any): JSX.Element {
           startDate: dateRange.startDate,
           status: tabValue.length > 0 ? tabValue : [],
           search: debounceSearchValue,
+          role: user?.role ? user?.role : ROLES_USER.SALE,
         };
         if (tabValue.length > 0) {
           payload.status = tabValue;
@@ -302,6 +307,7 @@ export default function HistoryScreen({ navigation }: any): JSX.Element {
     zone,
     isSaleManager,
     user?.zone,
+    user?.role,
   ]);
 
   useEffect(() => {
@@ -336,6 +342,7 @@ export default function HistoryScreen({ navigation }: any): JSX.Element {
           page: page + 1,
           endDate: dateRange.endDate,
           startDate: dateRange.startDate,
+          role: user?.role ? user?.role : ROLES_USER.SALE,
         };
         if (isHasCustomerId) {
           payload.customerCompanyId = customerCompanyId;
@@ -394,6 +401,7 @@ export default function HistoryScreen({ navigation }: any): JSX.Element {
       <View style={styles().containerFilter}>
         <View style={styles().flexRow}>
           <TouchableOpacity
+            disabled={typeSearch === 'area' && !isSaleManager}
             onPress={async () => {
               if (isSaleManager) {
                 const result: string = await SheetManager.show(

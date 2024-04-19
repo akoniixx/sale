@@ -61,6 +61,7 @@ export interface HistoryDataType {
     orderProductPromotions: any[];
   }[];
   orderFiles: orderFiles[];
+  deliveryFiles: string[];
 }
 export interface orderFiles {
   createAt: string;

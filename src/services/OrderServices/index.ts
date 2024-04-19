@@ -74,7 +74,6 @@ const getOrderSearchSuggestions = async ({
   return await request
     .get(`/order-cart/order/search/search-name?${query}`)
     .then(res => {
-      console.log(res.data);
       return res.data;
     })
     .catch(err => {

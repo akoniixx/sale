@@ -53,6 +53,7 @@ export default function CartScreen({
   const [currentStep, setCurrentStep] = React.useState(0);
   const [showError, setShowError] = React.useState(false);
   const [visible, setVisible] = React.useState(false);
+  const [modalReset, setModalReset] = useState<boolean>(false);
   const {
     state: { user },
   } = useAuth();
@@ -111,6 +112,25 @@ export default function CartScreen({
     await getSelectPromotion(cD.allPromotions);
     setCartList(cl);
     setModalReorder(false);
+  };
+
+  const reset = async () => {
+    try {
+      setLoading(true);
+      setCartList([]);
+      setModalReset(false);
+      setCurrentStep(0);
+      setDataReadyLoad([]);
+      setHeadData([]);
+      setDollyData([]);
+      setDataForLoad([]);
+      await AsyncStorage.removeItem('imageUris')
+      await postCartItem([]);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const onCreateOrder = async () => {
@@ -376,6 +396,18 @@ export default function CartScreen({
             ? navigation.goBack()
             : setCurrentStep(currentStep - 1);
         }}
+        componentRight={
+          <TouchableOpacity
+            disabled={cartList.length <= 0}
+            onPress={() => setModalReset(true)}>
+            <Text
+              fontSize={16}
+              fontFamily="NotoSans"
+              color={cartList.length <= 0 ? 'text3' : 'primary'}>
+              ล้าง
+            </Text>
+          </TouchableOpacity>
+        }
         title={t('screens.CartScreen.title')}
       />
       <Content
@@ -496,6 +528,17 @@ export default function CartScreen({
           await reArrangeReorder();
         }}
         textConfirm="ตกลง"
+      />
+
+<ModalWarning
+        visible={modalReset}
+        width={'70%'}
+        title="ยืนยันล้างตะกร้าสินค้า"
+        desc={`ต้องการล้างรายการสินค้าในตะกร้าทั้งหมด\nใช่หรือไม่?`}
+        onConfirm={() => reset()}
+        minHeight={60}
+        onRequestClose={() => setModalReset(false)}
+        titleCenter
       />
     </Container>
   );

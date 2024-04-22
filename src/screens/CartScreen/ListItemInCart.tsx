@@ -694,35 +694,7 @@ export default function ListItemInCart({
         />
       )}
 
-<View style={{
-          marginTop: 8,
-          backgroundColor: 'white',
-          padding: 16,
-        }}>
-          <Text fontSize={18} bold fontFamily="NotoSans">ลำดับการจัดเรียงสินค้า</Text>
-          <TouchableOpacity onPress={() => navigationRef.navigate('OrderLoadsScreen')} style={{ paddingVertical: 15, paddingHorizontal: 10, borderWidth: 0.5, borderRadius: 8, marginTop: 10, borderColor: '#E1E7F6' }}>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-              <View style={{ flexDirection: 'row' }}>
-                <Image source={icons.car} style={{ width: 24, height: 24, marginRight: 10 }} />
-                <View>
-                  <Text fontFamily='NotoSans' lineHeight={21} fontSize={14}>รายการจัดเรียงสินค้าขึ้นรถ</Text>
-                  {!currentList.every(Item => Item.quantity === 0) && dataForLoad.length > 0 &&
-                    <Text fontSize={14} lineHeight={18} color='secondary'>กรุณาตรวจสอบลำดับสินค้าอีกครั้ง</Text>
-                  }
-                </View>
-              </View>
-              <View style={{ flexDirection: 'row' }}>
-                {currentList.every(Item => Item.quantity === 0) && dataForLoad.length > 0 &&
-                  <Image source={icons.uploadSucsess} style={{ width: 20, height: 20, marginRight: 10 }} />
-                }
-                {!currentList.every(Item => Item.quantity === 0) && dataForLoad.length > 0 &&
-                  <Image source={icons.warning} style={{ width: 25, height: 25, marginRight: 10 }} />
-                }
-                <Image source={icons.iconNext} style={{ width: 20, height: 20 }} />
-              </View>
-            </View>
-          </TouchableOpacity>
-        </View>
+
 
 
       <GiftFromPromotion

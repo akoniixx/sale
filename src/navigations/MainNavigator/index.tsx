@@ -32,12 +32,14 @@ import SelectLocationScreen from '../../screens/SelectLocationScreen';
 import AddLocationScreen from '../../screens/AddLocationScreen';
 import EditLocationScreen from '../../screens/EditLocationScreen';
 import OrderLoadsScreen from '../../screens/CartScreen/OrderLoadsScreen';
+import DeliveryFilesScreen from '../../screens/DeliveryFilesScreen';
 
 export type LocationDataType = {
   comment?: string;
   selected?: string;
   name?: string;
   address?: string;
+  id?: string;
 };
 
 export type MainStackParamList = {
@@ -182,6 +184,9 @@ export type MainStackParamList = {
     customerOtherId: string;
   };
   OrderLoadsScreen:undefined
+  DeliveryFilesScreen: {
+    deliveryFiles: string[];
+  };
 };
 const Stack = createStackNavigator<MainStackParamList>();
 export default function MainNavigator() {
@@ -293,6 +298,11 @@ export default function MainNavigator() {
       <Stack.Screen name="AddLocationScreen" component={AddLocationScreen} />
       <Stack.Screen name="EditLocationScreen" component={EditLocationScreen} />
       <Stack.Screen name="OrderLoadsScreen" component={OrderLoadsScreen} />
+      <Stack.Screen
+        initialParams={{ deliveryFiles: [] }}
+        name="DeliveryFilesScreen"
+        component={DeliveryFilesScreen}
+      />
     </Stack.Navigator>
   );
 }

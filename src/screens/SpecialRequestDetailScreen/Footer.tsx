@@ -221,7 +221,7 @@ export default function Footer({
         visible={alreadyReject}
         width={Dimensions.get('window').width - 100}
         textConfirm="ดูรายละเอียด"
-        title={`คำสั่งซื้อ ${orderDetail?.orderNo} \n ไม่สามารถยกเลิกได้ เนื่องจาก ผู้จัดการฝ่ายขายยื่นไม่อนุมัติคำสั่งซื้อ ในระบบไปก่อนหน้า`}
+        title={`คำสั่งซื้อ ${orderDetail?.orderNo} \n ไม่สามารถดำเนินการต่อได้ เนื่องจากคำสั่งซื้อนี้ ถูกยกเลิกหรือปฎิเสธไปแล้ว`}
         onConfirm={async () => {
           setAlreadyReject(false);
           await setTimeout(() => {
@@ -245,24 +245,18 @@ export default function Footer({
         }}
       />
 
-      <ModalWarning
+      <ModalOnlyConfirm
         title={warningTitleAlreadyApproved}
         visible={alreadyConfirmButReject}
-        descCenter
-        descError
-        titleFontSize={18}
-        descFontSize={16}
         width={Dimensions.get('window').width - 100}
-        desc={`ต้องการยืนยันการยกเลิกคำสั่งซื้อนี้\nใช่หรือไม่?`}
-        onConfirm={() => {
+        onConfirm={async () => {
           setAlreadyConfirmButReject(false);
-          if (!orderDetail) {
-            return;
-          }
+          await setTimeout(() => {
+            refetch && refetch();
+          }, 1000);
+          scrollToTop();
         }}
-        onRequestClose={() => {
-          setAlreadyConfirmButReject(false);
-        }}
+        textConfirm="ดูรายละเอียด"
       />
     </>
   );

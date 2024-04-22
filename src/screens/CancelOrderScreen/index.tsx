@@ -52,6 +52,7 @@ export default function CancelOrderScreen({
     try {
       setLoading(true);
       const isStatusWaitApprove = status === 'WAIT_APPROVE_ORDER';
+
       const payload: PayloadCancelOrder = {
         orderId,
         cancelRemark: reason,

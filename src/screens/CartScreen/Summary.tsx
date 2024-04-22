@@ -97,19 +97,15 @@ export default function Summary({ setLoading }: Props): JSX.Element {
             ) {
               const isArray = Array.isArray(el.conditionDetail);
 
-              if (isArray) {
+            
                 listDataDiscount.push({
-                  ...dataPush,
-                  value: (el.conditionDetail || []).find((el: any) => {
-                    return el.conditionDiscount > 0;
-                  }).conditionDiscount,
+                  label: item.productName,
+                  valueLabel: `(฿${numberWithCommas(el.discountPrice)} x ${
+                    item.quantity
+                  } ${item.saleUOMTH ? item.saleUOMTH : item.saleUOM || 'Unit'})`,
+                  value: el?.totalDiscount,
                 });
-              } else {
-                listDataDiscount.push({
-                  ...dataPush,
-                  value: el.conditionDetail?.conditionDiscount || 0,
-                });
-              }
+              
             }
           });
         }

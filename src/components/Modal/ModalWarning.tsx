@@ -75,7 +75,7 @@ export default function ModalWarning({
             }}>
             <Text
               semiBold
-              lineHeight={28}
+              lineHeight={30}
               center={!titleCenter}
               fontSize={titleFontSize}>
               {title}
@@ -86,7 +86,7 @@ export default function ModalWarning({
                 fontFamily="Sarabun"
                 color={descError ? 'error' : 'text3'}
                 center={descCenter}
-                lineHeight={26}>
+                lineHeight={28}>
                 {desc}
               </Text>
             )}

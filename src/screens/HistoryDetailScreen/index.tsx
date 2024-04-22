@@ -33,11 +33,12 @@ import { useAuth } from '../../contexts/AuthContext';
 import FooterButton from './FooterButton';
 import { useFocusEffect } from '@react-navigation/native';
 import { navigationRef } from '../../navigations/RootNavigator';
+import LocationDelivery from '../../components/LocationDelivery/LocationDelivery';
 
 export const locationMapping = {
   SHOP: 'จัดส่งที่ร้าน',
   FACTORY: 'รับที่โรงงาน',
-  OTHER: 'ส่ง/รับ ที่อื่นๆ',
+  OTHER: 'จัดส่งที่อื่นๆ',
 };
 export default function HistoryDetailScreen({
   route,
@@ -118,10 +119,16 @@ export default function HistoryDetailScreen({
             el.promotionType === 'DISCOUNT_NOT_MIX' ||
             el.promotionType === 'DISCOUNT_MIX'
           ) {
+
+
             listDataDiscount.push({
-              ...dataPush,
+              label: item.productName,
+              valueLabel: `(฿${numberWithCommas(el.discountPrice)} x ${
+                item.quantity
+              } ${item.saleUOMTH ? item.saleUOMTH : item.saleUOM || 'Unit'})`,
               value: el?.totalDiscount,
             });
+          
           }
         });
       }
@@ -439,35 +446,10 @@ export default function HistoryDetailScreen({
                   paddingHorizontal: 0,
                 },
               ]}>
-              <View
-                style={{
-                  marginTop: 8,
-                  paddingHorizontal: 16,
-                }}>
-                <Text
-                  fontSize={14}
-                  color="text3"
-                  semiBold
-                  fontFamily="NotoSans"
-                  style={{
-                    marginBottom: 8,
-                  }}>
-                  การจัดส่ง
-                </Text>
-                <Text fontSize={18} semiBold fontFamily="NotoSans">
-                  {
-                    locationMapping[
-                      orderDetail?.deliveryDest as keyof typeof locationMapping
-                    ]
-                  }
-                </Text>
-                <Text
-                  style={{
-                    marginBottom: 8,
-                  }}>
-                  {orderDetail?.deliveryAddress || '-'}
-                </Text>
-              </View>
+              <LocationDelivery
+                orderDetail={orderDetail}
+                navigation={navigation}
+              />
               <DashedLine
                 dashColor={colors.border1}
                 dashGap={6}
@@ -1039,11 +1021,12 @@ export default function HistoryDetailScreen({
                   })}
               </View>
             ) : null}
-            {user?.company !== 'ICPI' ? (
+            {user?.company !== 'ICPI' && user?.role !== 'SALE MANAGER' ? (
               <>
                 {orderDetail?.status === 'DELIVERY_SUCCESS' ||
                 orderDetail?.status === 'SHOPAPP_CANCEL_ORDER' ||
                 orderDetail?.status === 'COMPANY_CANCEL_ORDER' ||
+                orderDetail?.status === 'SALE_CANCEL_ORDER' ||
                 orderDetail?.status === 'REJECT_ORDER' ? (
                   <FooterReorder
                     navigation={navigation}

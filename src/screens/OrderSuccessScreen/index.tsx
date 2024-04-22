@@ -72,7 +72,6 @@ export default function OrderSuccessScreen({
 
         const productBrand = await AsyncStorage.getItem('productBrand');
         if (response) {
-
           const fbList: {
             productName: string;
             id: string;
@@ -110,7 +109,8 @@ export default function OrderSuccessScreen({
                     productName: fr.productName,
                     id: fr.productId,
                     quantity: fr.quantity,
-                    baseUnit: fr.baseUnitOfMeaTh || fr.saleUOMTH || fr.saleUOM || '',
+                    baseUnit:
+                      fr.baseUnitOfMeaTh || fr.saleUOMTH || fr.saleUOM || '',
                     status: fr.productStatus,
                     productImage: fr.productImage,
                   };
@@ -122,16 +122,16 @@ export default function OrderSuccessScreen({
                   productName: fr.productName,
                   id: fr.productFreebiesId,
                   quantity: fr.quantity,
-                  baseUnit: fr.baseUnitOfMeaTh || fr.baseUnitOfMeaEn || fr.saleUOMTH,
+                  baseUnit:
+                    fr.baseUnitOfMeaTh || fr.baseUnitOfMeaEn || fr.saleUOMTH,
                   status: fr.productFreebiesStatus,
                   productImage: fr.productFreebiesImage || fr.productImage,
                 };
 
                 spfbList.push(newObj);
               }
-
             });
-          setSpFreebieList(spfbList)
+          setSpFreebieList(spfbList);
           setFreebieList(fbList);
           setOrderData(response);
         }
@@ -145,11 +145,11 @@ export default function OrderSuccessScreen({
     }
   }, [orderId]);
 
-  const getUniquePromotions = (orderProducts) => {
+  const getUniquePromotions = orderProducts => {
     const seenPromotions = new Set();
-    
+
     // Use flatMap to flatten the promotions, and then filter based on unique values.
-    return orderProducts.flatMap(el => 
+    return orderProducts.flatMap(el =>
       el.orderProductPromotions.filter(itm => {
         const key = `${itm.promotionType}-${itm.promotionName}`;
         if (!seenPromotions.has(key)) {
@@ -157,7 +157,7 @@ export default function OrderSuccessScreen({
           return true;
         }
         return false;
-      })
+      }),
     );
   };
 
@@ -173,7 +173,6 @@ export default function OrderSuccessScreen({
   });
 
   useEffect(() => {
-    console.log(orderData)
     BackHandler.addEventListener('hardwareBackPress', () => {
       return true;
     });
@@ -213,8 +212,8 @@ export default function OrderSuccessScreen({
         title={
           orderData
             ? mappingStatusHeader[
-            orderData.status as keyof typeof mappingStatusHeader
-            ]
+                orderData.status as keyof typeof mappingStatusHeader
+              ]
             : 'รอยืนยันคำสั่งซื้อ'
         }
       />
@@ -265,7 +264,7 @@ export default function OrderSuccessScreen({
                   <Text center fontFamily="NotoSans" color="text3" semiBold>
                     {
                       mappingStatus[
-                      orderData.status as keyof typeof mappingStatus
+                        orderData.status as keyof typeof mappingStatus
                       ]
                     }
                   </Text>
@@ -326,7 +325,7 @@ export default function OrderSuccessScreen({
                           {`(${el.unit})`}
                         </Text>
                         <View style={{ alignItems: 'flex-end' }}>
-                          {el.price !== el.totalPrice ?
+                          {el.price !== el.totalPrice ? (
                             <Text
                               fontSize={12}
                               fontFamily="NotoSans"
@@ -337,7 +336,7 @@ export default function OrderSuccessScreen({
                               }}>
                               {`฿${numberWithCommas(el.price, true)}`}
                             </Text>
-                            : null}
+                          ) : null}
 
                           <Text
                             fontFamily="NotoSans"
@@ -349,67 +348,95 @@ export default function OrderSuccessScreen({
                             {`฿${numberWithCommas(el.totalPrice, true)}`}
                           </Text>
                         </View>
-
                       </View>
                     );
                   })}
                 </View>
-                {orderData?.orderProducts[0].orderProductPromotions.length > 0 ?
-
-                  (
-                    <View style={{ marginVertical: 10 }}>
-                      <View style={{ flexDirection: 'row' }}>
-                        <Image source={icons.promoDetail} style={{ width: 24, height: 24, marginRight: 8 }} />
-                        <Text fontSize={16} lineHeight={24} bold fontFamily='NotoSans' color='text3'>รายละเอียดโปรโมชัน</Text>
-                      </View>
-
-                      <View style={{ borderWidth: 0.5, padding: 20, backgroundColor: '#F8FAFF', borderColor: '#EAEAEA', marginVertical: 10 }}>
-                      {
-  getUniquePromotions(orderData?.orderProducts || []).map(promo => (
-    <Text fontFamily="Sarabun">
-      {`• ${promotionTypeMap(promo.promotionType)} - ${promo.promotionName}`}
-    </Text>
-  ))
-}
-                      </View>
+                {orderData?.orderProducts[0].orderProductPromotions.length >
+                0 ? (
+                  <View style={{ marginVertical: 10 }}>
+                    <View style={{ flexDirection: 'row' }}>
+                      <Image
+                        source={icons.promoDetail}
+                        style={{ width: 24, height: 24, marginRight: 8 }}
+                      />
+                      <Text
+                        fontSize={16}
+                        lineHeight={24}
+                        bold
+                        fontFamily="NotoSans"
+                        color="text3">
+                        รายละเอียดโปรโมชัน
+                      </Text>
                     </View>
-                  ) : null
-                }
 
+                    <View
+                      style={{
+                        borderWidth: 0.5,
+                        padding: 20,
+                        backgroundColor: '#F8FAFF',
+                        borderColor: '#EAEAEA',
+                        marginVertical: 10,
+                      }}>
+                      {getUniquePromotions(orderData?.orderProducts || []).map(
+                        promo => (
+                          <Text fontFamily="Sarabun">
+                            {`• ${promotionTypeMap(promo.promotionType)} - ${
+                              promo.promotionName
+                            }`}
+                          </Text>
+                        ),
+                      )}
+                    </View>
+                  </View>
+                ) : null}
 
                 <DashedLine dashColor={colors.border1} dashGap={6} />
-                {orderData.vat!==0&&<>
-                  <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    height: 50,
-                    alignItems: 'center',
-                  }}>
-        <Text color="text2" semiBold>
-        มูลค่ารวมหลังหักส่วนลด
-        </Text>
-        <Text color="text2" semiBold fontFamily="NotoSans" fontSize={20}>
-          {`฿${numberWithCommas(+orderData?.price-orderData?.totalDiscount, true)}`}
-        </Text>
-      </View>
-      <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    height: 50,
-                    alignItems: 'center',
-                  }}>
-        <Text color="text2" semiBold>
-          {`ภาษีมูลค่าเพิ่ม ${orderData.vatPercentage} %`}
-        </Text>
-        <Text color="text2" semiBold fontFamily="NotoSans" fontSize={20}>
-          {`฿${numberWithCommas(+orderData.vat, true)}`}
-        </Text>
-      </View>
-      <DashedLine dashColor={colors.border1} dashGap={6} />
-                </>}
-              
+                {orderData.vat !== 0 && (
+                  <>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        height: 50,
+                        alignItems: 'center',
+                      }}>
+                      <Text color="text2" semiBold>
+                        มูลค่ารวมหลังหักส่วนลด
+                      </Text>
+                      <Text
+                        color="text2"
+                        semiBold
+                        fontFamily="NotoSans"
+                        fontSize={20}>
+                        {`฿${numberWithCommas(
+                          +orderData?.price - orderData?.totalDiscount,
+                          true,
+                        )}`}
+                      </Text>
+                    </View>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        height: 50,
+                        alignItems: 'center',
+                      }}>
+                      <Text color="text2" semiBold>
+                        {`ภาษีมูลค่าเพิ่ม ${orderData.vatPercentage} %`}
+                      </Text>
+                      <Text
+                        color="text2"
+                        semiBold
+                        fontFamily="NotoSans"
+                        fontSize={20}>
+                        {`฿${numberWithCommas(+orderData.vat, true)}`}
+                      </Text>
+                    </View>
+                    <DashedLine dashColor={colors.border1} dashGap={6} />
+                  </>
+                )}
+
                 <View
                   style={{
                     flexDirection: 'row',
@@ -428,7 +455,7 @@ export default function OrderSuccessScreen({
                     {`฿${numberWithCommas(orderData.totalPrice, true)}`}
                   </Text>
                 </View>
-               
+
                 <DashedLine dashColor={colors.border1} dashGap={6} />
                 <View>
                   <View
@@ -512,20 +539,17 @@ export default function OrderSuccessScreen({
                       </Text>
                     </View>
                   )}
-
                 </View>
 
                 <View>
-
                   {spfreebieList.length > 0 ? (
-
                     <>
                       <View
                         style={{
                           flexDirection: 'row',
                           justifyContent: 'space-between',
                           height: 60,
-                          marginVertical: 20
+                          marginVertical: 20,
                         }}>
                         <View>
                           <Text fontFamily="NotoSans" bold fontSize={18}>
@@ -588,7 +612,6 @@ export default function OrderSuccessScreen({
                       })}
                     </>
                   ) : null}
-
                 </View>
                 <View
                   style={{

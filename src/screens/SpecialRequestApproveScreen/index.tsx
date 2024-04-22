@@ -257,7 +257,7 @@ export default function SpecialRequestApproveScreen({
         searchText: value,
         status: mappingTabStatus[currentTab as 0 | 1 | 2],
       });
-      if (result) {
+      if (result && result.length > 0) {
         const newFormat = result.map(
           (el: { customerNo: string; customerName: string }) => {
             return {
@@ -348,7 +348,7 @@ export default function SpecialRequestApproveScreen({
               <AutoCompleteSearch
                 onSearch={onSearchWithAutoComplete}
                 getSuggestions={getSuggestions}
-                placeholder="ค้นหาเลขใบสั่งซื้อ, ร้านค้า"
+                placeholder="ค้นหาร้านค้า"
               />
               <View style={styles.row}>
                 <TouchableOpacity onPress={onSelectArea} style={styles.flexRow}>

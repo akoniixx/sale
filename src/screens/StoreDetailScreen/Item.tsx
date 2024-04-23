@@ -80,7 +80,7 @@ export default function Item({
   useEffect(() => {
     const updateAmountCart = async () => {
       try {
-        if (currentCount > 5) {
+        if (currentCount > 1) {
           setLoading(true);
         }
 
@@ -88,7 +88,7 @@ export default function Item({
       } catch (e) {
         console.log(e);
       } finally {
-        if (currentCount > 5) {
+        if (currentCount > 1) {
           setLoading(false);
         }
         setIsNotFirstFetch(false);
@@ -109,7 +109,7 @@ export default function Item({
   }) => {
     const findIndex = cartList?.findIndex(item => item?.productId === id);
 
-    if (+quantity < 1 && findIndex !== -1) {
+    if (+quantity <=0 && findIndex !== -1) {
       const newCartList = [...cartList];
       newCartList.splice(findIndex, 1);
       setCartList(newCartList);
@@ -132,7 +132,7 @@ export default function Item({
     if (findIndex !== -1) {
       const newCartList = [...cartList];
 
-      newCartList[findIndex].amount += 5;
+      newCartList[findIndex].amount += 1;
       setCartList(newCartList);
       setIsNotFirstFetch(true);
     }
@@ -143,8 +143,8 @@ export default function Item({
     if (findIndex !== -1) {
       const newCartList = [...cartList];
       const amount = newCartList[findIndex].amount;
-      if (amount > 5) {
-        newCartList[findIndex].amount -= 5;
+      if (amount > 1) {
+        newCartList[findIndex].amount -= 1;
         setCartList(newCartList);
         setIsNotFirstFetch(true);
       } else {
@@ -304,7 +304,7 @@ export default function Item({
                   productId: idItem,
                   productName,
                   unitPrice,
-                  amount: 5,
+                  amount: 1,
                   productImage,
                   order: cartList.length + 1,
                   orderProductPromotions,

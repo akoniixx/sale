@@ -91,7 +91,7 @@ export default function CartScreen({
     deliveryAddress: null,
     deliveryRemark: null,
     deliveryDest: '',
-    numberPlate: null,
+    numberPlate: '',
   });
   const reArrangeShipment = (dataList: newProductType[]) => {
     return dataList.map((item, index) => {
@@ -215,6 +215,11 @@ export default function CartScreen({
         setPromotionList([]);
         setPromotionListValue([]);
         setVisibleConfirm(false);
+        setDataReadyLoad([]);
+        setHeadData([]);
+        setCurrentList([]);
+        setDollyData([]);
+        setDataForLoad([]);
         setLoading(false);
         await AsyncStorage.removeItem('specialRequestRemark');
         const storedUrisJson = await AsyncStorage.getItem('imageUris');
@@ -453,7 +458,11 @@ export default function CartScreen({
         {currentStep === 1 && (
           <TouchableOpacity
             onPress={() => {
-              setVisibleConfirm(true);
+              if (dataStepTwo.numberPlate?.trim().length == 0||dataStepTwo.numberPlate== undefined) {
+                setShowError(true);
+              } else {
+                setVisibleConfirm(true);
+              }
             }}
             style={{
               width: '100%',

@@ -233,7 +233,7 @@ export default function StepTwo({
                     ? 'จัดส่งที่ร้าน'
                     : dataStepTwo.deliveryDest === 'OTHER'
                     ? 'จัดส่งที่อื่นๆ'
-                    : 'จัดส่งที่โรงงาน'}
+                    : 'รับที่โรงงาน'}
                 </Text>
                 <Text color="text3" fontSize={14} lineHeight={26}>
                   {addressDelivery.name}
@@ -388,7 +388,7 @@ export default function StepTwo({
         </View>
       ) : null}
 
-      <View
+      {user?.company === 'ICPF' && <View
         style={{
           marginTop: 8,
           backgroundColor: 'white',
@@ -448,7 +448,7 @@ export default function StepTwo({
             </View>
           </View>
         </TouchableOpacity>
-      </View>
+      </View>}
 
       <View
         style={[
@@ -628,7 +628,7 @@ export default function StepTwo({
                   ? 'จัดส่งที่ร้าน'
                   : dataStepTwo.deliveryDest === 'OTHER'
                   ? 'จัดส่งที่อื่นๆ'
-                  : 'จัดส่งที่โรงงาน'}
+                  : 'รับที่โรงงาน'}
               </Text>
               <Text color="text3" fontSize={14} lineHeight={26}>
                 {addressDelivery.name}

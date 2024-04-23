@@ -27,6 +27,7 @@ type Props = {
   descFontSize?: TextStyled['fontSize'];
   colorPrimaryButton?: TextStyled['color'];
   contentAlign?: 'center' | 'flex-start' | 'flex-end';
+  ColorDesc?: "white" | "text3" | "primary" | "secondary" | "text1" | "text2" | "current" | "error" | "specialRequest" | "waiting" | "warning" | "subheading3" | "border2" | undefined
 };
 
 export default function ModalWarning({
@@ -47,6 +48,7 @@ export default function ModalWarning({
   descFontSize,
   colorPrimaryButton = 'primary',
   contentAlign = 'center',
+  ColorDesc,
 }: Props): JSX.Element {
   return (
     <ModalRN
@@ -84,7 +86,7 @@ export default function ModalWarning({
               <Text
                 fontSize={descFontSize || 14}
                 fontFamily="Sarabun"
-                color={descError ? 'error' : 'text3'}
+                color={ColorDesc?ColorDesc:'text3'}
                 center={descCenter}
                 lineHeight={28}>
                 {desc}

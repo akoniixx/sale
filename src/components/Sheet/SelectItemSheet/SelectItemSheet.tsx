@@ -134,12 +134,24 @@ export const SelectItemsSheet = (props: SheetProps) => {
   const selectAll = () => {
     setCurrentList((currentList: any[]) =>
       currentList.map(cur => {
-        return {
-          ...cur,
-          isSelected: !cur.isSelected,
-          key: uuid.v4(),
-          type: type === 'รถแม่' ? 'head' : 'dolly',
-        };
+        if(
+          currentList?.every(item => item.isSelected)
+        ){
+          return {
+            ...cur,
+            isSelected: false,
+            key: uuid.v4(),
+            type: type === 'รถแม่' ? 'head' : 'dolly',
+          };
+        }else{
+          return {
+            ...cur,
+            isSelected: true,
+            key: uuid.v4(),
+            type: type === 'รถแม่' ? 'head' : 'dolly',
+          };
+        }
+       
       }),
     );
   };

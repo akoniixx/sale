@@ -116,7 +116,7 @@ export default function Footer({
     if (findIndex !== -1) {
       const newCartList = [...cartList];
 
-      newCartList[findIndex].amount += 5;
+      newCartList[findIndex].amount += 1;
       try {
         setLoading(true);
         await postCartItem(newCartList);
@@ -135,7 +135,7 @@ export default function Footer({
         {
           ...productItem,
           productId: id,
-          amount: 5,
+          amount: 1,
           orderProductPromotions: promotionIdList,
           order: cartList.length + 1,
         },
@@ -160,8 +160,8 @@ export default function Footer({
     if (findIndex !== -1) {
       const newCartList = [...cartList];
       const amount = newCartList[findIndex].amount;
-      if (amount > 5) {
-        newCartList[findIndex].amount -= 5;
+      if (amount > 1) {
+        newCartList[findIndex].amount -= 1;
         setCartList(newCartList);
       } else {
         newCartList.splice(findIndex, 1);

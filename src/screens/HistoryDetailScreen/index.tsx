@@ -688,7 +688,7 @@ export default function HistoryDetailScreen({
                 </View>
               ) : null}
 
-              {user?.company === 'ICPI' && (
+              {user?.company === 'ICPF' && (
                 <View
                   style={{
                     marginTop: 8,

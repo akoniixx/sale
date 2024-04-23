@@ -5,7 +5,7 @@ import icons from '../../assets/icons';
 
 import { useLocalization } from '../../contexts/LocalizationContext';
 import ModalWarning from '../Modal/ModalWarning';
-import { numberReturnString } from '../../utils/functions';
+import { numberReturnString, numberWithCommas } from '../../utils/functions';
 
 interface Props {
   currentQuantity: number;
@@ -29,7 +29,7 @@ export default function Counter({
   const [isModalVisible, setIsModalVisible] = React.useState<boolean>(false);
   useEffect(() => {
     if (+currentQuantity > 0) {
-      setQuantity(currentQuantity.toString());
+      setQuantity(currentQuantity.toFixed(2).toString());
       setCounter?.(currentQuantity);
     } else {
       setQuantity('0');
@@ -41,7 +41,7 @@ export default function Counter({
     if (currentQuantity.toString() === quantity.toString()) {
       return;
     }
-    if (+quantity < 1 && currentQuantity > 0) {
+    if (+quantity <= 0 && currentQuantity > 0) {
       setIsModalVisible(true);
     } else {
       onChangeText?.({ id, quantity });
@@ -57,17 +57,17 @@ export default function Counter({
           if (onDecrease) {
             onDecrease(id);
             setQuantity(prev => {
-              if (+prev >= 5) {
-                return (+prev - 5).toFixed(2);
+              if (+prev >= 1) {
+                return (+prev - 1).toFixed(2);
               }
-              return +prev - 5 < 1 ? '0' : prev;
+              return +prev - 1 < 1 ? '0' : prev;
             });
             if (setCounter) {
               setCounter(prev => {
-                if (+prev >= 5) {
-                  return +prev - 5;
+                if (+prev >= 1) {
+                  return +prev - 1;
                 }
-                return +prev - 5 < 1 ? 0 : prev;
+                return +prev - 1 < 1 ? 0 : prev;
               });
             }
           }
@@ -97,7 +97,7 @@ export default function Counter({
           ref={inputRef}
           maxLength={5}
           allowFontScaling={false}
-          value={numberReturnString(quantity).toString()}
+          value={numberWithCommas(quantity, true).toString()}
           keyboardType="numeric"
           style={{
             fontFamily: 'NotoSansThai-Bold',
@@ -110,8 +110,9 @@ export default function Counter({
             minWidth: 40,
           }}
           onChangeText={text => {
+         
             const value = text.replace(/[^0-9.]/g, '');
-
+console.log(value)
             setQuantity(value);
             if (setCounter) {
               setCounter(+value);
@@ -124,11 +125,11 @@ export default function Counter({
         onPress={() => {
           onIncrease?.(id);
           setQuantity(prev => {
-            return (+prev + 5).toString();
+            return (+prev + 1).toString();
           });
           if (setCounter) {
             setCounter(prev => {
-              return prev + 5;
+              return prev + 1;
             });
           }
         }}

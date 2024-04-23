@@ -358,7 +358,40 @@ export default function ListItemInCart({
       }
     }
   };
-  const onDelete = async (id: string | number) => {
+  const onDelete = async (id: string) => {
+    setDelId(id);
+    console.log(dataForLoad.length )
+    if (dataForLoad.length > 0) {
+      setModalDelete(true);
+    } else {
+      setVisibleDel(true);
+    }
+  };
+
+  const onConfirmDelete = async () => {
+    const newCartList = cartList?.filter(
+      item => item?.productId.toString() !== delId.toString(),
+    );
+    const currentCL = reArrangeShipment(newCartList);
+    setHeadData([]);
+    setDollyData([]);
+    setDataForLoad([]);
+    setDataReadyLoad([]);
+
+    setLoading(true);
+    const { cartList: cl, cartDetail: cD } = await postCartItem(currentCL);
+    await getSelectPromotion(cD.allPromotions);
+    setCartList(cl);
+
+    setIsDelCart(true);
+
+    setVisibleDel(false);
+    setModalDelete(false);
+    setCartList(newCartList);
+
+   
+  };
+  /* const onDelete = async (id: string | number) => {
     try {
       setLoading(true);
       const newCartList = cartList?.filter(
@@ -379,7 +412,7 @@ export default function ListItemInCart({
     } finally {
       setLoading(false);
     }
-  };
+  }; */
   const [isDelCart, setIsDelCart] = React.useState(false);
   const itemsDropdown = useMemo(() => {
     return cartList.map((el, idx) => {
@@ -542,8 +575,8 @@ export default function ListItemInCart({
                   <TouchableOpacity
                     style={styles.buttonDel}
                     onPress={() => {
-                      setDelId(item.productId);
-                      setVisibleDel(true);
+                      onDelete(item.productId);
+                    
                     }}>
                     <Image
                       source={icons.bin}
@@ -711,6 +744,16 @@ export default function ListItemInCart({
         message={t('modalMessage.deleteCart')}
         onRequestClose={() => setIsDelCart(false)}
       />
+       <ModalWarning
+          visible={modalDelete}
+          width={'70%'}
+          title="ยืนยันการลบสินค้า"
+          titleCenter
+          desc={`การลดจำนวนสินค้าในตะกร้า ส่งผลต่อ\nลำดับการจัดเรียงสินค้าขึ้นรถที่กำหนดไว้\nระบบจะรีเซ็ตค่าลำดับจัดเรียงทั้งหมดออก\nหากกดยืนยันการลดจำนวนสินค้า`}
+          ColorDesc="error"
+          onConfirm={onConfirmDelete}
+          onRequestClose={() => setModalDelete(false)}
+        />
       <ModalWarning
         visible={modalWarningDelete}
         width={'70%'}

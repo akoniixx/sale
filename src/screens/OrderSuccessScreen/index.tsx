@@ -8,7 +8,7 @@ import {
   Dimensions,
   BackHandler,
 } from 'react-native';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StackScreenProps } from '@react-navigation/stack';
 import { MainStackParamList } from '../../navigations/MainNavigator';
 import Header from '../../components/Header/Header';
@@ -65,6 +65,15 @@ export default function OrderSuccessScreen({
     product_brand_name: string;
     company: string;
   } | null>(null);
+
+  const [totalQuantities, setTotalQuantities] = useState<
+    [{ unit: string; quantity: number }]
+  >([
+    {
+      unit: '',
+      quantity: 0,
+    },
+  ]);
   useEffect(() => {
     const getOrderByOrderId = async () => {
       try {
@@ -136,6 +145,19 @@ export default function OrderSuccessScreen({
           setOrderData(response);
         }
         setProductBrand(JSON.parse(productBrand || ''));
+        const quantitiesRecord: Record<string, number> =
+        response.orderProducts.reduce((acc, product) => {
+          const key = product.saleUOMTH || product.baseUnitOfMeaTh;
+          if (key) {
+            acc[key] = (acc[key] || 0) + product.quantity;
+          }
+          return acc;
+        }, {});
+
+      const totalQuantities = Object.entries(quantitiesRecord).map(
+        ([unit, quantity]) => ({ unit, quantity }),
+      );
+      setTotalQuantities(totalQuantities);
       } catch (e) {
         console.log(e);
       }
@@ -143,6 +165,7 @@ export default function OrderSuccessScreen({
     if (orderId) {
       getOrderByOrderId();
     }
+    
   }, [orderId]);
 
   const getUniquePromotions = orderProducts => {
@@ -292,6 +315,77 @@ export default function OrderSuccessScreen({
                   </View>
                   <View
                     style={{
+                      padding: 10,
+                      backgroundColor: colors.background1,
+                      borderColor: colors.border1,
+                      borderWidth: 1,
+                      marginVertical: 10,
+                      borderRadius: 8,
+                    }}>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                      }}>
+                      <Text lineHeight={30}>รายการทั้งหมด</Text>
+                      <Text lineHeight={30}>{listProduct?.length} รายการ</Text>
+                    </View>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        marginTop: 10,
+                      }}>
+                      <Text lineHeight={30}>จำนวนสินค้าทั้งหมด</Text>
+                      <View style={{ alignItems: 'flex-end' }}>
+                        {totalQuantities?.map((el, idx) => (
+                          <Text lineHeight={30} key={idx}>
+                            {(el?.quantity).toFixed(2)} {el?.unit}
+                          </Text>
+                        ))}
+                      </View>
+                    </View>
+                  </View>
+                  {orderData?.orderProducts[0].orderProductPromotions.length >
+                0 ? (
+                  <View style={{ marginVertical: 10 }}>
+                    <View style={{ flexDirection: 'row' }}>
+                      <Image
+                        source={icons.promoDetail}
+                        style={{ width: 24, height: 24, marginRight: 8 }}
+                      />
+                      <Text
+                        fontSize={16}
+                        lineHeight={24}
+                        bold
+                        fontFamily="NotoSans"
+                       >
+                        โปรโมชัน
+                      </Text>
+                    </View>
+
+                    <View
+                      style={{
+                        borderWidth: 0.5,
+                        padding: 20,
+                        backgroundColor: '#F8FAFF',
+                        borderColor: '#EAEAEA',
+                        marginVertical: 10,
+                      }}>
+                      {getUniquePromotions(orderData?.orderProducts || []).map(
+                        promo => (
+                          <Text fontFamily="Sarabun">
+                            {`• ${promotionTypeMap(promo.promotionType)} - ${
+                              promo.promotionName
+                            }`}
+                          </Text>
+                        ),
+                      )}
+                    </View>
+                  </View>
+                ) : null}
+                  <View
+                    style={{
                       flexDirection: 'row',
                       justifyContent: 'space-between',
                       marginTop: 16,
@@ -352,44 +446,8 @@ export default function OrderSuccessScreen({
                     );
                   })}
                 </View>
-                {orderData?.orderProducts[0].orderProductPromotions.length >
-                0 ? (
-                  <View style={{ marginVertical: 10 }}>
-                    <View style={{ flexDirection: 'row' }}>
-                      <Image
-                        source={icons.promoDetail}
-                        style={{ width: 24, height: 24, marginRight: 8 }}
-                      />
-                      <Text
-                        fontSize={16}
-                        lineHeight={24}
-                        bold
-                        fontFamily="NotoSans"
-                        color="text3">
-                        รายละเอียดโปรโมชัน
-                      </Text>
-                    </View>
-
-                    <View
-                      style={{
-                        borderWidth: 0.5,
-                        padding: 20,
-                        backgroundColor: '#F8FAFF',
-                        borderColor: '#EAEAEA',
-                        marginVertical: 10,
-                      }}>
-                      {getUniquePromotions(orderData?.orderProducts || []).map(
-                        promo => (
-                          <Text fontFamily="Sarabun">
-                            {`• ${promotionTypeMap(promo.promotionType)} - ${
-                              promo.promotionName
-                            }`}
-                          </Text>
-                        ),
-                      )}
-                    </View>
-                  </View>
-                ) : null}
+                
+               
 
                 <DashedLine dashColor={colors.border1} dashGap={6} />
                 {orderData.vat !== 0 && (

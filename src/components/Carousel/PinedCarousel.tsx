@@ -1,14 +1,14 @@
-import React, { useRef } from "react";
-import { Dimensions, TouchableOpacity, View } from "react-native";
+import React, { useRef } from 'react';
+import { Dimensions, TouchableOpacity, View } from 'react-native';
 
-import { colors } from "../../assets/colors/colors";
+import { colors } from '../../assets/colors/colors';
 import Carousel, { Pagination } from 'react-native-snap-carousel';
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { PromotionCard } from "./PromotionCard";
-import NewsCard from "../News/NewsCard";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { PromotionCard } from './PromotionCard';
+import NewsCard from '../News/NewsCard';
 
 interface Props {
-  data: Pined[]
+  data: Pined[];
   navigation?: any;
   allScreen?: boolean;
   loading?: boolean;
@@ -18,7 +18,6 @@ export default function PinedCarousel({
   data,
   navigation,
 
-
   loading = false,
 }: Props) {
   const isCarousel = useRef(null);
@@ -26,16 +25,13 @@ export default function PinedCarousel({
   const [index, setIndex] = React.useState(0);
 
   return (
-
     <>
       {loading ? (
         <View
           style={{
             padding: 10,
             width: '100%',
-          }}>
-
-        </View>
+          }}></View>
       ) : (
         <Carousel
           autoplay={true}
@@ -50,36 +46,27 @@ export default function PinedCarousel({
           useScrollView={true}
           vertical={false}
           renderItem={({ item }: any) => {
-
-            return (
-
-              <NewsCard data={item} navigation={navigation} />
-
-            );
-          }
-          }
+            return <NewsCard data={item} navigation={navigation} />;
+          }}
         />
       )}
 
-    
-        <Pagination
-          dotsLength={data?.length}
-          activeDotIndex={index}
-          carouselRef={isCarousel}
-          dotStyle={{
-            width: 8,
-            height: 8,
-            borderRadius: 5,
-            marginHorizontal: 0,
-            backgroundColor: '#1F2933',
-          }}
-          inactiveDotOpacity={0.4}
-          inactiveDotScale={0.9}
-          tappableDots={true}
-          containerStyle={{paddingVertical:10,marginTop:0}}
-        />
-     
+      <Pagination
+        dotsLength={data?.length}
+        activeDotIndex={index}
+        carouselRef={isCarousel}
+        dotStyle={{
+          width: 8,
+          height: 8,
+          borderRadius: 5,
+          marginHorizontal: 0,
+          backgroundColor: '#1F2933',
+        }}
+        inactiveDotOpacity={0.4}
+        inactiveDotScale={0.9}
+        tappableDots={true}
+        containerStyle={{ paddingVertical: 10, marginTop: 0 }}
+      />
     </>
-  )
-
+  );
 }

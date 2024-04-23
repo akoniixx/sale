@@ -46,8 +46,9 @@ const getAllProducts = async ({
     .then(res => {
       return res.data;
     })
-    .catch(err =>{ console.log(err)
-    throw err
+    .catch(err => {
+      console.log(err);
+      throw err;
     });
 };
 const getProductById = async (id: string, customerCompanyId: string) => {
@@ -71,8 +72,8 @@ const getProductBrand = async (company?: string) => {
     .catch(err => console.log(err));
 };
 
-const getProductFree = async (payload:any) => {
-  const {  ...rest } = payload;
+const getProductFree = async (payload: any) => {
+  const { ...rest } = payload;
 
   const query = Object.entries(rest).reduce((acc, [key, value]) => {
     if (value !== undefined) {
@@ -82,31 +83,30 @@ const getProductFree = async (payload:any) => {
   }, '');
 
   return await request
-  .get(`/master/product-freebies?${query}`)
-  .then(res => res.data)
-  .catch(err => console.log(err));
-}
+    .get(`/master/product-freebies?${query}`)
+    .then(res => res.data)
+    .catch(err => console.log(err));
+};
 
-const getBaseFreebies =async (company:string,itemNo:string) => {
+const getBaseFreebies = async (company: string, itemNo: string) => {
   return await navRequest
     .get(`/nav/uom-nav?company=${company}&itemNo=${itemNo}`)
     .then(res => res.data)
     .catch(err => {
-      console.log(err)
-      throw(err)
-    })
-  
-}
+      console.log(err);
+      throw err;
+    });
+};
 
-const getAllNameProduct = async (company:string) => {
+const getAllNameProduct = async (company: string) => {
   return await request
-  .get(`/master/product/product-name/${company}`)
-  .then(res => res.data)
-  .catch(err => {
-    console.log(err)
-    throw(err)
-  })
-}
+    .get(`/master/product/product-name/${company}`)
+    .then(res => res.data)
+    .catch(err => {
+      console.log(err);
+      throw err;
+    });
+};
 
 export const productServices = {
   getAllProducts,
@@ -115,5 +115,5 @@ export const productServices = {
   getProductCategory,
   getProductFree,
   getBaseFreebies,
-  getAllNameProduct
+  getAllNameProduct,
 };

@@ -1,4 +1,12 @@
-import { Image, KeyboardAvoidingView, Platform, TouchableOpacity, View, Alert, FlatList } from 'react-native';
+import {
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  TouchableOpacity,
+  View,
+  Alert,
+  FlatList,
+} from 'react-native';
 import React, { useEffect, useState } from 'react';
 import Text from '../../components/Text/Text';
 import { colors } from '../../assets/colors/colors';
@@ -8,7 +16,11 @@ import Header from '../../components/Header/Header';
 import Content from '../../components/Content/Content';
 import SearchInput from '../../components/SearchInput/SearchInput';
 import { productServices } from '../../services/ProductServices';
-import { ProductFreebies, ProductType, SpFreebies } from '../../entities/productType';
+import {
+  ProductFreebies,
+  ProductType,
+  SpFreebies,
+} from '../../entities/productType';
 import ImageCache from '../../components/ImageCache/ImageCache';
 import images from '../../assets/images';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -23,23 +35,23 @@ import { useCart } from '../../contexts/CartContext';
 import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-
 interface Props {
   navigation?: any;
-  route?: any
+  route?: any;
 }
-
 
 export default function FreeSpeciaRequestScreen({ navigation, route }: Props) {
   const [page, setPage] = React.useState<number>(1);
   const [searchValue, setSearchValue] = useState<string | undefined>();
-  const [freebies, setFreebies] = useState<SpFreebies[]>([])
-  const [freebiesCount, setFreebiesCount] = useState<number>(0)
-  const [product, setProduct] = useState<SpFreebies[]>([])
+  const [freebies, setFreebies] = useState<SpFreebies[]>([]);
+  const [freebiesCount, setFreebiesCount] = useState<number>(0);
+  const [product, setProduct] = useState<SpFreebies[]>([]);
   const [selectedItems, setSelectedItems] = useState<SpFreebies[]>([]);
   const [visibleConfirm, setVisibleConfirm] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const [debounceSearchValue, setDebounceSearchValue] = useState<string | undefined>('');
+  const [debounceSearchValue, setDebounceSearchValue] = useState<
+    string | undefined
+  >('');
   const [type, setType] = React.useState<string>('product');
 
   const headerList = [
@@ -49,7 +61,7 @@ export default function FreeSpeciaRequestScreen({ navigation, route }: Props) {
     },
     {
       id: 'freebies',
-      title: 'สินค้าอื่นๆ'
+      title: 'สินค้าอื่นๆ',
     },
   ];
 
@@ -66,8 +78,20 @@ export default function FreeSpeciaRequestScreen({ navigation, route }: Props) {
   } = useCart();
 
   const handleSelect = (idx: SpFreebies) => {
-    if (selectedItems.some(item => item.productFreebiesId ? item.productFreebiesId === idx.productFreebiesId : item.productId === idx.productId)) {
-      setSelectedItems(prev => prev.filter(i => i.productFreebiesId ? i.productFreebiesId !== idx.productFreebiesId : i.productId !== idx.productId));
+    if (
+      selectedItems.some(item =>
+        item.productFreebiesId
+          ? item.productFreebiesId === idx.productFreebiesId
+          : item.productId === idx.productId,
+      )
+    ) {
+      setSelectedItems(prev =>
+        prev.filter(i =>
+          i.productFreebiesId
+            ? i.productFreebiesId !== idx.productFreebiesId
+            : i.productId !== idx.productId,
+        ),
+      );
     } else {
       const itemWithQuantity = { ...idx, quantity: 1 };
       setSelectedItems(prev => [...prev, itemWithQuantity]);
@@ -75,49 +99,42 @@ export default function FreeSpeciaRequestScreen({ navigation, route }: Props) {
   };
 
   const getFreebies = async () => {
-    setLoading(true)
+    setLoading(true);
     const payload: any = {
       company: user?.company,
       searchText: searchValue,
       productFreebiesStatus: 'ACTIVE',
       take: limit,
-      page: 1
-
-    }
+      page: 1,
+    };
     try {
-      const res = await productServices.getProductFree(payload)
+      const res = await productServices.getProductFree(payload);
 
-      setFreebiesCount(res.count)
-      setFreebies(res.data)
-      setLoading(false)
+      setFreebiesCount(res.count);
+      setFreebies(res.data);
+      setLoading(false);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
     }
-    catch (error) {
-      console.log(error)
-    }
-    finally {
-      setLoading(false)
-    }
-  }
-
+  };
 
   const fetchDataMore = async () => {
     if (freebies.length < freebiesCount) {
-
       try {
         const payload: any = {
           company: user?.company,
           searchText: searchValue,
           productFreebiesStatus: 'ACTIVE',
           take: limit,
-          page: page + 1
-        }
+          page: page + 1,
+        };
 
-        const res = await productServices.getProductFree(payload)
+        const res = await productServices.getProductFree(payload);
 
-
-        setFreebies([...freebies, ...res.data])
-        setLoading(false)
-
+        setFreebies([...freebies, ...res.data]);
+        setLoading(false);
 
         setPage(page + 1);
       } catch (e) {
@@ -129,7 +146,7 @@ export default function FreeSpeciaRequestScreen({ navigation, route }: Props) {
   };
 
   const getProduct = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
       const customerCompanyId = await AsyncStorage.getItem('customerCompanyId');
       const productB = await AsyncStorage.getItem('productBrand');
@@ -142,56 +159,49 @@ export default function FreeSpeciaRequestScreen({ navigation, route }: Props) {
         searchText: searchValue,
         customerCompanyId: customerCompanyId || '',
         productBrandId: pB?.product_brand_id,
-
       });
       const updatedProducts = result.data.map(product => {
         const newProduct = { ...product }; // Create a copy of the object
         delete newProduct.promotion; // Remove the 'promotion' field
         return newProduct;
       });
-      setProduct(updatedProducts)
-      setLoading(false)
+      setProduct(updatedProducts);
+      setLoading(false);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
     }
-    catch (error) {
-      console.log(error)
-    }
-    finally {
-      setLoading(false)
-    }
-
-
-  }
+  };
 
   const onSearch = (v: string | undefined) => {
     setDebounceSearchValue(v);
   };
 
   const onConfirm = async () => {
-    setVisibleConfirm(false)
+    setVisibleConfirm(false);
     try {
       setLoading(true);
-      await postCartItem(cartList, selectedItems)
-      navigation.navigate('SpecialRequestScreen')
-
-
+      await postCartItem(cartList, selectedItems);
+      navigation.navigate('SpecialRequestScreen');
     } catch (error) {
       console.log(error);
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
     if (cartDetail?.specialRequestFreebies) {
+      let selected = Array.from(
+        new Set([...cartDetail?.specialRequestFreebies, ...selectedItems]),
+      );
 
-      let selected = Array.from(new Set([...cartDetail?.specialRequestFreebies, ...selectedItems]))
-
-      setSelectedItems(selected)
-
+      setSelectedItems(selected);
     }
-    getProduct()
-    getFreebies()
-  }, [debounceSearchValue])
+    getProduct();
+    getFreebies();
+  }, [debounceSearchValue]);
 
   const renderItem = ({ item }: { item: SpFreebies }) => (
     <TouchableOpacity onPress={() => handleSelect(item)}>
@@ -200,7 +210,12 @@ export default function FreeSpeciaRequestScreen({ navigation, route }: Props) {
           flexDirection: 'row',
           paddingVertical: 20,
           flex: 1,
-          backgroundColor: selectedItems.some(selectedItem => selectedItem.productFreebiesId === item.productFreebiesId) ? '#F8FAFF' : 'transparent',
+          backgroundColor: selectedItems.some(
+            selectedItem =>
+              selectedItem.productFreebiesId === item.productFreebiesId,
+          )
+            ? '#F8FAFF'
+            : 'transparent',
           borderBottomColor: colors.border1,
           borderBottomWidth: 0.5,
           borderStyle: 'solid',
@@ -219,20 +234,20 @@ export default function FreeSpeciaRequestScreen({ navigation, route }: Props) {
           )}
           <View style={{ marginLeft: 16, flex: 1, alignSelf: 'center' }}>
             <Text semiBold>{item.productName}</Text>
-
           </View>
         </View>
         <View style={{ alignItems: 'center', alignSelf: 'center', width: 40 }}>
-          {selectedItems.some(selectedItem => selectedItem.productFreebiesId === item.productFreebiesId) && <Image source={icons.check} style={{ width: 20, height: 20 }} />}
+          {selectedItems.some(
+            selectedItem =>
+              selectedItem.productFreebiesId === item.productFreebiesId,
+          ) && <Image source={icons.check} style={{ width: 20, height: 20 }} />}
         </View>
       </View>
     </TouchableOpacity>
   );
 
   const renderFreebies = () => (
-
     <>
-
       <FlatList
         data={freebies}
         renderItem={renderItem}
@@ -241,7 +256,6 @@ export default function FreeSpeciaRequestScreen({ navigation, route }: Props) {
         onEndReachedThreshold={0.2}
         showsVerticalScrollIndicator={false}
       />
-
 
       {/* { {freebies?.map((el, idx) => (
         <TouchableOpacity key={idx} onPress={() => handleSelect(el)}>
@@ -305,14 +319,16 @@ export default function FreeSpeciaRequestScreen({ navigation, route }: Props) {
         </TouchableOpacity>
       ))}} */}
     </>
-  )
+  );
 
   const renderProduct = () => (
-    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{
-      flexGrow: 1,
+    <ScrollView
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={{
+        flexGrow: 1,
 
-      paddingBottom: 70
-    }}>
+        paddingBottom: 70,
+      }}>
       {product?.map((el, idx) => (
         <TouchableOpacity key={idx} onPress={() => handleSelect(el)}>
           <View
@@ -321,17 +337,21 @@ export default function FreeSpeciaRequestScreen({ navigation, route }: Props) {
               flexDirection: 'row',
               paddingVertical: 20,
               flex: 1,
-              backgroundColor: selectedItems.some(item => item.productId === el.productId) ? '#F8FAFF' : 'transparent',
+              backgroundColor: selectedItems.some(
+                item => item.productId === el.productId,
+              )
+                ? '#F8FAFF'
+                : 'transparent',
               borderBottomColor: colors.border1,
               borderBottomWidth: 0.5,
-              borderStyle: 'solid'
+              borderStyle: 'solid',
             }}>
             <View
               style={{
                 flexDirection: 'row',
                 flex: 1,
 
-                width: '80%'
+                width: '80%',
               }}>
               {el.productImage ? (
                 <ImageCache
@@ -354,7 +374,7 @@ export default function FreeSpeciaRequestScreen({ navigation, route }: Props) {
                 style={{
                   marginLeft: 16,
                   flex: 1,
-                  alignSelf: 'center'
+                  alignSelf: 'center',
                 }}>
                 <Text semiBold>{el.productName}</Text>
                 <View
@@ -368,14 +388,17 @@ export default function FreeSpeciaRequestScreen({ navigation, route }: Props) {
                 </View>
               </View>
             </View>
-            <View style={{ alignItems: 'center', alignSelf: 'center', width: 40 }}>
-              {selectedItems.some(item => item.productId === el.productId) && <Image source={icons.check} style={{ width: 20, height: 20 }} />}
+            <View
+              style={{ alignItems: 'center', alignSelf: 'center', width: 40 }}>
+              {selectedItems.some(item => item.productId === el.productId) && (
+                <Image source={icons.check} style={{ width: 20, height: 20 }} />
+              )}
             </View>
           </View>
         </TouchableOpacity>
       ))}
     </ScrollView>
-  )
+  );
 
   return (
     <Container>
@@ -387,7 +410,7 @@ export default function FreeSpeciaRequestScreen({ navigation, route }: Props) {
         }}>
         <Header
           title="เพิ่มของแถม (Special Req.) "
-        /*  onBackCustom={() => {
+          /*  onBackCustom={() => {
            navigation.navigate('CartScreen', {
              specialRequestRemark: specialRequestRemark,
              step: 1,
@@ -397,7 +420,7 @@ export default function FreeSpeciaRequestScreen({ navigation, route }: Props) {
         <Content>
           <View
             style={{
-              marginBottom: 20
+              marginBottom: 20,
             }}>
             <View
               style={{
@@ -446,14 +469,7 @@ export default function FreeSpeciaRequestScreen({ navigation, route }: Props) {
             }}
           />
 
-
-          {type === 'product' ?
-            renderProduct()
-
-            :
-            renderFreebies()
-          }
-
+          {type === 'product' ? renderProduct() : renderFreebies()}
         </Content>
         <FooterShadow
           style={{
@@ -467,15 +483,25 @@ export default function FreeSpeciaRequestScreen({ navigation, route }: Props) {
               marginBottom: 16,
             }}
             onPress={() => {
-              setVisibleConfirm(true)
+              setVisibleConfirm(true);
             }}
             title="เพิ่มของแถม"
             iconBack={
-              selectedItems.length > 0 ?
-                <View style={{ backgroundColor: '#135CC6', paddingVertical: 1, paddingHorizontal: 10, marginLeft: 5, borderRadius: 6, alignSelf: 'center' }}>
-                  <Text fontFamily='NotoSans' bold fontSize={16} color='white'>{selectedItems.length + ' รายการ'}</Text>
+              selectedItems.length > 0 ? (
+                <View
+                  style={{
+                    backgroundColor: '#135CC6',
+                    paddingVertical: 1,
+                    paddingHorizontal: 10,
+                    marginLeft: 5,
+                    borderRadius: 6,
+                    alignSelf: 'center',
+                  }}>
+                  <Text fontFamily="NotoSans" bold fontSize={16} color="white">
+                    {selectedItems.length + ' รายการ'}
+                  </Text>
                 </View>
-                : null
+              ) : null
             }
           />
         </FooterShadow>
@@ -491,6 +517,5 @@ export default function FreeSpeciaRequestScreen({ navigation, route }: Props) {
       />
       <LoadingSpinner visible={loading} />
     </Container>
-  )
-
+  );
 }

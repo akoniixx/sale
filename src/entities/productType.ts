@@ -58,11 +58,11 @@ export interface PromotionType {
   isDelete: boolean;
   conditionDetail: {
     conditionDiscount: {
-      quantity: string
-      saleUnit: string
-      discountPrice: string
-      saleUnitDiscount: string
-    }[]
+      quantity: string;
+      saleUnit: string;
+      discountPrice: string;
+      saleUnitDiscount: string;
+    }[];
     productId: string;
     condition: {
       freebies: {
@@ -166,13 +166,12 @@ export interface ProductSummary extends ProductType {
   productCategory?: ProductCategory;
 }
 
-
 export interface ProductFreebies {
   saleUOMTH: string;
   base: {
-    unit_code:string,
-    unit_desc:string,
-  }[]
+    unit_code: string;
+    unit_desc: string;
+  }[];
   productFreebiesId: string;
   company: string;
   productName: string;
@@ -186,15 +185,14 @@ export interface ProductFreebies {
   createDate: string;
   updateDate: string;
   updateBy: null | string;
-  quantity: number
+  quantity: number;
 }
-
 
 export interface SpFreebies {
   base: {
-    unit_code:string,
-    unit_desc:string,
-  }[]
+    unit_code: string;
+    unit_desc: string;
+  }[];
   productFreebiesId: string;
   productFreebiesCodeNAV: string;
   baseUnitOfMeaEn: string;
@@ -204,7 +202,7 @@ export interface SpFreebies {
   createDate: string;
   updateDate: string;
   updateBy: null | string;
-  quantity: number
+  quantity: number;
   productId: string;
   company: string;
   productLocation: string;

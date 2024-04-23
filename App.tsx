@@ -109,15 +109,15 @@ const App = () => {
         <AutocompleteDropdownContextProvider>
           <LocalizationProvider>
             <AuthProvider>
-            <OrderLoadsProvider>
-              <SpecialRequestProvider>
-                <CartProvider>
-                  <SheetProvider>
-                    <AppNavigator />
-                  </SheetProvider>
-                </CartProvider>
-              </SpecialRequestProvider>
-            </OrderLoadsProvider>
+              <OrderLoadsProvider>
+                <SpecialRequestProvider>
+                  <CartProvider>
+                    <SheetProvider>
+                      <AppNavigator />
+                    </SheetProvider>
+                  </CartProvider>
+                </SpecialRequestProvider>
+              </OrderLoadsProvider>
             </AuthProvider>
           </LocalizationProvider>
           <Toast config={toastConfig} />

@@ -5,15 +5,13 @@ import Text from '../../components/Text/Text';
 import ItemNotification from './ItemNotification';
 import { NotificationList } from '../../entities/notiListTypes';
 
-
-interface Props{
-  data:NotificationList
-  fetchDataMore:()=>Promise<void>
-  navigation:any
-  
+interface Props {
+  data: NotificationList;
+  fetchDataMore: () => Promise<void>;
+  navigation: any;
 }
 
-export default function Body({data,fetchDataMore,navigation}:Props) {
+export default function Body({ data, fetchDataMore, navigation }: Props) {
   const EmptyItem = () => {
     return (
       <View
@@ -42,7 +40,13 @@ export default function Body({data,fetchDataMore,navigation}:Props) {
       onEndReached={fetchDataMore}
       onEndReachedThreshold={0.2}
       renderItem={({ item }) => {
-        return <ItemNotification data={item} fetchDataMore={fetchDataMore} navigation={navigation}/>;
+        return (
+          <ItemNotification
+            data={item}
+            fetchDataMore={fetchDataMore}
+            navigation={navigation}
+          />
+        );
       }}
     />
   );

@@ -19,7 +19,6 @@ import { StackNavigationHelpers } from '@react-navigation/stack/lib/typescript/s
 import { AuthServices } from '../../services/AuthServices';
 import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
 
-
 interface Props {
   navigation: StackNavigationHelpers;
 }
@@ -48,10 +47,8 @@ export default function LoginScreen({ navigation }: Props): JSX.Element {
 
   const onSubmit = async (v: { tel: string }) => {
     try {
-      setLoading(true)
+      setLoading(true);
       const { data } = await AuthServices.requestOtp(v.tel);
-
-      
 
       navigation.navigate('OtpScreen', {
         token: data.result.token,
@@ -59,18 +56,16 @@ export default function LoginScreen({ navigation }: Props): JSX.Element {
         tel: v.tel,
       });
     } catch (e: any) {
-      console.log(e)
-     
+      console.log(e);
+
       if (e?.response?.data?.statusCode) {
         setErrorCode(e.response.data.statusCode);
       }
       if (e?.response?.data?.statusCode === 500) {
-        
-        console.log(e)
+        console.log(e);
       }
-    }
-    finally{
-      setLoading(false)
+    } finally {
+      setLoading(false);
     }
   };
 

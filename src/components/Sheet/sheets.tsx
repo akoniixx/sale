@@ -11,5 +11,5 @@ registerSheet('select-date-range', SelectDateRangeSelect);
 registerSheet('select-area', SelectAreaSheet);
 registerSheet('select-area-only-once', SelectAreaOnlyOnceSheet);
 registerSheet('input-select-sheet', SelectOnlyOneSheet);
-registerSheet('selectItemsSheet',SelectItemsSheet)
+registerSheet('selectItemsSheet', SelectItemsSheet);
 export {};

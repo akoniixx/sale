@@ -76,8 +76,8 @@
       "durationPromotion": "ระยะเวลา %{dateStart} - %{dateEnd}",
       "promotionTextConvert": "ซื้อ %{buy} %{unitBuy} แถม %{productNameFree} %{free}  %{unitFree}",
       "promotionDiscount": "ซื้อ %{buy} %{unitBuy} ลด%{unitDiscount}ละ %{discountPrice} บาท ",
-      "promotionDiscount_mix_quantity": "ซื้อ %{buy} %{unitBuy} ลด %{discountPrice} บาท" ,
-      "promotionDiscount_mix_size": "ซื้อ %{buy} %{unitBuy} ลด %{discountPrice} บาท" ,
+      "promotionDiscount_mix_quantity": "ซื้อ %{buy} %{unitBuy} ลด %{discountPrice} บาท",
+      "promotionDiscount_mix_size": "ซื้อ %{buy} %{unitBuy} ลด %{discountPrice} บาท",
       "freebies_mix_quantity": "เมื่อซื้อครบ %{buy} %{unitBuy} แถม %{productNameFree} (%{commonNameFree}) ขนาด %{sizeFree} จำนวน %{free} %{unitFree} "
     },
     "CartScreen": {

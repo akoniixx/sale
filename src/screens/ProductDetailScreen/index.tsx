@@ -31,14 +31,12 @@ export default function ProductDetailScreen({
   const [productItem, setProductItem] = React.useState<ProductSummary>();
   const [loading, setLoading] = useState(false);
 
-
-const onError = () =>{
-  setTimeout(() => {
-    navigation.goBack()
-  }, 500);
-  setIsError(false)
-  
-}
+  const onError = () => {
+    setTimeout(() => {
+      navigation.goBack();
+    }, 500);
+    setIsError(false);
+  };
 
   useFocusEffect(
     React.useCallback(() => {
@@ -65,62 +63,60 @@ const onError = () =>{
   );
   return (
     <>
-    <Container>
-      <Header componentRight={<CartBadge navigation={navigation} />} />
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={{ flex: 1, padding: 0, width: '100%' }}>
-        <Content
-          style={{
-            backgroundColor: colors.background1,
-            padding: 0,
-          }}>
-          <Body
-            {...productItem}
-            saleUOMTH={productItem?.saleUOMTH}
-            packSize={productItem?.packSize}
-            productImage={productItem?.productImage}
-            productName={productItem?.productName}
-            unitPrice={productItem?.unitPrice}
-            commonName={productItem?.commonName}
-          />
-          {productItem && (
-            <Footer
-              navigation={navigation}
-              id={id}
-              setIsAddCart={setIsAddCart}
-              setIsDelCart={setIsDelCart}
-              setLoading={setLoading}
-              setIsError={setIsError}
-              setErrorMessege={setErrorMessege}
-              isError={isError}
-              productItem={productItem}
+      <Container>
+        <Header componentRight={<CartBadge navigation={navigation} />} />
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={{ flex: 1, padding: 0, width: '100%' }}>
+          <Content
+            style={{
+              backgroundColor: colors.background1,
+              padding: 0,
+            }}>
+            <Body
+              {...productItem}
+              saleUOMTH={productItem?.saleUOMTH}
+              packSize={productItem?.packSize}
+              productImage={productItem?.productImage}
+              productName={productItem?.productName}
+              unitPrice={productItem?.unitPrice}
+              commonName={productItem?.commonName}
             />
-          )}
-           <ModalWarning
-     visible={isError}
-     onlyCancel
-     onRequestClose={() => onError()}
-     textCancel={'ตกลง'}
-     title={`${errorMessege?errorMessege:''}`}
-     desc="กรุณาสร้างคำสั่งซื้อใหม่แยกประเภทสินค้า"
-   />
-        </Content>
-      </KeyboardAvoidingView>
-      <LoadingSpinner visible={loading} />
-      <ModalMessage
-        visible={isAddCart}
-        message={t('modalMessage.addCart')}
-        onRequestClose={() => setIsAddCart(false)}
-      />
-      <ModalMessage
-        visible={isDelCart}
-        message={t('modalMessage.deleteCart')}
-        onRequestClose={() => setIsDelCart(false)}
-      />
-      
-    </Container>
-    
-   </>
+            {productItem && (
+              <Footer
+                navigation={navigation}
+                id={id}
+                setIsAddCart={setIsAddCart}
+                setIsDelCart={setIsDelCart}
+                setLoading={setLoading}
+                setIsError={setIsError}
+                setErrorMessege={setErrorMessege}
+                isError={isError}
+                productItem={productItem}
+              />
+            )}
+            <ModalWarning
+              visible={isError}
+              onlyCancel
+              onRequestClose={() => onError()}
+              textCancel={'ตกลง'}
+              title={`${errorMessege ? errorMessege : ''}`}
+              desc="กรุณาสร้างคำสั่งซื้อใหม่แยกประเภทสินค้า"
+            />
+          </Content>
+        </KeyboardAvoidingView>
+        <LoadingSpinner visible={loading} />
+        <ModalMessage
+          visible={isAddCart}
+          message={t('modalMessage.addCart')}
+          onRequestClose={() => setIsAddCart(false)}
+        />
+        <ModalMessage
+          visible={isDelCart}
+          message={t('modalMessage.deleteCart')}
+          onRequestClose={() => setIsDelCart(false)}
+        />
+      </Container>
+    </>
   );
 }

@@ -155,7 +155,7 @@ interface ContextCart {
       cl: newProductType[],
       specialRequestFreebies?: SpFreebies[],
       newAllPromotion?: PromotionTypeCart[],
-      DataForReadyLoad?:DataForReadyLoad[]
+      DataForReadyLoad?: DataForReadyLoad[],
     ) => Promise<any>;
     postEditIsUseCod: ({ isUseCOD }: { isUseCOD: boolean }) => Promise<any>;
     postEditPaymentMethod: (
@@ -173,8 +173,8 @@ interface ContextCart {
   setFreebieListItem: React.Dispatch<React.SetStateAction<any>>;
   setPromotionListValue: React.Dispatch<React.SetStateAction<string[]>>;
   onMutateFreebie: (orderProducts: any) => void;
-  cartOrderLoad:DataForOrderLoad[];
-  setCartOrderLoad:React.Dispatch<React.SetStateAction<DataForOrderLoad[]>>
+  cartOrderLoad: DataForOrderLoad[];
+  setCartOrderLoad: React.Dispatch<React.SetStateAction<DataForOrderLoad[]>>;
 }
 const CartContext = React.createContext<ContextCart>({
   cartList: [],
@@ -212,7 +212,6 @@ const CartContext = React.createContext<ContextCart>({
         cartList: [] as newProductType[],
         specialRequestFreebies: [] as ProductFreebies[],
         cartDetail: {} as CartDetailType,
-        
       }),
     getSelectPromotion: async () => Promise.resolve(),
     postEditIsUseCod: async () => Promise.resolve(),
@@ -221,17 +220,15 @@ const CartContext = React.createContext<ContextCart>({
   onMutateFreebie: () => {
     return;
   },
-  cartOrderLoad:[],
-  setCartOrderLoad: ()=>{}
+  cartOrderLoad: [],
+  setCartOrderLoad: () => {},
 });
 
 export const CartProvider: React.FC<Props> = ({ children }) => {
   const {
     state: { user },
   } = useAuth();
-  const { 
-    setDataReadyLoad,
-  } = useOrderLoads();
+  const { setDataReadyLoad } = useOrderLoads();
   const [cartList, setCartList] = React.useState<newProductType[]>([]);
   const [promotionListValue, setPromotionListValue] = React.useState<string[]>(
     [],
@@ -254,7 +251,9 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
 
   const [promotionList, setPromotionList] = React.useState<any>([]);
   const [freebieListItem, setFreebieListItem] = React.useState<any>([]);
-  const [cartOrderLoad, setCartOrderLoad] = React.useState<DataForOrderLoad[]>([]);
+  const [cartOrderLoad, setCartOrderLoad] = React.useState<DataForOrderLoad[]>(
+    [],
+  );
   const value = React.useMemo(
     () => ({
       cartList,
@@ -419,38 +418,44 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
         })
         .filter((item: any) => !item.isFreebie);
 
-        const data: DataForOrderLoad[] = result.orderProducts
+      const data: DataForOrderLoad[] = result.orderProducts;
 
-        const processedData: DataForOrderLoad[] = data?.map((item) => ({
-          productId: item.productId,
-          quantity: item.quantity,
-          productName: item.productName,
-          saleUOMTH: item.saleUOMTH,
-          productImage: item.productImage,
-          baseUnitOfMeaTh: item.baseUnitOfMeaTh,
-          productFreebiesId: item.productFreebiesId,
-          isFreebie: item.isFreebie,
-          
-        }));
+      const processedData: DataForOrderLoad[] = data?.map(item => ({
+        productId: item.productId,
+        quantity: item.quantity,
+        productName: item.productName,
+        saleUOMTH: item.saleUOMTH,
+        productImage: item.productImage,
+        baseUnitOfMeaTh: item.baseUnitOfMeaTh,
+        productFreebiesId: item.productFreebiesId,
+        isFreebie: item.isFreebie,
+      }));
 
-        const mergedProducts = processedData.reduce((acc: { [key: string]: DataForOrderLoad }, item) => {     
-          const key = item.productId || `freebie_${item.productFreebiesId}` || 'undefined';
-          if (acc[key]) {          
-            acc[key].quantity += item.quantity;           
+      const mergedProducts = processedData.reduce(
+        (acc: { [key: string]: DataForOrderLoad }, item) => {
+          const key =
+            item.productId ||
+            `freebie_${item.productFreebiesId}` ||
+            'undefined';
+          if (acc[key]) {
+            acc[key].quantity += item.quantity;
             if (item.isFreebie) {
-              acc[key].freebieQuantity = (acc[key].freebieQuantity || 0) + item.quantity;
+              acc[key].freebieQuantity =
+                (acc[key].freebieQuantity || 0) + item.quantity;
             }
-          } else {           
-            acc[key] = { ...item };           
+          } else {
+            acc[key] = { ...item };
             acc[key].freebieQuantity = item.isFreebie ? item.quantity : 0;
-          }       
+          }
           return acc;
-        }, {});
-        
-        const mergedProductsArray = Object.values(mergedProducts);
-        const orderLoads = result.orderLoads
-      setCartOrderLoad(mergedProductsArray)
-      setDataReadyLoad(orderLoads)
+        },
+        {},
+      );
+
+      const mergedProductsArray = Object.values(mergedProducts);
+      const orderLoads = result.orderLoads;
+      setCartOrderLoad(mergedProductsArray);
+      setDataReadyLoad(orderLoads);
       setCartList(newFormat);
       return {
         ...result,
@@ -496,7 +501,7 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
       cl: newProductType[],
       specialRequestFreebies?: SpFreebies[],
       allPromotions?: PromotionTypeCart[],
-      dataReadyLoad?:DataForReadyLoad[],
+      dataReadyLoad?: DataForReadyLoad[],
     ) => {
       try {
         const orderProducts = cl.map(item => {
@@ -521,7 +526,7 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
           allPromotions: cartDetail?.allPromotions || [],
           specialRequestFreebies: cartDetail?.specialRequestFreebies || [],
           useCashDiscount: cartDetail?.useCashDiscount || false,
-          orderLoads: dataReadyLoad||[]
+          orderLoads: dataReadyLoad || [],
         };
 
         if (specialRequestFreebies) {
@@ -533,9 +538,9 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
         }
 
         const result = await cartServices.postCart(payload);
-        const data: DataForOrderLoad[] = result.orderProducts
+        const data: DataForOrderLoad[] = result.orderProducts;
 
-        const processedData: DataForOrderLoad[] = data?.map((item) => ({
+        const processedData: DataForOrderLoad[] = data?.map(item => ({
           productId: item.productId,
           quantity: item.quantity,
           productName: item.productName,
@@ -544,29 +549,33 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
           baseUnitOfMeaTh: item.baseUnitOfMeaTh,
           productFreebiesId: item.productFreebiesId,
           isFreebie: item.isFreebie,
-          
         }));
 
-        
-
-        const mergedProducts = processedData.reduce((acc: { [key: string]: DataForOrderLoad }, item) => {     
-          const key = item.productId || `freebie_${item.productFreebiesId}` || 'undefined';
-          if (acc[key]) {          
-            acc[key].quantity += item.quantity;           
-            if (item.isFreebie) {
-              acc[key].freebieQuantity = (acc[key].freebieQuantity || 0) + item.quantity;
+        const mergedProducts = processedData.reduce(
+          (acc: { [key: string]: DataForOrderLoad }, item) => {
+            const key =
+              item.productId ||
+              `freebie_${item.productFreebiesId}` ||
+              'undefined';
+            if (acc[key]) {
+              acc[key].quantity += item.quantity;
+              if (item.isFreebie) {
+                acc[key].freebieQuantity =
+                  (acc[key].freebieQuantity || 0) + item.quantity;
+              }
+            } else {
+              acc[key] = { ...item };
+              acc[key].freebieQuantity = item.isFreebie ? item.quantity : 0;
             }
-          } else {           
-            acc[key] = { ...item };           
-            acc[key].freebieQuantity = item.isFreebie ? item.quantity : 0;
-          }       
-          return acc;
-        }, {});
-        
-        const mergedProductsArray = Object.values(mergedProducts);
-        setCartOrderLoad(mergedProductsArray)
+            return acc;
+          },
+          {},
+        );
 
-        setDataReadyLoad(result.orderLoads)
+        const mergedProductsArray = Object.values(mergedProducts);
+        setCartOrderLoad(mergedProductsArray);
+
+        setDataReadyLoad(result.orderLoads);
         setCartDetail(result);
         const newFormat = (result?.orderProducts || [])
           .map((item: any): newProductType => {
@@ -623,7 +632,7 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
         },
         onMutateFreebie,
         cartOrderLoad,
-        setCartOrderLoad
+        setCartOrderLoad,
       }}>
       {children}
     </CartContext.Provider>

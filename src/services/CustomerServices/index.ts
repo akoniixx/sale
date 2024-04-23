@@ -7,24 +7,28 @@ const getDealerZoneById = async (saleId: string) => {
   return data;
 };
 
-const getCustomer = async (customerId:string,company:string) => {
+const getCustomer = async (customerId: string, company: string) => {
   return await request
     .get(
       `/auth/customer/get-customer?customerId=${customerId}&company=${company}`,
     )
     .then(res => {
-      return (res.data)})
+      return res.data;
+    })
     .catch(err => console.log(JSON.stringify(err.response.data, null, 2)));
 };
 
-const getCustomerByCusComId  =async (customerCompanyId:string) => {
+const getCustomerByCusComId = async (customerCompanyId: string) => {
   return await request
-    .get(
-      `/auth/customer-company/${customerCompanyId}`,
-    )
+    .get(`/auth/customer-company/${customerCompanyId}`)
     .then(res => {
-      return (res.data)})
+      return res.data;
+    })
     .catch(err => console.log(JSON.stringify(err.response.data, null, 2)));
-}
+};
 
-export const customerServices = { getDealerZoneById,getCustomer,getCustomerByCusComId };
+export const customerServices = {
+  getDealerZoneById,
+  getCustomer,
+  getCustomerByCusComId,
+};

@@ -15,8 +15,8 @@ export interface CartItemType {
   customerName?: string;
   customerNo?: string;
   userShopId: string;
-  orderLoads?:DataForReadyLoad[]
-  userStaffId: string
+  orderLoads?: DataForReadyLoad[];
+  userStaffId: string;
 }
 interface GetCartType {
   userStaffId?: string;
@@ -26,7 +26,9 @@ const postCart = async (payload: CartItemType) => {
   return await request
     .post(`/order-cart/cart/sale`, payload)
     .then(res => res.data)
-    .catch(err => {throw(err.response.data)});
+    .catch(err => {
+      throw err.response.data;
+    });
 };
 const getCartList = async ({ userStaffId, customerCompanyId }: GetCartType) => {
   return await request
@@ -34,23 +36,23 @@ const getCartList = async ({ userStaffId, customerCompanyId }: GetCartType) => {
       `/order-cart/cart/sale?userStaffId=${userStaffId}&customerCompanyId=${customerCompanyId}`,
     )
     .then(res => {
-      return (res.data)})
+      return res.data;
+    })
     .catch(err => console.log(JSON.stringify(err.response.data, null, 2)));
 };
-const postReorder =async (payload:
-  {
-    company:string,
-    userStaffId:string,
-    orderId:string
-    isForceReorder:boolean
-  }) => {
-    return await request
+const postReorder = async (payload: {
+  company: string;
+  userStaffId: string;
+  orderId: string;
+  isForceReorder: boolean;
+}) => {
+  return await request
     .post('/order-cart/cart/shop-reorder', payload)
     .then(res => res.data)
     .catch(err => err.response.data);
-}
+};
 export const cartServices = {
   postCart,
   getCartList,
-  postReorder
+  postReorder,
 };

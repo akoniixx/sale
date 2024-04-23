@@ -23,7 +23,6 @@ export default function SelectBrandBeforeDetailScreen({
   const { id, name: nameCompany, productBrand } = route.params;
   const { t } = useLocalization();
   const { setItem: setProductBrand } = useAsyncStorage('productBrand');
-  
 
   return (
     <Container>
@@ -66,7 +65,7 @@ export default function SelectBrandBeforeDetailScreen({
                         width: 50,
                         height: 50,
                         marginRight: 16,
-                        resizeMode:'contain'
+                        resizeMode: 'contain',
                       }}
                     />
                     <Text>{item.product_brand_name}</Text>

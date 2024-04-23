@@ -46,10 +46,14 @@ export default function ListItemInCart({
   const [loading, setLoading] = React.useState(false);
   const [loadingAnotherPromotion, setLoadingAnotherPromotion] =
     React.useState(false);
-    const [totalQuantities, setTotalQuantities] = useState<[{ unit: string, quantity: number }]>([{
+  const [totalQuantities, setTotalQuantities] = useState<
+    [{ unit: string; quantity: number }]
+  >([
+    {
       unit: '',
-      quantity: 0
-    }])
+      quantity: 0,
+    },
+  ]);
   const {
     cartList,
     cartDetail,
@@ -72,56 +76,62 @@ export default function ListItemInCart({
     setDollyData,
     setDataForLoad,
     dataReadyLoad,
-    setDataReadyLoad
+    setDataReadyLoad,
   } = useOrderLoads();
 
   const [visibleDel, setVisibleDel] = React.useState(false);
   const [delId, setDelId] = React.useState<string | number>('');
   const [decreaseId, setDecreaseId] = React.useState<string | number>('');
-  const [modalWarningDelete, setModalWarningDelete] = useState<boolean>(false)
-  const [modalDelete, setModalDelete] = useState<boolean>(false)
+  const [modalWarningDelete, setModalWarningDelete] = useState<boolean>(false);
+  const [modalDelete, setModalDelete] = useState<boolean>(false);
   useEffect(() => {
-    const quantitiesRecord: Record<string, number> = cartList.reduce((acc, product) => {
-      const key = product.saleUOMTH || product.baseUnitOfMeaTh;
-      if (key) {
-        acc[key] = (acc[key] || 0) + product.quantity;
-      }
-      return acc;
-    }, {});
-
-    const totalQuantities = Object.entries(quantitiesRecord).map(([unit, quantity]) => ({ unit, quantity }));
-    setTotalQuantities(totalQuantities)
-  }, [cartList])
-
-  useEffect(() => {
-    const mergedProducts = dataForLoad.reduce((acc: { [key: string]: DataForOrderLoad }, item) => {
-      const key = item.productId || `freebie_${item.productFreebiesId}` || 'undefined';
-      if (acc[key]) {
-        acc[key].quantity += item.quantity;
-        if (item.isFreebie) {
-          acc[key].freebieQuantity = (acc[key].freebieQuantity || 0) + item.quantity;
+    const quantitiesRecord: Record<string, number> = cartList.reduce(
+      (acc, product) => {
+        const key = product.saleUOMTH || product.baseUnitOfMeaTh;
+        if (key) {
+          acc[key] = (acc[key] || 0) + product.quantity;
         }
-      } else {
-        acc[key] = { ...item };
-        acc[key].freebieQuantity = item.isFreebie ? item.quantity : 0;
-      }
-      return acc;
-    }, {});
+        return acc;
+      },
+      {},
+    );
+
+    const totalQuantities = Object.entries(quantitiesRecord).map(
+      ([unit, quantity]) => ({ unit, quantity }),
+    );
+    setTotalQuantities(totalQuantities);
+  }, [cartList]);
+
+  useEffect(() => {
+    const mergedProducts = dataForLoad.reduce(
+      (acc: { [key: string]: DataForOrderLoad }, item) => {
+        const key =
+          item.productId || `freebie_${item.productFreebiesId}` || 'undefined';
+        if (acc[key]) {
+          acc[key].quantity += item.quantity;
+          if (item.isFreebie) {
+            acc[key].freebieQuantity =
+              (acc[key].freebieQuantity || 0) + item.quantity;
+          }
+        } else {
+          acc[key] = { ...item };
+          acc[key].freebieQuantity = item.isFreebie ? item.quantity : 0;
+        }
+        return acc;
+      },
+      {},
+    );
 
     const mergedProductsArray = Object.values(mergedProducts);
 
-
-    const updatedData = cartOrderLoad.map((item1) => {
-
-      const item2 = mergedProductsArray.find((item) => {
+    const updatedData = cartOrderLoad.map(item1 => {
+      const item2 = mergedProductsArray.find(item => {
         if (item.productFreebiesId) {
-
-          return item.productFreebiesId === item1.productFreebiesId
+          return item.productFreebiesId === item1.productFreebiesId;
         } else {
-          return item.productId === item1.productId
+          return item.productId === item1.productId;
         }
-      }
-      );
+      });
       if (item2) {
         return {
           ...item1,
@@ -130,7 +140,7 @@ export default function ListItemInCart({
           maxQuantity: item1.quantity,
           freebieQuantity: item2.freebieQuantity - item1.freebieQuantity,
           amount: item1.quantity - item1.freebieQuantity,
-          amountFreebie: item1.freebieQuantity
+          amountFreebie: item1.freebieQuantity,
         };
       }
       return {
@@ -140,13 +150,11 @@ export default function ListItemInCart({
         maxQuantity: item1.quantity,
         freebieQuantity: item1.freebieQuantity,
         amount: item1.quantity - item1.freebieQuantity,
-        amountFreebie: item1.freebieQuantity
-      }
+        amountFreebie: item1.freebieQuantity,
+      };
     });
     setCurrentList(updatedData);
-  }, [cartOrderLoad, dataForLoad])
-  
-
+  }, [cartOrderLoad, dataForLoad]);
 
   const onChangeOrder = async (value: any, id: string) => {
     const findIndex = cartList?.findIndex(item => item?.productId === id);
@@ -179,13 +187,12 @@ export default function ListItemInCart({
         const newCartList = [...cartList];
 
         newCartList[findIndex].amount += 1;
-        const newDataReadyLoad = [...dataReadyLoad]
+        const newDataReadyLoad = [...dataReadyLoad];
         const { cartList: cl, cartDetail: cD } = await postCartItem(
           newCartList,
           [],
           [],
-          newDataReadyLoad
-
+          newDataReadyLoad,
         );
         await getSelectPromotion(cD.allPromotions);
         setCartList(cl);
@@ -199,8 +206,8 @@ export default function ListItemInCart({
 
   const onDecrease = async (id: string) => {
     if (dataForLoad.length > 0) {
-      setDecreaseId(id)
-      setModalWarningDelete(true)
+      setDecreaseId(id);
+      setModalWarningDelete(true);
     } else {
       setLoading(true);
 
@@ -212,25 +219,24 @@ export default function ListItemInCart({
         const amount = newCartList[findIndex].amount;
         if (amount > 1) {
           newCartList[findIndex].amount -= 1;
-          const newDataReadyLoad = [...dataReadyLoad]
+          const newDataReadyLoad = [...dataReadyLoad];
           const { cartList: cl, cartDetail: cD } = await postCartItem(
             newCartList,
             [],
-            [],          
-            newDataReadyLoad
+            [],
+            newDataReadyLoad,
           );
           await getSelectPromotion(cD.allPromotions);
           setCartList(newCartList);
         } else {
           newCartList.splice(findIndex, 1);
-        
-         
-          const newDataReadyLoad = [...dataReadyLoad]
+
+          const newDataReadyLoad = [...dataReadyLoad];
           const { cartList: cl, cartDetail: cD } = await postCartItem(
             newCartList,
             [],
-            [],          
-            newDataReadyLoad
+            [],
+            newDataReadyLoad,
           );
           await getSelectPromotion(cD.allPromotions);
           setCartList(newCartList);
@@ -241,7 +247,7 @@ export default function ListItemInCart({
   };
 
   const onConfirmDecrease = async () => {
-    setModalWarningDelete(false)
+    setModalWarningDelete(false);
     setLoading(true);
 
     const findIndex = cartList?.findIndex(
@@ -251,27 +257,24 @@ export default function ListItemInCart({
       const newCartList = [...cartList];
       const amount = newCartList[findIndex].amount;
       if (amount > 1) {
-      
         newCartList[findIndex].amount -= 1;
-      
-        const newDataReadyLoad = [...dataReadyLoad]
-       
+
+        const newDataReadyLoad = [...dataReadyLoad];
 
         const { cartList: cl, cartDetail: cD } = await postCartItem(
           newCartList,
           [],
-          [],          
-          newDataReadyLoad
+          [],
+          newDataReadyLoad,
         );
         await getSelectPromotion(cD.allPromotions);
         setCartList(newCartList);
-
       } else {
         newCartList.splice(findIndex, 1);
-        setHeadData([])
-        setDollyData([])
-        setDataForLoad([])
-        setDataReadyLoad([])
+        setHeadData([]);
+        setDollyData([]);
+        setDataForLoad([]);
+        setDataReadyLoad([]);
         const { cartList: cl, cartDetail: cD } = await postCartItem(
           newCartList,
         );
@@ -280,11 +283,9 @@ export default function ListItemInCart({
       }
       setLoading(false);
     }
+  };
 
-  }
-
-
- /*  const onDecrease = async (id: string | number) => {
+  /*  const onDecrease = async (id: string | number) => {
     try {
       setLoading(true);
       const findIndex = cartList?.findIndex(
@@ -513,23 +514,24 @@ export default function ListItemInCart({
                         </View>
                       )}
                     </Text>
-                    { user?.company == 'ICPL' &&<Dropdown
-                      style={{
-                        width: 70,
-                        height: 24,
-                        justifyContent: 'center',
-                        paddingLeft: 16,
-                        marginTop: 8,
-                        paddingVertical: 2,
-                      }}
-                      titleModal="เลือกลำดับ"
-                      data={itemsDropdown}
-                      value={item.order}
-                      onChangeValue={value =>
-                        onChangeOrder(value, item.productId)
-                      }
-                    /> }
-                    
+                    {user?.company == 'ICPL' && (
+                      <Dropdown
+                        style={{
+                          width: 70,
+                          height: 24,
+                          justifyContent: 'center',
+                          paddingLeft: 16,
+                          marginTop: 8,
+                          paddingVertical: 2,
+                        }}
+                        titleModal="เลือกลำดับ"
+                        data={itemsDropdown}
+                        value={item.order}
+                        onChangeValue={value =>
+                          onChangeOrder(value, item.productId)
+                        }
+                      />
+                    )}
                   </View>
                 </View>
                 <View
@@ -633,25 +635,31 @@ export default function ListItemInCart({
         </Text>
         {cartList.length > 0 ? (
           <View>
-          <View>{RenderList(loadingAnotherPromotion || loading)}</View>
-          <View style={{ marginTop: 10 }}>
-          <DashedLine
-            dashGap={0}
-            dashThickness={0.5}
-            dashColor={colors.border2}
-            style={{ marginBottom: 20 }}
-          />
-          <View style={{ flexDirection: 'row', alignItems: 'baseline' }}>
-            <Text fontFamily='NotoSans' color='text3' fontSize={16} bold>จำนวนรวม :    </Text>
-            <View>
-              {totalQuantities.map(i => (<Text fontFamily='NotoSans' fontSize={18} bold>
-                {i.quantity%1===0? i.quantity : i.quantity.toFixed(2)} {i.unit}
-              </Text>))}
+            <View>{RenderList(loadingAnotherPromotion || loading)}</View>
+            <View style={{ marginTop: 10 }}>
+              <DashedLine
+                dashGap={0}
+                dashThickness={0.5}
+                dashColor={colors.border2}
+                style={{ marginBottom: 20 }}
+              />
+              <View style={{ flexDirection: 'row', alignItems: 'baseline' }}>
+                <Text fontFamily="NotoSans" color="text3" fontSize={16} bold>
+                  จำนวนรวม :{' '}
+                </Text>
+                <View>
+                  {totalQuantities.map(i => (
+                    <Text fontFamily="NotoSans" fontSize={18} bold>
+                      {i.quantity % 1 === 0
+                        ? i.quantity
+                        : i.quantity.toFixed(2)}{' '}
+                      {i.unit}
+                    </Text>
+                  ))}
+                </View>
+              </View>
             </View>
           </View>
-
-        </View>
-        </View>
         ) : (
           <View
             style={{
@@ -694,9 +702,6 @@ export default function ListItemInCart({
         />
       )}
 
-
-
-
       <GiftFromPromotion
         freebieListItem={freebieListItem}
         loadingPromo={loadingPromo || loading || loadingAnotherPromotion}
@@ -706,15 +711,14 @@ export default function ListItemInCart({
         message={t('modalMessage.deleteCart')}
         onRequestClose={() => setIsDelCart(false)}
       />
-        <ModalWarning
-          visible={modalWarningDelete}
-          width={'70%'}
-          title='ยืนยันการลดจำนวนสินค้าในตะกร้า'
-          desc={`การลดสินค้าในตะกร้า ส่งผลต่อลำดับ\nการขนสินค้าขึ้นรถที่กำหนดไว้\nหากกดยืนยันการลดสินค้า`}
-       
-          onConfirm={onConfirmDecrease}
-          onRequestClose={() => setModalWarningDelete(false)}
-        />
+      <ModalWarning
+        visible={modalWarningDelete}
+        width={'70%'}
+        title="ยืนยันการลดจำนวนสินค้าในตะกร้า"
+        desc={`การลดสินค้าในตะกร้า ส่งผลต่อลำดับ\nการขนสินค้าขึ้นรถที่กำหนดไว้\nหากกดยืนยันการลดสินค้า`}
+        onConfirm={onConfirmDecrease}
+        onRequestClose={() => setModalWarningDelete(false)}
+      />
       {/* <LoadingSpinner visible={loading} /> */}
     </>
   );

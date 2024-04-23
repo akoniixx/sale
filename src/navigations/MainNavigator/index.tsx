@@ -183,7 +183,7 @@ export type MainStackParamList = {
   EditLocationScreen: {
     customerOtherId: string;
   };
-  OrderLoadsScreen:undefined
+  OrderLoadsScreen: undefined;
   DeliveryFilesScreen: {
     deliveryFiles: string[];
   };

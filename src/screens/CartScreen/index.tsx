@@ -76,7 +76,7 @@ export default function CartScreen({
     setDollyData,
     setDataForLoad,
     dataForLoad,
-  } = useOrderLoads()
+  } = useOrderLoads();
   const refInput = React.useRef<any>(null);
   const scrollRef = React.useRef<ScrollView | null>(null);
   const [modalReorder, setModalReorder] = useState(false);
@@ -124,7 +124,7 @@ export default function CartScreen({
       setHeadData([]);
       setDollyData([]);
       setDataForLoad([]);
-      await AsyncStorage.removeItem('imageUris')
+      await AsyncStorage.removeItem('imageUris');
       await postCartItem([]);
     } catch (error) {
       console.log(error);
@@ -180,7 +180,7 @@ export default function CartScreen({
         orderProducts,
         allPromotions: cartDetail.allPromotions,
         specialRequestFreebies: cartDetail.specialRequestFreebies || [],
-        orderLoads: dataReadyLoad
+        orderLoads: dataReadyLoad,
       };
 
       if (dataStepTwo.deliveryAddressId) {
@@ -529,7 +529,7 @@ export default function CartScreen({
         textConfirm="ตกลง"
       />
 
-<ModalWarning
+      <ModalWarning
         visible={modalReset}
         width={'70%'}
         title="ยืนยันล้างตะกร้าสินค้า"

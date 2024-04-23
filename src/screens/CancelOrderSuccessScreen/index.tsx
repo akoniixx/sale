@@ -43,7 +43,7 @@ export default function CancelOrderSuccessScreen({
             onPress={() => {
               navigation.navigate('HistoryDetailScreen', {
                 orderId: orderId,
-               headerTitle:date
+                headerTitle: date,
               });
             }}>
             <Image
@@ -84,7 +84,7 @@ export default function CancelOrderSuccessScreen({
               backgroundColor: colors.white,
             }}>
             <Text fontFamily="NotoSans" semiBold>
-            เหตุผลที่ยกเลิก (พนักงานขาย)
+              เหตุผลที่ยกเลิก (พนักงานขาย)
             </Text>
             <Text color="text2">{cancelRemark}</Text>
           </View>
@@ -205,7 +205,7 @@ export default function CancelOrderSuccessScreen({
             onPress={() => {
               navigation.navigate('HistoryDetailScreen', {
                 orderId: orderId,
-                headerTitle:date
+                headerTitle: date,
               });
             }}
           />

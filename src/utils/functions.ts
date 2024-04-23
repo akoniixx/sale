@@ -1,4 +1,4 @@
-import { Dimensions } from "react-native";
+import { Dimensions } from 'react-native';
 
 export const numberWithCommas = (x?: number | string, isDecimal = false) => {
   if (!x) return 0;
@@ -50,7 +50,7 @@ export const getNewPath = (path: string) => {
   return sliceStart + '/' + encodeURIComponent(sliceEnd);
 };
 
-const {width, height} = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 const guidelineBaseWidth = 350;
 const guidelineBaseHeight = 680;
 
@@ -60,4 +60,3 @@ export const normalize = (size: number, factor = 0.5) =>
   size + (scale(size) - size) * factor;
 const aspectRatio = height / width;
 const isIpad = aspectRatio > 1.6;
-

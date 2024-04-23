@@ -10,7 +10,6 @@ import termConditions from '../../utils/termAndConditions.json';
 export default function TCReadOnlyScreen(
   props: StackScreenProps<MainStackParamList, 'TCReadOnlyScreen', undefined>,
 ) {
-  
   return (
     <Container>
       <Header title="เงื่อนไขและข้อตกลงการใช้บริการ" />

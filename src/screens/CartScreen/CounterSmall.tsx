@@ -27,7 +27,6 @@ const CounterSmall = ({
   onDecrease,
   onIncrease,
   id,
- 
 }: Props): JSX.Element => {
   const [quantity, setQuantity] = React.useState('0');
   const [isModalVisible, setIsModalVisible] = React.useState<boolean>(false);
@@ -55,12 +54,11 @@ const CounterSmall = ({
       return;
     }
     if ((+quantity < 1 && currentQuantity > 0) || !quantity) {
-      if(!isSpecialRequest){
+      if (!isSpecialRequest) {
         setIsModalVisible(true);
-      }else{
+      } else {
         onChangeText?.({ id, quantity });
       }
-     
     } else {
       onChangeText?.({ id, quantity });
     }
@@ -103,10 +101,11 @@ const CounterSmall = ({
         returnKeyType="done"
         onSubmitEditing={() => {
           if (+quantity < 1 && currentQuantity > 0) {
-           if(!isSpecialRequest) {setIsModalVisible(true)}
-           else{
-            onChangeText?.({ id, quantity });
-           }
+            if (!isSpecialRequest) {
+              setIsModalVisible(true);
+            } else {
+              onChangeText?.({ id, quantity });
+            }
           } else {
             onChangeText?.({ id, quantity });
           }

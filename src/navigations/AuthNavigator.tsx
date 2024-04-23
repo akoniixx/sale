@@ -16,7 +16,7 @@ export type AuthStackParamList = {
     tel: string;
   };
   WelcomeScreen: undefined;
-  TermAndConditionScreen:undefined
+  TermAndConditionScreen: undefined;
 };
 const Stack = createStackNavigator<AuthStackParamList>();
 export default function AuthNavigator() {
@@ -41,7 +41,10 @@ export default function AuthNavigator() {
         <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} />
         <Stack.Screen name="OtpScreen" component={OtpScreen} />
         <Stack.Screen name="LoginScreen" component={LoginScreen} />
-        <Stack.Screen name="TermAndConditionScreen" component={TermAndConditionScreen} />
+        <Stack.Screen
+          name="TermAndConditionScreen"
+          component={TermAndConditionScreen}
+        />
       </Stack.Group>
     </Stack.Navigator>
   );

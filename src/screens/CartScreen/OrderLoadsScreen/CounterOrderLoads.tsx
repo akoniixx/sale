@@ -17,11 +17,11 @@ interface Props {
   currentQuantity: number;
   onBlur?: () => void;
   onChangeText?: (value: { quantity: string; id?: any }) => void;
-  maxQuantity:number
+  maxQuantity: number;
   id: string;
   onIncrease?: (id: string) => void;
   onDecrease?: (id: string) => void;
-  disable?:boolean
+  disable?: boolean;
 }
 const CounterOrderLoads = ({
   currentQuantity = 0,
@@ -30,7 +30,7 @@ const CounterOrderLoads = ({
   onIncrease,
   id,
   disable,
-  maxQuantity
+  maxQuantity,
 }: Props): JSX.Element => {
   const [quantity, setQuantity] = React.useState<string>('0.00');
   const { t } = useLocalization();
@@ -38,7 +38,7 @@ const CounterOrderLoads = ({
   const [isModalVisible, setIsModalVisible] = React.useState<boolean>(false);
   const onBlurInput = () => {
     onChangeText?.({ id, quantity });
-/* 
+    /* 
     if (+quantity < 1 && currentQuantity > 0) {
       setIsModalVisible(true);
     } else {
@@ -55,10 +55,17 @@ const CounterOrderLoads = ({
   }, [currentQuantity]);
 
   return (
-    <View style={[styles.container,{backgroundColor:disable?'#E1E7F6':'white'}]}>
+    <View
+      style={[
+        styles.container,
+        { backgroundColor: disable ? '#E1E7F6' : 'white' },
+      ]}>
       <TouchableOpacity
-      disabled={disable}
-      style={[styles.button,{ backgroundColor:disable?'#E1E7F6' :colors.primary,}]}
+        disabled={disable}
+        style={[
+          styles.button,
+          { backgroundColor: disable ? '#E1E7F6' : colors.primary },
+        ]}
         onPress={() => {
           if (onDecrease) {
             onDecrease(id);
@@ -73,7 +80,7 @@ const CounterOrderLoads = ({
         />
       </TouchableOpacity>
       <Pressable
-      disabled={disable}
+        disabled={disable}
         onPress={e => {
           e.stopPropagation();
           inputRef.current?.focus();
@@ -92,9 +99,9 @@ const CounterOrderLoads = ({
             padding: 0,
           }}
           onChangeText={text => {
-            if(+text>maxQuantity){
-              setQuantity(maxQuantity.toFixed(2).toString())
-            }else{
+            if (+text > maxQuantity) {
+              setQuantity(maxQuantity.toFixed(2).toString());
+            } else {
               const convertedTextToDecimal = text.replace(/[^0-9.]/g, '');
               const onlyTwoDecimal = convertedTextToDecimal.split('.');
               const toFixed =
@@ -103,16 +110,17 @@ const CounterOrderLoads = ({
                   : convertedTextToDecimal;
               setQuantity(toFixed);
             }
-          
-          
-          }} 
+          }}
           onBlur={onBlurInput}
         />
       </Pressable>
 
       <TouchableOpacity
-      disabled={disable}
-        style={[styles.button,{ backgroundColor:disable?'#E1E7F6' :colors.primary,}]}
+        disabled={disable}
+        style={[
+          styles.button,
+          { backgroundColor: disable ? '#E1E7F6' : colors.primary },
+        ]}
         onPress={() => {
           if (onIncrease) {
             onIncrease(id);

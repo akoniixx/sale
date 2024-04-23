@@ -16,9 +16,9 @@ interface Props {
   setIsDelCart: React.Dispatch<React.SetStateAction<boolean>>;
   productItem: ProductSummary;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
-  setIsError: (v: boolean) => void
-  setErrorMessege: (v: string) => void
-  isError: boolean
+  setIsError: (v: boolean) => void;
+  setErrorMessege: (v: string) => void;
+  isError: boolean;
 }
 export default function Footer({
   id,
@@ -34,7 +34,7 @@ export default function Footer({
   const { t } = useLocalization();
 
   const [currentCount, setCurrentCount] = useState(0);
-  const [error,setError] = useState(false)
+  const [error, setError] = useState(false);
   const {
     cartList,
     setCartList,
@@ -43,7 +43,6 @@ export default function Footer({
   const currentProduct = cartList?.find(
     item => item?.productId.toString() === id,
   );
- 
 
   const [debounceCount, loading] = useDebounce(currentProduct?.amount, 500);
 
@@ -66,54 +65,49 @@ export default function Footer({
     quantity: string;
     id?: any;
   }) => {
-   
+    if (!error) {
+      const findIndex = cartList?.findIndex(
+        item => item?.productId.toString() === id.toString(),
+      );
+      if (findIndex !== -1) {
+        const newCartList = [...cartList];
+        if (+quantity < 1) {
+          setLoading(true);
 
-if(!error){
-  const findIndex = cartList?.findIndex(
-    item => item?.productId.toString() === id.toString(),
-  );
-  if (findIndex !== -1) {
-    const newCartList = [...cartList];
-    if (+quantity < 1) {
-      setLoading(true);
+          newCartList.splice(findIndex, 1);
+          setCartList(newCartList);
+          await postCartItem(newCartList);
+          setIsDelCart(true);
+          setLoading(false);
 
-      newCartList.splice(findIndex, 1);
-      setCartList(newCartList);
-      await postCartItem(newCartList);
-      setIsDelCart(true);
-      setLoading(false);
+          return;
+        } else {
+          newCartList[findIndex].amount = Number(quantity);
+          setCartList(newCartList);
+        }
+      } else {
+        const newCartList: any = [
+          ...cartList,
+          {
+            ...productItem,
+            productId: id,
+            amount: Number(quantity),
+            orderProductPromotions: promotionIdList || [],
+            order: cartList.length + 1,
+          },
+        ];
 
-      return;
-    } else {
-      newCartList[findIndex].amount = Number(quantity);
-      setCartList(newCartList);
-   
+        try {
+          const res = await postCartItem(newCartList);
+          setIsAddCart(true);
+          setCartList(newCartList);
+        } catch (error: any) {
+          setIsError(true);
+          setErrorMessege(error.message);
+          console.log(error, 'from catch detail');
+        }
+      }
     }
-  } else {
-    const newCartList: any = [
-      ...cartList,
-      {
-        ...productItem,
-        productId: id,
-        amount: Number(quantity),
-        orderProductPromotions: promotionIdList || [],
-        order: cartList.length + 1,
-      },
-    ];
-
-    try {
-      const res = await postCartItem(newCartList);
-      setIsAddCart(true);
-      setCartList(newCartList);
-    } catch (error: any) {
-      setIsError(true)
-      setErrorMessege(error.message)
-      console.log(error, 'from catch detail')
-    }
-  }
-}
-
-   
   };
   const onIncrease = async () => {
     const findIndex = cartList?.findIndex(
@@ -129,13 +123,12 @@ if(!error){
         setIsAddCart(true);
         setCartList(newCartList);
       } catch (error: any) {
-        setIsError(true)
-        setErrorMessege(error.message)
-        console.log(error, 'from catch detail')
+        setIsError(true);
+        setErrorMessege(error.message);
+        console.log(error, 'from catch detail');
       } finally {
         setLoading(false);
       }
-
     } else {
       const newCartList: any = [
         ...cartList,
@@ -152,16 +145,12 @@ if(!error){
         setIsAddCart(true);
         setCartList(newCartList);
       } catch (error: any) {
-        setIsError(true)
-        setErrorMessege(error.message)
-        console.log(error, 'from catch detail')
-
+        setIsError(true);
+        setErrorMessege(error.message);
+        console.log(error, 'from catch detail');
       } finally {
-
       }
-
     }
- 
   };
   const onDecrease = async () => {
     const findIndex = cartList?.findIndex(
@@ -174,7 +163,6 @@ if(!error){
       if (amount > 5) {
         newCartList[findIndex].amount -= 5;
         setCartList(newCartList);
-       
       } else {
         newCartList.splice(findIndex, 1);
         setCartList(newCartList);
@@ -184,48 +172,46 @@ if(!error){
     }
   };
   const onOrder = async () => {
-      // setDisabledButton(true);
-      const findIndex = cartList?.findIndex(
-        item => item?.productId.toString() === id,
-      );
+    // setDisabledButton(true);
+    const findIndex = cartList?.findIndex(
+      item => item?.productId.toString() === id,
+    );
 
-      if (findIndex !== -1) {
-        const newCartList = [...cartList];
-        newCartList[findIndex].amount = currentCount;
+    if (findIndex !== -1) {
+      const newCartList = [...cartList];
+      newCartList[findIndex].amount = currentCount;
+      setCartList(newCartList);
+      await postCartItem(newCartList);
+      navigation.navigate('CartScreen');
+    } else {
+      const newCartList: any = [
+        ...cartList,
+        {
+          ...productItem,
+          productId: id,
+          amount: currentCount,
+          orderProductPromotions: promotionIdList,
+          order: cartList?.length + 1,
+        },
+      ];
+
+      try {
+        const res = await postCartItem(newCartList);
+        setIsAddCart(true);
         setCartList(newCartList);
-        await postCartItem(newCartList);
         navigation.navigate('CartScreen');
-      } else {
-        const newCartList: any = [
-          ...cartList,
-          {
-            ...productItem,
-            productId: id,
-            amount: currentCount,
-            orderProductPromotions: promotionIdList,
-            order: cartList?.length + 1,
-          },
-        ];
-
-        try {
-          const res = await postCartItem(newCartList);
-          setIsAddCart(true);
-          setCartList(newCartList);
-          navigation.navigate('CartScreen');
-        } catch (error: any) {
-          console.log
-          setError(true)
-          setIsError(true)
-          setErrorMessege(error.message)
-        
-  
-        } 
-
-       /*  setCartList(newCartList);
-        await postCartItem(newCartList); */
+      } catch (error: any) {
+        console.log;
+        setError(true);
+        setIsError(true);
+        setErrorMessege(error.message);
       }
-      // setIsAddCart(true);
-      // setDisabledButton(false);
+
+      /*  setCartList(newCartList);
+        await postCartItem(newCartList); */
+    }
+    // setIsAddCart(true);
+    // setDisabledButton(false);
   };
   return (
     <View style={styles().container}>

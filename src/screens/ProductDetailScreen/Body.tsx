@@ -193,7 +193,6 @@ export default function Body({
                   endDate={item.promotion.endDate}
                   promotionName={item.promotion.promotionName}
                 />
-                
               );
             })}
           </View>

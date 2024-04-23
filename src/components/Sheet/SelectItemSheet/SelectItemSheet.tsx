@@ -126,6 +126,17 @@ export const SelectItemsSheet = (props: SheetProps) => {
     }));
   };
 
+  const selectAll = () => {
+    setCurrentList((currentList:any[])=>currentList.map(cur => {
+      return{
+        ...cur,
+        isSelected:!cur.isSelected ,
+        key:uuid.v4(),
+        type: type === 'รถแม่' ? 'head' : 'dolly'
+      }
+    }) )
+  }
+
   const handleSelectItem = (item: DataForOrderLoad) => {
     setCurrentList((currentList: any[]) => currentList.map(cur => {
       if (item.isFreebie) {
@@ -149,9 +160,6 @@ export const SelectItemsSheet = (props: SheetProps) => {
       }
       return cur;
     }));
-
-
-
   };
   const onSubmit = () => {
     const selectedItems = currentList.filter(item => item.isSelected);
@@ -252,6 +260,20 @@ export const SelectItemsSheet = (props: SheetProps) => {
               style={{ marginVertical: 20 }}
             />
             <View style={{ paddingHorizontal: 10 }}>
+              <View style={{flexDirection:'row',marginBottom:10}}>
+
+             
+            <TouchableOpacity
+                          onPress={() => selectAll()}>
+                          <Image
+                            source={
+                              currentList?.every(item => item.isSelected) ? icons.checkbox : icons.uncheckbox
+                            }
+                            style={{ width: 20, height: 20 }}
+                          />
+                        </TouchableOpacity>
+<Text fontSize={16} style={{marginLeft:10}}>เลือกทั้งหมด</Text>
+                        </View>
               {currentList.filter(item => item.quantity > 0).map((item, idx) => {
 
                 return (

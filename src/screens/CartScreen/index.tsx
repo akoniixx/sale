@@ -1,5 +1,5 @@
 import { View, ScrollView, Image, TouchableOpacity } from 'react-native';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Container from '../../components/Container/Container';
 import Content from '../../components/Content/Content';
 import { useLocalization } from '../../contexts/LocalizationContext';
@@ -182,6 +182,7 @@ export default function CartScreen({
         specialRequestFreebies: cartDetail.specialRequestFreebies || [],
         orderLoads: dataReadyLoad
       };
+
       if (dataStepTwo.deliveryAddressId) {
         payload.deliveryAddressId = dataStepTwo.deliveryAddressId;
         const result = await otherAddressServices.getById(
@@ -205,9 +206,7 @@ export default function CartScreen({
       if (dataStepTwo.numberPlate) {
         payload.numberPlate = dataStepTwo.numberPlate;
       }
-      // console.log('payload', JSON.stringify(payload, null, 2));
       const result = await orderServices.createOrder(payload);
-      /*  console.log(result) */
 
       if (result) {
         setCartDetail({} as CartDetailType);
@@ -328,28 +327,28 @@ export default function CartScreen({
 
         if (params?.locationData) {
           // select location
-          const isHaveLocationData = Object.keys(params.locationData).some(
-            el => params.locationData?.[el as keyof LocationDataType],
-          );
-          const locationData = params.locationData ? params.locationData : null;
-          if (!isHaveLocationData || !locationData) {
-            return;
-          }
-          setAddressDelivery(prev => ({
-            ...prev,
-            address: locationData.address || '',
-            name: locationData.name || '',
-            id: locationData.id || '',
-          }));
-          setDataStepTwo(prev => ({
-            ...prev,
-            deliveryAddress: `${locationData.name || ''} ${
-              locationData.address
-            }`,
-            deliveryRemark: locationData.comment || '',
-            deliveryDest: locationData.selected || '',
-            deliveryAddressId: locationData.id || undefined,
-          }));
+          // const isHaveLocationData = Object.keys(params.locationData).some(
+          //   el => params.locationData?.[el as keyof LocationDataType],
+          // );
+          // const locationData = params.locationData ? params.locationData : null;
+          // if (!isHaveLocationData || !locationData) {
+          //   return;
+          // }
+          // setAddressDelivery(prev => ({
+          //   ...prev,
+          //   address: locationData.address || '',
+          //   name: locationData.name || '',
+          //   id: locationData.id || '',
+          // }));
+          // setDataStepTwo(prev => ({
+          //   ...prev,
+          //   deliveryAddress: `${locationData.name || ''} ${
+          //     locationData.address
+          //   }`,
+          //   deliveryRemark: locationData.comment || '',
+          //   deliveryDest: locationData.selected || '',
+          //   deliveryAddressId: locationData.id || undefined,
+          // }));
         } else if (user?.company && user?.company === 'ICPL') {
           getShopLocation();
         } else if (user?.company && user?.company === 'ICPF') {

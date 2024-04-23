@@ -20,6 +20,10 @@ export default function LocationDelivery({ orderDetail, navigation }: Props) {
       deliveryFiles: orderDetail?.deliveryFiles,
     });
   };
+  console.log(
+    'orderDetail?.deliveryDest',
+    JSON.stringify(orderDetail, null, 2),
+  );
   return (
     <View
       style={{
@@ -50,7 +54,7 @@ export default function LocationDelivery({ orderDetail, navigation }: Props) {
         }}>
         {orderDetail?.deliveryAddress || '-'}
       </Text>
-      <TouchableOpacity
+      {/* <TouchableOpacity
         onPress={handlePress}
         style={{
           borderWidth: 1,
@@ -72,7 +76,7 @@ export default function LocationDelivery({ orderDetail, navigation }: Props) {
           </View>
           <Image style={{ width: 24, height: 24 }} source={icons.iconNext} />
         </View>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </View>
   );
 }

@@ -14,6 +14,7 @@ interface PayloadHistory {
   isSpecialRequest?: boolean;
   zone?: string;
   userStaffId?: string;
+  role?: string;
 }
 const getHistory = async (payload: PayloadHistory) => {
   const {
@@ -27,6 +28,7 @@ const getHistory = async (payload: PayloadHistory) => {
     startDate,
     zone,
     userStaffId,
+    role,
   } = payload;
 
   const queryStatus = status?.reduce((acc, value) => {
@@ -56,6 +58,9 @@ const getHistory = async (payload: PayloadHistory) => {
   }
   if (zone) {
     payloadQuery.customerZones = zone;
+  }
+  if (role) {
+    payloadQuery.role = role;
   }
 
   const query = new URLSearchParams(payloadQuery as any).toString();

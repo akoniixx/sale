@@ -20,10 +20,7 @@ export default function LocationDelivery({ orderDetail, navigation }: Props) {
       deliveryFiles: orderDetail?.deliveryFiles,
     });
   };
-  console.log(
-    'orderDetail?.deliveryDest',
-    JSON.stringify(orderDetail, null, 2),
-  );
+
   return (
     <View
       style={{
@@ -54,7 +51,7 @@ export default function LocationDelivery({ orderDetail, navigation }: Props) {
         }}>
         {orderDetail?.deliveryAddress || '-'}
       </Text>
-      {/* <TouchableOpacity
+      <TouchableOpacity
         onPress={handlePress}
         style={{
           borderWidth: 1,
@@ -63,20 +60,22 @@ export default function LocationDelivery({ orderDetail, navigation }: Props) {
           borderRadius: 8,
           marginTop: 10,
         }}>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-          }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Text fontFamily="NotoSans">
-              เอกสารที่เกี่ยวกับการขนส่ง (
-              {orderDetail?.deliveryFiles?.length || 0} รายการ)
-            </Text>
+        {orderDetail && orderDetail?.deliveryFiles?.length > 0 && (
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+            }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Text fontFamily="NotoSans">
+                เอกสารที่เกี่ยวกับการขนส่ง (
+                {orderDetail?.deliveryFiles?.length || 0} รายการ)
+              </Text>
+            </View>
+            <Image style={{ width: 24, height: 24 }} source={icons.iconNext} />
           </View>
-          <Image style={{ width: 24, height: 24 }} source={icons.iconNext} />
-        </View>
-      </TouchableOpacity> */}
+        )}
+      </TouchableOpacity>
     </View>
   );
 }

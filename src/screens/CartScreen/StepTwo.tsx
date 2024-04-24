@@ -388,67 +388,69 @@ export default function StepTwo({
         </View>
       ) : null}
 
-      {user?.company === 'ICPF' && <View
-        style={{
-          marginTop: 8,
-          backgroundColor: 'white',
-          padding: 16,
-        }}>
-        <Text fontSize={18} bold fontFamily="NotoSans">
-          ลำดับการจัดเรียงสินค้า
-        </Text>
-        <TouchableOpacity
-          onPress={() => navigationRef.navigate('OrderLoadsScreen')}
+      {user?.company === 'ICPF' && (
+        <View
           style={{
-            paddingVertical: 15,
-            paddingHorizontal: 10,
-            borderWidth: 0.5,
-            borderRadius: 8,
-            marginTop: 10,
-            borderColor: '#E1E7F6',
+            marginTop: 8,
+            backgroundColor: 'white',
+            padding: 16,
           }}>
-          <View
-            style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <View style={{ flexDirection: 'row' }}>
-              <Image
-                source={icons.car}
-                style={{ width: 24, height: 24, marginRight: 10 }}
-              />
-              <View>
-                <Text fontFamily="NotoSans" lineHeight={21}>
-                  รายการจัดเรียงสินค้าขึ้นรถ
-                </Text>
+          <Text fontSize={18} bold fontFamily="NotoSans">
+            ลำดับการจัดเรียงสินค้า
+          </Text>
+          <TouchableOpacity
+            onPress={() => navigationRef.navigate('OrderLoadsScreen')}
+            style={{
+              paddingVertical: 15,
+              paddingHorizontal: 10,
+              borderWidth: 0.5,
+              borderRadius: 8,
+              marginTop: 10,
+              borderColor: '#E1E7F6',
+            }}>
+            <View
+              style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+              <View style={{ flexDirection: 'row' }}>
+                <Image
+                  source={icons.car}
+                  style={{ width: 24, height: 24, marginRight: 10 }}
+                />
+                <View>
+                  <Text fontFamily="NotoSans" lineHeight={21}>
+                    รายการจัดเรียงสินค้าขึ้นรถ
+                  </Text>
+                  {!currentList.every(Item => Item.quantity === 0) &&
+                    dataForLoad.length > 0 && (
+                      <Text fontSize={14} lineHeight={18} color="secondary">
+                        กรุณาตรวจสอบลำดับสินค้าอีกครั้ง
+                      </Text>
+                    )}
+                </View>
+              </View>
+              <View style={{ flexDirection: 'row' }}>
+                {currentList.every(Item => Item.quantity === 0) &&
+                  dataForLoad.length > 0 && (
+                    <Image
+                      source={icons.uploadSucsess}
+                      style={{ width: 20, height: 20, marginRight: 10 }}
+                    />
+                  )}
                 {!currentList.every(Item => Item.quantity === 0) &&
                   dataForLoad.length > 0 && (
-                    <Text fontSize={14} lineHeight={18} color="secondary">
-                      กรุณาตรวจสอบลำดับสินค้าอีกครั้ง
-                    </Text>
+                    <Image
+                      source={icons.warning}
+                      style={{ width: 25, height: 25, marginRight: 10 }}
+                    />
                   )}
+                <Image
+                  source={icons.iconNext}
+                  style={{ width: 24, height: 24 }}
+                />
               </View>
             </View>
-            <View style={{ flexDirection: 'row' }}>
-              {currentList.every(Item => Item.quantity === 0) &&
-                dataForLoad.length > 0 && (
-                  <Image
-                    source={icons.uploadSucsess}
-                    style={{ width: 20, height: 20, marginRight: 10 }}
-                  />
-                )}
-              {!currentList.every(Item => Item.quantity === 0) &&
-                dataForLoad.length > 0 && (
-                  <Image
-                    source={icons.warning}
-                    style={{ width: 25, height: 25, marginRight: 10 }}
-                  />
-                )}
-              <Image
-                source={icons.iconNext}
-                style={{ width: 24, height: 24 }}
-              />
-            </View>
-          </View>
-        </TouchableOpacity>
-      </View>}
+          </TouchableOpacity>
+        </View>
+      )}
 
       <View
         style={[
@@ -521,46 +523,45 @@ export default function StepTwo({
           </Text>
           {user?.company !== 'ICPF' && (
             <TouchableOpacity
-              onPress={async () => {
-                const result: {
-                  name?: string;
-                  address: string;
-                  comment?: string;
-                  selected: string;
-                } = await SheetManager.show('select-location', {
-                  payload: {
-                    address: addressDelivery.address,
-                    name: addressDelivery.name,
-                    comment: dataStepTwo?.deliveryRemark || '',
-                    selected: dataStepTwo.deliveryDest,
-                  },
-                });
-                if (result) {
-                  setAddressDelivery(prev => ({
-                    ...prev,
-                    address: result.address,
-                    name: result.name || '',
-                  }));
-                  setDataStepTwo(prev => ({
-                    ...prev,
-                    deliveryAddress: `${result.name || ''} ${
-                      result.address || ''
-                    }`,
-                    deliveryRemark: result.comment || '',
-                    deliveryDest: result.selected || '',
-                  }));
-                }
-              }}
-              // onPress={() => {
-              //   navigation.navigate('SelectLocationScreen', {
-              //     address: addressDelivery.address,
-              //     name: addressDelivery.name,
-              //     comment: dataStepTwo?.deliveryRemark || '',
-              //     selected: dataStepTwo.deliveryDest,
-              //     id: addressDelivery?.id,
+              // onPress={async () => {
+              //   const result: {
+              //     name?: string;
+              //     address: string;
+              //     comment?: string;
+              //     selected: string;
+              //   } = await SheetManager.show('select-location', {
+              //     payload: {
+              //       address: addressDelivery.address,
+              //       name: addressDelivery.name,
+              //       comment: dataStepTwo?.deliveryRemark || '',
+              //       selected: dataStepTwo.deliveryDest,
+              //     },
               //   });
+              //   if (result) {
+              //     setAddressDelivery(prev => ({
+              //       ...prev,
+              //       address: result.address,
+              //       name: result.name || '',
+              //     }));
+              //     setDataStepTwo(prev => ({
+              //       ...prev,
+              //       deliveryAddress: `${result.name || ''} ${
+              //         result.address || ''
+              //       }`,
+              //       deliveryRemark: result.comment || '',
+              //       deliveryDest: result.selected || '',
+              //     }));
+              //   }
               // }}
-            >
+              onPress={() => {
+                navigation.navigate('SelectLocationScreen', {
+                  address: addressDelivery.address,
+                  name: addressDelivery.name,
+                  comment: dataStepTwo?.deliveryRemark || '',
+                  selected: dataStepTwo.deliveryDest,
+                  id: addressDelivery?.id,
+                });
+              }}>
               <Text fontSize={14} color="primary">
                 เปลี่ยน
               </Text>

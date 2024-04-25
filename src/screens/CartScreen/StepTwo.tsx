@@ -114,6 +114,52 @@ export default function StepTwo({
             <Text bold fontSize={18} fontFamily="NotoSans">
               สถานที่รับสินค้า / สถานที่จัดส่ง
             </Text>
+            {user?.company !== 'ICPF' && (
+              <TouchableOpacity
+                // onPress={async () => {
+                //   const result: {
+                //     name?: string;
+                //     address: string;
+                //     comment?: string;
+                //     selected: string;
+                //   } = await SheetManager.show('select-location', {
+                //     payload: {
+                //       address: addressDelivery.address,
+                //       name: addressDelivery.name,
+                //       comment: dataStepTwo?.deliveryRemark || '',
+                //       selected: dataStepTwo.deliveryDest,
+                //     },
+                //   });
+                //   if (result) {
+                //     setAddressDelivery(prev => ({
+                //       ...prev,
+                //       address: result.address,
+                //       name: result.name || '',
+                //     }));
+                //     setDataStepTwo(prev => ({
+                //       ...prev,
+                //       deliveryAddress: `${result.name || ''} ${
+                //         result.address || ''
+                //       }`,
+                //       deliveryRemark: result.comment || '',
+                //       deliveryDest: result.selected || '',
+                //     }));
+                //   }
+                // }}
+                onPress={() => {
+                  navigation.navigate('SelectLocationScreen', {
+                    address: addressDelivery.address,
+                    name: addressDelivery.name,
+                    comment: dataStepTwo?.deliveryRemark || '',
+                    selected: dataStepTwo.deliveryDest,
+                    id: addressDelivery?.id,
+                  });
+                }}>
+                <Text fontSize={14} color="primary">
+                  เปลี่ยน
+                </Text>
+              </TouchableOpacity>
+            )}
           </View>
 
           <View style={styles.inputContainer}>
@@ -131,7 +177,7 @@ export default function StepTwo({
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
-                  marginBottom: 12,
+                  marginBottom: 0,
                 }}>
                 <TouchableOpacity
                   onPress={() => {
@@ -158,14 +204,12 @@ export default function StepTwo({
                 <InputText
                   ref={refInput}
                   value={dataStepTwo?.numberPlate || ''}
-                  multiline
                   returnKeyType="done"
                   blurOnSubmit
                   isError={isShowError}
                   scrollEnabled={false}
                   style={{
-                    paddingTop: 16,
-                    marginTop: 10,
+                    marginTop: 8,
                   }}
                   onChangeText={(text: string) => {
                     setIsShowError(false);
@@ -184,7 +228,7 @@ export default function StepTwo({
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
-                  marginBottom: 12,
+                  marginBottom: 8,
                 }}>
                 <TouchableOpacity
                   onPress={() => {
@@ -502,151 +546,6 @@ export default function StepTwo({
         </View>
       </View>
 
-      <View
-        style={[
-          styles.container,
-          {
-            marginTop: 8,
-          },
-        ]}>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            borderBottomWidth: 1,
-            borderBottomColor: colors.border1,
-            paddingBottom: 14,
-          }}>
-          <Text bold fontSize={18} fontFamily="NotoSans">
-            สถานที่รับสินค้า / สถานที่จัดส่ง
-          </Text>
-          {user?.company !== 'ICPF' && (
-            <TouchableOpacity
-              // onPress={async () => {
-              //   const result: {
-              //     name?: string;
-              //     address: string;
-              //     comment?: string;
-              //     selected: string;
-              //   } = await SheetManager.show('select-location', {
-              //     payload: {
-              //       address: addressDelivery.address,
-              //       name: addressDelivery.name,
-              //       comment: dataStepTwo?.deliveryRemark || '',
-              //       selected: dataStepTwo.deliveryDest,
-              //     },
-              //   });
-              //   if (result) {
-              //     setAddressDelivery(prev => ({
-              //       ...prev,
-              //       address: result.address,
-              //       name: result.name || '',
-              //     }));
-              //     setDataStepTwo(prev => ({
-              //       ...prev,
-              //       deliveryAddress: `${result.name || ''} ${
-              //         result.address || ''
-              //       }`,
-              //       deliveryRemark: result.comment || '',
-              //       deliveryDest: result.selected || '',
-              //     }));
-              //   }
-              // }}
-              onPress={() => {
-                navigation.navigate('SelectLocationScreen', {
-                  address: addressDelivery.address,
-                  name: addressDelivery.name,
-                  comment: dataStepTwo?.deliveryRemark || '',
-                  selected: dataStepTwo.deliveryDest,
-                  id: addressDelivery?.id,
-                });
-              }}>
-              <Text fontSize={14} color="primary">
-                เปลี่ยน
-              </Text>
-            </TouchableOpacity>
-          )}
-        </View>
-        <View style={styles.inputContainer}>
-          <View
-            style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <Text fontFamily="NotoSans" semiBold fontSize={16}>
-              {/*  {user?.company === 'ICPF' && <Text color="error">{`*  `}</Text>} */}
-              ข้อมูลทะเบียนรถ
-            </Text>
-            <Text>{dataStepTwo.numberPlate?.length || 0}/50</Text>
-          </View>
-
-          <InputText
-            maxLength={50}
-            value={dataStepTwo?.numberPlate || ''}
-            multiline
-            blurOnSubmit
-            returnKeyType="done"
-            style={{
-              paddingTop: 12,
-            }}
-            scrollEnabled={false}
-            onChangeText={(text: string) => {
-              setIsShowError(false);
-              setDataStepTwo(prev => ({ ...prev, numberPlate: text }));
-            }}
-            placeholder="ระบุทะเบียนรถ"
-          />
-          <Text color="text3" fontSize={14} lineHeight={26}>
-            กรุณาระบุทะเบียนรถ 1 คำสั่งซื้อต่อ 1 คัน
-          </Text>
-          {/* {isShowError && (
-            <Text color="error" fontFamily="NotoSans">
-              กรุณากรอกทะเบียนรถ
-            </Text>
-          )} */}
-        </View>
-        <View
-          style={{
-            marginTop: 16,
-            padding: 8,
-            backgroundColor: colors.background1,
-          }}>
-          <View
-            style={{
-              flexDirection: 'row',
-            }}>
-            <Image
-              source={icons.location}
-              style={{
-                width: 24,
-                height: 24,
-              }}
-            />
-            <View
-              style={{
-                marginLeft: 8,
-              }}>
-              <Text semiBold lineHeight={26}>
-                {dataStepTwo.deliveryDest === 'SHOP'
-                  ? 'จัดส่งที่ร้าน'
-                  : dataStepTwo.deliveryDest === 'OTHER'
-                  ? 'จัดส่งที่อื่นๆ'
-                  : 'รับที่โรงงาน'}
-              </Text>
-              <Text color="text3" fontSize={14} lineHeight={26}>
-                {addressDelivery.name}
-              </Text>
-              <Text
-                lineHeight={20}
-                color="text3"
-                fontSize={14}
-                style={{
-                  width: 280,
-                }}>
-                {addressDelivery.address}
-              </Text>
-            </View>
-          </View>
-        </View>
-      </View>
       <Summary setLoading={setLoading} />
       <LoadingSpinner visible={loading} />
     </>

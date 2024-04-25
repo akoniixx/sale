@@ -1,4 +1,11 @@
-import { View, ScrollView, Image, TouchableOpacity } from 'react-native';
+import {
+  View,
+  ScrollView,
+  Image,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
 import React, { useEffect, useState } from 'react';
 import Container from '../../components/Container/Container';
 import Content from '../../components/Content/Content';
@@ -32,7 +39,7 @@ import { factoryServices } from '../../services/FactorySevices';
 import ModalOnlyConfirm from '../../components/Modal/ModalOnlyConfirm';
 import { useOrderLoads } from '../../contexts/OrdersLoadContext';
 import { otherAddressServices } from '../../services/OtherAddressServices/OtherAddressServices';
-
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 export interface TypeDataStepTwo {
   specialRequestRemark?: string | null;
   saleCoRemark?: string | null;
@@ -393,164 +400,170 @@ export default function CartScreen({
   }, [params?.specialRequestRemark]);
 
   return (
-    <Container>
-      <Header
-        onBackCustom={() => {
-          currentStep === 0
-            ? navigation.goBack()
-            : setCurrentStep(currentStep - 1);
-        }}
-        componentRight={
-          <TouchableOpacity
-            disabled={cartList.length <= 0}
-            onPress={() => setModalReset(true)}>
-            <Text
-              fontSize={16}
-              fontFamily="NotoSans"
-              color={cartList.length <= 0 ? 'text3' : 'primary'}>
-              ล้าง
-            </Text>
-          </TouchableOpacity>
-        }
-        title={t('screens.CartScreen.title')}
-      />
-      <Content
-        style={{
-          backgroundColor: colors.background1,
-          padding: 0,
-        }}>
-        <View
+    <KeyboardAwareScrollView>
+      <Container>
+        <Header
+          onBackCustom={() => {
+            currentStep === 0
+              ? navigation.goBack()
+              : setCurrentStep(currentStep - 1);
+          }}
+          componentRight={
+            <TouchableOpacity
+              disabled={cartList.length <= 0}
+              onPress={() => setModalReset(true)}>
+              <Text
+                fontSize={16}
+                fontFamily="NotoSans"
+                color={cartList.length <= 0 ? 'text3' : 'primary'}>
+                ล้าง
+              </Text>
+            </TouchableOpacity>
+          }
+          title={t('screens.CartScreen.title')}
+        />
+        <Content
           style={{
-            backgroundColor: colors.white,
-            paddingVertical: 12,
-            justifyContent: 'center',
-            marginVertical: 8,
+            backgroundColor: colors.background1,
+            padding: 0,
           }}>
-          <Step
-            onPress={step => {
-              if (cartList.length > 0) {
-                setCurrentStep(step === 2 ? currentStep : step);
-              }
-            }}
-            currentStep={currentStep}
-            labelList={['รายการคำสั่งซื้อ', 'สรุปคำสั่งซื้อ', 'สั่งซื้อสำเร็จ']}
-          />
-        </View>
-        <ScrollView ref={ref => (scrollRef.current = ref)}>
-          {renderStep()}
-        </ScrollView>
-      </Content>
-      <FooterShadow
-        style={{
-          paddingBottom: isKeyboardVisible ? 0 : 16,
-        }}>
-        {currentStep === 0 && (
-          <Button
-            onPress={() => {
-              if (cartList.length < 1) {
-                return setVisible(true);
-              }
-              setCurrentStep(prev => prev + 1);
-            }}
-            title={t('screens.CartScreen.stepOneButton')}
-          />
-        )}
-        {currentStep === 1 && (
-          <TouchableOpacity
-            onPress={() => {
-              if (
-                dataStepTwo.numberPlate?.trim().length == 0 ||
-                dataStepTwo.numberPlate == undefined
-              ) {
-                setShowError(true);
-              } else {
-                setVisibleConfirm(true);
-              }
-            }}
+          <View
             style={{
-              width: '100%',
-              height: 50,
+              backgroundColor: colors.white,
+              paddingVertical: 12,
               justifyContent: 'center',
-              alignItems: 'center',
-              backgroundColor: colors.primary,
-              borderRadius: 8,
+              marginVertical: 8,
             }}>
-            <View
+            <Step
+              onPress={step => {
+                if (cartList.length > 0) {
+                  setCurrentStep(step === 2 ? currentStep : step);
+                }
+              }}
+              currentStep={currentStep}
+              labelList={[
+                'รายการคำสั่งซื้อ',
+                'สรุปคำสั่งซื้อ',
+                'สั่งซื้อสำเร็จ',
+              ]}
+            />
+          </View>
+          <ScrollView ref={ref => (scrollRef.current = ref)}>
+            {renderStep()}
+          </ScrollView>
+        </Content>
+        <FooterShadow
+          style={{
+            paddingBottom: isKeyboardVisible ? 0 : 16,
+          }}>
+          {currentStep === 0 && (
+            <Button
+              onPress={() => {
+                if (cartList.length < 1) {
+                  return setVisible(true);
+                }
+                setCurrentStep(prev => prev + 1);
+              }}
+              title={t('screens.CartScreen.stepOneButton')}
+            />
+          )}
+          {currentStep === 1 && (
+            <TouchableOpacity
+              onPress={() => {
+                if (
+                  dataStepTwo.numberPlate?.trim().length == 0 ||
+                  dataStepTwo.numberPlate == undefined
+                ) {
+                  setShowError(true);
+                } else {
+                  setVisibleConfirm(true);
+                }
+              }}
               style={{
-                position: 'absolute',
-                left: 16,
+                width: '100%',
+                height: 50,
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: colors.primary,
+                borderRadius: 8,
               }}>
-              <Image
-                source={icons.cartFill}
-                style={{
-                  width: 24,
-                  height: 24,
-                }}
-              />
               <View
                 style={{
-                  width: 16,
-                  height: 16,
                   position: 'absolute',
-                  right: -6,
-                  borderColor: colors.primary,
-                  borderWidth: 1,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  borderRadius: 12,
-                  zIndex: 1,
-                  padding: 2,
-                  backgroundColor: colors.white,
+                  left: 16,
                 }}>
-                <Text color="primary" fontSize={12} lineHeight={12}>
-                  {cartList.length}
-                </Text>
+                <Image
+                  source={icons.cartFill}
+                  style={{
+                    width: 24,
+                    height: 24,
+                  }}
+                />
+                <View
+                  style={{
+                    width: 16,
+                    height: 16,
+                    position: 'absolute',
+                    right: -6,
+                    borderColor: colors.primary,
+                    borderWidth: 1,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    borderRadius: 12,
+                    zIndex: 1,
+                    padding: 2,
+                    backgroundColor: colors.white,
+                  }}>
+                  <Text color="primary" fontSize={12} lineHeight={12}>
+                    {cartList.length}
+                  </Text>
+                </View>
               </View>
-            </View>
-            <Text color="white" bold fontSize={18} fontFamily="NotoSans">
-              {t('screens.CartScreen.stepTwoButton')}
-            </Text>
-          </TouchableOpacity>
-        )}
-      </FooterShadow>
-      <ModalWarning
-        visible={visible}
-        onlyCancel
-        onRequestClose={() => setVisible(false)}
-        textCancel={'ตกลง'}
-        title="ไม่สามารถสั่งสินค้าได้"
-        desc="คุณต้องเพิ่มสินค้าที่ต้องการสั่งซื้อในตะกร้านี้"
-      />
-      <ModalWarning
-        visible={visibleConfirm}
-        title="ยืนยันคำสั่งซื้อ"
-        desc="ต้องการยืนยันคำสั่งซื้อใช่หรือไม่?"
-        onConfirm={async () => {
-          await onCreateOrder();
-        }}
-        onRequestClose={() => setVisibleConfirm(false)}
-      />
+              <Text color="white" bold fontSize={18} fontFamily="NotoSans">
+                {t('screens.CartScreen.stepTwoButton')}
+              </Text>
+            </TouchableOpacity>
+          )}
+        </FooterShadow>
+        <ModalWarning
+          visible={visible}
+          onlyCancel
+          onRequestClose={() => setVisible(false)}
+          textCancel={'ตกลง'}
+          title="ไม่สามารถสั่งสินค้าได้"
+          desc="คุณต้องเพิ่มสินค้าที่ต้องการสั่งซื้อในตะกร้านี้"
+        />
+        <ModalWarning
+          visible={visibleConfirm}
+          title="ยืนยันคำสั่งซื้อ"
+          desc="ต้องการยืนยันคำสั่งซื้อใช่หรือไม่?"
+          onConfirm={async () => {
+            await onCreateOrder();
+          }}
+          onRequestClose={() => setVisibleConfirm(false)}
+        />
 
-      <ModalOnlyConfirm
-        visible={modalReorder}
-        title={`สินค้าในรายการ \nมีการเรียงลำดับการขนสินค้าใหม่ \nกรุณาตรวจสอบลำดับสินค้าอีกครั้ง \nก่อนสรุปคำสั่งซื้อ`}
-        width={'80%'}
-        onConfirm={async () => {
-          await reArrangeReorder();
-        }}
-        textConfirm="ตกลง"
-      />
+        <ModalOnlyConfirm
+          visible={modalReorder}
+          title={`สินค้าในรายการ \nมีการเรียงลำดับการขนสินค้าใหม่ \nกรุณาตรวจสอบลำดับสินค้าอีกครั้ง \nก่อนสรุปคำสั่งซื้อ`}
+          width={'80%'}
+          onConfirm={async () => {
+            await reArrangeReorder();
+          }}
+          textConfirm="ตกลง"
+        />
 
-      <ModalWarning
-        visible={modalReset}
-        width={'70%'}
-        title="ยืนยันล้างตะกร้าสินค้า"
-        desc={`ต้องการล้างรายการสินค้าในตะกร้าทั้งหมด\nใช่หรือไม่?`}
-        onConfirm={() => reset()}
-        minHeight={60}
-        onRequestClose={() => setModalReset(false)}
-        titleCenter
-      />
-    </Container>
+        <ModalWarning
+          visible={modalReset}
+          width={'70%'}
+          title="ยืนยันล้างตะกร้าสินค้า"
+          desc={`ต้องการล้างรายการสินค้าในตะกร้าทั้งหมด\nใช่หรือไม่?`}
+          onConfirm={() => reset()}
+          minHeight={60}
+          onRequestClose={() => setModalReset(false)}
+          titleCenter
+        />
+      </Container>
+    </KeyboardAwareScrollView>
   );
 }

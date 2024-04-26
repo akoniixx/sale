@@ -131,7 +131,7 @@ export default function GiftFromPromotion({
                       {item?.productName}
                     </Text>
                     <Text semiBold fontSize={12} lineHeight={22}>
-                      {item?.quantity} {item?.baseUnit}
+                      {item?.quantity.toFixed(2)} {item?.baseUnit}
                     </Text>
                   </View>
                 </View>
@@ -149,10 +149,15 @@ export default function GiftFromPromotion({
                 />
                 <View style={{ flexDirection: 'row', alignItems: 'baseline' }}>
                   <Text fontFamily='NotoSans' color='text3' fontSize={16} bold>จำนวนรวม :    </Text>
-                  <View>
-                  <Text fontFamily='NotoSans' fontSize={18} bold>
-                    {totalQuantities.map((i,idx) => (`${i.quantity%1===0? i.quantity : i.quantity.toFixed(2)} ${i.unit}${idx!==totalQuantities.length-1?',':''} `))}
+                  <View style={{flex:1,flexDirection:'row',flexWrap:'wrap'}}>
+                  {totalQuantities.map((i,idx) => (
+                    <Text fontFamily="NotoSans" fontSize={18} bold>
+                      {i.quantity % 1 === 0
+                        ? i.quantity
+                        : i.quantity.toFixed(2)}{' '}
+                      {i.unit}{idx+1 == totalQuantities.length?' ':', ' }
                     </Text>
+                  ))}
                   </View>
                 </View>
 

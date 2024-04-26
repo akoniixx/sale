@@ -144,10 +144,11 @@ export default function OrderSuccessScreen({
           setFreebieList(fbList);
           setOrderData(response);
         }
+       
         setProductBrand(JSON.parse(productBrand || ''));
         const quantitiesRecord: Record<string, number> =
         response.orderProducts.reduce((acc, product) => {
-          const key = product.saleUOMTH || product.baseUnitOfMeaTh;
+          const key =  acc.isFreebie == false? product.saleUOMTH || product.baseUnitOfMeaTh : product.baseUnitOfMeaTh||product.saleUOMTH
           if (key) {
             acc[key] = (acc[key] || 0) + product.quantity;
           }

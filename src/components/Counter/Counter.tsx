@@ -112,7 +112,6 @@ export default function Counter({
           onChangeText={text => {
          
             const value = text.replace(/[^0-9.]/g, '');
-console.log(value)
             setQuantity(value);
             if (setCounter) {
               setCounter(+value);

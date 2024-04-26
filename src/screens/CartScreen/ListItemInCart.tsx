@@ -687,6 +687,7 @@ export default function ListItemInCart({
                         ? i.quantity
                         : i.quantity.toFixed(2)}{' '}
                       {i.unit}
+                      
                     </Text>
                   ))}
                 </View>

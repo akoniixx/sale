@@ -87,7 +87,7 @@ export default function ListItemInCart({
   useEffect(() => {
     const quantitiesRecord: Record<string, number> = cartList.reduce(
       (acc, product) => {
-        const key = product.saleUOMTH || product.baseUnitOfMeaTh;
+        const key =  acc.isFreebie == false? product.saleUOMTH || product.baseUnitOfMeaTh : product.baseUnitOfMeaTh||product.saleUOMTH
         if (key) {
           acc[key] = (acc[key] || 0) + product.quantity;
         }
@@ -681,8 +681,8 @@ export default function ListItemInCart({
                   จำนวนรวม :{' '}
                 </Text>
                 <View>
-                  {totalQuantities.map(i => (
-                    <Text fontFamily="NotoSans" fontSize={18} bold>
+                  {totalQuantities.map((i,idx) => (
+                    <Text key={idx} fontFamily="NotoSans" fontSize={18} bold>
                       {i.quantity % 1 === 0
                         ? i.quantity
                         : i.quantity.toFixed(2)}{' '}
@@ -723,7 +723,7 @@ export default function ListItemInCart({
         visible={visibleDel}
         title="ยืนยันการลบสินค้า"
         desc="ต้องการยืนยันการลบสินค้าใช่หรือไม่ ?"
-        onConfirm={() => onDelete(delId)}
+        onConfirm={ onConfirmDelete}
         onRequestClose={() => setVisibleDel(false)}
       />
 

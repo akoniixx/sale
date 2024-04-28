@@ -108,14 +108,14 @@ export const ModalDataunloadList = ({
                           </Text>
                           <Text fontSize={14} color="text2">
                             {item.isFreebie
-                              ? `${item.amountFreebie} ${
+                              ? `${item.amountFreebie.toFixed(2)} ${
                                   item?.saleUOMTH || item?.baseUnitOfMeaTh
                                 }`
                               : item.amountFreebie > 0
-                              ? `${item.amount} + ${item.amountFreebie} ${
+                              ? `${item.amount.toFixed(2)} + ${item.amountFreebie.toFixed(2)} ${
                                   item?.saleUOMTH || item?.baseUnitOfMeaTh
                                 }`
-                              : `${item.amount} ${
+                              : `${item.amount.toFixed(2)} ${
                                   item?.saleUOMTH || item?.baseUnitOfMeaTh
                                 }`}
                           </Text>
@@ -124,7 +124,7 @@ export const ModalDataunloadList = ({
                               flexDirection: 'row',
                               justifyContent: 'space-between',
                             }}>
-                            <Text>{`${item?.quantity} ${
+                            <Text>{`${item?.quantity.toFixed(2)} ${
                               item?.saleUOMTH || item?.baseUnitOfMeaTh
                             }`}</Text>
                           </View>

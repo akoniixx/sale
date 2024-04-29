@@ -27,12 +27,14 @@ interface Props {
       name: string;
       addressText: string;
       id: string;
+      deliveryFiles: string[];
     }>
   >;
   otherAddress: {
     name: string;
     addressText: string;
     id: string;
+    deliveryFiles: string[];
   };
 }
 interface CustomerOtherAddressFile {
@@ -88,6 +90,7 @@ export default function ListOtherLocation({
       name: item.receiver,
       addressText: `${item.address} ${item.subdistrict} ${item.district} ${item.province} ${item.postcode}`,
       id: item.id,
+      deliveryFiles: item.fileOtherAddress.map(el => el.pathFile),
     });
   };
 
@@ -105,6 +108,7 @@ export default function ListOtherLocation({
           });
           if (result && result.success) {
             setListOtherAddress(result.responseData);
+
             if (route?.params?.id) {
               setOtherAddress(prev => {
                 return {
@@ -119,6 +123,9 @@ export default function ListOtherLocation({
                 name: result.responseData[0].receiver,
                 addressText: `${result.responseData[0].address} ${result.responseData[0].subdistrict} ${result.responseData[0].district} ${result.responseData[0].province} ${result.responseData[0].postcode}`,
                 id: result.responseData[0].id,
+                deliveryFiles: result.responseData[0].fileOtherAddress.map(
+                  (el: any) => el.pathFile,
+                ),
               });
             }
           }

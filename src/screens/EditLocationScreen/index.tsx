@@ -112,7 +112,9 @@ export default function EditLocationScreen({
             onPress={() => {
               setOnConfirmDel(true);
             }}>
-            <Text color="error">ลบที่อยู่</Text>
+            <Text color="error" lineHeight={28}>
+              ลบที่อยู่
+            </Text>
           </TouchableOpacity>
         }
       />

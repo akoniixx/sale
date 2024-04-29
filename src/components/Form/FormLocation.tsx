@@ -100,7 +100,7 @@ export default function FormLocation({ addressId, onSubmit }: Props) {
     postcode: yup.string().required('กรุณาระบุรหัสไปรษณีย์'),
     address: yup.string().required('กรุณาระบุรายละเอียดที่อยู่'),
     receiver: yup.string().required('กรุณาระบุชื่อผู้รับ'),
-    telephone: yup.string().min(10).required('กรุณาระบุเบอร์ติดต่อ'),
+    telephone: yup.string().min(9).max(10).required('กรุณาระบุเบอร์ติดต่อ'),
   });
 
   return (

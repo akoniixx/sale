@@ -12,7 +12,7 @@ import Button from '../../components/Button/Button';
 import icons from '../../assets/icons';
 import { colors } from '../../assets/colors/colors';
 import Summary from './Summary';
-import { TypeDataStepTwo } from '.';
+import { AddressDelivery, TypeDataStepTwo } from '.';
 import { SheetManager } from 'react-native-actions-sheet';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { MainStackParamList } from '../../navigations/MainNavigator';
@@ -34,17 +34,13 @@ interface Props {
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   setDataStepTwo: React.Dispatch<React.SetStateAction<TypeDataStepTwo>>;
   dataStepTwo: TypeDataStepTwo;
-  setAddressDelivery: React.Dispatch<
-    React.SetStateAction<{
-      address: string;
-      name: string;
-    }>
-  >;
-  addressDelivery: {
-    address: string;
-    name: string;
-    id?: string;
-  };
+  // setAddressDelivery: React.Dispatch<
+  //   React.SetStateAction<{
+  //     address: string;
+  //     name: string;
+  //   }>
+  // >;
+  addressDelivery: AddressDelivery;
   navigation: StackNavigationProp<MainStackParamList, 'CartScreen'>;
   refInput: React.MutableRefObject<any>;
 }
@@ -53,14 +49,14 @@ export default function StepTwo({
   dataStepTwo,
   navigation,
   addressDelivery,
-  setAddressDelivery,
+  // setAddressDelivery,
   setLoading,
   loading,
   refInput,
   setIsShowError,
   isShowError,
 }: Props) {
-  const { cartDetail,cartOrderLoad } = useCart();
+  const { cartDetail, cartOrderLoad } = useCart();
   const {
     state: { user },
   } = useAuth();
@@ -76,7 +72,6 @@ export default function StepTwo({
     setDataForLoad,
     dataReadyLoad,
     setDataReadyLoad,
-    
   } = useOrderLoads();
 
   const [isCollapsed, setIsCollapsed] = useState<boolean>(true);
@@ -208,6 +203,7 @@ export default function StepTwo({
                     comment: dataStepTwo?.deliveryRemark || '',
                     selected: dataStepTwo.deliveryDest,
                     id: addressDelivery?.id,
+                    deliveryFiles: addressDelivery?.deliveryFiles,
                   });
                 }}>
                 <Text fontSize={14} color="primary">
@@ -310,7 +306,8 @@ export default function StepTwo({
             style={{
               marginTop: 16,
               padding: 8,
-              backgroundColor: colors.background1,
+              backgroundColor: colors.grey1,
+              borderRadius: 8,
             }}>
             <View
               style={{
@@ -346,9 +343,44 @@ export default function StepTwo({
                   }}>
                   {addressDelivery.address}
                 </Text>
+                {addressDelivery.deliveryFiles.length > 0 && (
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      marginTop: 4,
+                    }}>
+                    <Image
+                      source={icons.paperGray}
+                      style={{
+                        width: 18,
+                        height: 18,
+                        marginRight: 8,
+                      }}
+                      resizeMode="contain"
+                    />
+                    <Text
+                      lineHeight={20}
+                      color="text3"
+                      fontSize={14}
+                      style={{
+                        width: 280,
+                      }}>
+                      {`เอกสาร ${addressDelivery.deliveryFiles.length} รายการ`}
+                    </Text>
+                  </View>
+                )}
               </View>
             </View>
           </View>
+        </View>
+        <View style={{ marginTop: 20 }}>
+          <Text semiBold color="text2" fontFamily="NotoSans">
+            หมายเหตุ (ลูกค้า)
+          </Text>
+          <Text>
+            {dataStepTwo?.deliveryRemark ? dataStepTwo?.deliveryRemark : '-'}
+          </Text>
         </View>
         <View style={{ marginTop: 20 }}>
           <Text semiBold color="text2" fontFamily="NotoSans">

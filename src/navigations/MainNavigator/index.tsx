@@ -40,6 +40,7 @@ export type LocationDataType = {
   name?: string;
   address?: string;
   id?: string;
+  deliveryFiles?: string[];
 };
 
 export type MainStackParamList = {

@@ -55,7 +55,7 @@ export default function HistoryItemArea({
   const { setItem: setTermPayment } = useAsyncStorage('termPayment');
   const { setItem: setCustomerNo } = useAsyncStorage('customerNo');
   const { setItem: setCustomerName } = useAsyncStorage('customerName');
-  const { setItem: setProductBrand } = useAsyncStorage('productBrand');
+  // const { setItem: setProductBrand } = useAsyncStorage('productBrand');
   const { setItem: setAddress } = useAsyncStorage('address');
 
   const { setItem: setUserShopId } = useAsyncStorage('userShopId');

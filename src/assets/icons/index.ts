@@ -85,4 +85,5 @@ export default {
   locationIcon: require('./locationIcon.png'),
   editPrimary: require('./editPrimary.png'),
   receiverIcon: require('./receiverIcon.png'),
+  paperGray: require('./paperGray.png'),
 };

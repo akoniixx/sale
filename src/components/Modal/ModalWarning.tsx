@@ -27,7 +27,21 @@ type Props = {
   descFontSize?: TextStyled['fontSize'];
   colorPrimaryButton?: TextStyled['color'];
   contentAlign?: 'center' | 'flex-start' | 'flex-end';
-  ColorDesc?: "white" | "text3" | "primary" | "secondary" | "text1" | "text2" | "current" | "error" | "specialRequest" | "waiting" | "warning" | "subheading3" | "border2" | undefined
+  ColorDesc?:
+    | 'white'
+    | 'text3'
+    | 'primary'
+    | 'secondary'
+    | 'text1'
+    | 'text2'
+    | 'current'
+    | 'error'
+    | 'specialRequest'
+    | 'waiting'
+    | 'warning'
+    | 'subheading3'
+    | 'border2'
+    | undefined;
 };
 
 export default function ModalWarning({
@@ -43,7 +57,6 @@ export default function ModalWarning({
   onlyCancel = false,
   minHeight = 50,
   descCenter = false,
-  descError,
   titleFontSize,
   descFontSize,
   colorPrimaryButton = 'primary',
@@ -86,7 +99,7 @@ export default function ModalWarning({
               <Text
                 fontSize={descFontSize || 14}
                 fontFamily="Sarabun"
-                color={ColorDesc?ColorDesc:'text3'}
+                color={ColorDesc ? ColorDesc : 'text3'}
                 center={descCenter}
                 lineHeight={28}>
                 {desc}

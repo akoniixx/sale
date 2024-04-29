@@ -26,23 +26,34 @@ export default function GiftFromPromotion({
   loadingPromo,
 }: Props): JSX.Element {
   const { t } = useLocalization();
-  const [totalQuantities, setTotalQuantities] = useState<[{ unit: string, quantity: number }]>([{
-    unit: '',
-    quantity: 0
-  }])
-  if (freebieListItem.length < 1) return <></>;
+  const [totalQuantities, setTotalQuantities] = useState<
+    [{ unit: string; quantity: number }]
+  >([
+    {
+      unit: '',
+      quantity: 0,
+    },
+  ]);
   useEffect(() => {
-    const quantitiesRecord: Record<string, number> = freebieListItem.reduce((acc, product) => {
-      const key = product.baseUnit 
-      if (key) {
-        acc[key] = (acc[key] || 0) + product.quantity;
-      }
-      return acc;
-    }, {});
+    if (freebieListItem.length > 0) {
+      const quantitiesRecord: Record<string, number> = freebieListItem.reduce(
+        (acc, product) => {
+          const key = product.baseUnit;
+          if (key) {
+            acc[key] = (acc[key] || 0) + product.quantity;
+          }
+          return acc;
+        },
+        {},
+      );
 
-    const totalQuantities = Object.entries(quantitiesRecord).map(([unit, quantity]) => ({ unit, quantity }));
-    setTotalQuantities(totalQuantities)
-  }, [freebieListItem])
+      const totalQuantities = Object.entries(quantitiesRecord).map(
+        ([unit, quantity]) => ({ unit, quantity }),
+      );
+      setTotalQuantities(totalQuantities);
+    }
+  }, [freebieListItem]);
+  if (freebieListItem.length < 1) return <></>;
   return (
     <View style={styles().container}>
       <View style={styles().header}>
@@ -140,28 +151,28 @@ export default function GiftFromPromotion({
           </ScrollView>
         </View>
       )}
-       <View style={{ marginTop: 10 }}>
-                <DashedLine
-                  dashGap={0}
-                  dashThickness={0.5}
-                  dashColor={colors.border2}
-                  style={{ marginBottom: 20 }}
-                />
-                <View style={{ flexDirection: 'row', alignItems: 'baseline' }}>
-                  <Text fontFamily='NotoSans' color='text3' fontSize={16} bold>จำนวนรวม :    </Text>
-                  <View style={{flex:1,flexDirection:'row',flexWrap:'wrap'}}>
-                  {totalQuantities.map((i,idx) => (
-                    <Text fontFamily="NotoSans" fontSize={18} bold>
-                      {i.quantity % 1 === 0
-                        ? i.quantity
-                        : i.quantity.toFixed(2)}{' '}
-                      {i.unit}{idx+1 == totalQuantities.length?' ':', ' }
-                    </Text>
-                  ))}
-                  </View>
-                </View>
-
-              </View>
+      <View style={{ marginTop: 10 }}>
+        <DashedLine
+          dashGap={0}
+          dashThickness={0.5}
+          dashColor={colors.border2}
+          style={{ marginBottom: 20 }}
+        />
+        <View style={{ flexDirection: 'row', alignItems: 'baseline' }}>
+          <Text fontFamily="NotoSans" color="text3" fontSize={16} bold>
+            จำนวนรวม :{' '}
+          </Text>
+          <View style={{ flex: 1, flexDirection: 'row', flexWrap: 'wrap' }}>
+            {totalQuantities.map((i, idx) => (
+              <Text fontFamily="NotoSans" fontSize={18} bold key={idx}>
+                {i.quantity % 1 === 0 ? i.quantity : i.quantity.toFixed(2)}{' '}
+                {i.unit}
+                {idx + 1 == totalQuantities.length ? ' ' : ', '}
+              </Text>
+            ))}
+          </View>
+        </View>
+      </View>
     </View>
   );
 }

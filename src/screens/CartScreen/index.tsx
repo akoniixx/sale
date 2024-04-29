@@ -47,8 +47,15 @@ export interface TypeDataStepTwo {
   deliveryAddressId?: string | null;
   deliveryRemark?: string | null;
   deliveryDest: string;
+  deliveryFiles?: string[];
 
   numberPlate?: string | null;
+}
+export interface AddressDelivery {
+  address: string;
+  name: string;
+  deliveryFiles: string[];
+  id?: string;
 }
 export default function CartScreen({
   navigation,
@@ -88,10 +95,13 @@ export default function CartScreen({
   const scrollRef = React.useRef<ScrollView | null>(null);
   const [modalReorder, setModalReorder] = useState(false);
   const [loading, setLoading] = React.useState(false);
-  const [addressDelivery, setAddressDelivery] = React.useState({
-    address: '',
-    name: '',
-  });
+  const [addressDelivery, setAddressDelivery] = React.useState<AddressDelivery>(
+    {
+      address: '',
+      name: '',
+      deliveryFiles: [],
+    },
+  );
   const [dataStepTwo, setDataStepTwo] = React.useState<TypeDataStepTwo>({
     specialRequestRemark: null,
     saleCoRemark: null,
@@ -99,6 +109,7 @@ export default function CartScreen({
     deliveryRemark: null,
     deliveryDest: '',
     numberPlate: '',
+    deliveryFiles: [],
   });
   const reArrangeShipment = (dataList: newProductType[]) => {
     return dataList.map((item, index) => {
@@ -295,7 +306,6 @@ export default function CartScreen({
             navigation={navigation}
             refInput={refInput}
             addressDelivery={addressDelivery}
-            setAddressDelivery={setAddressDelivery}
           />
         );
       }
@@ -329,6 +339,7 @@ export default function CartScreen({
           setAddressDelivery({
             address: parsedAddress.addressText,
             name: parsedAddress.name,
+            deliveryFiles: [],
           });
           setDataStepTwo(prev => ({
             ...prev,
@@ -351,6 +362,7 @@ export default function CartScreen({
             address: locationData.address || '',
             name: locationData.name || '',
             id: locationData.id || '',
+            deliveryFiles: locationData.deliveryFiles || [],
           }));
           setDataStepTwo(prev => ({
             ...prev,
@@ -360,6 +372,7 @@ export default function CartScreen({
             deliveryRemark: locationData.comment || '',
             deliveryDest: locationData.selected || '',
             deliveryAddressId: locationData.id || undefined,
+            deliveryFiles: locationData.deliveryFiles || [],
           }));
         } else if (user?.company && user?.company === 'ICPL') {
           getShopLocation();

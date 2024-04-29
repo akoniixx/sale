@@ -51,16 +51,16 @@ export default function LocationDelivery({ orderDetail, navigation }: Props) {
         }}>
         {orderDetail?.deliveryAddress || '-'}
       </Text>
-      <TouchableOpacity
-        onPress={handlePress}
-        style={{
-          borderWidth: 1,
-          borderColor: colors.border1,
-          padding: 15,
-          borderRadius: 8,
-          marginTop: 10,
-        }}>
-        {orderDetail && orderDetail?.deliveryFiles?.length > 0 && (
+      {orderDetail && orderDetail?.deliveryFiles?.length > 0 && (
+        <TouchableOpacity
+          onPress={handlePress}
+          style={{
+            borderWidth: 1,
+            borderColor: colors.border1,
+            padding: 15,
+            borderRadius: 8,
+            marginTop: 10,
+          }}>
           <View
             style={{
               flexDirection: 'row',
@@ -74,8 +74,8 @@ export default function LocationDelivery({ orderDetail, navigation }: Props) {
             </View>
             <Image style={{ width: 24, height: 24 }} source={icons.iconNext} />
           </View>
-        )}
-      </TouchableOpacity>
+        </TouchableOpacity>
+      )}
     </View>
   );
 }

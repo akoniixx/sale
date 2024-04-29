@@ -431,8 +431,6 @@ export const CartProvider: React.FC<Props> = ({ children }) => {
         isFreebie: item.isFreebie,
       }));
 
-      console.log(JSON.stringify(processedData),'sssss')
-
       const mergedProducts = processedData.reduce(
         (acc: { [key: string]: DataForOrderLoad }, item) => {
           const key =

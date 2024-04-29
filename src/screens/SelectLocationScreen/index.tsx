@@ -82,6 +82,7 @@ export default function SelectLocationScreen({ navigation, route }: Props) {
     name: '',
     addressText: '',
     id: '',
+    deliveryFiles: [] as string[],
   });
 
   useEffect(() => {
@@ -137,6 +138,7 @@ export default function SelectLocationScreen({ navigation, route }: Props) {
             comment: remark,
             address: otherAddress.addressText,
             id: otherAddress.id,
+            deliveryFiles: otherAddress.deliveryFiles,
           }
         : selected === 'SHOP'
         ? {
@@ -172,6 +174,7 @@ export default function SelectLocationScreen({ navigation, route }: Props) {
                 address: route.params.address,
                 comment: route.params.comment,
                 id: route.params.id,
+                deliveryFiles: route.params.deliveryFiles,
               },
             });
           }}
@@ -319,6 +322,7 @@ export default function SelectLocationScreen({ navigation, route }: Props) {
                       <View
                         style={{
                           marginLeft: 12,
+                          width: '100%',
                         }}>
                         <Text
                           fontSize={18}
@@ -331,7 +335,8 @@ export default function SelectLocationScreen({ navigation, route }: Props) {
                           fontSize={16}
                           lineHeight={24}
                           style={{
-                            width: '60%',
+                            width: '70%',
+
                             marginTop: 8,
                           }}>
                           {storeAddress.addressText}
@@ -341,6 +346,7 @@ export default function SelectLocationScreen({ navigation, route }: Props) {
                       <View
                         style={{
                           marginLeft: 12,
+                          width: '100%',
                         }}>
                         <Text
                           fontSize={18}
@@ -353,7 +359,7 @@ export default function SelectLocationScreen({ navigation, route }: Props) {
                           fontSize={16}
                           lineHeight={24}
                           style={{
-                            width: '60%',
+                            width: '70%',
                             alignSelf: 'flex-start',
                             marginTop: 8,
                           }}>
@@ -433,7 +439,14 @@ export default function SelectLocationScreen({ navigation, route }: Props) {
             </Content>
           </ScrollView>
           <FooterShadow style={{}}>
-            <SubmitButton title="ยืนยัน" onSubmit={onSubmitLocation} />
+            <SubmitButton
+              title="ยืนยัน"
+              onSubmit={onSubmitLocation}
+              disabled={
+                selected === 'OTHER' &&
+                (otherAddress.id === '' || !otherAddress.id)
+              }
+            />
           </FooterShadow>
         </Form>
       </Container>

@@ -341,7 +341,7 @@ export default function OrderLoadsScreen({
           shipmentOrder: item.order,
         };
       });
-      const payload: CartItemType = {
+      const payload: any = {
         company: company ? company : 'ICPI',
         orderProducts,
 
@@ -350,6 +350,7 @@ export default function OrderLoadsScreen({
         customerCompanyId: customerCompanyId ? +customerCompanyId : 0,
         orderLoads: combinedArray,
         userStaffId: cartDetail.userStaffId,
+        specialRequestFreebies: cartDetail?.specialRequestFreebies || [],
       };
 
       const res = await cartServices.postCart(payload);

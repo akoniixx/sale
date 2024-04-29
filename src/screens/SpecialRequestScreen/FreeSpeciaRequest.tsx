@@ -109,7 +109,6 @@ export default function FreeSpeciaRequestScreen({ navigation, route }: Props) {
     };
     try {
       const res = await productServices.getProductFree(payload);
-
       setFreebiesCount(res.count);
       setFreebies(res.data);
       setLoading(false);
@@ -208,7 +207,7 @@ export default function FreeSpeciaRequestScreen({ navigation, route }: Props) {
       <View
         style={{
           flexDirection: 'row',
-          paddingVertical: 20,
+          paddingVertical: 10,
           flex: 1,
           backgroundColor: selectedItems.some(
             selectedItem =>
@@ -224,19 +223,31 @@ export default function FreeSpeciaRequestScreen({ navigation, route }: Props) {
           {item.productFreebiesImage ? (
             <ImageCache
               uri={getNewPath(item.productFreebiesImage)}
-              style={{ width: 72, height: 72 }}
+              style={{ width: 48, height: 48 }}
             />
           ) : (
             <Image
               source={images.emptyProduct}
-              style={{ width: 72, height: 72 }}
+              style={{ width: 48, height: 48 }}
             />
           )}
           <View style={{ marginLeft: 16, flex: 1, alignSelf: 'center' }}>
-            <Text semiBold>{item.productName}</Text>
+            <Text fontFamily='Sarabun' fontSize={16} >{item.productName}</Text>
+            <View
+                  style={{
+                    flexDirection: 'row',
+                  }}>
+                  <Text color="text3" fontFamily='Sarabun' fontSize={16} >
+                   {item.productFreebiesCodeNAV}
+                  </Text>
+                </View>
           </View>
         </View>
-        <View style={{ alignItems: 'center', alignSelf: 'center', width: 40 }}>
+        <View  style={{ alignItems: 'flex-end',justifyContent:'space-between',paddingRight:10,marginLeft:20}}>
+        <View style={{flexDirection:'row'}}>
+                <Text color='text3'>เหลือ </Text>
+                <Text > {item.remainQty}</Text>
+                </View>
           {selectedItems.some(
             selectedItem =>
               selectedItem.productFreebiesId === item.productFreebiesId,
@@ -335,7 +346,7 @@ export default function FreeSpeciaRequestScreen({ navigation, route }: Props) {
             key={idx}
             style={{
               flexDirection: 'row',
-              paddingVertical: 20,
+              paddingVertical: 10,
               flex: 1,
               backgroundColor: selectedItems.some(
                 item => item.productId === el.productId,
@@ -357,16 +368,16 @@ export default function FreeSpeciaRequestScreen({ navigation, route }: Props) {
                 <ImageCache
                   uri={getNewPath(el.productImage)}
                   style={{
-                    width: 72,
-                    height: 72,
+                    width: 48,
+                    height: 48,
                   }}
                 />
               ) : (
                 <Image
                   source={images.emptyProduct}
                   style={{
-                    width: 72,
-                    height: 72,
+                    width: 48,
+                    height: 48,
                   }}
                 />
               )}
@@ -374,25 +385,30 @@ export default function FreeSpeciaRequestScreen({ navigation, route }: Props) {
                 style={{
                   marginLeft: 16,
                   flex: 1,
-                  alignSelf: 'center',
+                 justifyContent:'space-between'
                 }}>
                 <Text semiBold>{el.productName}</Text>
                 <View
                   style={{
                     flexDirection: 'row',
-                    alignItems: 'center',
                   }}>
-                  <Text color="text3" fontSize={14}>
-                    {el.packSize}
+                  <Text color="text3" fontFamily='Sarabun' fontSize={14}>
+                    {el.packSize} | {el.productCodeNAV}
                   </Text>
                 </View>
               </View>
             </View>
             <View
-              style={{ alignItems: 'center', alignSelf: 'center', width: 40 }}>
+              style={{ alignItems: 'flex-end',justifyContent:'space-between',paddingRight:10}}>
+                <View style={{flexDirection:'row'}}>
+                <Text color='text3'>เหลือ </Text>
+                <Text > {el.qtySaleUnit}</Text>
+                </View>
+                 
               {selectedItems.some(item => item.productId === el.productId) && (
                 <Image source={icons.check} style={{ width: 20, height: 20 }} />
               )}
+            
             </View>
           </View>
         </TouchableOpacity>

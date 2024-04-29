@@ -60,7 +60,7 @@ export default function StepTwo({
   setIsShowError,
   isShowError,
 }: Props) {
-  const { cartDetail } = useCart();
+  const { cartDetail,cartOrderLoad } = useCart();
   const {
     state: { user },
   } = useAuth();
@@ -76,6 +76,7 @@ export default function StepTwo({
     setDataForLoad,
     dataReadyLoad,
     setDataReadyLoad,
+    
   } = useOrderLoads();
 
   const [isCollapsed, setIsCollapsed] = useState<boolean>(true);
@@ -92,6 +93,60 @@ export default function StepTwo({
       getFile();
     }, []),
   );
+
+  useEffect(() => {
+    const mergedProducts = dataForLoad.reduce(
+      (acc: { [key: string]: DataForOrderLoad }, item) => {
+        const key =
+          item.productId || `freebie_${item.productFreebiesId}` || 'undefined';
+        if (acc[key]) {
+          acc[key].quantity += item.quantity;
+          if (item.isFreebie) {
+            acc[key].freebieQuantity =
+              (acc[key].freebieQuantity || 0) + item.quantity;
+          }
+        } else {
+          acc[key] = { ...item };
+          acc[key].freebieQuantity = item.isFreebie ? item.quantity : 0;
+        }
+        return acc;
+      },
+      {},
+    );
+
+    const mergedProductsArray = Object.values(mergedProducts);
+
+    const updatedData = cartOrderLoad.map(item1 => {
+      const item2 = mergedProductsArray.find(item => {
+        if (item.productFreebiesId) {
+          return item.productFreebiesId === item1.productFreebiesId;
+        } else {
+          return item.productId === item1.productId;
+        }
+      });
+      if (item2) {
+        return {
+          ...item1,
+          quantity: item1.quantity - item2.quantity,
+          isSelected: false,
+          maxQuantity: item1.quantity,
+          freebieQuantity: item2.freebieQuantity - item1.freebieQuantity,
+          amount: item1.quantity - item1.freebieQuantity,
+          amountFreebie: item1.freebieQuantity,
+        };
+      }
+      return {
+        ...item1,
+        quantity: item1.quantity,
+        isSelected: false,
+        maxQuantity: item1.quantity,
+        freebieQuantity: item1.freebieQuantity,
+        amount: item1.quantity - item1.freebieQuantity,
+        amountFreebie: item1.freebieQuantity,
+      };
+    });
+    setCurrentList(updatedData);
+  }, [cartOrderLoad, dataForLoad]);
 
   return (
     <>
@@ -460,7 +515,7 @@ export default function StepTwo({
                   style={{ width: 24, height: 24, marginRight: 10 }}
                 />
                 <View>
-                  <Text fontFamily="NotoSans" lineHeight={21}>
+                  <Text fontFamily="NotoSans" lineHeight={25}>
                     รายการจัดเรียงสินค้าขึ้นรถ
                   </Text>
                   {!currentList.every(Item => Item.quantity === 0) &&

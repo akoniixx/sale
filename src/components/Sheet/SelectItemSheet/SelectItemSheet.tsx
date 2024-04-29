@@ -98,7 +98,7 @@ export const SelectItemsSheet = (props: SheetProps) => {
         amountFreebie: item1.freebieQuantity,
       };
     });
-    /* console.log(updatedData) */
+    /*  console.log(updatedData) */
     setCurrentList(updatedData);
   }, [cartOrderLoad, dataForLoad]);
 
@@ -134,24 +134,32 @@ export const SelectItemsSheet = (props: SheetProps) => {
   const selectAll = () => {
     setCurrentList((currentList: any[]) =>
       currentList.map(cur => {
-        if(
-          currentList?.every(item => item.isSelected)
-        ){
+        if (cur.quantity > 0) {
+
+          if (
+            currentList?.every(item => item.isSelected)
+          ) {
+            return {
+              ...cur,
+              isSelected: false,
+              key: uuid.v4(),
+              type: type === 'รถแม่' ? 'head' : 'dolly',
+            };
+          } else {
+            return {
+              ...cur,
+              isSelected: true,
+              key: uuid.v4(),
+              type: type === 'รถแม่' ? 'head' : 'dolly',
+            };
+          }
+        } else {
           return {
-            ...cur,
-            isSelected: false,
-            key: uuid.v4(),
-            type: type === 'รถแม่' ? 'head' : 'dolly',
-          };
-        }else{
-          return {
-            ...cur,
-            isSelected: true,
-            key: uuid.v4(),
-            type: type === 'รถแม่' ? 'head' : 'dolly',
-          };
+            ...cur
+          }
         }
-       
+
+
       }),
     );
   };
@@ -159,8 +167,10 @@ export const SelectItemsSheet = (props: SheetProps) => {
   const handleSelectItem = (item: DataForOrderLoad) => {
     setCurrentList((currentList: any[]) =>
       currentList.map(cur => {
-        if (item.isFreebie) {
+        if (item.isFreebie && item.productFreebiesId) {
+
           if (cur.productFreebiesId === item.productFreebiesId) {
+
             return {
               ...cur,
               isSelected: !cur.isSelected,
@@ -294,7 +304,7 @@ export const SelectItemsSheet = (props: SheetProps) => {
                   style={{ width: 20, height: 20 }}
                 />
               </TouchableOpacity>
-              <Text fontSize={16} style={{ marginLeft: 10 }}>
+              <Text fontSize={16} style={{ marginLeft: 10 }} lineHeight={25}>
                 เลือกทั้งหมด
               </Text>
             </View>
@@ -359,17 +369,13 @@ export const SelectItemsSheet = (props: SheetProps) => {
                           <Text fontSize={14} color="text2">
                             {' '}
                             {item.isFreebie
-                              ? `${item.amountFreebie?.toFixed(2)} ${
-                                  item?.saleUOMTH || item?.baseUnitOfMeaTh
-                                } (ของแถม)`
+                              ? `${item.amountFreebie?.toFixed(2)} ${item?.saleUOMTH || item?.baseUnitOfMeaTh
+                              } (ของแถม)`
                               : item.amountFreebie > 0
-                              ? `${item.amount?.toFixed(2)} ${
-                                  item?.saleUOMTH || item?.baseUnitOfMeaTh
-                                } + ${item?.amountFreebie?.toFixed(2)} ${
-                                  item?.saleUOMTH || item?.baseUnitOfMeaTh
+                                ? `${item.amount?.toFixed(2)} ${item?.saleUOMTH || item?.baseUnitOfMeaTh
+                                } + ${item?.amountFreebie?.toFixed(2)} ${item?.saleUOMTH || item?.baseUnitOfMeaTh
                                 } (ของแถม)`
-                              : `${item.amount?.toFixed(2)} ${
-                                  item?.saleUOMTH || item?.baseUnitOfMeaTh
+                                : `${item.amount?.toFixed(2)} ${item?.saleUOMTH || item?.baseUnitOfMeaTh
                                 }`}
                           </Text>
                           <View

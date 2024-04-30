@@ -178,8 +178,20 @@ export const SelectItemsSheet = (props: SheetProps) => {
               type: type === 'รถแม่' ? 'head' : 'dolly',
             };
           }
-        } else {
-          if (cur.productId === item.productId) {
+        }else if(
+          item.isFreebie && item.productFreebiesId == undefined
+        ){
+         if(cur.productId === item.productId && cur.isFreebie === item.isFreebie){
+          return{
+            ...cur,
+            isSelected: !cur.isSelected,
+            key: uuid.v4(),
+            type: type === 'รถแม่' ? 'head' : 'dolly',
+           }
+         }
+        } 
+        else {
+          if (cur.productId === item.productId && cur.isFreebie === item.isFreebie) {
             return {
               ...cur,
               isSelected: !cur.isSelected,

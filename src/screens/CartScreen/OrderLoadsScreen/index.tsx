@@ -189,7 +189,7 @@ export default function OrderLoadsScreen({
         amountFreebie: item1.freebieQuantity,
       };
     });
-    /* console.log(updatedData) */
+    console.log(updatedData)
     setCurrentList(updatedData);
   }, [cartOrderLoad, dataForLoad]);
 
@@ -365,7 +365,7 @@ export default function OrderLoadsScreen({
 
   const renderItemListUnsort = () => {
     if (
-      currentList.some(item => item.quantity !== 0 && dataForLoad.length !== 0)
+      currentList.some(item => item.quantity !>= 0 && dataForLoad.length !== 0)
     ) {
       const remainingItems = currentList.filter(
         item => item.quantity > 0,

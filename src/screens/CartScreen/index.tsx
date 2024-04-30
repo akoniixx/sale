@@ -143,7 +143,7 @@ export default function CartScreen({
       setDollyData([]);
       setDataForLoad([]);
       await AsyncStorage.removeItem('imageUris');
-      await postCartItem([]);
+      await postCartItem([],[]);
     } catch (error) {
       console.log(error);
     } finally {
